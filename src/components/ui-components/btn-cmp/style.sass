@@ -1,0 +1,53 @@
+.oilcase-btn
+    display: flex 
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    transition: background .2s
+    &__text 
+        color: $white
+        font-size: 20px
+        @media screen and (max-width: 1023px)
+            font-size: 14px
+
+    &:hover 
+        background-color: $hover-primary
+
+    &:active 
+        background-color: $pressed-primary        
+
+    &._secondary 
+        border: 1px solid $default-primary 
+        padding: 18px 32px 18px 24px
+        gap: 10px
+        border-radius: 4px
+
+        @media screen and (max-width: 1279px)
+            padding: 12px 22px 12px 18px
+        
+        @media screen and (max-width: 1056px) 
+            padding: 10px 16px 10px 12px
+
+    &._primary 
+        background-color: $default-primary
+        transition: background .2s
+        padding: 18px
+        gap: 10px
+        display: flex 
+        align-items: center
+        justify-content: center
+        &:hover 
+            background-color: $hover-primary 
+
+        &:active 
+            background-color: $pressed-primary
+
+        @media screen and (max-width: 1279px)
+            padding: 13px
+        @media screen and (max-width: 1056px)
+            padding: 11px
+
+    &._disabled
+        background-color: $disabled-primary    
+        border-color: $disabled-primary     
+        pointer-events: none

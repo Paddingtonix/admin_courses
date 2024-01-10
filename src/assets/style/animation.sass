@@ -1,0 +1,90 @@
+[data-animate]
+    transition: transform .6s .0s, opacity .6s
+    opacity: 0
+
+$directions: ("bottom": "translateY(50px)", "right": "translateX(50px)", "left": "translateX(-50px)", "top": "translateY(-50px)")
+
+@each $name, $transform in $directions
+    [data-animate-direction="#{$name}"]
+        transform: #{$transform}
+
+[data-animate="true"]:not([data-delay="true"])
+    opacity: 1
+    transform: translate3d(0, 0, 0)
+
+[data-delay="false"]
+    transform: none !important        
+
+.page-enter-active
+    transition: transform .6s .0s, opacity .6s
+    transition-delay: .0s
+    position: absolute 
+    left: 0
+    transform: translate3d(0, 50px, 0)
+    overflow-y: hidden
+    // top: 0 
+    // transform: none
+    opacity: 0
+    width: 1196px
+
+.page-enter-to
+    transform: translateY(0)
+    background-attachment: scroll !important
+    height: 100vh
+    overflow: hidden
+    opacity: 1
+    z-index: 1
+
+.page-enter, .page-leave
+    transform: translate3d(0, 50px, 0)
+    // opacity: 0
+    transition: transform 100.6s .0s, opacity .6s
+    
+.page-leave-active
+    transition: transform 100.6s, opacity .6s
+    transform: translate(0, 50px, 0)
+    // opacity: 0
+
+    
+.page-leave-to
+    transition: transform 1.6s, opacity .6s
+    transform: translate3d(0, 50px, 0)
+    // opacity: 0
+
+.fadeHeight-enter-active
+    transition: max-height 1.6s, opacity .2s
+    overflow: hidden
+
+.fadeHeight-enter-from
+    max-height: 0
+    opacity: 0
+    transition: max-height 1.6s, opacity .2s
+    
+ 
+.fadeHeight-leave-active,
+.fadeHeight-enter-to
+    transition: max-height 1.6s, opacity .2s
+    max-height: 2000px
+    overflow: hidden
+
+
+.fadeHeight-leave-to, .fadeHeight-enter
+    transition: max-height 1.6s, opacity .2s
+    pointer-events: none
+    max-height: 0
+    opacity: 0
+    overflow: hidden
+
+.fade-enter-active, .fade-leave-active
+    transition: opacity .4s
+
+.fade-enter, .fade-leave-to
+    opacity: 0
+
+@keyframes logo
+    0%
+        transform: rotateY(0deg)
+    50%
+        transform: rotateY(90deg)
+    100%
+        transform: rotateY(0deg)

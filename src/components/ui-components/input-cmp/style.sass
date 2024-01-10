@@ -1,0 +1,50 @@
+.oilcase-input 
+    width: 100%
+    height: 60px
+    position: relative
+    &__field 
+        height: 100%
+        width: 100%
+        padding: 30px 24px 19px
+        background-color: $background-input
+        border: 1px solid $border-input
+        border-radius: 4px
+        font-size: 18px
+        transition: all .2s
+        &:hover 
+            border-color: $hover-input
+
+        &:focus
+            border-color: $default-primary
+            padding-top: 30px
+            color: $white
+            + label 
+                top: 16px 
+                font-size: 12px 
+                color: $default-primary
+
+        &._fill-input
+            color: $white
+            + label 
+                top: 16px 
+                font-size: 12px 
+
+        &._error-input 
+            border-color: $error-input        
+                
+    &__label 
+        position: absolute    
+        top: 50%
+        left: 24px 
+        transform: translateY(-50%) 
+        color: $gray-text
+        font-size: 18px
+        transition: all .2s
+            
+    &__error 
+        color: $error-input  
+        font-size: 12px
+        font-weight: 500
+        position: absolute
+        bottom: -18px
+        left: 0
