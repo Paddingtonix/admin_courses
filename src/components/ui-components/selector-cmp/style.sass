@@ -1,0 +1,36 @@
+.oilcase-selector
+    height: 60px
+    position: relative
+    width: 100%
+    padding: 19px 24px
+    background-color: $background-input
+    border: 1px solid $border-input
+    border-radius: 4px
+    font-size: 18px
+    transition: all .2s
+    cursor: pointer
+    span 
+        color: $white
+        transition: color .2s
+        white-space: nowrap
+        
+    &__list
+        position: absolute
+        display: flex 
+        flex-direction: column
+        gap: 8px    
+        background-color: $background-input
+        width: 100%
+        left: 0
+        top: 60px
+        z-index: 10
+        border: 1px solid $border-input
+        border-radius: 4px
+        padding: 12px 24px
+        span 
+            &:hover 
+                color: $hover-primary
+
+    &__active 
+        &._placeholder
+            color: $gray

@@ -1,0 +1,64 @@
+.admin-course
+    &__title 
+        margin-bottom: 12px
+
+    &__chips 
+        display: flex
+        gap: 12px
+        margin-bottom: 50px
+
+    &__filters
+        display: flex 
+        justify-content: space-between
+        align-items: flex-end
+        margin-bottom: 24px
+        &__selectors
+            display: flex 
+            align-items: center
+            gap: 12px
+            .oilcase-selector
+                width: 255px
+
+        &__sort 
+            display: flex 
+            align-items: center
+            gap: 8px     
+            position: relative
+            &__values 
+                display: flex 
+                align-items: center
+                gap: 4px
+                cursor: pointer
+                min-width: 415px
+
+            &__list 
+                position: absolute
+                top: 25px
+                right: 18px
+                width: fit-content
+                display: flex 
+                flex-direction: column
+                gap: 8px
+                background-color: $background-dark-gray
+                border: 1px solid $border-input
+                padding: 8px
+                span 
+                    cursor: pointer
+
+            span 
+                color: $white   
+
+    &__search 
+        display: flex
+        align-items: center
+        gap: 8px
+        width: 412px 
+        margin-bottom: 22px
+        svg 
+            cursor: pointer
+            path 
+                transition: stroke .2s
+                
+            &:hover 
+                path 
+                    stroke: $hover-primary

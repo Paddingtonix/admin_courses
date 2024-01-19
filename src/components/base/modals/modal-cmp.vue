@@ -3,7 +3,8 @@
             <div class="oilcase-modal" v-if="modalComponent" :key="modalComponent">
                 <div @click="closeModal()" class="oilcase-modal__shadow"></div>
                 <div class="oilcase-modal__container">
-                    <component :is="modalComponent" :data="modalProps" :class="'oilcase-modal'"></component>
+                    <h1 class="oilcase-modal__container__title">{{ modalProps.title }}</h1>
+                    <component :is="modalComponent" :data="modalProps"></component>
                 </div>
             </div>
     </transition>
@@ -12,18 +13,21 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapMutations, mapGetters } from 'vuex';
+import authModal from './auth-modal/auth-modal.vue';
 
 export default defineComponent({
     data() {
         return {
         }
     },
-    components: {},
+    components: {
+        authModal
+    },
     computed: {
-        ...mapGetters('modal', ['modalComponent', 'modalProps', 'modalShadow']),
+        ...mapGetters('modalModule', ['modalComponent', 'modalProps']),
     },
     methods: {
-        ...mapMutations('modal', ['closeModal']),
+        ...mapMutations('modalModule', ['closeModal']),
     },
 })
 </script>

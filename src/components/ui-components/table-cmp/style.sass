@@ -1,0 +1,52 @@
+.oilcase-table
+    display: flex
+    width: 100%
+    max-width: 1735px
+    &__column 
+        display: flex
+        flex-direction: column
+        width: 100%
+        &:first-child
+            ._style-row
+                padding-left: 24px
+                border-left: 1px solid $border-input
+
+        &:last-child
+            ._style-row 
+                padding-right: 24px   
+                border-right: 1px solid $border-input
+
+        &:not(:first-child)
+            ._style-row
+                padding-left: 24px             
+
+    ._style-row
+        background-color: $background-dark-gray
+        border-top: 1px solid $border-input
+        padding: 18px 0
+        display: flex 
+        position: relative
+        &:last-child
+            border-bottom: 1px solid $border-input
+
+        span 
+            color: $white
+            white-space: nowrap
+        
+        a
+            color: $hover-link
+            white-space: nowrap
+            transition: color .2s
+            &:hover 
+                color: $hover-primary
+
+    &__basket 
+        position: absolute
+        right: 25px
+        cursor: pointer
+        path 
+            transition: fill .2s
+            
+        &:hover 
+            path 
+                fill: $hover-primary

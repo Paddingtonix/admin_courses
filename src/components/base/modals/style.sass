@@ -1,18 +1,19 @@
-.oilcase-modal 
-    position: fixed
+.oilcase-modal
+    position: fixed 
     top: 0
     left: 0
     right: 0
     bottom: 0
-    width: 100vw
     display: flex
     align-items: center
     justify-content: center
+    z-index: 100
     &__shadow 
         height: 100%
         width: 100%
         position: absolute
-        background: rgba(0, 0, 0, 0.30)
+        pointer-events: none
+        backdrop-filter: blur(12px)
 
     &__title 
         color: $white
@@ -22,14 +23,17 @@
         width: 100%
 
     &__container 
-        width: 478px
-        padding: 40px
+        padding: 80px
         border-radius: 8px
-        background-color: #373C43  
+        background-color: $background-dark-gray 
         z-index: 4  
-
+        &__title 
+            color: $white
+            margin-bottom: 56px
     &__text 
         color: $white 
         font-size: 18px    
         text-align: center
         margin-bottom: 32px
+
+@import './auth-modal/style'        

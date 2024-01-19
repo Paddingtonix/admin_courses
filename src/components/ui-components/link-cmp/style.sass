@@ -1,0 +1,21 @@
+.oilcase-link
+    display: flex 
+    align-items: center
+    gap: 12px
+    cursor: pointer
+    svg path 
+        transition: stroke .2s
+
+    &:hover 
+        span 
+            color: $hover-primary
+
+        svg path 
+            stroke: $hover-primary
+
+
+    &__text 
+        color: $white
+        opacity: 0
+        pointer-events: none
+        transition: color .2s
