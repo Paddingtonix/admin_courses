@@ -15,13 +15,24 @@ import { defineComponent } from 'vue';
 import { mapMutations, mapGetters } from 'vuex';
 import authModal from './auth-modal/auth-modal.vue';
 
+
+//admin option
+import adminDeleteModal from './admin/delete-modal/delete-modal.vue';
+import adminAttentionModal from './admin/attention-modal/attention-modal.vue';
+import adminStatusModal from './admin/status-modal/status-modal.vue';
+import adminErrorModal from './admin/error-modal/error-modal.vue';
+
 export default defineComponent({
     data() {
         return {
         }
     },
     components: {
-        authModal
+        authModal,
+        adminDeleteModal,
+        adminAttentionModal,
+        adminStatusModal,
+        adminErrorModal
     },
     computed: {
         ...mapGetters('modalModule', ['modalComponent', 'modalProps']),
