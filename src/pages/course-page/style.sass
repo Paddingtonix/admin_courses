@@ -12,10 +12,38 @@
         justify-content: space-between
         align-items: flex-end
         margin-bottom: 24px
+        transition: height 10s
         &__selectors
             display: flex 
             align-items: center
+            flex-wrap: wrap
             gap: 12px
+            width: 930px
+            &__direction 
+                padding: 8px 12px
+                background-color: $background-dark-gray
+                border: 1px solid $border-input
+                border-radius: 4px 
+                display: flex 
+                align-items: center
+                gap: 8px
+                transition: border .2s 
+                cursor: pointer
+                &:hover 
+                    border-color: $hover-primary
+                    span 
+                        color: $hover-primary
+
+                    svg path 
+                        stroke: $hover-primary  
+
+                > span
+                    color: $white
+                    transition: color .2s
+
+                svg path 
+                    transition: stroke .2s    
+
             .oilcase-selector
                 width: 255px
 
@@ -47,6 +75,9 @@
 
             span 
                 color: $white   
+    &__table
+        > span 
+            color: $white
 
     &__search 
         display: flex

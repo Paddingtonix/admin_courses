@@ -28,11 +28,18 @@
                     :selector_list="selector.list"
                     :checkbox="selector.checkbox"
                     :selector_placeholder="selector.placeholder"
+                    :selector_type="selector.type"
                     @setSelectorValue="saveStateSelector"
                 />
                 <btn-cmp 
                     :btn_text="'Показать'"
                 />
+                <div class="admin-course__filters__selectors__direction" v-for="(direction, idx) in select_directions.value" :key="idx" @click="deleteDirection(idx)">
+                    <span>{{ direction.selected_checkbox }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+                        <path d="M12.5 4L4.5 12M4.5 4L12.5 12" stroke="#808E9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
             </div>
             <div class="admin-course__filters__sort">
                 <span>Сортировка</span>
@@ -47,11 +54,14 @@
                 </div>
             </div>
         </div>
-        <div class="admin-course__table">
+        <div v-if="data_table.length" class="admin-course__table">
             <table-cmp 
                 :header_table="header_table"  
                 :data_table="data_table"
             />
+        </div>
+        <div v-else class="admin-course__table">
+            <span>К сожалению, по вашему запросу не найдено ни одного курса. </span>
         </div>
         <pagination-cmp 
             @change_page="currentPage"
@@ -61,8 +71,8 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, watchEffect } from 'vue';
-import { useRouter } from 'vue-router'
+import { defineComponent, reactive, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios';
 
 import chipsCmp from '../../components/ui-components/chips-cmp/chips-cmp.vue'
@@ -293,9 +303,14 @@ export default defineComponent({
             selector: false
         })
 
+        const deleteDirection = (idx: number) => {
+            select_directions.value.splice(idx, 1)
+        }
+
         const selector_filter = [
             {
                 placeholder: 'Направление',
+                type: 'direaction',
                 checkbox: true,
                 list: [
                     {
@@ -326,6 +341,7 @@ export default defineComponent({
             },
             {
                 placeholder: 'Статус',
+                type: 'status',
                 list: [
                     {
                         id: 1,
@@ -355,6 +371,7 @@ export default defineComponent({
             },
             {
                 placeholder: 'Язык',
+                type: 'lang',
                 list: [
                     {
                         id: 1,
@@ -389,6 +406,12 @@ export default defineComponent({
             label: "Поиск",
             error: ""
         } as auth
+
+        const select_directions = reactive(
+            {
+                value: []
+            }
+        )
         
         axios
             .get('/api/counter.json')
@@ -397,21 +420,43 @@ export default defineComponent({
             })
         
         const router = useRouter()
+        const route = useRoute()
 
-        watchEffect(() => {
-            router.push({
-                query: { 
-                    current_page: current_page.value
-                }
-            }) 
-        })
+        // watch(() => {
+        //     // router.push({
+        //     //     query: { 
+        //     //         current_page: current_page.value
+        //     //     }
+        //     // }) 
+        // })
+        watch(
+            () => current_page.value, 
+            () => router.push({ query: { ...route.query, current_page: current_page.value}})
+        )
 
-        const saveStateSelector = (params: any) => {
-            router.push({
-                query: {
-                    direction: params
-                }
-            }) 
+        const saveStateSelector = (params: { [key: string]: string } | any) => {
+            if(params.type === 'direction') {
+                select_directions.value = params.direction
+                
+                let query: { selected_checkbox?: string } = {};
+
+                query.selected_checkbox = params.direction
+                    .filter((item: { selected_checkbox: string }) => item.selected_checkbox)
+                    .map((item: { selected_checkbox: string }) => item.selected_checkbox)
+                    .join(",");
+
+                router.push({
+                    query: {...route.query, ...query}
+                });
+
+            } else {
+                router.push({
+                    query: {
+                        ...route.query, 
+                        ...params
+                    }
+                }) 
+            }
         }
         
         return {
@@ -427,7 +472,9 @@ export default defineComponent({
             pages,
             currentPage,
             current_page,
-            saveStateSelector
+            saveStateSelector,
+            select_directions,
+            deleteDirection
         }
     },  
     components: {

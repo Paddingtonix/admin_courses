@@ -1,12 +1,15 @@
 <template>
     <transition name="fade">
-            <div class="oilcase-modal" v-if="modalComponent" :key="modalComponent">
-                <div @click="closeModal()" class="oilcase-modal__shadow"></div>
-                <div class="oilcase-modal__container">
-                    <h1 class="oilcase-modal__container__title">{{ modalProps.title }}</h1>
-                    <component :is="modalComponent" :data="modalProps"></component>
-                </div>
+        <div class="oilcase-modal" v-if="modalComponent" :key="modalComponent">
+            <div @click="closeModal()" class="oilcase-modal__shadow"></div>
+            <div class="oilcase-modal__container">
+                <svg @click="closeModal()" class="oilcase-modal__container__close" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
+                    <path d="M1 16L8.5 8.5L16 16M16 1L8.49857 8.5L1 1" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1 class="oilcase-modal__container__title">{{ modalProps.title }}</h1>
+                <component :is="modalComponent" :data="modalProps"></component>
             </div>
+        </div>
     </transition>
 </template>
 

@@ -27,9 +27,23 @@
         border-radius: 8px
         background-color: $background-dark-gray 
         z-index: 4  
+        position: relative
         &__title 
             color: $white
             margin-bottom: 56px
+        
+        &__close
+            position: absolute
+            top: 25px
+            right: 25px
+            cursor: pointer
+            path 
+                transition: stroke .2s
+                
+            &:hover 
+                path 
+                    stroke: $hover-primary
+
     &__text 
         color: $white 
         font-size: 18px    

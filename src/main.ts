@@ -5,6 +5,7 @@ import './components/index.sass';
 import store from './store/store'
 import onScrollAnimate from './unilities/scrollAnimate';
 import VueCookies from 'vue-cookies'
+import vClickOutside from 'click-outside-vue3'
 
 import routes from './router';
 
@@ -42,6 +43,8 @@ app.directive('animation', {
 });
 
 
+
+
 router.afterEach(() => {
     setTimeout(() => {
         onScrollAnimate();
@@ -53,4 +56,4 @@ router.beforeEach(() => {
     window.removeEventListener('scroll', onScrollAnimate);
 });
 
-app.use(store).use(router).use(VueCookies).mount('#app');
+app.use(store).use(router).use(vClickOutside).use(VueCookies).mount('#app');

@@ -1,8 +1,8 @@
 <template>
-    <div class="oilcase-selector" @click="openList">
+    <div class="oilcase-selector" @click="openList(true)">
         <span class="oilcase-selector__active" :class="{_placeholder: select_value.value === ''}">{{ select_value.value === '' ? selector_placeholder : select_value.value }}</span>
         <transition name="fade">
-            <div class="oilcase-selector__list" v-if="open_list.value">
+            <div class="oilcase-selector__list" v-if="open_list.value" v-click-outside="() => openList(false)">
                 <template v-if="checkbox">
                     <checkbox-cmp 
                         v-for="selector in selector_list" 
@@ -48,6 +48,10 @@ export default defineComponent({
         selector_placeholder: {
             type: String,
             default: 'placeholder'
+        },
+        selector_type: {
+            type: String,
+            default: ''
         }
     },
     setup(props, { emit }) {
@@ -62,11 +66,11 @@ export default defineComponent({
 
         const selectValue = (name: string) => {
             select_value.value = name
-            emit('setSelectorValue', select_value.value)  
+            emit('setSelectorValue', {type: props.selector_type, value: select_value.value})  
         }
 
-        const openList = () => {
-            open_list.value = true
+        const openList = (value: boolean) => {
+            open_list.value = value
         }
 
         const selected_checkbox = reactive([] as Array<{selected_checkbox: string}>)
@@ -83,7 +87,7 @@ export default defineComponent({
                 select_value.value = ''
             }
 
-            emit('setSelectorValue', selected_checkbox)            
+            emit('setSelectorValue', {direction: selected_checkbox, type: 'direction'})            
         }
 
         // watchEffect(() => {
