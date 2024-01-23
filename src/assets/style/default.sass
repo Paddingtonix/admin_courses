@@ -2,6 +2,8 @@ body
     background-color: $background-main
     overflow-x: hidden
     margin: 0 !important
+    &::-webkit-scrollbar
+        display: none
 
 span, p, a, h1, h2, h3, h4, h5, h6, li, ul, input
     font-style: normal
@@ -56,6 +58,7 @@ img
     &__container 
         padding-top: 56px
         padding-left: 136px
+        padding-bottom: 56px
         min-height: 100vh
         height: fit-content
         position: relative

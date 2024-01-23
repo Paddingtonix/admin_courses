@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     props: {
@@ -36,6 +37,7 @@ export default defineComponent({
     },
     setup() {
         const store = useStore()
+        const router = useRouter()
 
         const deleteRow = (type: string, name: string) => {
             if(type === ('В разработке' || 'На модерации')) {
@@ -95,7 +97,6 @@ export default defineComponent({
                         }
                     })
                     break;
-
                 case 'В архиве': 
                     store.commit('modalModule/openModal', {
                         newState: 'adminAttentionModal',
@@ -109,8 +110,12 @@ export default defineComponent({
                     })
                     
                     break;
-
                 default:
+                    router.push({
+                        name: 'course-id',
+                        params: { id: name }
+                    })   
+
                     break;
             }
         }

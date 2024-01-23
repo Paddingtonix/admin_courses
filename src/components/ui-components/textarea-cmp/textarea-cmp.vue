@@ -1,16 +1,15 @@
 <template>
-    <div class="oilcase-input">
-        <input 
-            class="oilcase-input__field"
-            :class="{'_fill-input': input_field_value.value.length, '_error-input': input_error.length}"
-            :type="input_type"
-            v-model="input_field_value.value"
+    <div class="oilcase-textarea">
+        <textarea 
+            class="oilcase-textarea__field"
+            :class="{'_fill-input': textarea_field_value.value.length, '_error-input': textarea_error.length}"
+            :type="textarea_type"
+            v-model="textarea_field_value.value"
             @keyup="setValue"
             v-bind="$attrs"
         />
-        <slot></slot>
-        <label class="oilcase-input__label">{{ input_label }}</label>
-        <span class="oilcase-input__error">{{ input_error }}</span>
+        <label class="oilcase-textarea__label">{{ textarea_label }}</label>
+        <span class="oilcase-textarea__error">{{ textarea_error }}</span>
     </div>
 </template>
 <script lang="ts">
@@ -18,30 +17,30 @@ import { defineComponent, reactive } from 'vue'
 
 export default defineComponent({
     props: {
-        input_type: {
+        textarea_type: {
             type: String,
             default: 'text'
         },
-        input_value: {
+        textarea_value: {
             type: String,
             default: ''
         },
-        input_label: {
+        textarea_label: {
             type: String,
             default: 'label'
         },
-        input_error: {
+        textarea_error: {
             type: String,
             default: ''
         },
     },
     setup(props) {
-        const input_field_value = reactive({
-            value: props.input_value
+        const textarea_field_value = reactive({
+            value: props.textarea_value
         })
 
         return {
-            input_field_value
+            textarea_field_value
         }
     },
     methods: {

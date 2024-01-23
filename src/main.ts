@@ -1,11 +1,15 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+
 import './components/index.sass';
+import 'v-calendar/style.css';
+
 import store from './store/store'
 import onScrollAnimate from './unilities/scrollAnimate';
 import VueCookies from 'vue-cookies'
 import vClickOutside from 'click-outside-vue3'
+import VCalendar from 'v-calendar';
 
 import routes from './router';
 
@@ -56,4 +60,4 @@ router.beforeEach(() => {
     window.removeEventListener('scroll', onScrollAnimate);
 });
 
-app.use(store).use(router).use(vClickOutside).use(VueCookies).mount('#app');
+app.use(store).use(router).use(vClickOutside).use(VueCookies).use(VCalendar, {}).mount('#app');
