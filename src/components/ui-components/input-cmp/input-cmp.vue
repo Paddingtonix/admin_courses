@@ -2,14 +2,27 @@
     <div class="oilcase-input">
         <input 
             class="oilcase-input__field"
-            :class="{'_fill-input': input_field_value.value.length, '_error-input': input_error.length}"
+            :class="{
+                '_fill-input': input_field_value.value.length, 
+                '_error-input': input_error.length, 
+                '_small': input_size === 's', 
+                '_medium': input_size === 'm', 
+                '_large': input_size === 'l'
+            }"
             :type="input_type"
             v-model="input_field_value.value"
             @keyup="setValue"
             v-bind="$attrs"
         />
         <slot></slot>
-        <label class="oilcase-input__label">{{ input_label }}</label>
+        <label 
+            class="oilcase-input__label" 
+            :class="{
+                '_small': input_size === 's',
+                '_medium': input_size === 'm',
+                '_large': input_size === 'l'
+            }"
+        >{{ input_label }}</label>
         <span class="oilcase-input__error">{{ input_error }}</span>
     </div>
 </template>
@@ -34,10 +47,14 @@ export default defineComponent({
             type: String,
             default: ''
         },
+        input_size: {
+            type: String,
+            default: 'l'
+        }
     },
     setup(props) {
         const input_field_value = reactive({
-            value: props.input_value
+            value: !props.input_value.length ? '' : props.input_value
         })
 
         return {

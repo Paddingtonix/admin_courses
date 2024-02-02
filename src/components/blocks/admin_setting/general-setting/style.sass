@@ -1,0 +1,54 @@
+.admin-course-general
+    &__settings
+        &__category
+            color: $white
+            margin-bottom: 24px
+
+        &__chips
+            display: flex 
+            align-items: center    
+            gap: 12px
+            margin-bottom: 50px
+
+    &__params 
+        width: 60%
+        &__field 
+            display: flex
+            flex-direction: column 
+            gap: 12px
+            border-top: 1px solid $border-input 
+            padding-top: 24px
+            &:not(:last-child)
+                margin-bottom: 24px
+
+            &__title
+                color: $white
+                font-size: 20px
+                margin-bottom: 8px
+            
+            &__explanation
+                color: $white
+
+            &__container
+                display: flex 
+                align-items: center
+                gap: 12px    
+
+                &._small
+                    .oilcase-input 
+                        max-width: 50px 
+
+                &._medium
+                    .oilcase-input
+                        max-width: 170px        
+
+            &:last-child
+                margin-bottom: 48px            
+        
+        &__btn 
+            width: 350px
+
+        &__btns 
+            display: flex 
+            align-items: center
+            gap: 8px    

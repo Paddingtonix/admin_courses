@@ -1,6 +1,17 @@
 <template>
-    <div class="oilcase-selector" @click="openList(true)">
-        <span class="oilcase-selector__active" :class="{_placeholder: select_value.value === ''}">{{ select_value.value === '' ? selector_placeholder : select_value.value }}</span>
+    <div class="oilcase-selector">
+        <!-- <span class="oilcase-selector__active" :class="{_placeholder: select_value.value === ''}">{{ select_value.value === '' ? selector_placeholder : select_value.value }}</span> -->
+        <input 
+            :class="{
+                '_fill-input': select_value.value.length, 
+            }"
+            class="oilcase-selector__active"
+            @click="openList(true)"
+            v-model="select_value.value"
+        />
+        <label 
+            class="oilcase-selector__label" 
+        >{{ selector_placeholder }}</label>
         <transition name="fade">
             <div class="oilcase-selector__list" v-if="open_list.value" v-click-outside="() => openList(false)">
                 <template v-if="checkbox">

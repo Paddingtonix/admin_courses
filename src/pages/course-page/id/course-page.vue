@@ -6,7 +6,8 @@
             :id="tab_id.value"
             @select="setTabId"
         />
-        <div class="admin-course-id__main-settings admin-course-id__container" v-if="tab_id.value === 1">
+        <general-setting v-if="tab_id.value === 1" :params="params_course"/>
+        <!-- <div class="admin-course-id__main-settings admin-course-id__container" v-if="tab_id.value === 1">
             <h3 class="admin-course-id__main-settings__category">Параметры курса</h3>
             <div class="admin-course-id__main-settings__chips">
                 <chips-cmp 
@@ -181,7 +182,7 @@
                     :btn_text="'Сохранить'"
                 />
             </div>
-        </div>
+        </div> -->
         <div class="admin-course-id__main-settings admin-course-id__container" v-if="tab_id.value === 2">
             <div class="admin-course-id__main-settings__info">
                 <div class="admin-course-id__main-settings__info__field" v-for="info in course_setting.course_info.slice(0, 2)" :key="info">
@@ -237,145 +238,116 @@
             </div>
             <div class="admin-course-id__main-settings__content">
                 <div class="_field">
-                    <input-cmp 
-                        :input_label="content.intro"
-                        :input_value="''"
-                    /> 
-                    <svg 
-                        v-if="edit_mod.value"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                    </svg> 
+                    <edit-input-cmp 
+                        :label="content.intro"
+                        :edit_mod="edit_mod.value"
+                    />
                 </div>
                 <div class="_field">
-                    <input-cmp 
-                        :input_label="content.intro_test"
+                    <edit-input-cmp
+                        :label="content.intro_test"
                         :input_value="''"
+                        :edit_mod="edit_mod.value"
                     /> 
-                    <svg 
-                        v-if="edit_mod.value"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                    </svg> 
                 </div>
-                <div class="admin-course-id__main-settings__content__part" v-for="part in content.part" :key="part.title">
+                <div class="admin-course-id__main-settings__content__part _field" v-for="(part, idx) in content.part" :key="idx">
                     <div class="_field">
-                        <input-cmp 
-                            :input_label="part.title"
+                        <edit-input-cmp
+                            :label="part.title"
+                            :edit_mod="edit_mod.value"
                         />
-                        <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M4.41999 20.579C4.13948 20.5785 3.87206 20.4603 3.68299 20.253C3.49044 20.0475 3.39476 19.7695 3.41999 19.489L3.66499 16.795L14.983 5.48103L18.52 9.01703L7.20499 20.33L4.51099 20.575C4.47999 20.578 4.44899 20.579 4.41999 20.579ZM19.226 8.31003L15.69 4.77403L17.811 2.65303C17.9986 2.46525 18.2531 2.35974 18.5185 2.35974C18.7839 2.35974 19.0384 2.46525 19.226 2.65303L21.347 4.77403C21.5348 4.9616 21.6403 5.21612 21.6403 5.48153C21.6403 5.74694 21.5348 6.00146 21.347 6.18903L19.227 8.30903L19.226 8.31003Z" fill="#ffffff"/>
-                        </svg>
-                        <svg 
-                            v-if="edit_mod.value"
-                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                        </svg>  
                     </div>
-                    <div class="admin-course-id__main-settings__content__add" @click="addAuthors" v-if="course_setting.authors.length !== 2 && edit_mod.value">
+                    <div class="admin-course-id__main-settings__content__add" @click="addBlock('part', idx, 0, 0)" v-if="edit_mod.value && content.part.length > 0 ">
                         <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 8V16M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#B1B3B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <span>Добавить часть</span>
                     </div>
-                    <div class="admin-course-id__main-settings__content__part__chapter" v-for="chapter in part.chapter" :key="chapter.title">
+                    <div class="admin-course-id__main-settings__content__part__chapter" v-for="(chapter, chapter_idx) in part.chapter" :key="chapter_idx">
                         <div class="_field">
-                            <input-cmp 
-                                :input_label="chapter.title"
+                            <edit-input-cmp
+                                :label="chapter.title"
+                                :edit_mod="edit_mod.value"
                             />
-                            <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M4.41999 20.579C4.13948 20.5785 3.87206 20.4603 3.68299 20.253C3.49044 20.0475 3.39476 19.7695 3.41999 19.489L3.66499 16.795L14.983 5.48103L18.52 9.01703L7.20499 20.33L4.51099 20.575C4.47999 20.578 4.44899 20.579 4.41999 20.579ZM19.226 8.31003L15.69 4.77403L17.811 2.65303C17.9986 2.46525 18.2531 2.35974 18.5185 2.35974C18.7839 2.35974 19.0384 2.46525 19.226 2.65303L21.347 4.77403C21.5348 4.9616 21.6403 5.21612 21.6403 5.48153C21.6403 5.74694 21.5348 6.00146 21.347 6.18903L19.227 8.30903L19.226 8.31003Z" fill="#ffffff"/>
-                            </svg>
-                            <svg 
-                                v-if="edit_mod.value"
-                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                            </svg> 
                         </div>
-                        <div class="admin-course-id__main-settings__content__add" @click="addAuthors" v-if="course_setting.authors.length !== 2 && edit_mod.value">
+                        <div class="admin-course-id__main-settings__content__add" @click="addBlock('chapter', idx, chapter_idx, 0)" v-if="edit_mod.value">
                             <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 8V16M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#B1B3B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span>Добавить главу</span>
                         </div>
-                        <div class="admin-course-id__main-settings__content__part__chapter" v-for="section in chapter.section" :key="section.title">
+                        <div class="admin-course-id__main-settings__content__part__chapter" v-for="(section, section_idx) in chapter.section" :key="section_idx">
                             <div class="_field">
-                                <input-cmp 
-                                    :input_label="section.title"
+                                <edit-input-cmp
+                                    :label="section.title"
+                                    :edit_mod="edit_mod.value"
                                 />
-                                <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M4.41999 20.579C4.13948 20.5785 3.87206 20.4603 3.68299 20.253C3.49044 20.0475 3.39476 19.7695 3.41999 19.489L3.66499 16.795L14.983 5.48103L18.52 9.01703L7.20499 20.33L4.51099 20.575C4.47999 20.578 4.44899 20.579 4.41999 20.579ZM19.226 8.31003L15.69 4.77403L17.811 2.65303C17.9986 2.46525 18.2531 2.35974 18.5185 2.35974C18.7839 2.35974 19.0384 2.46525 19.226 2.65303L21.347 4.77403C21.5348 4.9616 21.6403 5.21612 21.6403 5.48153C21.6403 5.74694 21.5348 6.00146 21.347 6.18903L19.227 8.30903L19.226 8.31003Z" fill="#ffffff"/>
-                                </svg>
-                                <svg 
-                                    v-if="edit_mod.value"
-                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                                </svg> 
                             </div>
-                            <div class="admin-course-id__main-settings__content__add" @click="addAuthors" v-if="course_setting.authors.length !== 2 && edit_mod.value">
+                            <!-- <div class="admin-course-id__main-settings__content__add" @click="addAuthors" v-if="course_setting.authors.length !== 2 && edit_mod.value"> -->
+                            <div class="admin-course-id__main-settings__content__add" @click="addBlock('section', idx, chapter_idx, section_idx)" v-if="edit_mod.value">
                                 <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M12 8V16M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#B1B3B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                                 <span>Добавить раздел</span>
                             </div>
                             <div class="_field">
-                                <input-cmp 
-                                    :input_label="chapter.test"
+                                <edit-input-cmp
+                                    :label="chapter.test"
+                                    :edit_mod="edit_mod.value"
                                 />
-                                <svg v-if="edit_mod.value" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M4.41999 20.579C4.13948 20.5785 3.87206 20.4603 3.68299 20.253C3.49044 20.0475 3.39476 19.7695 3.41999 19.489L3.66499 16.795L14.983 5.48103L18.52 9.01703L7.20499 20.33L4.51099 20.575C4.47999 20.578 4.44899 20.579 4.41999 20.579ZM19.226 8.31003L15.69 4.77403L17.811 2.65303C17.9986 2.46525 18.2531 2.35974 18.5185 2.35974C18.7839 2.35974 19.0384 2.46525 19.226 2.65303L21.347 4.77403C21.5348 4.9616 21.6403 5.21612 21.6403 5.48153C21.6403 5.74694 21.5348 6.00146 21.347 6.18903L19.227 8.30903L19.226 8.31003Z" fill="#ffffff"/>
-                                </svg>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="_field">
-                    <input-cmp 
-                        :input_label="content.final_test"
+                    <edit-input-cmp 
+                        :label="content.final_test"
+                        :edit_mod="edit_mod.value"
                         :input_value="''"
                     />
-                    <svg 
-                        v-if="edit_mod.value"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
-                    </svg>  
                 </div>
-                <input-cmp 
-                    :input_label="content.final"
-                    :input_value="''"
-                /> 
-            </div>
-            <btn-cmp 
-                v-if="!edit_mod.value"
-                :btn_text="'Редактировать структуру'"
-                class="admin-course-id__main-settings__edit"
-                @click="openEditBlock(true)"
-            />
-            <div v-else class="admin-course-id__main-settings__btns">
-                 <btn-cmp 
-                    v-if="edit_mod.value"
+                <div class="_field">
+                    <edit-input-cmp
+                        :label="content.final"
+                        :edit_mod="edit_mod.value"
+                        :input_value="''"
+                    />
+                </div>
+                <btn-cmp 
+                    v-if="!edit_mod.value"
+                    :btn_text="'Редактировать структуру'"
                     class="admin-course-id__main-settings__edit"
-                    :btn_text="'Отмена'"
-                    :btn_type="'secondary'"
-                    @click="openEditBlock(false)"
+                    @click="openEditBlock(true)"
                 />
-                 <btn-cmp 
-                    v-if="edit_mod.value"
-                    class="admin-course-id__main-settings__edit"
-                    :btn_text="'Сохранить'"
-                />
+                <div v-else class="admin-course-id__main-settings__btns">
+                    <btn-cmp 
+                        v-if="edit_mod.value"
+                        class="admin-course-id__main-settings__edit"
+                        :btn_text="'Отмена'"
+                        :btn_type="'secondary'"
+                        @click="openEditBlock(false)"
+                    />
+                    <btn-cmp 
+                        v-if="edit_mod.value"
+                        class="admin-course-id__main-settings__edit"
+                        :btn_text="'Сохранить'"
+                    />
+                </div>
             </div>
         </div>
+        <router-view></router-view>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
+import generalSetting from '../../../components/blocks/admin_setting/general-setting/general-setting.vue'
 import tabsCmp from '../../../components/ui-components/tabs-cmp/tabs-cmp.vue'
-import chipsCmp from '../../../components/ui-components/chips-cmp/chips-cmp.vue'
+// import chipsCmp from '../../../components/ui-components/chips-cmp/chips-cmp.vue'
 import inputCmp from '../../../components/ui-components/input-cmp/input-cmp.vue'
-import selectorCmp from '../../../components/ui-components/selector-cmp/selector-cmp.vue'
+// import selectorCmp from '../../../components/ui-components/selector-cmp/selector-cmp.vue'
 import btnCmp from '../../../components/ui-components/btn-cmp/btn-cmp.vue'
 import textareaCmp from '../../../components/ui-components/textarea-cmp/textarea-cmp.vue'
+import editInputCmp from '../../../components/ui-components/edit-input-cmp/edit-input-cmp.vue'
 import axios from 'axios'
 
 export default defineComponent({
@@ -400,17 +372,17 @@ export default defineComponent({
             }
         ]
 
-        const chips_list = reactive({
-            list: [] as Array<[
-                {
-                    name: string,
-                    count: string,
-                }
-            ]>
-        })
+        // const chips_list = reactive({
+        //     list: [] as Array<[
+        //         {
+        //             name: string,
+        //             count: string,
+        //         }
+        //     ]>
+        // })
 
         const tab_id = reactive({
-            value: 2 as number
+            value: 1 as number
         })
 
         const setTabId = (val: number) => {
@@ -484,7 +456,7 @@ export default defineComponent({
                 {
                     title: 'Название',
                     label: 'Новый курс по геологии',
-                    text: ''
+                    text: 'Текст'
                 },
                 {
                     title: 'Авторы',
@@ -597,7 +569,7 @@ export default defineComponent({
         })
 
         const payment = reactive({
-            value: false
+            value: true
         })
 
         const credit = reactive({
@@ -628,18 +600,130 @@ export default defineComponent({
                 
         })
 
-        axios
-            .get('/api/course_setting.json')
-            .then(response => {
-                chips_list.list = response.data
-            })
+        const save_value_content = reactive({
+            value: ''
+        }) 
+
+        const editInput = (val: string) => {
+            save_value_content.value = val
+        }
+
+        /////////////////////integration
+
+        const endpoints = reactive([
+            'http://192.168.19.204:8080/admin/v1/course/filters',
+            'http://192.168.19.204:8080/admin/v1/course/1',
+            'http://192.168.19.204:8080/admin/v1/course/1/info',
+            'http://192.168.19.204:8080/admin/v1/course/1/content'
+        ])
+
+        const filters = reactive({
+            direction: [] as Array<{
+                direaction_id: number,
+                direction_name: string,
+            }>
+        })
+
+        const params_course = reactive({
+            settings:  [
+                {
+                    title: 'Тип' as string,
+                    count: '' as string,
+                },
+                {
+                    title: 'Формат' as string,
+                    count: '' as string,
+                },
+                {
+                    title: 'Приобретение' as string,
+                    count: '' as string,
+                },
+                {
+                    title: 'Доступ' as string,
+                    count: '' as string,
+                },
+            ],
+            authors: [] as Array<[string]> | null,
+            price_in_rubles: 0 as number,
+            duration_academic_hours: 0 as number | null,
+            sales_termination_date: 0 as number,
+            directions: [] as Array<{
+                direction_id: number, 
+                direction_name: string
+            }>
+        })
+
+
+        axios.all(endpoints.map((endpoint) => 
+            axios
+                .get(endpoint)))
+                .then(axios.spread((filters_response, general_response, info_response, content_response) => {
+                    filters.direction = filters_response.data.directions
+
+                    params_course.settings[0].count = general_response.data.course_format
+                    params_course.settings[1].count = general_response.data.course_type
+                    params_course.settings[2].count = general_response.data.is_free ? 'Бесплатно' : 'Платно'
+                    params_course.settings[3].count = general_response.data.is_partial_available ? 'Частичный' : 'Полный'
+                    params_course.authors = general_response.data.author_emails
+                    params_course.price_in_rubles = general_response.data.price_in_rubles
+                    params_course.duration_academic_hours = general_response.data.duration_academic_hours
+                    params_course.sales_termination_date = general_response.data.sales_termination_date
+                    params_course.directions = general_response.data.directions
+
+
+                    console.log(general_response, info_response, content_response);
+                    
+                }))
+                .catch(err => {
+                    console.log(err);
+                })
+                .finally(() => {})
+
+        ////////////////////////////////
+        const addBlock = (type: string, idx: number, chapter_idx: number, section_idx: number) => {   
+            console.log(section_idx);
+                     
+            if(type === 'part') {                                
+                content.part.push(
+                    {
+                        title: 'Часть 1',
+                        chapter: [
+                            {
+                                title: 'Глава 11',
+                                test: 'test 11',
+                                section: [
+                                    {
+                                        title: 'Раздел 111'
+                                    }
+                                ]
+                            }
+                        ]  
+                    })
+                
+            } else if(type === 'chapter') {
+                content.part[idx].chapter.push(
+                    {
+                        title: 'Глава 11',
+                        test: 'test 11',
+                        section: [
+                            {
+                                title: 'Раздел 111'
+                            }
+                        ]
+                    })                
+            } else {
+                content.part[idx].chapter[chapter_idx].section.push({
+                    title: 'Раздел 111'
+                })
+            }
+        }    
 
         return {
             course_lang,
             tabs,
             setTabId,
             tab_id,
-            chips_list,
+            // chips_list,
             course_setting,
             edit_mod,
             openEditBlock,
@@ -661,16 +745,27 @@ export default defineComponent({
             synchronous,
             payment,
             credit,
-            content
+            content,
+            editInput,
+            save_value_content,
+            addBlock,
+
+
+            filters,
+            params_course
         }
     },
     components: {
         'tabs-cmp': tabsCmp,
-        'chips-cmp': chipsCmp,
+        // 'chips-cmp': chipsCmp,
         'input-cmp': inputCmp,
         'btn-cmp': btnCmp,
-        'selector-cmp': selectorCmp,
-        'textarea-cmp': textareaCmp
+        // 'selector-cmp': selectorCmp,
+        'textarea-cmp': textareaCmp,
+        'edit-input-cmp': editInputCmp,
+
+
+        'general-setting': generalSetting
     }
 })
 </script>
