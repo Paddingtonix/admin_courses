@@ -2,17 +2,15 @@
     height: 60px
     position: relative
     width: 100%
-    padding: 19px 24px
-    background-color: $background-input
-    border: 1px solid $border-input
-    border-radius: 4px
-    font-size: 18px
-    transition: all .2s
-    input 
+    &__field 
         height: 100%
-        width: 100%    
-
-    &__active 
+        width: 100%
+        padding: 30px 24px 19px
+        background-color: $background-input
+        border: 1px solid $border-input
+        border-radius: 4px
+        font-size: 18px
+        transition: all .2s
         &._fill-input
             color: $white
             + label 
@@ -34,12 +32,13 @@
         color: $white
         transition: color .2s
         white-space: nowrap
+        cursor: pointer
         
     &__list
         position: absolute
         display: flex 
         flex-direction: column
-        gap: 8px    
+        gap: 12px    
         background-color: $background-input
         width: 100%
         left: 0

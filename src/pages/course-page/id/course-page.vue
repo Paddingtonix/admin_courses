@@ -6,7 +6,7 @@
             :id="tab_id.value"
             @select="setTabId"
         />
-        <general-setting v-if="tab_id.value === 1" :params="params_course"/>
+        <general-setting v-if="tab_id.value === 1" :params="params_course" :directions="general_params.directions"/>
         <!-- <div class="admin-course-id__main-settings admin-course-id__container" v-if="tab_id.value === 1">
             <h3 class="admin-course-id__main-settings__category">Параметры курса</h3>
             <div class="admin-course-id__main-settings__chips">
@@ -653,6 +653,10 @@ export default defineComponent({
             }>
         })
 
+        const general_params = reactive({
+            directions: [] as Array<{}>
+        })
+
 
         axios.all(endpoints.map((endpoint) => 
             axios
@@ -670,8 +674,10 @@ export default defineComponent({
                     params_course.sales_termination_date = general_response.data.sales_termination_date
                     params_course.directions = general_response.data.directions
 
+                    general_params.directions = filters_response.data.directions
 
-                    console.log(general_response, info_response, content_response);
+                    console.log(info_response, content_response);
+                    
                     
                 }))
                 .catch(err => {
@@ -752,7 +758,8 @@ export default defineComponent({
 
 
             filters,
-            params_course
+            params_course,
+            general_params
         }
     },
     components: {

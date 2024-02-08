@@ -310,7 +310,7 @@ export default defineComponent({
         const selector_filter = [
             {
                 placeholder: 'Направление',
-                type: 'direaction',
+                type: 'direction',
                 checkbox: true,
                 list: [
                     {

@@ -13,7 +13,7 @@
             <div class="admin-course-general__params__field">
                 <span class="admin-course-general__params__field__title">Авторы</span>
                 <span class="admin-course-general__params__field__explanation">(у курса долженг быть хотя бы один автор)</span>
-                <template v-if="params.authors.length">
+                <template v-if="params.authors !== null">
                     <input-cmp 
                         v-for="email in params.authors"
                         :key="email"
@@ -25,7 +25,6 @@
                 <template v-else>
                     <input-cmp 
                         :input_label="'Email'"
-                        :input_value="changed_params.authors[0]"
                         :disabled="edit_mod.state"
                     />
                 </template>
@@ -47,9 +46,15 @@
                 <span class="admin-course-general__params__field__explanation">(курс будет снят с витрины при наступлении указанной даты в 00:00 по времени МСК)</span>
                 <input-cmp 
                     :input_label="'Дата снятия курса с витрины'"
-                    :input_value="changed_params.sales_termination_date"
+                    :input_value="date.date_visible"
                     :disabled="edit_mod.state"
+                    @click="openCalendar(true)"
                 />
+                <date-picker 
+                    v-if="calendar.active" 
+                    class="admin-course-general__params__field__calendar"
+                    v-model="date.value"
+                ></date-picker>
             </div>
             <div class="admin-course-general__params__field">
                 <span class="admin-course-general__params__field__title">Длительность курса</span>
@@ -68,9 +73,24 @@
                 <span class="admin-course-general__params__field__explanation">(выберите минимум одно направление)</span>
                 <div class="admin-course-general__params__field__small-container">
                     <selector-cmp 
+                        v-if="!edit_mod.state"
                         :selector_placeholder="'Не выбрано'"
+                        :selector_list="directions_list.values"
+                        :edit_mod="edit_mod.state"
                         :disabled="edit_mod.state"
+                        :checkbox="true"
+                        @setSelectorValue="saveStateSelector"
                     />
+                    <div class="admin-course-general__params__field__selected"  v-else>
+                        <div
+                            class="admin-course-general__params__field__selected__direction"
+                            v-for="(direction, idx) in select_directions.value"
+                            :key="idx"
+                        >
+                            <span>{{ direction.selected_checkbox }}</span>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -93,13 +113,14 @@
             <btn-cmp 
                 class="admin-course-general__params__btn"
                 :btn_text="'Сохранить'"
-                @click="editMod(false)"
+                @click="saveGeneralSettings()"
             />
         </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
+import { DatePicker } from 'v-calendar';
 import axios from 'axios'
 
 import chipsCmp from '../../../ui-components/chips-cmp/chips-cmp.vue'
@@ -112,6 +133,10 @@ export default defineComponent({
         params: {
             type: Object,
             default: () => {}
+        },
+        directions: {
+            type: Array,
+            default: () => []
         }
     },
     setup(props) {
@@ -124,6 +149,10 @@ export default defineComponent({
             ]>
         })
 
+        const directions_list = reactive({
+            values: props.params.directions
+        })
+
         const edit_mod = reactive({
             state: true
         })
@@ -133,6 +162,61 @@ export default defineComponent({
         const editMod = (state: boolean) => {
             edit_mod.state = state
         }
+
+        const select_directions = reactive({
+            value: [] as Array<{}>
+        })
+
+        const calendar = reactive({
+            active: false
+        })
+
+        const openCalendar = (state: boolean) => {
+            calendar.active = state
+        }
+
+        const saveStateSelector = (params: { [key: string]: string } | any) => {
+            if(params.type === 'direction') {
+                select_directions.value = params.direction
+            }
+        }
+
+        const date = reactive({
+            value: '' as any,
+            date_visible: '' as any
+        })
+
+        
+
+        const saveGeneralSettings = () => {
+            axios
+                .post('http://192.168.19.204:8080/admin/v1/course/1/settings', {
+                    directions_ids: directions_list.values.map((direction_id: { id: number; }) => direction_id.id),
+                    duration_academic_hours: changed_params.duration_academic_hours,
+                    sales_termination_date: changed_params.sales_termination_date,
+                    price_in_rubles: changed_params.price_in_rubles
+                })
+                .finally(() => {
+                    console.log('final');
+                    editMod(false)
+                })
+        }
+
+        watch(() => props.directions, () => {
+            directions_list.values = changed_params.directions.length ? changed_params.directions : props.directions
+        })
+
+        watch(() => date.value, () => {
+            let date_format = date.value
+
+            let date_format_day = date_format.getDate();
+            let date_format_mounth = date_format.getMonth() + 1;
+            let date_format_year = date_format.getFullYear();
+
+
+            date.date_visible = (date_format_day < 10 ? '0' : '') + date_format_day + '.' + (date_format_mounth < 10 ? '0' : '') + date_format_mounth + '.' + date_format_year;
+            date.value = new Date(date.value).toISOString().substring(0, 10) + "T00:00:00Z";
+        })
 
         axios
             .get('/api/course_setting.json')
@@ -144,7 +228,14 @@ export default defineComponent({
             chips_list,
             changed_params,
             editMod,
-            edit_mod
+            edit_mod,
+            directions_list,
+            saveStateSelector,
+            select_directions,
+            saveGeneralSettings,
+            calendar,
+            openCalendar,
+            date
         }
     },
     components: {
@@ -152,6 +243,7 @@ export default defineComponent({
         'input-cmp': inputCmp,
         'selector-cmp': selectorCmp,
         'btn-cmp': btnCmp,
+        DatePicker
     }
 })
 </script>

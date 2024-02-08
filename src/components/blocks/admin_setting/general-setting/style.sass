@@ -18,8 +18,26 @@
             gap: 12px
             border-top: 1px solid $border-input 
             padding-top: 24px
+            position: relative
             &:not(:last-child)
                 margin-bottom: 24px
+
+            &__calendar 
+                position: absolute !important
+                z-index: 10
+                top: 100%    
+                .vc-pane-container 
+                    background-color: $background-main
+                    svg 
+                        stroke: $white
+
+                .vc-pane-layout
+                    span 
+                        color: $white       
+
+                .vc-weeks 
+                    >  div 
+                        color: $white         
 
             &__title
                 color: $white
@@ -40,7 +58,38 @@
 
                 &._medium
                     .oilcase-input
-                        max-width: 170px        
+                        max-width: 170px       
+
+            &__selected
+                display: flex 
+                align-items: center
+                flex-wrap: wrap
+                gap: 12px
+                width: 930px
+                &__direction
+                    padding: 8px 12px
+                    background-color: $background-dark-gray
+                    border: 1px solid $border-input
+                    border-radius: 4px 
+                    display: flex 
+                    align-items: center
+                    gap: 8px
+                    transition: border .2s 
+                    cursor: pointer
+                    &:hover 
+                        border-color: $hover-primary
+                        span 
+                            color: $hover-primary
+
+                        svg path 
+                            stroke: $hover-primary  
+
+                    > span
+                        color: $white
+                        transition: color .2s
+
+                    svg path 
+                        transition: stroke .2s    
 
             &:last-child
                 margin-bottom: 48px            
