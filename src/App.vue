@@ -17,7 +17,7 @@ import axios from 'axios';
 export default defineComponent({
     name: 'app',
     setup() {
-        axios.defaults.headers.common['Authorization'] = `Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJhdXRob3JAYXV0aG9yLmNvbSIsInJvbGUiOiJBdXRob3IiLCJuYmYiOjE3MDY2OTI5MDgsImV4cCI6MTczODIyODkwOCwiaWF0IjoxNzA2NjkyOTA4fQ.z9hJt6_FX7xlfDeGCob7L8g65DiERhkD0m2WSiemruMK19Uy1-lttzbFiQg10RHha2ZjhEPL5tkuTTGcG9uiig`
+        axios.defaults.headers.common['Authorization'] = `Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJhZG1pbkBhZG1pbi5jb20iLCJ1bmlxdWVfbmFtZSI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTcwNzM2MjI1NiwiZXhwIjoxNzM4ODk4MjU2LCJpYXQiOjE3MDczNjIyNTZ9.uG2LvCXBumkAJeOzKVrhoTK6M3pOy81H8QYMEvMO4-YASuQ7Us96H06NSI56EPfClUX0HuQKPx-fISictxkvHA`
     },
     methods: {},
     components: {

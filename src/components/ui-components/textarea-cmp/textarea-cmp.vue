@@ -2,7 +2,6 @@
     <div class="oilcase-textarea">
         <textarea 
             class="oilcase-textarea__field"
-            :class="{'_fill-input': textarea_field_value.value.length, '_error-input': textarea_error.length}"
             :type="textarea_type"
             v-model="textarea_field_value.value"
             @keyup="setValue"

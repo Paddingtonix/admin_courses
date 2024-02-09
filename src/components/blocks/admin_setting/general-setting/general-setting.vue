@@ -13,7 +13,6 @@
             <div class="admin-course-general__params__field">
                 <span class="admin-course-general__params__field__title">Авторы</span>
                 <span class="admin-course-general__params__field__explanation">(у курса долженг быть хотя бы один автор)</span>
-                <template v-if="params.authors !== null">
                     <input-cmp 
                         v-for="email in params.authors"
                         :key="email"
@@ -21,13 +20,6 @@
                         :input_value="email"
                         :disabled="edit_mod.state"
                     />
-                </template>
-                <template v-else>
-                    <input-cmp 
-                        :input_label="'Email'"
-                        :disabled="edit_mod.state"
-                    />
-                </template>
             </div>
             <div class="admin-course-general__params__field">
                 <span class="admin-course-general__params__field__title">Стоимость курса</span>
@@ -49,6 +41,7 @@
                     :input_value="date.date_visible"
                     :disabled="edit_mod.state"
                     @click="openCalendar(true)"
+                    v-click-outside="() => openCalendar(false)"
                 />
                 <date-picker 
                     v-if="calendar.active" 
@@ -183,6 +176,7 @@ export default defineComponent({
 
         const date = reactive({
             value: '' as any,
+            date_server: '' as any,
             date_visible: '' as any
         })
 
@@ -202,9 +196,9 @@ export default defineComponent({
                 })
         }
 
-        watch(() => props.directions, () => {
-            directions_list.values = changed_params.directions.length ? changed_params.directions : props.directions
-        })
+        // watch(() => props.directions, () => {
+        //     directions_list.values = changed_params.directions.length ? changed_params.directions : props.directions
+        // })
 
         watch(() => date.value, () => {
             let date_format = date.value
@@ -212,10 +206,14 @@ export default defineComponent({
             let date_format_day = date_format.getDate();
             let date_format_mounth = date_format.getMonth() + 1;
             let date_format_year = date_format.getFullYear();
+            
 
 
             date.date_visible = (date_format_day < 10 ? '0' : '') + date_format_day + '.' + (date_format_mounth < 10 ? '0' : '') + date_format_mounth + '.' + date_format_year;
-            date.value = new Date(date.value).toISOString().substring(0, 10) + "T00:00:00Z";
+
+            // console.log(date.value);
+
+            // date.value = new Date(date.value).toISOString().substring(0, 10) + "T00:00:00Z";
         })
 
         axios

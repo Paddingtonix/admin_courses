@@ -53,9 +53,12 @@ export default defineComponent({
         }
     },
     setup(props) {
+        console.log(props);
+        
         const input_field_value = reactive({
-            value: !props.input_value.length ? '' : props.input_value
+            value: props.input_value !== null && props.input_value !== undefined ? props.input_value : ''
         })
+
 
         return {
             input_field_value
