@@ -5,6 +5,7 @@
             <input-cmp 
                 :input_label="'Название'"
                 :input_value="params.name"
+                :disabled="edit_mod.state"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -12,6 +13,7 @@
             <input-cmp 
                 :input_label="'Если авторов больше одного, перечислите ФИО через запятую'"
                 :input_value="params.teachers"
+                :disabled="edit_mod.state"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -19,6 +21,7 @@
             <textarea-cmp
                 :textarea_label="'Краткое описание курса'"
                 :textarea_value="params.teachers"
+                :disabled="edit_mod.state"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -26,6 +29,7 @@
             <textarea-cmp 
                 :textarea_label="'На кого рассчитан курс'"
                 :textarea_value="params.teachers"
+                :disabled="edit_mod.state"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -33,6 +37,7 @@
             <textarea-cmp 
                 :textarea_label="'Описание инструментов обучения'"
                 :textarea_value="params.teachers"
+                :disabled="edit_mod.state"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -40,6 +45,7 @@
             <textarea-cmp 
                 :textarea_label="'Описание результатов обучения'"
                 :textarea_value="params.teachers"
+                :disabled="edit_mod.state"
             />
         </div>
         <btn-cmp 

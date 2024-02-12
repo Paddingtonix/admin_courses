@@ -42,7 +42,7 @@ export default defineComponent({
         ]
 
         const tab_id = reactive({
-            value: 1 as number
+            value: 3 as number
         })
 
         const setTabId = (val: number) => {
