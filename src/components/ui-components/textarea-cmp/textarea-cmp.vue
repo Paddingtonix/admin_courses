@@ -44,7 +44,7 @@ export default defineComponent({
     },
     methods: {
         setValue() {
-            // this.$emit('update', {value: this.input_field_value.value, type: this.$props.input_type})
+            this.$emit('update', {value: this.textarea_field_value.value, type: this.$props.textarea_type})
         },
     }
 })

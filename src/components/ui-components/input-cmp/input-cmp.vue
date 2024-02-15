@@ -50,6 +50,10 @@ export default defineComponent({
         input_size: {
             type: String,
             default: 'l'
+        },
+        init_value: {
+            type: String,
+            default: ''
         }
     },
     setup(props) {

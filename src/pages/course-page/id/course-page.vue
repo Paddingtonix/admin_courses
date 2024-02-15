@@ -8,12 +8,12 @@
         />
         <general-setting v-if="tab_id.value === 1" :params="params_course" :directions="general_params.directions"/>
         <info-setting v-if="tab_id.value === 2" :params="params_course"/>
-        <content-setting v-if="tab_id.value === 3" :params="params_course" />
+        <content-setting v-if="tab_id.value === 3" :params="params_course" @reload-content="reloadContent" />
         <router-view></router-view>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref, watch } from 'vue'
 import generalSetting from '../../../components/blocks/admin_setting/general-setting/general-setting.vue'
 import infoSetting from '../../../components/blocks/admin_setting/info-setting/info-setting.vue'
 import contentSetting from '../../../components/blocks/admin_setting/content-setting/content-setting.vue'
@@ -76,6 +76,7 @@ export default defineComponent({
                 text: 'pochta6'
             },
         ])
+
 
         const course_setting = reactive({
             authors: [
@@ -181,6 +182,7 @@ export default defineComponent({
                 direction_name: string,
             }>
         })
+        
 
         const params_course = reactive({
             settings:  [
@@ -219,7 +221,8 @@ export default defineComponent({
             final_testing: {},
             initial_page: {},
             initial_testing: '',
-            parts: []
+            parts: [],
+            id: 0
         })
 
         const general_params = reactive({
@@ -256,11 +259,39 @@ export default defineComponent({
                     params_course.initial_page = content_response.data.initial_page
                     params_course.initial_testing = content_response.data.initial_testing
                     params_course.parts = content_response.data.parts
+                    params_course.id = content_response.data.id
+                    params_course.final_page = content_response.data.final_page
+                    params_course.final_testing = content_response.data.final_testing
                 }))
                 .catch(err => {
                     console.log(err);
                 })
                 .finally(() => {})
+        
+        const reload = reactive({
+            value: false
+        })
+
+        const reloadContent = (val: boolean) => {
+            console.log('qwerty');
+            
+            reload.value = val
+        }
+
+        watch(() => reload.value, () => {
+            if(reload.value) {
+                axios
+                    .get('http://192.168.19.204:8080/admin/v1/course/1/content')
+                    .then((content_response) => {
+                        params_course.initial_page = content_response.data.initial_page
+                        params_course.initial_testing = content_response.data.initial_testing
+                        params_course.parts = content_response.data.parts
+                        params_course.id = content_response.data.id
+                        params_course.final_page = content_response.data.final_page
+                        params_course.final_testing = content_response.data.final_testing
+                    })
+            }
+        })
 
         ////////////////////////////////
         // const addBlock = (type: string, idx: number, chapter_idx: number, section_idx: number) => {   
@@ -313,7 +344,8 @@ export default defineComponent({
 
             filters,
             params_course,
-            general_params
+            general_params,
+            reloadContent
         }
     },
     components: {

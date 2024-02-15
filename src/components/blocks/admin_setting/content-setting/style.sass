@@ -31,6 +31,9 @@
 
             &._section
                 width: 70%      
+                > div
+                    &:not(:last-child)
+                        margin-bottom: 8px
 
         &__container
             display: flex 
@@ -41,3 +44,12 @@
                 &:last-child
                     width: 100%
                     justify-content: flex-start
+
+    &__params 
+        &__btns
+            display: flex        
+            align-items: center
+            justify-content: space-between
+            gap: 12px
+            > div 
+                width: 100%    

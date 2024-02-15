@@ -4,11 +4,13 @@
             :input_label="label"
             :input_size="input_size"
             @update="setValue"
+            :input_value="input_init_value"
+            :disabled="!changes_value.value"
         />
         <template v-if="!edit_mod">
             <transition-group name="slide-up">
                 <div class="oilcase-edit-input__icons" v-if="changes_value.value">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <svg @click="saveTitle" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M8.81806 19.779L2.4541 13.415L5.2841 10.585L8.81806 14.129L18.716 4.22104L21.546 7.05104L8.81806 19.779Z" fill="#ffffff"/>
                     </svg>
                     <svg @click="openEdit(false)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -16,10 +18,10 @@
                     </svg>
                 </div>
                 <div class="oilcase-edit-input__icons" v-else>
-                    <svg @click="openEdit(true)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <svg v-if="!not_editable" @click="openEdit(true)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M4.41999 20.579C4.13948 20.5785 3.87206 20.4603 3.68299 20.253C3.49044 20.0475 3.39476 19.7695 3.41999 19.489L3.66499 16.795L14.983 5.48103L18.52 9.01703L7.20499 20.33L4.51099 20.575C4.47999 20.578 4.44899 20.579 4.41999 20.579ZM19.226 8.31003L15.69 4.77403L17.811 2.65303C17.9986 2.46525 18.2531 2.35974 18.5185 2.35974C18.7839 2.35974 19.0384 2.46525 19.226 2.65303L21.347 4.77403C21.5348 4.9616 21.6403 5.21612 21.6403 5.48153C21.6403 5.74694 21.5348 6.00146 21.347 6.18903L19.227 8.30903L19.226 8.31003Z" fill="#ffffff"/>
                     </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <svg v-if="!not_delete" @click="deleteBlock" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M17 22H7C5.89543 22 5 21.1046 5 20V7H3V5H7V4C7 2.89543 7.89543 2 9 2H15C16.1046 2 17 2.89543 17 4V5H21V7H19V20C19 21.1046 18.1046 22 17 22ZM7 7V20H17V7H7ZM9 4V5H15V4H9ZM15 18H13V9H15V18ZM11 18H9V9H11V18Z" fill="#ffffff" />
                     </svg> 
                 </div>
@@ -30,6 +32,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 import inputCmp from '../input-cmp/input-cmp.vue'
+import axios from 'axios'
 
 export default defineComponent({
     props: {
@@ -44,12 +47,33 @@ export default defineComponent({
         input_size: {
             type: String,
             default: 'l'
+        },
+        not_editable: {
+            type: Boolean,
+            default: false
+        },
+        input_init_value: {
+            type: String,
+            default: ''
+        },
+        not_delete: {
+            type: Boolean,
+            default: false
+        },
+        id: {
+            type: Number,
+            default: 0
+        },
+        type: {
+            type: String,
+            default: ''
         }
     },
-    setup() {
+    setup(props, { emit }) {
         const changes_value = reactive({
             value: false
         })
+
 
         const focusInput = () => {
             changes_value.value = true
@@ -66,13 +90,160 @@ export default defineComponent({
         const openEdit = (val:boolean) => {
             changes_value.value = val
         }
+        
+
+        const deleteBlock = () => {
+            switch (props.type) {
+                case 'parts':
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/part/${props.id}`)
+                        .then((resp) => {
+                            console.log(resp);
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
+                    break;
+
+                case 'chapters': 
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/chapter/${props.id}`)
+                        .then((resp) => {
+                            console.log(resp);
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+                    
+                    break;
+                
+                case 'sections': 
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/section/${props.id}`)
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+                    
+                    break;   
+                    
+                case 'init_page': 
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/page/${props.id}`)
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+                    break;    
+                case 'testing': 
+                    console.log('qwerty');
+                
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/testing/${props.id}`)
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })  
+                    
+                    break;
+                    
+                case 'final_testing': 
+                    axios
+                        .delete(`http://192.168.19.204:8080/admin/v1/testing/${props.id}`)
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })  
+                    
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        const saveTitle = () => {
+            switch (props.type) {
+                case 'parts':
+                    axios
+                        .patch(`http://192.168.19.204:8080/admin/v1/part/${props.id}`, {
+                            title: input_value.value
+                        })
+                        .then((resp) => {
+                            console.log(resp);
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+
+                    break;
+                case 'chapters': 
+                    axios
+                        .patch(`http://192.168.19.204:8080/admin/v1/chapter/${props.id}`, {
+                            title: input_value.value
+                        })
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+                    
+                    break;
+                
+                case 'sections': 
+                    axios
+                        .patch(`http://192.168.19.204:8080/admin/v1/section/${props.id}`, {
+                            title: input_value.value
+                        })
+                        .then((resp) => {
+                            emit('reload-content', true)
+                            console.log(resp);
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                            openEdit(false)
+                        })
+                    
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         return {
             changes_value,
             input_value,
             focusInput,
             openEdit,
-            setValue
+            setValue,
+            deleteBlock,
+            saveTitle
         }
     },
     components: {

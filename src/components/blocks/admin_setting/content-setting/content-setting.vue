@@ -17,83 +17,131 @@
         <div class="admin-course-content__content">
             <div class="admin-course-content__content__field">
                 <edit-input-cmp 
+                    v-if="params.initial_page !== null"
                     :label="'Вводная страница'"
                     :edit_mod="edit_mod.state"
                     :disabled="edit_mod.state"
+                    :not_editable="true"
+                    :type="'init_page'"
+                    :id="params.initial_page.id"
+                    @reload-content="reloadContentParent"
+                />
+                <add-btn-cmp 
+                    v-else
+                    :text="'Вводную страницу'"
+                    @click="addBlockOnContent('Intrance', params.id)"
                 />
             </div>
             <div class="admin-course-content__content__field">
                 <edit-input-cmp 
+                    v-if="params.initial_testing !== null"
                     :label="'Входной тест'"
                     :edit_mod="edit_mod.state"
                     :disabled="edit_mod.state"
+                    :not_editable="true"
+                    :type="'testing'"
+                    :id="params.initial_testing.id"
+                    @reload-content="reloadContentParent"
+                />
+                <add-btn-cmp 
+                    v-else
+                    :text="'Вводный тест'"
+                    @click="addBlockOnContent('Entrance', params.id)"
                 />
             </div>
-            <div class="admin-course-content__content__container">
+            <div class="admin-course-content__content__container" v-for="(part, idx_part) in structure_content.parts" :key="part.id">
                 <div class="admin-course-content__content__field">
                     <edit-input-cmp 
-                        :label="'Часть 1'"
+                        :label="`Часть ${idx_part + 1}`"
                         :edit_mod="edit_mod.state"
                         :disabled="edit_mod.state"
+                        :type="'parts'"
+                        :id="part.id"
+                        :input_init_value="part.title"
                     />
                 </div>
-                <template v-for="(part, idx_part) in structure_content.parts" :key="part.id">
+                <template v-for="(chapter, chapter_idx) in part.chapters" :key="chapter.id">
                     <div class="admin-course-content__content__field _chapter">
                         <edit-input-cmp
-                            :label="'Глава 11'"
+                            :label="`Глава ${chapter_idx + 1}`"
                             :edit_mod="edit_mod.state"
                             :disabled="edit_mod.state"
+                            :not_delete="part.chapters.length > 1 ? false : true"
+                            :type="'chapters'"
+                            :id="chapter.id"
+                            :input_init_value="chapter.title"
+                            @reload-content="reloadContentParent"
                         />
                         <add-btn-cmp 
+                            v-if="chapter_idx === part.chapters.length - 1"
                             :text="'Главу'"
-                            :block="params.parts[0].chapters[0]"
+                            :block="chapter"
                             :type_block="'chapters'"
                             :idx_block="[idx_part]"
-                            @add-block="addBlockOnContent"
+                            @click="addBlockOnContent('chapter', part.id)"
                         />
                     </div>
-                    <template v-for="(chapter, chapter_idx) in part.chapters" :key="chapter.id">
-                        <div class="admin-course-content__content__field _section">
-                            <edit-input-cmp 
-                                :label="'Раздел 111'"
-                                :edit_mod="edit_mod.state"
-                                :disabled="edit_mod.state"
-                            />
-                            <add-btn-cmp 
-                                :text="'Раздел'"
-                                :block="params.parts[0].chapters[0].sections[0]"
-                                :type_block="'sections'"
-                                :idx_block="[idx_part, chapter_idx]"
-                                @add-block="addBlockOnContent"
-                            />
-                        </div>
-                        <div class="admin-course-content__content__field _section">
-                            <edit-input-cmp 
-                                v-for="chapter in part.chapters"
-                                :key="chapter.id"
-                                :edit_mod="edit_mod.state"
-                                :label="'Тест11'"
-                                :disabled="edit_mod.state"
-                            />
-                        </div>
-                    </template>
+                    <div class="admin-course-content__content__field _section" 
+                        v-for="(section, section_idx) in chapter.sections" 
+                        :key="section.id"
+                    >
+                        <edit-input-cmp 
+                            :label="`Раздел ${section_idx + 1}`"
+                            :edit_mod="edit_mod.state"
+                            :disabled="edit_mod.state"
+                            :not_delete="chapter.sections.length > 1 ? false : true"
+                            :type="'sections'"
+                            :id="section.id"
+                            :input_init_value="section.title"
+                            @reload-content="reloadContentParent"
+                        />
+                        <add-btn-cmp 
+                            v-if="section_idx === chapter.sections.length - 1"
+                            :text="'Раздел'"
+                            :block="section"
+                            :type_block="'sections'"
+                            :idx_block="[idx_part, chapter_idx]"
+                            @click="addBlockOnContent('section', chapter.id)"
+                        />
+                    </div>
+                    <div class="admin-course-content__content__field _section">
+                        <edit-input-cmp 
+                            :edit_mod="edit_mod.state"
+                            :label="'Тест11'"
+                            :disabled="edit_mod.state"
+                            :not_delete="true"
+                        />
+                    </div>
                 </template>
                 <add-btn-cmp 
+                    v-if="idx_part === structure_content.parts.length - 1"
                     :text="'Часть'"
-                    :block="params.parts[0]"
+                    :block="part"
                     :type_block="'parts'"
-                    @add-block="addBlockOnContent"
+                    @click="addBlockOnContent('part', params.id)"
                 />
             </div>
             <div class="admin-course-content__content__field">
-                <edit-input-cmp 
-                    :label="'Итоговый тест'"
+                <edit-input-cmp
+                    v-if="params.final_testing !== null"
                     :edit_mod="edit_mod.state"
+                    :label="'Итоговый тест'"
+                    :input_init_value="params.final_testing.title"
+                    :disabled="edit_mod.state"
+                    :not_editable="true"
+                    :type="'final_testing'"
+                    :id="params.final_testing.id"
+                    @reload-content="reloadContentParent"
+                />
+                <add-btn-cmp 
+                    v-else
+                    :text="'Итоговый тест'"
+                    @click="addBlockOnContent('Final', params.id)"
                 />
             </div>
             <div class="admin-course-content__content__field">
-                <edit-input-cmp 
-                    :label="'Итоги'"
+                <input-cmp
+                    :input_label="'Итоги'"
                     :edit_mod="edit_mod.state"
                 />
             </div>
@@ -126,7 +174,9 @@
 import { defineComponent, reactive, watch } from 'vue';
 import editInputCmp from '@/components/ui-components/edit-input-cmp/edit-input-cmp.vue';
 import btnCmp from '@/components/ui-components/btn-cmp/btn-cmp.vue';
+import inputCmp from '@/components/ui-components/input-cmp/input-cmp.vue';
 import btnAddCmp from '@/components/ui-components/btn-add-cmp/btn-add-cmp.vue';
+import axios from 'axios';
 
 
 export default defineComponent({
@@ -136,7 +186,7 @@ export default defineComponent({
             default: () => {}
         },
     },
-    setup(props) {
+    setup(props, { emit }) {
         const edit_mod = reactive({
             state: true
         })
@@ -153,32 +203,96 @@ export default defineComponent({
             structure_content.parts = props.params.parts
         })
 
-        const addBlockOnContent = (block: any) => {
-            switch (block.type) {
-                case 'parts':
-                    console.log('qwerty');
-                    
-                    structure_content.parts.push(block.block)
+        const addBlockOnContent = (type: string, id: number | null) => {   
+            
+            switch (type) {
+                case 'part':
+                    axios
+                        .post(`http://192.168.19.204:8080/admin/v1/part?courseId=${id}`)
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
                     break;
-                
-                case 'chapters': 
-                    console.log('chapters');
-                    
-                    structure_content.parts[block.idx_block[0]].chapters.push(block.block)
+            
+                case 'chapter': 
+                    axios
+                        .post(`http://192.168.19.204:8080/admin/v1/chapter?partId=${id}`)
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
                     break;
 
-                case 'sections': 
-                    console.log('sectionss')
-                    structure_content.parts[block.idx_block[0]].chapters[block.idx_block[1]].sections.push(block.block) 
+                case 'section': 
+                    axios
+                        .post(`http://192.168.19.204:8080/admin/v1/section?chapterId=${id}`)
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
+                    break;
+                case 'Initial': 
+                    axios
+                        .post('http://192.168.19.204:8080/admin/v1/page', {
+                            course_id: id,
+                            category: type
+                        })
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
+                    break;
+
+                case 'Entrance': 
+                    axios
+                        .post('http://192.168.19.204:8080/admin/v1/testing', {
+                            course_id: id,
+                            category: type
+                        })
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
+                    break;
+
+                case 'Final':                         
+                    axios
+                        .post('http://192.168.19.204:8080/admin/v1/testing', {
+                            course_id: id,
+                            category: type
+                        })
+                        .then(() => {
+                            emit('reload-content', true)
+                        })
+                        .finally(() => {
+                            emit('reload-content', false)
+                        })
+
                     break;
 
                 default:
                     break;
             }
-            
+        }
 
-            console.log(block);
-            
+        const reloadContentParent = (val: boolean) => {
+            emit('reload-content', val)
         }
 
         const saveGeneralSettings = () => {
@@ -189,13 +303,15 @@ export default defineComponent({
             editMod,
             saveGeneralSettings,
             structure_content,
-            addBlockOnContent
+            addBlockOnContent,
+            reloadContentParent
         }
     },
     components: {
         'edit-input-cmp': editInputCmp,
         'btn-cmp': btnCmp,
-        'add-btn-cmp': btnAddCmp
+        'add-btn-cmp': btnAddCmp,
+        'input-cmp': inputCmp,
     }
 })
 </script>

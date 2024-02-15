@@ -22,6 +22,7 @@
                 :textarea_label="'Краткое описание курса'"
                 :textarea_value="params.teachers"
                 :disabled="edit_mod.state"
+                @update="setValue"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -77,7 +78,7 @@ import { defineComponent, reactive } from 'vue'
 import inputCmp from '@/components/ui-components/input-cmp/input-cmp.vue';
 import textareaCmp from '@/components/ui-components/textarea-cmp/textarea-cmp.vue';
 import btnCmp from '@/components/ui-components/btn-cmp/btn-cmp.vue';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default defineComponent({
     props: {
@@ -86,7 +87,7 @@ export default defineComponent({
             default: () => {}
         }
     },
-    setup() {
+    setup(props) {
         const edit_mod = reactive({
             state: true
         })
@@ -95,13 +96,29 @@ export default defineComponent({
             edit_mod.state = state
         }
 
+
         const saveGeneralSettings = () => {
         }
+
+        // const setValue = (val: string) => {
+
+        // }
+
+        axios
+            .patch(`http://192.168.19.204:8080/admin/v1/course/${props.params.id}/info`, {
+                title: props.params.name,
+                description: props.params.description_course,
+                target_audience: props.params.target_audience,
+                education_methods: props.params.education_methods,
+                education_results: props.params.education_results,
+                authors: props.params.teachers
+            })
 
         return {
             edit_mod,
             editMod,
-            saveGeneralSettings
+            saveGeneralSettings,
+            // setValue
         }
     },
     components: {
