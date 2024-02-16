@@ -7,7 +7,7 @@
             @select="setTabId"
         />
         <general-setting v-if="tab_id.value === 1" :params="params_course" :directions="general_params.directions"/>
-        <info-setting v-if="tab_id.value === 2" :params="params_course"/>
+        <info-setting v-if="tab_id.value === 2" :params="params_course" @reload-content="reloadContent"/>
         <content-setting v-if="tab_id.value === 3" :params="params_course" @reload-content="reloadContent" />
         <router-view></router-view>
     </div>
@@ -42,7 +42,7 @@ export default defineComponent({
         ]
 
         const tab_id = reactive({
-            value: 3 as number
+            value: 2 as number
         })
 
         const setTabId = (val: number) => {

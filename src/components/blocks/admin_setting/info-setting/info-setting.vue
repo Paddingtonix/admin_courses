@@ -5,7 +5,9 @@
             <input-cmp 
                 :input_label="'Название'"
                 :input_value="params.name"
+                :input_type="'name'"
                 :disabled="edit_mod.state"
+                @update="setValue"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -13,7 +15,9 @@
             <input-cmp 
                 :input_label="'Если авторов больше одного, перечислите ФИО через запятую'"
                 :input_value="params.teachers"
+                :input_type="'teachers'"
                 :disabled="edit_mod.state"
+                @update="setValue"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -21,6 +25,7 @@
             <textarea-cmp
                 :textarea_label="'Краткое описание курса'"
                 :textarea_value="params.teachers"
+                :textarea_type="'description_course'"
                 :disabled="edit_mod.state"
                 @update="setValue"
             />
@@ -31,6 +36,8 @@
                 :textarea_label="'На кого рассчитан курс'"
                 :textarea_value="params.teachers"
                 :disabled="edit_mod.state"
+                :textarea_type="'target_audience'"
+                @update="setValue"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
@@ -39,14 +46,18 @@
                 :textarea_label="'Описание инструментов обучения'"
                 :textarea_value="params.teachers"
                 :disabled="edit_mod.state"
+                :textarea_type="'education_methods'"
+                @update="setValue"
             />
         </div>
         <div class="admin-course-id__main-settings__info__field">
             <h3 class="admin-course-id__main-settings__info__field__title">Результаты обучения</h3>
             <textarea-cmp 
                 :textarea_label="'Описание результатов обучения'"
+                :textarea_type="'education_results'"
                 :textarea_value="params.teachers"
                 :disabled="edit_mod.state"
+                @update="setValue"
             />
         </div>
         <btn-cmp 
@@ -68,13 +79,13 @@
             <btn-cmp 
                 class="admin-course-general__params__btn"
                 :btn_text="'Сохранить'"
-                @click="saveGeneralSettings()"
+                @click="saveInfo()"
             />
         </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, watch } from 'vue'
 import inputCmp from '@/components/ui-components/input-cmp/input-cmp.vue';
 import textareaCmp from '@/components/ui-components/textarea-cmp/textarea-cmp.vue';
 import btnCmp from '@/components/ui-components/btn-cmp/btn-cmp.vue';
@@ -87,7 +98,7 @@ export default defineComponent({
             default: () => {}
         }
     },
-    setup(props) {
+    setup(props, { emit }) {
         const edit_mod = reactive({
             state: true
         })
@@ -96,29 +107,70 @@ export default defineComponent({
             edit_mod.state = state
         }
 
+        const changed_info = reactive({
+            params: props.params
+        })
 
-        const saveGeneralSettings = () => {
+        watch(() => props.params, () => {
+            changed_info.params = props.params
+        })
+
+        const setValue = (val: {type: string, value: string}) => {            
+            switch (val.type) {
+                case 'name':
+                    changed_info.params.name = val.value
+                    break;
+                
+                case 'teachers':
+                    changed_info.params.teachers = val.value
+                    break;
+
+                case 'description_course':
+                    changed_info.params.description_course = val.value
+                    break;
+
+                case 'target_audience':
+                    changed_info.params.target_audience = val.value
+                    break;
+
+                case 'education_methods':
+                    changed_info.params.education_methods = val.value
+                    break;
+
+                case 'education_results':
+                    changed_info.params.education_results = val.value
+                    break;
+
+                default:
+                    break;
+            } 
         }
 
-        // const setValue = (val: string) => {
-
-        // }
-
-        axios
-            .patch(`http://192.168.19.204:8080/admin/v1/course/${props.params.id}/info`, {
-                title: props.params.name,
-                description: props.params.description_course,
-                target_audience: props.params.target_audience,
-                education_methods: props.params.education_methods,
-                education_results: props.params.education_results,
-                authors: props.params.teachers
-            })
+        const saveInfo = () => {
+            axios
+                .patch(`http://192.168.19.204:8080/admin/v1/course/${props.params.id}/info`, {
+                    title: changed_info.params.name,
+                    description: changed_info.params.description_course,
+                    target_audience: changed_info.params.target_audience,
+                    education_methods: changed_info.params.education_methods,
+                    education_results: changed_info.params.education_results,
+                    authors: changed_info.params.teachers
+                })
+                .then(() => {
+                    emit('reload-content', true)
+                })
+                .finally(() => {
+                    emit('reload-content', false)
+                    editMod(true)
+                })
+        }
 
         return {
             edit_mod,
             editMod,
-            saveGeneralSettings,
-            // setValue
+            saveInfo,
+            setValue,
+            changed_info
         }
     },
     components: {

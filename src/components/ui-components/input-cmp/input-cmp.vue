@@ -56,9 +56,8 @@ export default defineComponent({
             default: ''
         }
     },
-    setup(props) {
-        console.log(props);
-        
+    setup(props) {   
+             
         const input_field_value = reactive({
             value: props.input_value !== null && props.input_value !== undefined ? props.input_value : ''
         })
