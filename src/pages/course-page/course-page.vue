@@ -35,7 +35,7 @@
                     :btn_text="'Показать'"
                 />
                 <div class="admin-course__filters__selectors__direction" v-for="(direction, idx) in select_directions.value" :key="idx" @click="deleteDirection(idx)">
-                    <span>{{ direction.selected_checkbox }}</span>
+                    <span>{{ direction.selected_checkbox.text }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                         <path d="M12.5 4L4.5 12M4.5 4L12.5 12" stroke="#808E9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>

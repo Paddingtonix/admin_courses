@@ -27,7 +27,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, watch } from 'vue'
 
 export default defineComponent({
     props: {
@@ -56,12 +56,17 @@ export default defineComponent({
             default: ''
         }
     },
-    setup(props) {   
+    setup(props, { emit }) {   
              
         const input_field_value = reactive({
             value: props.input_value !== null && props.input_value !== undefined ? props.input_value : ''
         })
 
+
+        watch(() => props.input_value, () => {
+            input_field_value.value = props.input_value
+            emit('update', {value: input_field_value.value, type: props.input_type})
+        })
 
         return {
             input_field_value

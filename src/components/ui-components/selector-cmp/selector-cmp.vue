@@ -20,6 +20,7 @@
                         v-for="selector in selector_list" 
                         :key="selector.id"
                         :text="selector.name"
+                        :id="selector.id"
                         @setParams="multiCheckbox"
                     />
                 </template>
@@ -94,7 +95,7 @@ export default defineComponent({
 
         const selected_checkbox = reactive([] as Array<{selected_checkbox: string}>)
 
-        const multiCheckbox = (params: string) => {
+        const multiCheckbox = (params: any) => {
             if(!selected_checkbox.find(checkbox => checkbox.selected_checkbox === params)) {
                 selected_checkbox.push({selected_checkbox: params})
 
@@ -106,7 +107,7 @@ export default defineComponent({
                 select_value.value = ''
             }
 
-            emit('setSelectorValue', {direction: selected_checkbox, type: 'direction'})            
+            emit('setSelectorValue', {direction: selected_checkbox, type: 'direction', id: params.id})            
         }
 
         // watchEffect(() => {

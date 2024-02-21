@@ -6,6 +6,10 @@
             v-model="textarea_field_value.value"
             @keyup="setValue"
             v-bind="$attrs"
+            :class="{
+                '_fill-input': textarea_field_value.value.length, 
+                '_error-input': textarea_error.length, 
+            }"
         />
         <label class="oilcase-textarea__label">{{ textarea_label }}</label>
         <span class="oilcase-textarea__error">{{ textarea_error }}</span>

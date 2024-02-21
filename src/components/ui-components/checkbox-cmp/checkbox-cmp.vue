@@ -16,20 +16,24 @@ export default defineComponent({
         text: {
             type: String,
             default: 'text'
+        },
+        id: {
+            type: Number,
+            default: 0
         }
     },
-    setup(_, { emit }) {
+    setup(props, { emit }) {
         const checkbox_active = reactive({
             value: false
         })
 
-        const selectParams = (params: string) => {
+        const selectParams = (params: any) => {
             emit('setParams', params)
         }
 
         const changeStateCheckbox = (text: string) => {
             checkbox_active.value = !checkbox_active.value
-            selectParams(text)
+            selectParams({text: text, id: props.id})
         }
 
         return {

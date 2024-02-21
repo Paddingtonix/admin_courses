@@ -19,6 +19,8 @@
                         :input_label="'email'"
                         :input_value="email"
                         :disabled="edit_mod.state"
+                        :input_type="'author_emails'"
+                        @update="setValue"
                     />
             </div>
             <div class="admin-course-general__params__field">
@@ -26,9 +28,11 @@
                 <div class="admin-course-general__params__field__container _medium">
                     <input-cmp 
                         :input_label="'Цена'"
+                        :input_type="'price'"
                         :input_value="changed_params.price_in_rubles"
                         :input_size="'m'"
                         :disabled="edit_mod.state"
+                        @update="setValue"
                     />
                     <span class="admin-course-general__params__field__explanation">руб.</span>
                 </div>
@@ -39,8 +43,10 @@
                 <input-cmp 
                     :input_label="'Дата снятия курса с витрины'"
                     :input_value="date.date_visible"
+                    :input_type="'sales_term_date'"
                     :disabled="edit_mod.state"
                     @click="openCalendar(true)"
+                    @update="setValue"
                     v-click-outside="() => openCalendar(false)"
                 />
                 <date-picker 
@@ -55,7 +61,9 @@
                     <input-cmp 
                         :input_size="'s'"
                         :input_label="'N'"
+                        :input_type="'duration_academic_hours'"
                         :input_value="changed_params.sales_termination_date"
+                        @update="setValue"
                         :disabled="edit_mod.state"
                     />
                     <span class="admin-course-general__params__field__explanation">академических часов</span>
@@ -68,13 +76,13 @@
                     <selector-cmp 
                         v-if="!edit_mod.state"
                         :selector_placeholder="'Не выбрано'"
-                        :selector_list="directions_list.values"
+                        :selector_list="directions"
                         :edit_mod="edit_mod.state"
                         :disabled="edit_mod.state"
                         :checkbox="true"
                         @setSelectorValue="saveStateSelector"
                     />
-                    <div class="admin-course-general__params__field__selected"  v-else>
+                    <div class="admin-course-general__params__field__selected" v-else>
                         <div
                             class="admin-course-general__params__field__selected__direction"
                             v-for="(direction, idx) in select_directions.value"
@@ -168,7 +176,7 @@ export default defineComponent({
             calendar.active = state
         }
 
-        const saveStateSelector = (params: { [key: string]: string } | any) => {
+        const saveStateSelector = (params: { [key: string]: string } | any) => {            
             if(params.type === 'direction') {
                 select_directions.value = params.direction
             }
@@ -184,16 +192,43 @@ export default defineComponent({
 
         const saveGeneralSettings = () => {
             axios
-                .post('http://192.168.19.204:8080/admin/v1/course/1/settings', {
-                    directions_ids: directions_list.values.map((direction_id: { id: number; }) => direction_id.id),
+                .patch('http://192.168.19.204:8080/admin/v1/course/1/settings', {
                     duration_academic_hours: changed_params.duration_academic_hours,
                     sales_termination_date: changed_params.sales_termination_date,
-                    price_in_rubles: changed_params.price_in_rubles
+                    price_in_rubles: changed_params.price_in_rubles,
+                    direction_ids: select_directions.value.map((direction_id: any) => direction_id.selected_checkbox.id)
                 })
                 .finally(() => {
                     console.log('final');
                     editMod(false)
                 })
+        }
+
+        const setValue = (val: any) => {
+            switch (val.type) {
+                case 'price':
+                    changed_params.price_in_rubles = val.value
+                    break;
+                case 'sales_term_date': 
+                    console.log('qwerty');
+                
+                    changed_params.sales_termination_date = val.value
+                    break;
+                case 'author_emails':
+                    changed_params.authors.push(val.value)
+                    break;
+                case 'duration_academic_hours': 
+                    changed_params.duration_academic_hours = val.value
+                    break;
+                case 'directions': 
+                    console.log(val);
+                    
+                    break;    
+  
+                default:
+                    break;
+            }
+            console.log(val);
         }
 
         // watch(() => props.directions, () => {
@@ -233,7 +268,8 @@ export default defineComponent({
             saveGeneralSettings,
             calendar,
             openCalendar,
-            date
+            date,
+            setValue
         }
     },
     components: {
