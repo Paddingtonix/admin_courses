@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     },
     components: {
         dirs: [
+            '~/src/components/base/modals',
             '~/src/components/base',
             '~/src/components/ui-components',
             '~/src/pages',
