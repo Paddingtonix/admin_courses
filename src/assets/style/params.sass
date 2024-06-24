@@ -1,38 +1,60 @@
-$white: #fff
-$gray: #BEC1CA
-$dark-gray: #737F84
-$dark-blue: #b9bebf
+// @if .light-theme
+    // Light theme
+$basic_white: #ffffff
+$basic_color: #000000
+$dark_gray: #374351
+$basic_gray: #808E9D
+$light_gray: #B6C2D0
+$disabled_basic: #EDF2F8
 
-//buttons 
-// primary
-$default-primary: #03AEE2
-$hover-primary: #00C4FF
-$pressed-primary: #0080A7
-$disabled-primary: #A2A7AD
+$dark_primary: #125A9F
+$basic_primary: #176DC1
+$light_primary: #398BDB
 
-//secondary 
-$hover-primary: #00C4FF
-$pressed-primary: rgba(3, 174, 226, 0.16)
+$dark_secondary: #703B89
+$basic_secondary: #905CA9
+$light_secondary: #B884D0
 
+$dark_error: #C62625
+$basic_error: #F84544
+$light_error: #FF7C7C
 
-//links 
-$disable-link: #737F84
-$hover-link: #ADECFF
+$dark_warning: #CA8500
+$basic_warning: #CA8500
+$light_warning: #FFCE91
 
-//border 
-$border-default: #737F8C
+$dark_success: #1E7846
+$basic_success: #27AE63
+$light_success: #8BD9AD
+// @else
+//     // Dark theme
+//     $basic_color: #FFFFFF
 
-$background-main: #262E38
-$background-gray: #DAE0E1
-$background-dark-gray: #373C43
+//     $dark_gray: #3A4756
+//     $basic_gray: #667485
+//     $light_gray: #93A5B9
 
-//text 
-$gray-text: #B1B3B7
+//     $dark_primary: #0194C0
+//     $basic_primary: #03AEE2
+//     $light_primary: #25CCFF
 
-//input 
-$background-input: #3C434C
-$border-input: #595F67
-$hover-input: #9099A5
-$error-input: #FF7777
-$error-hover: #f99b9b
-$error-pressed: #ed4848
+//     $dark_secondary: #9A68B2
+//     $basic_secondary: #AE7CC5
+//     $light_secondary: #CD9BE5
+
+//     $dark_error: #E75150
+//     $basic_error: #FF6E6D
+//     $light_error: #FF9999
+
+//     $dark_warning: #D7A647
+//     $basic_warning: #FFC071
+//     $light_warning: #FFD49E
+
+//     $dark_success: #309A5F
+//     $basic_success: #3EC178
+//     $light_success: #86DCAC
+// @endif
+
+@function rem($value)
+    $rem_value: calc($value / 16) + rem
+    @return $rem_value
