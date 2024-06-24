@@ -1,6 +1,7 @@
 <template>
     <div class="oil">
         <Header />
+        <Sidebar />
         <NuxtPage />
     </div>
 </template>
