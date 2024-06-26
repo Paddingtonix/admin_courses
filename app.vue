@@ -21,4 +21,5 @@ export default defineComponent({
 </script>
 <style lang="sass">
 @import "@/src/assets/style/index.sass"
+@import "@/src/assets/style/vendor/normalize.sass"
 </style>
