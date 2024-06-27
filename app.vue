@@ -1,23 +1,22 @@
 <template>
     <div class="oil">
         <Header />
+        <ModalCmp />
         <NuxtPage />
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useRoute } from 'vue-router';
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-    setup() {
-        const route = useRoute();
-
+    setup() {        
         return {
-            route
+            
         }
     },
 })
 </script>
 <style lang="sass">
 @import "@/src/assets/style/index.sass"
+
 </style>
