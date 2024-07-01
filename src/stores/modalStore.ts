@@ -5,8 +5,11 @@ export const useModalStore = defineStore('modal', {
     isOpen: false
   }),
   actions: {
-    toggleModal() {
-      this.isOpen = !this.isOpen
-    }
+    openModal() {
+      this.isOpen = true
+    },
+    closeModal() {
+      this.isOpen = false
+    },
   }
 })

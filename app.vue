@@ -1,10 +1,16 @@
 <template>
     <div class="oil">
-        <Header />
-        <ModalCmp 
+        <!-- <ModalCmp 
             :isOpen="modalStore.isOpen"
-            @toggle="modalStore.toggleModal"/>
-        <NuxtPage />
+            @open="modalStore.openModal"
+            @close="modalStore.closeModal"
+        /> -->
+        <ModalCmp
+        
+        />
+        <NuxtPage 
+            name="app"
+        />
     </div>
 </template>
 <script lang="ts">

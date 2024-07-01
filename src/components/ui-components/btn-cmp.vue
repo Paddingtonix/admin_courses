@@ -30,6 +30,7 @@ export default defineComponent({
     user-select: none
     border-radius: rem(8)
     width: 100%
+    height: rem(56)
     @include flex_center()
     & > *
         transition: all .2s
