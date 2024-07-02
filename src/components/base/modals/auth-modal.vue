@@ -102,9 +102,9 @@
 
                 if(form_item.value) {
                     if(form_item.id === 'username' && !form_item.value.match(/@/gi)) {
-                        form_item.error = 'Поле может содержать только латиницу, цифры и специальные символы'
+                        form_item.error = 'Неверный формат данных. Введите корректный email'
                     } else if(!regExp.test(form_item.value)){
-                        form_item.error = 'Поле может содержать только латиницу, кириллицу, цифры и пробел'
+                        form_item.error = 'Неверный формат данных. Введите корректный email'
                     } else if(form_authorization.every(value => value.value.length)) {
                         form_item.error = ""
                     }
@@ -113,7 +113,7 @@
                         form_item.error = ""
                     }
                 } else if(!form_item.value.length && form_item.required) {
-                    form_item.error = 'Поле обязательно к заполнению'
+                    form_item.error = 'Это поле обязательно к заполнению для авторизации'
                 } 
             }
 
