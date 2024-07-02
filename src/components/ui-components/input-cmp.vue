@@ -5,6 +5,8 @@
         >{{ label }}</label>
         <input 
             v-model="input_value"
+            :type="type"
+            @keyup="setValue"
         />
         <div class="oil-input__message" v-if="error.length">
             <i>
@@ -25,20 +27,25 @@ export default defineComponent({
             type: String,
             default: 'Text'
         },
+        type: {
+            type: String,
+            default: '',
+        },
         error: {
             type: String,
             default: ''
-        },
-        warning: {
-            type: String,
-            default: 'Warning'
         }
     },
-    setup() {
+    setup(props, { emit }) {
         const input_value = ref<string>('')
 
+        const setValue = () => {
+            emit('set', { value: input_value.value, type: props.type })
+        }
+
         return {
-            input_value
+            input_value,
+            setValue
         }
     }
 })
@@ -64,7 +71,9 @@ export default defineComponent({
             color: $light_primary
 
     &__message
-        @inlude position_message_input() 
+        @include position_message_input()
+        span
+            color: $basic_error
         
     &._error-frame
         border-color: $basic_error
@@ -80,10 +89,10 @@ export default defineComponent({
         width: 100%
         height: 100%
 
-    // &:hover 
-    //     border-color: $basic_gray
-    //     label 
-    //         color: $basic_gray
+    &:hover 
+        border-color: $basic_gray
+        label 
+            color: $basic_gray
 
     &::focus
         border-color: $light_primary       

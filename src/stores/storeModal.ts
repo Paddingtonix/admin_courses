@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 
-export const useModalStore = defineStore('modal', {
+export const useStoreModal = defineStore('modal', {
   state: () => ({
-    isOpen: false
+    isOpen: false,
+    auth: false
   }),
   actions: {
     openModal() {
@@ -10,6 +11,6 @@ export const useModalStore = defineStore('modal', {
     },
     closeModal() {
       this.isOpen = false
-    },
+    }
   }
 })

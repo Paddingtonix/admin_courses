@@ -1,5 +1,5 @@
 <template>
-    <div class="oil-btn" :class="background_type" v-wave="{ color: '#03AEE2' }">
+    <div class="oil-btn" :class="background_type">
         <button>{{ text }}</button>
     </div>
 </template>

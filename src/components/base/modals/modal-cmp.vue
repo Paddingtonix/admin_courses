@@ -1,8 +1,5 @@
 <template>
     <div class="oil-modal">
-        <!-- <button class="oil-modal__btntestopen" @click="$emit('open')">Open Modal</button>
-        <button class="oil-modal__btntestclose" @click="$emit('close')">Close Modal</button>
-        <div class="oil-modal__test"  v-if="isOpen">ya test</div> -->
         <div class="oil-modal__container">
             <component :main_class="'oil-modal'" :is="modalComponent"></component>
         </div>
@@ -19,19 +16,14 @@
             }
         },
         setup() {
-            const remember_me = reactive({
-                active: false
-            })
             
             const modalComponent = authModal
 
             return {
-                remember_me,
                 modalComponent
             }
-        },
+        }
     })
-
 </script>
 <style scoped lang="sass">
 .oil-modal
@@ -41,26 +33,6 @@
     right: 0
     bottom: 0
     z-index: 900
-    // &__btntestopen
-    //     width: 100px
-    //     height: 100px
-    //     background-color: green
-    //     border: 2px solid blue
-    //     cursor: pointer
-
-    // &__btntestclose
-    //     width: 100px
-    //     height: 100px
-    //     background-color: yellow
-    //     border: 2px solid black
-    //     cursor: pointer
-
-    // &__test
-    //     width: 500px
-    //     height: 300px
-    //     background-color: blue
-    //     border: 2px solid red
-
     &__container 
         width: auto
         height: auto

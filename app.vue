@@ -1,28 +1,28 @@
 <template>
     <div class="oil">
-        <!-- <ModalCmp 
-            :isOpen="modalStore.isOpen"
-            @open="modalStore.openModal"
-            @close="modalStore.closeModal"
-        /> -->
-        <ModalCmp
-        
-        />
-        <NuxtPage 
-            name="app"
-        />
+        <ModalCmp />
+        <NuxtPage />
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useModalStore } from './src/stores/modalStore'
+import { defineComponent, onMounted } from 'vue'
+// import { useStoreModal } from './src/stores/storeModal'
+import { useStoreAuth } from './src/stores/storeAuth'
 
 export default defineComponent({
     setup() {
-        const modalStore = useModalStore()
+        const storeAuth = useStoreAuth()
+
+        onMounted(() => {
+            const token = localStorage.getItem('test_auth_token')
+            if (token === 'fake_token') {
+                storeAuth.logIn()
+                console.log('pinia, snova sasat');
+            }
+        })
 
         return {
-            modalStore 
+
         }
     },
 })
