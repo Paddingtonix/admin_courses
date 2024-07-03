@@ -6,7 +6,6 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue'
-// import { useStoreModal } from './src/stores/storeModal'
 import { useStoreAuth } from './src/stores/storeAuth'
 
 export default defineComponent({
@@ -17,17 +16,14 @@ export default defineComponent({
             const token = localStorage.getItem('test_auth_token')
             if (token === 'fake_token') {
                 storeAuth.logIn()
-                console.log('pinia, snova sasat');
+                console.log('pinia, snova sasat')
             }
         })
 
-        return {
-
-        }
+        return {}
     },
 })
 </script>
 <style lang="sass">
 @import "@/src/assets/style/index.sass"
-
 </style>

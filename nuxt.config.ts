@@ -15,7 +15,7 @@ export default defineNuxtConfig({
             '~/src/components/base',
             '~/src/components/ui-components',
             '~/src/pages',
-        ]
+        ],
     },
     modules: ['@pinia/nuxt'],
     ssr: true,
