@@ -42,7 +42,7 @@ export default defineComponent({
         },
         warning: {
             type: String,
-            default: 'Warning'
+            default: ''
         }
     },
     setup() {

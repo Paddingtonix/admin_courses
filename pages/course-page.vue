@@ -9,25 +9,49 @@
                     :text="card.text"
                 />
             </div>
-            <div class="oil-course__info__attention">
-                <i class="oil-course__info__attention__icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                        <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </i>
-                <p class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием. </p>
-            </div>
-            <btnCmp 
-                :text="'Создать курс'"
-                class="oil-course__info__btn"
-                @click="navigate('/course-create')"
-            />
+            <template v-if="!course_list.value.length">
+                <div class="oil-course__info__attention">
+                    <i class="oil-course__info__attention__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </i>
+                    <p class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием. </p>
+                </div>
+                <btnCmp 
+                    :text="'Создать курс'"
+                    class="oil-course__info__btn"
+                    @click="navigate('/course-create')"
+                />
+            </template>
+            <template v-else>
+                <div class="oil-course__settings-container">
+                    <div class="oil-course__settings">
+                        <SearchCmp 
+                            :label="'Поиск'"
+                        />
+                        <FilterCmp />
+                    </div>
+                    <div class="oil-course__create">
+                        <BtnCmp 
+                            :text="'Создать курс'"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </BtnCmp>
+                    </div>
+                </div>
+                
+                
+            </template>
         </div>
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios'
 
 export default defineComponent({
     setup() {
@@ -56,13 +80,28 @@ export default defineComponent({
             },
         ])
 
+        const course_list = reactive({
+            value: []
+        })
+
         const navigate = (url: string) => {
             router.push(url)
         }
 
+        onMounted(() => {
+            axios
+                .get('/api/course_list.json')
+                .then(resp => {
+                    console.log(resp);
+                    
+                    course_list.value = resp.data.courses
+                })
+        })
+
         return {
             course_info,
-            navigate
+            navigate,
+            course_list
         }
     }
 })
@@ -98,5 +137,15 @@ export default defineComponent({
                 line-height: 150%   
 
         &__btn 
-            max-width: rem(192)         
+            max-width: rem(192)
+
+    &__settings 
+        @include flex_start()
+        gap: rem(8)
+        &-container 
+            @include flex_center_spacing()
+            .oil-btn 
+                height: rem(38)
+                padding: rem(8) rem(24)
+
 </style>

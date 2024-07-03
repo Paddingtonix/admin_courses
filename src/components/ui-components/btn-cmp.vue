@@ -1,5 +1,6 @@
 <template>
     <div class="oil-btn" :class="background_type" v-wave="{ color: '#03AEE2' }">
+        <slot></slot>
         <button>{{ text }}</button>
     </div>
 </template>
@@ -31,6 +32,7 @@ export default defineComponent({
     border-radius: rem(8)
     width: 100%
     @include flex_center()
+    gap: rem(8)
     & > *
         transition: all .2s
 
