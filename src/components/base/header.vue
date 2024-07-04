@@ -1,5 +1,5 @@
 <template>
-    <header class="oil-header"></header>
+    <header class="oil-header">хэдер</header>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'

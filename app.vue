@@ -1,7 +1,6 @@
 <template>
     <div class="oil">
-        <ModalCmp />
-        <NuxtPage />
+        <NuxtLayout />
     </div>
 </template>
 <script lang="ts">

@@ -225,5 +225,7 @@ export default defineComponent({
                 width: rem(194)
 
         &__radios
+            @include flex_column
+            gap: rem(16)
             align-self: flex-start
 </style>

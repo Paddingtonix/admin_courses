@@ -1,5 +1,5 @@
 <template>
-    <div class="oil-cookie"></div>
+    <div class="oil-cookie">cookie</div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'

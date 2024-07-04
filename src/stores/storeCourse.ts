@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 export const useStoreCourses = defineStore('courseState', {
     state: () => ({
         // курс создан
-        createCourse: false,
+        createCourse: true,
         // в разработке
         development: false,
         // на модерации
-        moderation: true,
+        moderation: false,
         // есть ошибка по дате
         oneError: false,
         // есть несколько ошибок
