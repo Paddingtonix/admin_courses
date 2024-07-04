@@ -7,7 +7,7 @@ export const useStoreAuth = defineStore('auth', {
     actions: {
         logIn() {
             this.isAuth = true
-            console.log('pinia sasat')
+            console.log('pinia sasat! ya zaloginen')
         },
         logOut() {
             this.isAuth = false

@@ -17,6 +17,8 @@ export const useStoreCourses = defineStore('courseState', {
         // снят с витрины
         removed: false,
         // в архивк
-        archived: false
+        archived: false,
+        // удаление курса
+        deleteCourse: false
     })
 })

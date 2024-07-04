@@ -16,7 +16,7 @@ export default defineComponent({
             const token = localStorage.getItem('test_auth_token')
             if (token === 'fake_token') {
                 storeAuth.logIn()
-                console.log('pinia, snova sasat')
+                console.log('pinia, snova sasat! ya zaloginen')
             }
         })
 

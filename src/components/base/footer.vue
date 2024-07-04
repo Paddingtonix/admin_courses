@@ -1,15 +1,10 @@
 <template>
-    <footer class="oil-footer">
-
-    </footer>
+    <footer class="oil-footer"></footer>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
-    export default defineComponent({
-        setup() {
-            
-        }
-    })
-
+export default defineComponent({
+    setup() {},
+})
 </script>

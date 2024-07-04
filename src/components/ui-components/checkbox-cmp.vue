@@ -1,11 +1,11 @@
 <template>
     <div class="oil-checkbox" @click="setCheckboxValue({ active: $props.active !== undefined ? $props.active : false, id: $props.id !== undefined ? $props.id : 0 })">
-        <div class="oil-checkbox__field" :class="{_active:  $props.active, _checked_dis: $props.checked_disable, _unchecked_dis: $props.unchecked_disable}">
+        <div class="oil-checkbox__field" :class="{ _active: $props.active, _checked_dis: $props.checked_disable, _unchecked_dis: $props.unchecked_disable }">
             <svg v-if="$props.active" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6.0001 10.7799L3.2201 7.9999L2.27344 8.93989L6.0001 12.6666L14.0001 4.66656L13.0601 3.72656L6.0001 10.7799Z" fill="white"/>
+                <path d="M6.0001 10.7799L3.2201 7.9999L2.27344 8.93989L6.0001 12.6666L14.0001 4.66656L13.0601 3.72656L6.0001 10.7799Z" fill="white" />
             </svg>
             <svg v-if="$props.checked_disable" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6.0001 10.7799L3.2201 7.9999L2.27344 8.93989L6.0001 12.6666L14.0001 4.66656L13.0601 3.72656L6.0001 10.7799Z" fill="#5B6C7B"/>
+                <path d="M6.0001 10.7799L3.2201 7.9999L2.27344 8.93989L6.0001 12.6666L14.0001 4.66656L13.0601 3.72656L6.0001 10.7799Z" fill="#5B6C7B" />
             </svg>
         </div>
         <span class="oil-checkbox__text">{{ $props.text }}</span>
@@ -18,28 +18,28 @@ export default defineComponent({
     props: {
         text: {
             type: String,
-            default: 'text'
+            default: 'text',
         },
         active: {
             type: Boolean,
-            default: false
+            default: false,
         },
         id: {
             type: Number,
-            default: 0
+            default: 0,
         },
         checked_disable: {
             type: Boolean,
-            default: false
+            default: false,
         },
         unchecked_disable: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     emits: ['set_value'],
     setup(props, { emit }) {
-        const setCheckboxValue = (obj: { id: number, active: boolean }) => {
+        const setCheckboxValue = (obj: { id: number; active: boolean }) => {
             switch (obj.active) {
                 case false:
                     emit('set_value', { id: obj.id, active: true })
@@ -53,9 +53,9 @@ export default defineComponent({
         }
 
         return {
-            setCheckboxValue
+            setCheckboxValue,
         }
-    }
+    },
 })
 </script>
 <style scoped lang="sass">
@@ -69,11 +69,11 @@ export default defineComponent({
         align-items: center
         justify-content: center
         border: 1px solid $basic_primary
-        min-width: rem(20) 
+        min-width: rem(20)
         height: rem(20)
         border-radius: rem(4)
         transition: border .1s
-        &._active 
+        &._active
             background-color: $basic_primary
             border: 1px solid $basic_primary
 
@@ -87,5 +87,4 @@ export default defineComponent({
     &__text
         font-weight: 400
         line-height: rem(24)
-
 </style>

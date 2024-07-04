@@ -22,6 +22,7 @@
     border: none
     button
         color: $basic_white
+        cursor: pointer
 
     &:hover 
         background-color: $light_primary
@@ -38,6 +39,7 @@
     border: rem(1) solid $basic_primary
     button 
         color: $basic_primary
+        cursor: pointer
 
     &:hover 
         border: rem(1) solid $light_primary       
@@ -57,10 +59,12 @@
         button 
             color: $light_gray
 
+
 @mixin button_styles_tertiary()    
     border: none 
     button
         color: $basic_primary
+        cursor: pointer
         
     &:hover 
         background-color: #176DC10D
@@ -74,7 +78,25 @@
 
     &:disabled
         button 
-            color: $light_gray        
+            color: $light_gray
+
+
+@mixin button_styles_quaternary() 
+    background-color: $basic_error
+    border: none
+    button
+        color: $basic_white
+        cursor: pointer
+
+    &:hover 
+        background-color: $light_error
+
+    &:active
+        background-color: $dark_error
+
+    &:disabled
+        pointer-events: none
+        background-color: $disabled_basic
         
 @mixin position_message_input() 
     @include flex_center()

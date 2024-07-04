@@ -4,26 +4,23 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
         text: {
             type: String,
-            default: 'Button'
+            default: 'Button',
         },
         background_type: {
             type: String,
-            default: '_primary' //_secondary, _tertiary
-        }
+            default: '_primary', //_secondary, _tertiary, _quaternary
+        },
     },
-    setup() {
-        
-    }
 })
 </script>
 <style scoped lang="sass">
-.oil-btn 
+.oil-btn
     padding: rem(16) rem(32)
     cursor: pointer
     transition: all .2s
@@ -35,12 +32,15 @@ export default defineComponent({
     & > *
         transition: all .2s
 
-    &._primary 
+    &._primary
         @include button_styles_primary()
 
-    &._secondary 
+    &._secondary
         @include button_styles_secondary()
 
     &._tertiary
-        @include button_styles_tertiary()    
+        @include button_styles_tertiary()
+
+    &._quaternary
+        @include button_styles_tertiary()
 </style>

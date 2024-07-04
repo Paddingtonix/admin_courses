@@ -34,7 +34,15 @@
             <span>Если вы закончили проверку курса, и курс не нуждается в изменениях от автора, измените статус на “Опубликован” и курс станет доступен к приобретению.</span>
             <span>Если курс нуждается в доработке, измените статус на “В разработке”.</span>
         </div>
-        <div :class="`${main_class}__course-create__radio-btns`"></div>
+        <div :class="`${main_class}__course-create__radios`">
+            <RadioCmp 
+                v-for="(radio, radio_idx) in radio_moderation" :key="radio_idx"
+                :text="radio.text"
+                :id="radio_idx"
+                :active="active_radio"
+                @set_radio="setRadioValue"
+            />
+        </div>
         <div :class="`${main_class}__course-create__btns`">
             <BtnCmp
                 :text="'Отмена'"
@@ -104,12 +112,32 @@
             @click="closeModal"
         />
     </div>
+    <!-- удаление курса -->
+    <div :class="`${main_class}__course-create`" v-if="storeCourse.deleteCourse">
+        <div :class="`${main_class}__course-create__text`">
+            <span>Внимание! Если вы удалите курс, всё его содержимое удалится автоматически и не будет доступно к восстановлению.</span>
+            <span>Вы уверены, что хотите удалить курс “[Название курса]”?</span>
+        </div>
+        <div :class="`${main_class}__course-create__btns`">
+            <BtnCmp
+                :text="'Отмена'"
+                :background_type="'_secondary'"
+                @click="closeModal"
+            />
+            <BtnCmp
+                :text="'Удалить'"
+                :background_type="'_quaternary'"
+            />
+        </div>
+    </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import { useStoreModal } from '~/src/stores/storeModal'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import BtnCmp from '../../ui-components/btn-cmp.vue'
+import RadioCmp from '../../ui-components/radio-cmp.vue'
+// import { BtnCmp, RadioCmp } from '~/src/components/ui-components'
 
 export default defineComponent({
     props: {
@@ -130,14 +158,33 @@ export default defineComponent({
         const storeModal = useStoreModal()
         const storeCourse = useStoreCourses()
 
+        const radio_moderation = reactive([
+            {
+                text: 'В разработке'
+            },
+            {
+                text: 'Опубликован'
+            }
+
+        ])
+
+        const active_radio = ref<number | null>(null)
+
         const closeModal = () => {
             storeModal.closeModal()
+        }
+
+        const setRadioValue = (id_radio: number) => {
+            active_radio.value = id_radio
         }
 
         return {
             storeModal,
             storeCourse,
-            closeModal
+            radio_moderation,
+            active_radio,
+            closeModal,
+            setRadioValue
         }
     },
     components: {
@@ -176,4 +223,7 @@ export default defineComponent({
             gap: rem(12)
             .oil-btn
                 width: rem(194)
+
+        &__radios
+            align-self: flex-start
 </style>

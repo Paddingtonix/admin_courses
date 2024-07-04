@@ -1,15 +1,10 @@
 <template>
-    <aside class="oil-sidebar">
-
-    </aside>
+    <aside class="oil-sidebar"></aside>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
-    export default defineComponent({
-        setup() {
-            
-        }
-    })
-
+export default defineComponent({
+    setup() {},
+})
 </script>
