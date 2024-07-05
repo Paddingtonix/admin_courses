@@ -30,7 +30,9 @@
                         <SearchCmp 
                             :label="'Поиск'"
                         />
-                        <FilterCmp />
+                        <FilterCmp 
+                            @click="openFilter(true)"
+                        />
                     </div>
                     <div class="oil-course__create">
                         <BtnCmp 
@@ -41,9 +43,78 @@
                             </svg>
                         </BtnCmp>
                     </div>
+                    <div class="oil-course__filter" v-if="filter_frame.value">
+                        <svg @click="openFilter(false)" class="oil-course__filter__close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="#808E9D" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Статус</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(0, 6)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Язык</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(7, 10)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Направления</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(11)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__btns">
+                            <BtnCmp 
+                                :background_type="'_secondary'"
+                                :text="'Сбросить'"
+                            />
+                            <BtnCmp 
+                                :text="'Применить'"
+                            />
+                        </div>
+                    </div>
                 </div>
-                
-                
+                <div class="oil-course__settings__course-list">
+                    <TableHeadCmp 
+                        :name="'Название'"
+                        :status="'Статус'"
+                        :authors="'Авторы'"
+                        :direction="'направление'"
+                        :lang="'Язык'"
+                        :date_edit="'Дата посл. ред.'"
+                        :end_date="'Снятие с витрины'"               
+                    />
+                    <TableRowCmp 
+                        v-for="(row, idx) in course_list.value"
+                        :key="idx"
+                        :name="row.name"
+                        :status="row.status"
+                        :authors="row.email"
+                        :direction="row.direction"
+                        :lang="row.lang"
+                        :date_edit="row.edit_data"
+                        :end_date="row.end_data"
+                    />
+                </div>
+                <div class="oil-course__settings__pagination">
+                    <PaginationCmp 
+                        :pages_count="14"
+                    />
+                </div>
             </template>
         </div>
     </section>
@@ -80,9 +151,112 @@ export default defineComponent({
             },
         ])
 
+        const filter_course = reactive({
+            value: [
+                {
+                    text: 'Все',
+                    id: 'all_status',
+                    active: false
+                },
+                {
+                    text: 'В разработке',
+                    id: 'in developing',
+                    active: false
+                },
+                {
+                    text: 'На модерации',
+                    id: 'on_moderation',
+                    active: false
+                },
+                {
+                    text: 'Опубликован',
+                    id: 'public',
+                    active: false
+                },
+                {
+                    text: 'Снят с витрины',
+                    id: 'removed',
+                    active: false
+                },
+                {
+                    text: 'В архиве',
+                    id: 'archive',
+                    active: false
+                },
+                {
+                    text: 'Все',
+                    id: 'all_lang',
+                    active: false
+                },
+                {
+                    text: 'Русский',
+                    id: 'russian',
+                    active: false
+                },
+                {
+                    text: 'Английский',
+                    id: 'english',
+                    active: false
+                },
+                {
+                    text: 'Французский',
+                    id: 'french',
+                    active: false
+                },
+                {
+                    text: 'Все',
+                    id: 'all_direction',
+                    active: false
+                },
+                {
+                    text: 'Геология',
+                    id: 'geology',
+                    active: false
+                },
+                {
+                    text: 'Разработка',
+                    id: 'develop',
+                    active: false
+                },
+                {
+                    text: 'Бурение',
+                    id: 'drilling',
+                    active: false
+                },
+                {
+                    text: 'Русский',
+                    id: 'russian',
+                    active: false
+                },
+                {
+                    text: 'Технология добычи',
+                    id: 'mining',
+                    active: false
+                },
+                {
+                    text: 'Шельф',
+                    id: 'shelf',
+                    active: false
+                },
+                {
+                    text: 'Другое',
+                    id: 'other',
+                    active: false
+                },
+            ]
+        })
+
         const course_list = reactive({
             value: []
         })
+
+        const filter_frame = reactive({
+            value: false
+        })
+
+        const openFilter = (state: boolean) => {
+            filter_frame.value = state
+        }
 
         const navigate = (url: string) => {
             router.push(url)
@@ -101,7 +275,10 @@ export default defineComponent({
         return {
             course_info,
             navigate,
-            course_list
+            course_list,
+            filter_course,
+            filter_frame,
+            openFilter
         }
     }
 })
@@ -142,10 +319,54 @@ export default defineComponent({
     &__settings 
         @include flex_start()
         gap: rem(8)
+        width: rem(742)
+        &__course-list
+            margin-bottom: rem(24)
+
         &-container 
+            margin-bottom: rem(16)
+
             @include flex_center_spacing()
+            position: relative
             .oil-btn 
                 height: rem(38)
                 padding: rem(8) rem(24)
+
+        &__pagination 
+            @include flex_center()     
+
+    &__filter
+        padding: rem(32)
+
+        background-color: $basic_white
+        box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
+        @include flex_column() 
+        gap: rem(32)  
+        position: absolute    
+        right: 0  
+        top: rem(-132)
+        .oil-checkbox
+            width: rem(347)
+            &__text
+                font-size: rem(14)
+        
+        &__frame
+            gap: rem(12)
+
+            @include flex_column()
+            &__title
+                margin-bottom: rem(4)
+
+                font-size: rem(14)
+
+        &__btns 
+            @include flex_start()
+            gap: rem(12)        
+            
+        &__close
+            position: absolute
+            top: rem(24)
+            right: rem(24)
+            cursor: pointer
 
 </style>

@@ -18,6 +18,7 @@
     border-radius: rem(8)
     @include flex_center_spacing()
     gap: rem(8)
+    cursor: pointer
     &__text
         color: $basic_primary
         font-weight: bold

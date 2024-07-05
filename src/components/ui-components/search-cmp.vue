@@ -28,6 +28,7 @@ export default defineComponent({
 .oil-search 
     position: relative
     max-width: rem(542)
+    width: 100%
     &__icon 
         position: absolute
         top: 50%
