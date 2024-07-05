@@ -1,6 +1,7 @@
 <template>
     <div class="oil">
-        <NuxtLayout />
+        <Sidebar />
+        <NuxtPage />
     </div>
 </template>
 <script lang="ts">
@@ -25,4 +26,5 @@ export default defineComponent({
 </script>
 <style lang="sass">
 @import "@/src/assets/style/index.sass"
+@import "@/src/assets/style/vendor/normalize.sass"
 </style>

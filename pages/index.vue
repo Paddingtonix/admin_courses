@@ -1,6 +1,6 @@
 <template>
     <div class="oil-main">
-        <p>я index</p>
+        <NuxtPage />
     </div>
 </template>
 <script lang="ts"></script>

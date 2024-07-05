@@ -1,0 +1,31 @@
+{
+    "courses": [
+        {
+            "name": "Геологическое моделирование пласта",
+            "status": "Опубликован",
+            "email": "michael.smith@gmail.com, sarah.lee@gmail.com",
+            "direction": "Геология",
+            "lang": "RU",
+            "edit_data": "01.03.2024",
+            "end_data": "01.03.2024"
+        },
+        {
+            "name": "Основы нефтегазового дела",
+            "status": "В разработке",
+            "email": "michael.smith@gmail.com, sarah.lee@gmail.com",
+            "direction": "Геология",
+            "lang": "RU",
+            "edit_data": "01.03.2024",
+            "end_data": "01.03.2024"
+        },
+        {
+            "name": "Разведка и добыча нефти и газа",
+            "status": "На модерации",
+            "email": "michael.smith@gmail.com, sarah.lee@gmail.com",
+            "direction": "Геология",
+            "lang": "RU",
+            "edit_data": "01.03.2024",
+            "end_data": "01.03.2024"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 <template>
-    <div class="oil-tabs" :class="{ _active: active === id }" @click="selectTab(id)"></div>
-    <span>{{ text }}</span>
+    <div class="oil-tabs" :class="{ _active: active === id }" @click="selectTab(id)">
+        <span>{{ text }}</span>
+    </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
@@ -9,7 +10,7 @@ export default defineComponent({
     props: {
         text: {
             type: String,
-            default: '',
+            default: 'text',
         },
         id: {
             type: Number,

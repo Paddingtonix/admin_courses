@@ -25,7 +25,7 @@ export default defineComponent({
             default: false,
         },
         id: {
-            type: Number,
+            type: [Number , String],
             default: 0,
         },
         checked_disable: {

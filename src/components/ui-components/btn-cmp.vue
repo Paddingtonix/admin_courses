@@ -1,5 +1,6 @@
 <template>
-    <div class="oil-btn" :class="background_type">
+    <div class="oil-btn" :class="background_type" v-wave="{ color: '#03AEE2' }">
+        <slot></slot>
         <button>{{ text }}</button>
     </div>
 </template>
@@ -29,6 +30,7 @@ export default defineComponent({
     width: 100%
     height: rem(56)
     @include flex_center()
+    gap: rem(8)
     & > *
         transition: all .2s
 
