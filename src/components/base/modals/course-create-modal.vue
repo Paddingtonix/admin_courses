@@ -137,7 +137,6 @@ import { useStoreModal } from '~/src/stores/storeModal'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import BtnCmp from '../../ui-components/btn-cmp.vue'
 import RadioCmp from '../../ui-components/radio-cmp.vue'
-// import { BtnCmp, RadioCmp } from '~/src/components/ui-components'
 
 export default defineComponent({
     props: {
@@ -154,7 +153,7 @@ export default defineComponent({
         }
     },
 
-    setup(props, ctx) {
+    setup() {
         const storeModal = useStoreModal()
         const storeCourse = useStoreCourses()
 
@@ -186,10 +185,7 @@ export default defineComponent({
             closeModal,
             setRadioValue
         }
-    },
-    components: {
-        BtnCmp,
-    },
+    }
 })
 </script>
 <style scoped lang="sass">
