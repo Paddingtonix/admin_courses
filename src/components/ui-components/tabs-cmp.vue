@@ -1,6 +1,6 @@
 <template>
     <div class="oil-tabs" :class="{ _active: active === id }" @click="selectTab(id)">
-        <span>{{ text }}</span>
+        <span class="oil-tabs__text">{{ text }}</span>
     </div>
 </template>
 <script lang="ts">
@@ -35,12 +35,11 @@ export default defineComponent({
 <style scoped lang="sass">
 .oil-tabs
     cursor: pointer
-    // transition: color .5s
-    // color: $menu
+    transition: color .5s
+    color: $basic_tab
     font-weight: 700
     font-size: 16px
     line-height: 24px
-    position: relative
     &:not(&._active)
         &:hover 
             // color: $hover-blue
@@ -68,6 +67,9 @@ export default defineComponent({
             &::after   
                 right: 0
                 left: auto
+
+    &__text
+        color: $basic_tab
 
     &._active
         // color: $btn-background
