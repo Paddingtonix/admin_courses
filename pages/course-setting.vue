@@ -10,13 +10,23 @@
                 v-for="(tab, tab_idx) in tabs.list" 
                 :key="tab_idx"
                 :text="tab.text"
+                @click="selectTab(tab.id)"
             />
         </div>
         <template v-if="active_tab === 1">
             <div class="oil-course__settings__main"></div>
         </template>
         <template v-if="active_tab === 2">
-            <div class="oil-course__settings__info"></div>
+            <div class="oil-course__settings__info">
+                <div 
+                    class="oil-course__settings__info__fields"
+                    v-for="info in course_info"
+                    :key="info.id"
+                >
+                    <span>{{ info.field }}</span>
+                    <span>{{ info.value }}</span>
+                </div>
+            </div>
         </template>
         <template v-if="active_tab === 3">
             <div class="oil-course__settings__content"></div>
@@ -47,10 +57,49 @@ export default defineComponent({
                 },
             ]
         })
+
+        const course_info = reactive([
+            {
+                field: 'Название курса',
+                value: 'Геологическое моделирование пласта',
+                id: 'course_name'
+            },
+            {
+                field: 'Авторы',
+                value: '',
+                id: 'author'
+            },
+            {
+                field: 'Описание',
+                value: '',
+                id: 'description'
+            },
+            {
+                field: 'Целевая аудитория',
+                value: '',
+                id: 'target_audience'
+            },
+            {
+                field: 'Методика обучения',
+                value: '',
+                id: 'methodology'
+            },
+            {
+                field: 'Результаты обучения',
+                value: '',
+                id: 'results'
+            },
+        ])
+
+        const selectTab = (id: number) => {
+            active_tab.value = id
+        }
         
         return {
             active_tab,
-            tabs
+            course_info,
+            tabs,
+            selectTab
         }
     },
 })
