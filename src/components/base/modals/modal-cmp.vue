@@ -35,8 +35,8 @@ export default defineComponent({
     setup() {
         const storeModal = useStoreModal()
 
-        // const modalComponent = ref<string>('auth-modal')
-        const modalComponent = ref<string>('course-create-modal')
+        const modalComponent = ref<string>('auth-modal')
+        // const modalComponent = ref<string>('course-create-modal')
 
         const closeModal = () => {
             storeModal.closeModal()
@@ -89,7 +89,7 @@ export default defineComponent({
             width: 100%
             height: rem(76)
             padding: rem(24) rem(40)
-            background-color: $modal_header
+            background-color: $basic_light_gray
             border: rem(1) solid $modal_border
             border-radius: rem(12) rem(12) 0 0
             @include flex_center_spacing

@@ -2,6 +2,7 @@
     <div class="oil">
         <Sidebar />
         <NuxtPage />
+        <ModalCmp />
     </div>
 </template>
 <script lang="ts">
@@ -20,7 +21,8 @@ export default defineComponent({
             }
         })
 
-        return {}
+        return {
+        }
     },
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-model="input_value" :type="type" @keyup="setValue" />
+        <input v-model="input_value" :type="type" @keyup="setValue" v-mask="mask"/>
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +19,7 @@ export default defineComponent({
     props: {
         label: {
             type: String,
-            default: 'Text',
+            default: '',
         },
         type: {
             type: String,
@@ -29,6 +29,10 @@ export default defineComponent({
             type: String,
             default: '',
         },
+        mask: {
+            type: String,
+            default: ''
+        }
     },
     setup(props, { emit }) {
         const input_value = ref<string>('')

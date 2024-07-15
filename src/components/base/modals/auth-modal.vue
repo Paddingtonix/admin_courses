@@ -35,7 +35,7 @@
     import { defineComponent, reactive, ref } from 'vue'
     import axios from 'axios'
     import { useStoreAuth } from '~/src/stores/storeAuth'
-    import type  { Form } from '~/src/ts-interface/inputs'
+    import type { Form } from '~/src/ts-interface/inputs'
 
     export default defineComponent({
         props: {
@@ -132,7 +132,7 @@
                 }
 
                 axios
-                    .get('/api/token.json', user_data)
+                    .post('http://192.168.19.32:8082/admin/v1/login', user_data)
                     .then((token: { data: { token: string } }) => {
                         emit('set_token', token.data)
                         if (user_valid.value && remember_me.value) {
