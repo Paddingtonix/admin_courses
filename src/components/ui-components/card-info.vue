@@ -1,7 +1,13 @@
 <template>
     <div class="oil-card-info">
-        <span class="oil-card-info__count">{{ count }}</span>
-        <span class="oil-card-info__text">{{ text }}</span>
+        <div class="oil-card-info__course-page">
+            <span class="oil-card-info__course-page__count">{{ count }}</span>
+            <span class="oil-card-info__course-page__text">{{ text }}</span>
+        </div>
+        <div class="oil-card-info__course-setting">
+            <span class="oil-card-info__course-setting__count">{{ count }}</span>
+            <span class="oil-card-info__course-setting__text">{{ text }}</span>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -22,22 +28,22 @@ export default defineComponent({
 </script>
 <style scoped lang="sass">
 .oil-card-info
-    padding: rem(16) rem(72) 
+    &__course-page
+        padding: rem(16) rem(72)
+        background-color: $disabled_basic
+        @include flex_column()
+        gap: rem(2)
+        border-radius: rem(8)
+        flex: 1
+        &__count 
+            font-size: rem(40)
+            line-height: 120%
+            font-weight: bold
+            text-align: center
 
-    background-color: $disabled_basic
-    @include flex_column()
-    gap: rem(2)
-    border-radius: rem(8)
-    flex: 1
-    &__count 
-        font-size: rem(40)
-        line-height: 120%
-        font-weight: bold
-        text-align: center
-
-    &__text 
-        font-size:  rem(14)
-        color: $basic_gray 
-        text-align: center
+        &__text 
+            font-size:  rem(14)
+            color: $basic_gray 
+            text-align: center
 
 </style>

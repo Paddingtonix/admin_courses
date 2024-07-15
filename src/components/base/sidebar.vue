@@ -112,6 +112,7 @@
     padding: rem(24) rem(26)
 
     position: fixed
+    z-index: 10
     gap: rem(24)
     @include flex_column()
     transition: width .3s
