@@ -1,7 +1,8 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-model="input_value" :type="type" @keyup="setValue" v-mask="mask"/>
+        <input v-if="$props.mask_date" v-model="input_value" :type="type" @keyup="setValue" v-mask="mask_date" @blur="validateDate" :placeholder="placeholder"/>
+        <input v-else v-model="input_value" :type="type" @keyup="setValue" v-mask="mask_price" :placeholder="placeholder"/>
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,7 +30,11 @@ export default defineComponent({
             type: String,
             default: '',
         },
-        mask: {
+        mask_date: {
+            type: Boolean,
+            default: false
+        },
+        placeholder: {
             type: String,
             default: ''
         }
@@ -41,9 +46,39 @@ export default defineComponent({
             emit('set', { value: input_value.value, type: props.type })
         }
 
+        const mask_price = computed(() => {
+            if (input_value.value.length === 5) return '# ###'
+            if (input_value.value.length === 6) return '## ###'
+            if (input_value.value.length === 9) return '# ### ###'
+            if (input_value.value.length === 10) return '## ### ###'
+            return '### ### ###'
+        })
+        
+        const mask_date = '##.##.##'
+
+        const validateDate = () => {
+            let error_message = ''
+            if (input_value.value.split('.').length === 3) {
+                const day = parseInt(input_value.value.split('.')[0], 10)
+                const month = parseInt(input_value.value.split('.')[1], 10)
+                const year = parseInt(input_value.value.split('.')[2], 10)
+                const currentYear = new Date().getFullYear() % 100
+
+                if (day < 1 || day > 31 || month < 1 || month > 12 || year < currentYear) {
+                    error_message === 'Неверная дата'
+                    // alert('Неверная дата')
+                }
+            }
+            console.log(error_message);
+            emit('error', error_message)
+        }
+
         return {
             input_value,
             setValue,
+            mask_price,
+            mask_date,
+            validateDate
         }
     },
 })
@@ -86,6 +121,8 @@ export default defineComponent({
         line-height: rem(24)
         width: 100%
         height: 100%
+        &::placeholder
+            color: #9AA7BB
 
     &:hover
         border-color: $basic_gray

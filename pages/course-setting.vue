@@ -29,8 +29,8 @@
                         <div v-if="!column_idx" class="oil-course-setting__info__table__column">
                             <div class="oil-course-setting__info__table__column__cell">
                                 <span>{{ column.authors }}</span>
-                                <div class="oil-course-setting__info__table__column__cell__tooltip-container" @mouseenter="showTooltip('authors')" @mouseleave="hideTooltip()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <div class="oil-course-setting__info__table__column__cell__tooltip-container">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('authors')" @mouseleave="hideTooltip()">
                                         <g clip-path="url(#clip0_799_14059)">
                                             <path d="M9.99935 13.3327V9.99935M9.99935 6.66602H10.0077M18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327C5.39698 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39698 5.39698 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39698 18.3327 9.99935Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </g>
@@ -42,7 +42,6 @@
                                     </svg>
                                     <transition name="fade">
                                         <div class="oil-course-setting__info__table__column__cell__tooltip" v-if="tooltip_id === 'authors'">
-                                        <!-- <div class="oil-course-setting__info__table__column__cell__tooltip"> -->
                                             <span class="oil-course-setting__info__table__column__cell__tooltip__text" v-html="setTooltipText('authors')"></span>
                                         </div>
                                     </transition>
@@ -58,9 +57,9 @@
                                 <span>{{ column.workload }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.dates_start_end }}</span>
-                                <div class="oil-course-setting__info__table__column__cell__tooltip-container" @mouseenter="showTooltip('dates_start_end')" @mouseleave="hideTooltip()">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <span>{{ column.start_end_dates }}</span>
+                                <div class="oil-course-setting__info__table__column__cell__tooltip-container">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('dates_start_end')" @mouseleave="hideTooltip()">
                                         <g clip-path="url(#clip0_799_14059)">
                                             <path d="M9.99935 13.3327V9.99935M9.99935 6.66602H10.0077M18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327C5.39698 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39698 5.39698 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39698 18.3327 9.99935Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </g>
@@ -78,9 +77,9 @@
                                 </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.date_removed }}</span>
-                                <div class="oil-course-setting__info__table__column__cell__tooltip-container" @mouseenter="showTooltip('date_removed')" @mouseleave="hideTooltip()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <span>{{ column.removed_date }}</span>
+                                <div class="oil-course-setting__info__table__column__cell__tooltip-container">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('date_removed')" @mouseleave="hideTooltip()">
                                         <g clip-path="url(#clip0_799_14059)">
                                             <path d="M9.99935 13.3327V9.99935M9.99935 6.66602H10.0077M18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327C5.39698 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39698 5.39698 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39698 18.3327 9.99935Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </g>
@@ -99,8 +98,8 @@
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <span>{{ column.direction }}</span>
-                                <div class="oil-course-setting__info__table__column__cell__tooltip-container" @mouseenter="showTooltip('direction')" @mouseleave="hideTooltip()">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <div class="oil-course-setting__info__table__column__cell__tooltip-container">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('direction')" @mouseleave="hideTooltip()">
                                         <g clip-path="url(#clip0_799_14059)">
                                             <path d="M9.99935 13.3327V9.99935M9.99935 6.66602H10.0077M18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327C5.39698 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39698 5.39698 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39698 18.3327 9.99935Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                         </g>
@@ -132,10 +131,12 @@
                                 <span>{{ column.workload }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.dates_start_end }}</span>
+                                <span>{{ column.start_date }}</span>
+                                —
+                                <span>{{ column.end_date }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.date_removed }}</span>
+                                <span>{{ column.removed_date }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <span>{{ column.direction }}</span>
@@ -147,28 +148,53 @@
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <InputCmp 
-                                    class="oil-course-setting__info__table__column__cell__input"
+                                    placeholder="99 999"
                                 />
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <InputCmp 
-                                    class="oil-course-setting__info__table__column__cell__input"
+                                    placeholder="999"
                                 />
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <InputCmp 
-                                    class="oil-course-setting__info__table__column__cell__input"
+                                    placeholder="999"
                                 />
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <InputCmp 
-                                    class="oil-course-setting__info__table__column__cell__input"
-                                />
+                                <div class="oil-course-setting__info__table__column__cell__dates">
+                                    <InputCmp 
+                                        placeholder="ДД.ММ.ГГ"
+                                        :mask_date="true"
+                                        @error="err_mess"
+                                    />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                —
+                                <div class="oil-course-setting__info__table__column__cell__dates">
+                                    <InputCmp 
+                                        placeholder="ДД.ММ.ГГ"
+                                        :mask_date="true"
+                                        @error="err_mess"
+                                    />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <InputCmp 
-                                    class="oil-course-setting__info__table__column__cell__input"
-                                />
+                                <div class="oil-course-setting__info__table__column__cell__dates">
+                                    <InputCmp 
+                                        placeholder="ДД.ММ.ГГ"
+                                        :mask_date="true"
+                                        @error="err_mess"
+                                    />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <span>{{ column.direction }}</span>
@@ -191,7 +217,7 @@
                     />
                     <BtnCmp
                         class="oil-course-setting__info__btn"
-                        :text="'Сохраниеть'"
+                        :text="'Сохранить'"
                         @click="saveSettings"
                     />
                 </div>
@@ -257,8 +283,8 @@ export default defineComponent({
                 price: 'Цена (руб)',
                 duration: 'Длительность (академ. часов)',
                 workload: 'Объём работы (дней)',
-                dates_start_end: 'Даты начала и окончания курса',
-                date_removed: 'Дата снятия с витрины',
+                start_end_dates: 'Даты начала и окончания курса',
+                removed_date: 'Дата снятия с витрины',
                 direction: 'Направление'
             },
             {
@@ -266,8 +292,9 @@ export default defineComponent({
                 price: '20 000',
                 duration: '150',
                 workload: '25',
-                dates_start_end: '01.01.24 — 01.02.24',
-                date_removed: '01.02.24',
+                start_date: '01.01.24',
+                end_date: '01.02.24',
+                removed_date: '01.02.24',
                 // direction: 'Геология, Разработка, Другое'
                 direction: 'Геология'
             }
@@ -316,6 +343,10 @@ export default defineComponent({
         const saveSettings = () => {
             storeEditCourseSetting.saveSetting()
         }
+
+        const err_mess = (err: string) => {
+            console.log(err, 'ya')
+        }
         
         return {
             active_tab,
@@ -329,7 +360,8 @@ export default defineComponent({
             setTooltipText,
             storeEditCourseSetting,
             editCourseSetting,
-            saveSettings
+            saveSettings,
+            err_mess
         }
     },
 })
@@ -359,16 +391,10 @@ export default defineComponent({
                     position: relative
                     gap: rem(8)
                     border-bottom: rem(1) solid $background-main
-                    padding: rem(24) rem(8)
+                    padding: rem(16) rem(8)
                     span
                         line-height: rem(24)
-
-                    svg
-                        cursor: pointer
-                        &:hover
-                            path
-                                transition: stroke .2s
-                                stroke: #398BDB
+                        margin: rem(8) 0
 
                     &__tooltip-container
                         position: relative
@@ -381,7 +407,7 @@ export default defineComponent({
                         border-radius: rem(8)
                         padding: rem(8) rem(12)
                         left: rem(12)
-                        bottom: rem(16)
+                        bottom: rem(24)
                         box-shadow: rem(0) rem(2) rem(4) rem(-2) rgba(24, 39, 75, 0.12), rem(0) rem(4) rem(4) rem(-2) rgba(24, 39, 75, 0.08)
                         z-index: 1
                         &__text
@@ -389,20 +415,25 @@ export default defineComponent({
                             font-size: 12px
                             width: rem(171)
 
-                        &__input::v-deep .oil-input
-                            height: rem(40)
-
                 &:first-child
                     width: rem(360)
                     .oil-course-setting__info__table__column__cell
                         span
                             color: $basic_tab
 
+                        svg
+                            cursor: pointer
+                            margin: rem(10) 0
+                            &:hover
+                                path
+                                    transition: stroke .2s
+                                    stroke: #398BDB
+
                 &:not(:first-child)
                     flex-grow: 1
                     .oil-course-setting__info__table__column__cell
                         &:nth-child(6n+1)
-                            padding: rem(22) rem(8)
+                            padding: rem(14) rem(8)
                             span
                                 background-color: $background-main
                                 color: $basic_primary
@@ -410,10 +441,32 @@ export default defineComponent({
                                 padding: rem(4) rem(8)
                                 line-height: rem(20)
 
+                        &:nth-child(5)
+                            display: flex
+                            gap: rem(8)
+                            align-items: center
+
+                        .oil-course-setting__info__table__column__cell__dates
+                            position: relative
+                            svg
+                                position: absolute
+                                top: rem(10)
+                                left: rem(16)
+                            
+                            .oil-input
+                                padding: rem(0) rem(16) rem(0) rem(44)
+
+                                
         &__btn
             width: fit-content
 
         &__setting-btns
             display: flex
             gap: rem(12)
+
+.oil-course-setting__info__table__column__cell
+    .oil-input
+        height: rem(40)
+        width: rem(136)
+
 </style>
