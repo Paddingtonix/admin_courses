@@ -32,7 +32,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, reactive, ref } from 'vue'
+    import { defineComponent } from 'vue'
     import axios from 'axios'
     import { useStoreAuth } from '~/src/stores/storeAuth'
     import type { Form } from '~/src/ts-interface/inputs'
