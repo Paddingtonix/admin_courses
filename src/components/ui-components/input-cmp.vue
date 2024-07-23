@@ -37,10 +37,18 @@ export default defineComponent({
         placeholder: {
             type: String,
             default: ''
+        },
+        date_calendar: {
+            type: String || Number,
+            default: '',
         }
     },
     setup(props, { emit }) {
         const input_value = ref<string>('')
+
+        watch(() => props.date_calendar, (new_date) => {
+            input_value.value = new_date
+        })
 
         const setValue = () => {
             emit('set', { value: input_value.value, type: props.type })
@@ -54,10 +62,10 @@ export default defineComponent({
             return '### ###'
         })
         
-        const mask_date = '##.##.##'
+        // const mask_date = '##.##.##'
 
         const mask = computed(() => {
-            if (props.mask_type === 'date') return mask_date
+            // if (props.mask_type === 'date') return mask_date
             if (props.mask_type === 'price') return mask_price.value
         })
 
@@ -65,7 +73,7 @@ export default defineComponent({
             input_value,
             setValue,
             mask_price,
-            mask_date,
+            // mask_date,
             mask
         }
     },

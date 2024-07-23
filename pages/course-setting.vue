@@ -122,24 +122,57 @@
                                 <span>{{ column.authors }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.price }}</span>
+                                <span v-if="course_table[1]">{{ column.price }}</span>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 99 999</span>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.duration }}</span>
+                                <span v-if="course_table[1]">{{ column.duration }}</span>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 100</span>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.workload }}</span>
+                                <span v-if="course_table[1]">{{ column.workload }}</span>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 50</span>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.start_date }}</span>
-                                —
-                                <span>{{ column.end_date }}</span>
+                                <span v-if="course_table[1]">{{ column.start_date }}</span>
+                                <span v-if="course_table[1]">—</span>
+                                <span v-if="course_table[1]">{{ column.end_date }}</span>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 01.01.24 — 01.02.24</span>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.removed_date }}</span>
+                                <span v-if="course_table[1]">{{ column.removed_date }}</span>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 01.02.24</span>
+                                </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.direction }}</span>
+                                <div v-if="picked_directions_filtered.length" class="oil-course-setting__info__table__column__cell__direction">
+                                    <DirectionCmp
+                                        v-for="(direction, direction_idx) in picked_directions_filtered"
+                                        :key="direction_idx"
+                                        :text="direction.text"
+                                        :id="direction.id"
+                                        :picked="picked_directions.includes(direction.id)"
+                                        @set_direction="pick_direction"
+                                    >{{ direction.text }}</DirectionCmp>
+                                </div>
+                                <div v-else class="oil-course-setting__info__table__column__cell__no-data">
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
+                                    <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: Геология, Разработка</span>
+                                </div>
                             </div>
                         </div>
                         <div v-else-if="storeEditCourseSetting.isEdit" class="oil-course-setting__info__table__column">
@@ -155,54 +188,24 @@
                             <div class="oil-course-setting__info__table__column__cell">
                                 <div class="oil-course-setting__info__table__column__cell__dates">
                                     <CalendarCmp />
-                                    —
+                                    <span>—</span>
                                     <CalendarCmp />
                                 </div>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
                                 <CalendarCmp />
                             </div>
-                            <!-- <div class="oil-course-setting__info__table__column__cell">
-                                <div class="oil-course-setting__info__table__column__cell__dates">
-                                    <InputCmp 
-                                        placeholder="ДД.ММ.ГГ"
-                                        :mask_type="'date'"
-                                        :value="date_input.value"
-                                        :error="date_input.error"
-                                    />
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                                —
-                                <div class="oil-course-setting__info__table__column__cell__dates">
-                                    <InputCmp 
-                                        placeholder="ДД.ММ.ГГ"
-                                        :mask_type="'date'"
-                                        :value="date_input.value"
-                                        :error="date_input.error"
-                                    />
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                            </div> -->
-                            <!-- <div class="oil-course-setting__info__table__column__cell">
-                                <CalendarCmp /> -->
-                                <!-- <div class="oil-course-setting__info__table__column__cell__dates">
-                                    <InputCmp 
-                                        placeholder="ДД.ММ.ГГ"
-                                        :mask_type="'date'"
-                                        :value="date_input.value"
-                                        :error="date_input.error"
-                                    />
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M17.5 8.33268H2.5M13.3333 1.66602V4.99935M6.66667 1.66602V4.99935M6.5 18.3327H13.5C14.9001 18.3327 15.6002 18.3327 16.135 18.0602C16.6054 17.8205 16.9878 17.4381 17.2275 16.9677C17.5 16.4329 17.5 15.7328 17.5 14.3327V7.33268C17.5 5.93255 17.5 5.23249 17.2275 4.69771C16.9878 4.2273 16.6054 3.84485 16.135 3.60517C15.6002 3.33268 14.9001 3.33268 13.5 3.33268H6.5C5.09987 3.33268 4.3998 3.33268 3.86502 3.60517C3.39462 3.84485 3.01217 4.2273 2.77248 4.69771C2.5 5.23249 2.5 5.93255 2.5 7.33268V14.3327C2.5 15.7328 2.5 16.4329 2.77248 16.9677C3.01217 17.4381 3.39462 17.8205 3.86502 18.0602C4.3998 18.3327 5.09987 18.3327 6.5 18.3327Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div> -->
-                            <!-- </div> -->
                             <div class="oil-course-setting__info__table__column__cell">
-                                <span>{{ column.direction }}</span>
+                                <div class="oil-course-setting__info__table__column__cell__direction">
+                                    <DirectionCmp  
+                                        v-for="(direction, direction_idx) in directions" 
+                                        :key="direction_idx"
+                                        :text="direction.text"
+                                        :id="direction.id"
+                                        :picked="picked_directions.includes(direction.id)"
+                                        @set_direction="pick_direction"
+                                    >{{ direction.text }}</DirectionCmp>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -218,7 +221,7 @@
                         class="oil-course-setting__info__btn"
                         :text="'Отмена'"
                         :background_type="'_secondary'"
-                        @click="saveSettings"
+                        @click="setCardInfo"
                     />
                     <BtnCmp
                         class="oil-course-setting__info__btn"
@@ -239,6 +242,7 @@
 </template>
 
 <script lang="ts">
+import axios from 'axios'
 import { defineComponent } from 'vue'
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
  
@@ -294,14 +298,12 @@ export default defineComponent({
             },
             {
                 authors: 'michael.smith@gmail.com',
-                price: '20 000',
-                duration: '150',
-                workload: '25',
+                price: ' 99 999',
+                duration: '100',
+                workload: '50',
                 start_date: '01.01.24',
                 end_date: '01.02.24',
-                removed_date: '01.02.24',
-                // direction: 'Геология, Разработка, Другое'
-                direction: 'Геология'
+                removed_date: '01.02.24'
             }
         ])
 
@@ -326,11 +328,6 @@ export default defineComponent({
             }
         ])
 
-        const date_input = reactive({
-            value: '',
-            error: ''
-        })
-
         const inputs = reactive([
             {
                 placeholder: '99 999',
@@ -343,26 +340,41 @@ export default defineComponent({
             {
                 placeholder: '999',
                 mask_type: 'price'
-            },
-            // {
-            //     date_inputs: [
-            //         {
-            //             placeholder: 'ДД.ММ.ГГ',
-            //             mask_type: 'date'
-            //         },
-            //         {
-            //             placeholder: 'ДД.ММ.ГГ',
-            //             mask_type: 'date'
-            //         }
-            //     ]
-            // },
-            // {
-            //     placeholder: 'ДД.ММ.ГГ',
-            //     mask_type: 'date'
-            // }
+            }
         ])
 
-        // const
+        const directions = reactive([
+            {
+                text: 'Геология',
+                id: 1
+            },
+            {
+                text: 'Разработка',
+                id: 2
+            },
+            {
+                text: 'Бурение',
+                id: 3
+            },
+            {
+                text: 'Технология добычи',
+                id: 4
+            },
+            {
+                text: 'Шельф',
+                id: 5
+            },
+            {
+                text: 'Другое',
+                id: 6
+            },
+        ])
+
+        const picked_directions = ref<number[]>([]) // Отправлять этот массив
+
+        const picked_directions_filtered = computed(() =>
+            directions.filter((direction) => picked_directions.value.includes(direction.id))
+        )
 
         const showTooltip = (id: string) => {
             tooltip_id.value = id
@@ -387,17 +399,24 @@ export default defineComponent({
             storeEditCourseSetting.saveSetting()
         }
 
-        const validateDate = () => {
-            if (date_input.value.split('.').length === 3) {
-                const day = parseInt(date_input.value.split('.')[0], 10)
-                const month = parseInt(date_input.value.split('.')[1], 10)
-                const year = parseInt(date_input.value.split('.')[2], 10)
-                const currentYear = new Date().getFullYear() % 100
-
-                if (day < 1 || day > 31 || month < 1 || month > 12 || year < currentYear) {
-                    alert('Неверная дата')
-                }
+        const pick_direction = (dir: { id: number, picked: boolean }) => {
+            if (dir.picked) {
+                picked_directions.value.push(dir.id)
+            } else {
+                picked_directions.value.splice(picked_directions.value.indexOf(dir.id), 1)
             }
+        }
+        
+        const setCardInfo = () => {
+            console.log('object');
+            axios
+                .get('http://192.168.19.204:8081/admin/v1/direction')
+                .then((response) => {
+                    console.log(response, 'setCardInfo')
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error)
+                })
         }
         
         return {
@@ -413,9 +432,12 @@ export default defineComponent({
             storeEditCourseSetting,
             editCourseSetting,
             saveSettings,
-            date_input,
-            validateDate,
-            inputs
+            inputs,
+            directions,
+            picked_directions,
+            pick_direction,
+            picked_directions_filtered,
+            setCardInfo
         }
     },
 })
@@ -469,11 +491,42 @@ export default defineComponent({
                             font-size: 12px
                             width: rem(171)
 
+                    &__no-data
+                        display: flex
+                        flex-direction: column
+                        gap: rem(2)
+                        height: rem(40)
+                        align-content: center
+                        span
+                            &__title, &__subtitle
+                            line-height: initial
+                            margin: initial
+                            
+                        &__title
+                            color: #5B6C7B
+                            font-size: 16px
+                            font-weight: 500
+                            line-height: 24px
+                            margin: 0
+
+                        &__subtitle
+                            color: #9AA7BB
+                            font-size: 12px
+                            font-weight: 400
+                            line-height: 16px
+                            margin: 0
+
+                    &__direction
+                        display: flex
+                        gap: rem(8)
+                        height: rem(40)
+                        align-items: center
+
                 &:first-child
                     width: rem(360)
                     .oil-course-setting__info__table__column__cell
                         span
-                            color: $basic_tab
+                            color: $basic_gray
 
                         svg
                             cursor: pointer
@@ -486,7 +539,7 @@ export default defineComponent({
                 &:not(:first-child)
                     flex-grow: 1
                     .oil-course-setting__info__table__column__cell
-                        &:nth-child(6n+1)
+                        &:first-child
                             padding: rem(14) rem(8)
                             span
                                 background-color: $background-main
@@ -494,9 +547,6 @@ export default defineComponent({
                                 border-radius: rem(16)
                                 padding: rem(4) rem(8)
                                 line-height: rem(20)
-
-                        &:nth-child(5)
-                            align-items: center
 
                         .oil-course-setting__info__table__column__cell__dates
                             display: flex
@@ -515,7 +565,6 @@ export default defineComponent({
                             display: flex
                             gap: 24px
 
-                                
         &__btn
             width: fit-content
 
