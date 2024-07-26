@@ -1,26 +1,11 @@
 <template>
     <div class="oil-row">
-        <div class="oil-row__cell">
-            <a>{{ name }}</a>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ status }}</span>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ authors }}</span>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ direction }}</span>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ lang }}</span>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ date_edit }}</span>
-        </div>
-        <div class="oil-row__cell">
-            <span>{{ end_date }}</span>
-        </div>
+        <template v-for="field in fields">
+            <div class="oil-row__cell" v-if="field.length" :key="field">
+                <a>{{ field }}</a>
+            </div>
+        </template>
+        <slot name="svg"/>
     </div>
 </template>
 <script lang="ts">
@@ -30,35 +15,39 @@ export default defineComponent({
     props: {
         name: {
             type: String,
-            default: 'name'
+            default: ''
         },
         status: {
             type: String,
-            default: 'status'
+            default: ''
         },
         authors: {
             type: String,
-            default: 'authors'
+            default: ''
         },
         direction: {
             type: String,
-            default: 'direction'
+            default: ''
         },
         lang: {
             type: String,
-            default: 'lang'
+            default: ''
         },
         date_edit: {
             type: String,
-            default: 'date_edit'
+            default: ''
         },
         end_date: {
             type: String,
-            default: 'end_date'
+            default: ''
         },
     },
-    setup() {
+    setup(props) {
+        const fields = props;
 
+        return {
+            fields
+        }
     }
 })
 </script>
