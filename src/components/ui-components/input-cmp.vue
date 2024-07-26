@@ -65,7 +65,6 @@ export default defineComponent({
         // const mask_date = '##.##.##'
 
         const mask = computed(() => {
-            // if (props.mask_type === 'date') return mask_date
             if (props.mask_type === 'price') return mask_price.value
         })
 

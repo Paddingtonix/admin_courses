@@ -7,11 +7,9 @@ export const useStoreEditCourseSetting = defineStore('editCourse', {
     actions: {
 		edit() {
 			this.isEdit = true
-			console.log('edit')
 		},
 		saveSetting() {
 			this.isEdit = false
-			console.log('saveSetting')
 		}
 	},
 })

@@ -24,7 +24,8 @@
     "v-calendar": "^3.1.2",
     "v-wave": "^2.0.0",
     "vue": "^3.4.27",
-    "vue-the-mask": "^0.11.1"
+    "vue-the-mask": "^0.11.1",
+    "vue3-cookies": "^1.0.6"
   },
   "devDependencies": {
     "@nuxt/postcss8": "^1.1.3",

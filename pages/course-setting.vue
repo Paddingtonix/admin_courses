@@ -158,16 +158,16 @@
                                     <span class="oil-course-setting__info__table__column__cell__no-data__subtitle">Пример: 01.02.24</span>
                                 </div>
                             </div>
-                            <div class="oil-course-setting__info__table__column__cell">
+                            <div class="oil-course-setting__info__table__column__cell" :style="{ pointerEvents: 'none' }">
                                 <div v-if="picked_directions_filtered.length" class="oil-course-setting__info__table__column__cell__direction">
                                     <DirectionCmp
                                         v-for="(direction, direction_idx) in picked_directions_filtered"
                                         :key="direction_idx"
-                                        :text="direction.text"
-                                        :id="direction.id"
-                                        :picked="picked_directions.includes(direction.id)"
-                                        @set_direction="pick_direction"
-                                    >{{ direction.text }}</DirectionCmp>
+                                        :text="direction.localizedName"
+                                        :id="direction.directionId"
+                                        :is_visible="direction.isVisible"
+                                        :picked="picked_directions.includes(direction.directionId)"
+                                    >{{ direction.localizedName }}</DirectionCmp>
                                 </div>
                                 <div v-else class="oil-course-setting__info__table__column__cell__no-data">
                                     <span class="oil-course-setting__info__table__column__cell__no-data__title">Нет даных</span>
@@ -200,11 +200,13 @@
                                     <DirectionCmp  
                                         v-for="(direction, direction_idx) in directions" 
                                         :key="direction_idx"
-                                        :text="direction.text"
-                                        :id="direction.id"
-                                        :picked="picked_directions.includes(direction.id)"
+                                        :text="direction.localizedName"
+                                        :id="direction.directionId"
+                                        :is_visible="direction.isVisible"
+                                        :picked="picked_directions.includes(direction.directionId)"
                                         @set_direction="pick_direction"
-                                    >{{ direction.text }}</DirectionCmp>
+                                    >{{ direction.localizedName }}</DirectionCmp>
+                                    <span v-if="show_error">Курсу должно быть присвоено хотя бы одно направлние!</span>
                                 </div>
                             </div>
                         </div>
@@ -245,12 +247,17 @@
 import axios from 'axios'
 import { defineComponent } from 'vue'
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
+import type { Direction } from '~/src/ts-interface/direction'
  
 export default defineComponent({
     setup() {
         const storeEditCourseSetting = useStoreEditCourseSetting()
 
         const active_tab = ref<number | null>(null)
+        const show_error = ref<boolean>(false)
+        const tooltip_id = ref<string>('')
+        const directions = reactive<Direction[]>([])
+        const picked_directions = reactive<number[]>([]) // Отправлять этот массив
 
         const tabs = reactive([
             {
@@ -307,7 +314,6 @@ export default defineComponent({
             }
         ])
 
-        const tooltip_id = ref<string>('')
 
         const tooltips = ref<{ id: string, text: string}[]>([
             {
@@ -343,37 +349,8 @@ export default defineComponent({
             }
         ])
 
-        const directions = reactive([
-            {
-                text: 'Геология',
-                id: 1
-            },
-            {
-                text: 'Разработка',
-                id: 2
-            },
-            {
-                text: 'Бурение',
-                id: 3
-            },
-            {
-                text: 'Технология добычи',
-                id: 4
-            },
-            {
-                text: 'Шельф',
-                id: 5
-            },
-            {
-                text: 'Другое',
-                id: 6
-            },
-        ])
-
-        const picked_directions = ref<number[]>([]) // Отправлять этот массив
-
         const picked_directions_filtered = computed(() =>
-            directions.filter((direction) => picked_directions.value.includes(direction.id))
+            directions.filter((direction) => picked_directions.includes(direction.directionId))
         )
 
         const showTooltip = (id: string) => {
@@ -396,28 +373,66 @@ export default defineComponent({
         }
 
         const saveSettings = () => {
-            storeEditCourseSetting.saveSetting()
+            if (picked_directions_filtered.value.length === 0) {
+                show_error.value = true
+            } else {
+                show_error.value = false
+                storeEditCourseSetting.saveSetting()
+            }
         }
+        
+        watch(picked_directions_filtered, (new_value) => {
+            if (new_value.length > 0) {
+                show_error.value = false
+            }
+        })
 
         const pick_direction = (dir: { id: number, picked: boolean }) => {
             if (dir.picked) {
-                picked_directions.value.push(dir.id)
+                picked_directions.push(dir.id)
             } else {
-                picked_directions.value.splice(picked_directions.value.indexOf(dir.id), 1)
+                picked_directions.splice(picked_directions.indexOf(dir.id), 1)
             }
         }
         
         const setCardInfo = () => {
-            console.log('object');
-            axios
-                .get('http://192.168.19.204:8081/admin/v1/direction')
-                .then((response) => {
-                    console.log(response, 'setCardInfo')
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error)
-                })
+            // console.log('Запрос отправлен')
+            // axios
+            //         .get('admin/v1/direction')
+            //         .then((response) => {
+            //             console.log('Ответ получен:', response.data)
+            //             response.data.forEach((element: Direction) => {
+            //                 directions.push(element)
+            //                 console.log(element, 'ya');
+            //             })
+            //         })
+            //         .catch((error) => {
+            //             console.error('Ошибка при получении данных:', error)
+            //         })
         }
+
+        onMounted(() => {
+            nextTick(() => {
+                axios
+                    .get('admin/v1/direction')
+                    .then((response) => {
+                        response.data.forEach((element: Direction) => {
+                            directions.push(element)
+                        })
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка при получении данных:', error)
+                    })
+
+                axios
+                    .get('admin/v1/user/authors')
+                    .then((response) => {
+                        console.log(response, 'admin/v1/user/authors')
+                    })
+            })
+
+
+        })
         
         return {
             active_tab,
@@ -437,7 +452,8 @@ export default defineComponent({
             picked_directions,
             pick_direction,
             picked_directions_filtered,
-            setCardInfo
+            setCardInfo,
+            show_error
         }
     },
 })
@@ -498,7 +514,6 @@ export default defineComponent({
                         height: rem(40)
                         align-content: center
                         span
-                            &__title, &__subtitle
                             line-height: initial
                             margin: initial
                             
@@ -521,6 +536,12 @@ export default defineComponent({
                         gap: rem(8)
                         height: rem(40)
                         align-items: center
+                        span
+                            position: absolute
+                            bottom: rem(-6)
+                            font-size: 12px
+                            line-height: 16px
+                            color: $basic_error
 
                 &:first-child
                     width: rem(360)

@@ -1,5 +1,5 @@
 <template>
-    <div class="oil-direction" :class="{ _active: picked}" @click="setDirection()"><span>{{ text }}</span></div>
+    <div v-if="is_visible" class="oil-direction" :class="{ _active: picked}" @click="setDirection()"><span>{{ text }}</span></div>
 </template>
 
 <script lang="ts">
@@ -18,6 +18,9 @@ export default defineComponent({
 		id: {
 			type: Number,
 			default: null
+		},
+		is_visible: {
+			type: Boolean,
 		}
 	},
 	setup(props, { emit }) {
