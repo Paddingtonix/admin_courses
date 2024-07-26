@@ -2,19 +2,8 @@
     <section class="oil-container">
         <div class="oil-page tags-page">
             <h4 class="tags-page__header">Метки</h4>
-            <nav class="navigation-switcher">
-                 <a 
-                  class="navigation-switcher__link"
-                  href="#">
-                    Метки
-                 </a>
-                 <a class="navigation-switcher__link" href="#">
-                    Разделы
-                 </a>
-            </nav>
-                
+            <TabSwitcherCmp :switcherArray="switcherArray"/>
             <hr class="tags-page__divider">
-
             <div class="tags-page__content">
 
                 <div class="tags-page__widget-wrapper">
@@ -60,14 +49,20 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import type ISwitcher from '~/src/ts-interface/switcher.type';
 
 
 export default defineComponent({
+
     setup(){
+        
+        const switcherArray: ISwitcher[] = [{text: 'Метки', id: 1, isActive: true}, {text: 'Разделы', id: 2, isActive: false}]
+
         const list = [{text: "10 меток на стр."}, {text: "20 меток на стр."}, {text: "30 меток на стр."}, {text: "40 меток на стр."}];
 
         return{
-            list
+            list,
+            switcherArray
         }  
     }
 })
@@ -117,6 +112,8 @@ export default defineComponent({
         position: absolute !important
         right: 0
         border: none !important
+        * 
+            cursor: pointer
     
 .tags-table-header
     .oil-head__cell
@@ -157,30 +154,4 @@ export default defineComponent({
         position: absolute
         right: rem(16)
 
-.navigation-switcher
-    display: flex
-
-    &__link
-        position: relative
-        display: block
-        font-weight: 500
-        margin-right: rem(16)
-        padding: rem(16) rem(8)
-        transition: color .3s ease-out
-
-        &::after
-          content: ""
-          transition: width .3s ease-in-out
-          display: block
-          position: absolute
-          bottom: 0
-          left: 0
-          width: 0%
-          height: rem(3)
-          background-color: $basic_primary  
-
-        &.active, &:hover
-            color: $basic_primary
-            &::after
-                width: 100%    
 </style>
