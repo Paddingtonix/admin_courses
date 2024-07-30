@@ -69,8 +69,8 @@ export default defineComponent({
             position: absolute
             right: rem(18)
             top: 50%
-            transform: rotate(0deg) translateY(-50%)
-            transition: transform .2s
+            transform: rotate(0deg) translateY(-40%)
+            transition: all .2s
             
 
             span 
@@ -78,7 +78,7 @@ export default defineComponent({
                 line-height: 150%
 
             &._active-list
-                transform: rotate(180deg) translateY(-50%)
+                transform: rotate(-180deg) translateY(40%)
 
         label 
             color: #9AA7BB
