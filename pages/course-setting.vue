@@ -47,7 +47,7 @@
                                     </transition>
                                 </div>
                             </div>
-                            <div class="oil-course-setting__info__table__column__cell">
+                            <div v-if="storeStateCourse.price === 'paid'" class="oil-course-setting__info__table__column__cell">
                                 <span>{{ column.price }}</span>
                             </div>
                             <div class="oil-course-setting__info__table__column__cell">
@@ -246,12 +246,14 @@
 <script lang="ts">
 import axios from 'axios'
 import { defineComponent } from 'vue'
+import { useStoreCourses } from '~/src/stores/storeCourse';
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
 import type { Direction } from '~/src/ts-interface/direction'
  
 export default defineComponent({
     setup() {
         const storeEditCourseSetting = useStoreEditCourseSetting()
+        const storeStateCourse = useStoreCourses()
 
         const active_tab = ref<number | null>(null)
         const show_error = ref<boolean>(false)
@@ -445,6 +447,7 @@ export default defineComponent({
             hideTooltip,
             setTooltipText,
             storeEditCourseSetting,
+            storeStateCourse,
             editCourseSetting,
             saveSettings,
             inputs,
