@@ -1,16 +1,16 @@
 
 <template>
     <nav class="navigation-switcher">
-      <a 
+      <NuxtLink
         class="navigation-switcher__link" 
-        href="#"
         v-for="switcher in switchers"
         :class="{ 'active': switcher.isActive }"
         :key="switcher.id"
+        :to="switcher.link"
         @click="changeSwitcher(switcher.id)"
       >
         {{ switcher.text }}
-      </a>
+      </NuxtLink>
     </nav>
   </template>
 
@@ -68,6 +68,7 @@ const changeSwitcher = (id: number) => {
 
         &.active, &:hover
             color: $basic_primary
+        &.active, &:active
             &::after
-                width: 100%
+              width: 100%
 </style>

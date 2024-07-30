@@ -69,7 +69,7 @@ export default defineComponent({
             position: absolute
             right: rem(18)
             top: 50%
-            transform: rotate(0deg) translateY(-40%)
+            transform: translateY(-40%)
             transition: all .2s
             
 

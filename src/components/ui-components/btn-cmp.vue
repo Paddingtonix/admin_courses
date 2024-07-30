@@ -1,25 +1,30 @@
 <template>
-    <div class="oil-btn" :class="background_type" v-wave="{ color: '#03AEE2' }">
-        <slot></slot>
-        <button>{{ text }}</button>
+    <!-- v-wave="{ color: '#03AEE2' }" -->
+    <div class="oil-btn" :class="background_type">
+      <slot></slot>
+      <button>{{ text }}</button>
     </div>
-</template>
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
+  </template>
+  
+  <script lang="ts">
+  import { defineComponent } from 'vue'
+  
+  export default defineComponent({
     props: {
-        text: {
-            type: String,
-            default: 'Button',
-        },
-        background_type: {
-            type: String,
-            default: '_primary', //_secondary, _tertiary, _quaternary
-        },
-    },
-})
-</script>
+      text: {
+        type: String,
+        default: 'Button',
+      },
+      background_type: {
+        type: String,
+        default: '_primary', //_secondary, _tertiary, _quaternary
+      },
+    }
+  })
+  </script>
+  
+
+
 <style scoped lang="sass">
 .oil-btn
     padding: rem(16) rem(32)
