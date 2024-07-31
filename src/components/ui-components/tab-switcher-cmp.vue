@@ -4,10 +4,8 @@
       <NuxtLink
         class="navigation-switcher__link" 
         v-for="switcher in switchers"
-        :class="{ 'active': switcher.isActive }"
         :key="switcher.id"
         :to="switcher.link"
-        @click="changeSwitcher(switcher.id)"
       >
         {{ switcher.text }}
       </NuxtLink>
@@ -24,22 +22,7 @@ const props = defineProps<{
 
 const { switcherArray } = props;
 
-const switchers = reactive(switcherArray);
-
-const changeSwitcher = (id: number) => {
-    const activeElement = switchers.find(el => el.isActive);
-
-    if(activeElement?.isActive){
-        activeElement.isActive = false
-    }
-
-    const currentElement = switchers.find(el => el.id === id);
-
-    if(currentElement && !currentElement.isActive) {
-        currentElement.isActive = true;
-    }
-
-}
+const switchers = switcherArray;
 
 </script>
 
@@ -66,9 +49,14 @@ const changeSwitcher = (id: number) => {
           height: rem(3)
           background-color: $basic_primary  
 
-        &.active, &:hover
+        &:hover
             color: $basic_primary
-        &.active, &:active
+        &:active
             &::after
               width: 100%
+        
+        &.router-link-exact-active
+            color: $basic_primary
+            &::after
+                  width: 100%
 </style>

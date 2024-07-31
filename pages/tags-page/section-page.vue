@@ -5,9 +5,6 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({
-    layout: 'tags-layout'
-})
 </script>
 
 <style>
