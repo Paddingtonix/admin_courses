@@ -1,9 +1,7 @@
 <template>
     <div class="oil">
         <Sidebar />
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
+        <NuxtPage />
     </div>
 </template>
 <script lang="ts">

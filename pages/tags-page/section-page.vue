@@ -10,12 +10,12 @@
     </div>
     <TableHeadCmp
     class="section-table-header"
-    :name="'Раздел меток'"
-    :status="'Кол-во меток'"
-    :lang="'Описание раздела'"
+    :status="'Раздел меток'"
+    :name="'Описание раздела'"
+    :lang="'Кол-во меток'"
   />
 
-  <TableRowCmp class="section-table-row" name="sort" status="course" authors="5">
+  <TableRowCmp class="section-table-row" name="Fugiat_amet" authors="Minim reprehenderit sint reprehenderit amet." status="5">
     <template v-slot:svg>
       <i class="section-table-row__svg">
         <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">

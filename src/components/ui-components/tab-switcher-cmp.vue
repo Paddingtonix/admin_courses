@@ -13,6 +13,7 @@
   </template>
 
 <script lang="ts" setup>
+
 import type ISwitcher from '~/src/ts-interface/switcher.type';
 import { defineProps } from 'vue';
 
