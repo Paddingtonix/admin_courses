@@ -18,19 +18,25 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
+import type { Selector } from '~/src/ts-interface/create-course-form'
+
 
 export default defineComponent({
     props: {
         list: {
-            type: Array,
+            type: Array as PropType<Selector[]>,
             default: () => []
         },
         label: {
             type: String,
             default: 'label'
+        },
+        type: {
+            type: String,
+            default: 'type'
         }
     },
-    setup() {
+    setup(props, { emit }) {
         const list_openned = reactive({
             value: false
         }) 
@@ -44,7 +50,8 @@ export default defineComponent({
         }
 
         const selectValue = (val: string) => {
-            chooses_variable.value = val
+            chooses_variable.value = val            
+            emit('setValue', {value: chooses_variable.value, type: props.type })
         }
 
         return {

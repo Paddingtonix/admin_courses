@@ -23,8 +23,8 @@ export const useStoreCourses = defineStore('courseState', {
         deleteCourse: false,
 
         // CardInfo data
-        // price: 'paid', //free
-        price: 'free', //free
+        price: 'paid', //free
+        // price: 'free', //free
         type: 'synchronous', //asynchronous
 
     })

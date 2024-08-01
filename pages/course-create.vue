@@ -14,10 +14,15 @@
                             v-if="field.selector?.length"
                             :list="field.selector"
                             :label="field.label"
+                            :type="field.type"
+                            @setValue="setValueSelector"
                         />
                         <inputCmp 
                             v-else
                             :label="field.label"
+                            :value="field.value"
+                            :key="field.type"
+                            @set="setValueSelector"
                         />
                     </template>
                 </div>
@@ -71,11 +76,13 @@
                         </div>
                     </div>
                     <div class="oil-create-course__form__fields__container">
-                        <template v-for="(field, idx) in form.slice(3)" :key="idx">
+                        <template v-for="(field, idx) in form.slice(2)" :key="idx">
                             <selectorCmp 
                                 :label="field.label"
                                 v-if="field.selector?.length"
                                 :list="field.selector"
+                                :type="field.type"
+                                @set="setValueSelector"
                             />
                         </template>
                     </div>
@@ -86,6 +93,7 @@
                         />
                         <BtnCmp 
                             :text="'Создать'"
+                            @click="submitForm"
                         />
                     </div>
                 </div>
@@ -95,6 +103,8 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
+import axios from 'axios'
+import type { FormField } from '~/src/ts-interface/create-course-form'
 
 export default defineComponent({
     setup() {
@@ -102,9 +112,11 @@ export default defineComponent({
             value: false
         })
 
-        const form = reactive([
+        const form = reactive<FormField[]>([
             {
                 label: 'Язык',
+                type: 'lang',
+                value: '',
                 selector: [
                     {
                         text: 'Русский',
@@ -126,6 +138,23 @@ export default defineComponent({
             },
             {
                 label: 'Тип',
+                type: 'type',
+                value: '',
+                selector: [
+                    {
+                        text: 'Асинхронный',
+                        active: false
+                    },
+                    {
+                        text: 'Синхронный',
+                        active: false
+                    }
+                ]
+            },
+            {
+                label: 'Формат',
+                type: 'format',
+                value: '',
                 selector: [
                     {
                         text: 'Онлайн',
@@ -138,7 +167,9 @@ export default defineComponent({
                 ]
             },
             {
-                label: 'Формат',
+                label: 'Приобретение',
+                type: "acquired",
+                value: '',
                 selector: [
                     {
                         text: 'Платно',
@@ -151,7 +182,9 @@ export default defineComponent({
                 ]
             },
             {
-                label: 'Покупка',
+                label: 'Доступ',
+                type: "access",
+                value: '',
                 selector: [
                     {
                         text: 'Полный',
@@ -163,29 +196,63 @@ export default defineComponent({
                     }
                 ]
             },
-            {
-                label: 'Доступ',
-                selector: [
-                    {
-                        text: 'Русский',
-                        active: false
-                    },
-                    {
-                        text: 'Английский',
-                        active: false
-                    }
-                ]
-            },
         ])
 
         const openGuide = () => {
             open_guide.value = !open_guide.value
         }
 
+        const setValueSelector = (val: { type: string | undefined; value: string | undefined }) => {
+            if (val.type && val.value) {
+                const field = form.find(field => field.type === val.type)
+                if (field) {
+                    field.value = val.value
+                    console.log(field.value, val.value)
+                }
+            }
+        }
+
+        const setValueInput = (val: { type: string | undefined; value: string | undefined }) => {
+            // if (val.type && val.value) {
+            //     const field = form.find(field => field.type === val.type)
+            //     if (field) {
+            //         field.value = val.value
+            //         console.log(field.value, val.value)
+            //     }
+            // }
+        }
+        // const validCheck = 
+        
+        const submitForm = () => {
+            console.log('submitForm');
+            const course_data = reactive({
+                languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                title: form[1].value,
+                courseFormat: form[2].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                courseType: form[3].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
+            })
+            console.log(course_data, 'course_data')
+
+            axios
+                .post('admin/v1/course', course_data)
+                .then((response) => {
+                    console.log(course_data, 'COURSE_DATA');
+                    console.log(response, 'eto ya');
+                })
+                .catch((error) => {
+                    console.error('Ошибка при получении данных:', error)
+                })
+        }
+
         return {
             open_guide,
             openGuide,
-            form
+            form,
+            submitForm,
+            setValueSelector,
+            setValueInput
         }
     }
 })

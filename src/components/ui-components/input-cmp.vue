@@ -1,8 +1,20 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-if="$props.mask_type" v-model="input_value" :type="type" @keyup="setValue" v-mask="mask" :placeholder="placeholder"/>
-        <input v-else v-model="input_value" :type="type" @keyup="setValue" :placeholder="placeholder"/>
+        <input 
+            v-if="$props.mask_type" 
+            v-model="input_value" 
+            :type="type" 
+            @keyup="setValue" 
+            v-mask="mask" 
+            :placeholder="placeholder"
+        />
+        <input 
+            v-else v-model="input_value" 
+            :type="type" 
+            @keyup="setValue" 
+            :placeholder="placeholder"
+        />
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,6 +50,10 @@ export default defineComponent({
             type: String,
             default: ''
         },
+        value: {
+            type: String,
+            default: '',
+        },
         date_calendar: {
             type: String || Number,
             default: '',
@@ -48,6 +64,10 @@ export default defineComponent({
 
         watch(() => props.date_calendar, (new_date) => {
             input_value.value = new_date
+        })
+
+        watch(() => props.value, (new_value) => {
+            input_value.value = new_value
         })
 
         const setValue = () => {

@@ -1,52 +1,51 @@
-
 <template>
     <nav class="navigation-switcher">
-      <a 
-        class="navigation-switcher__link" 
-        href="#"
-        v-for="switcher in switchers"
-        :class="{ 'active': switcher.isActive }"
-        :key="switcher.id"
-        @click="changeSwitcher(switcher.id)"
-      >
-        {{ switcher.text }}
-      </a>
+        <div 
+            class="navigation-switcher__link"
+            v-for="switcher in switchers" 
+            :key="switcher.id" 
+            :class="{ active: switcher.isActive }" 
+            @click="changeSwitcher(switcher.id)"
+        >
+            {{ switcher.text }}
+        </div>
     </nav>
-  </template>
+</template>
 
 <script lang="ts" setup>
-import type ISwitcher from '~/src/ts-interface/switcher.type';
-import { defineProps } from 'vue';
+import type ISwitcher from '~/src/ts-interface/switcher.type'
+import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps<{
-  switcherArray: ISwitcher[]
-}>();
+    switcherArray: ISwitcher[]
+}>()
 
-const { switcherArray } = props;
+const { switcherArray } = props
 
-const switchers = reactive(switcherArray);
+const switchers = reactive(switcherArray)
+
+const emit = defineEmits<{ (e: 'switch-tab', id: number): void }>()
 
 const changeSwitcher = (id: number) => {
-    const activeElement = switchers.find(el => el.isActive);
+    const activeElement = switchers.find((el) => el.isActive)
 
-    if(activeElement?.isActive){
+    if (activeElement?.isActive) {
         activeElement.isActive = false
     }
 
-    const currentElement = switchers.find(el => el.id === id);
+    const currentElement = switchers.find((el) => el.id === id)
 
-    if(currentElement && !currentElement.isActive) {
-        currentElement.isActive = true;
+    if (currentElement && !currentElement.isActive) {
+        currentElement.isActive = true
+        emit('switch-tab', id)
     }
-
 }
-
 </script>
 
 <style lang="sass">
 .navigation-switcher
     display: flex
-
+    cursor: pointer
     &__link
         position: relative
         display: block
@@ -54,7 +53,6 @@ const changeSwitcher = (id: number) => {
         margin-right: rem(16)
         padding: rem(16) rem(8)
         transition: color .3s ease-out
-
         &::after
           content: ""
           transition: width .3s ease-in-out
@@ -64,7 +62,7 @@ const changeSwitcher = (id: number) => {
           left: 0
           width: 0%
           height: rem(3)
-          background-color: $basic_primary  
+          background-color: $basic_primary
 
         &.active, &:hover
             color: $basic_primary

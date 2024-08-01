@@ -149,6 +149,10 @@ export default defineComponent({
                 count: 0,
                 text: 'Снят с витрины'
             },
+            {
+                count: 0,
+                text: 'В архиве'
+            },
         ])
 
         const filter_course = reactive({
