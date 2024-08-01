@@ -1,6 +1,8 @@
 <template>
     <div class="oil-main">
-        <NuxtPage />
+        <NuxtLayout name="default">
+            <NuxtPage />
+        </NuxtLayout>
     </div>
 </template>
 <script lang="ts"></script>

@@ -1,5 +1,6 @@
 export default interface ISwitcher {
     text: string,
     id: number,
-    isActive: boolean
+    isActive: boolean,
+    link: string
 }
