@@ -11,8 +11,8 @@
             <span 
                 v-for="(list_item, idx) in list" 
                 :key="idx"
-                @click="selectValue(list_item.text)"
-            >{{ list_item.text }}</span>
+                @click="selectValue(list_item)"
+            >{{ list_item }} на стр.</span>
         </div>
     </div>
 </template>
@@ -22,7 +22,7 @@ import { defineComponent, reactive } from 'vue'
 export default defineComponent({
     props: {
         list: {
-            type: Array,
+            type: Array.of(Number),
             default: () => []
         },
         label: {
@@ -36,14 +36,14 @@ export default defineComponent({
         }) 
 
         const chooses_variable = reactive({
-            value: ''
+            value: 0
         })
 
         const openList = () => {
             list_openned.value = !list_openned.value
         }
 
-        const selectValue = (val: string) => {
+        const selectValue = (val: number) => {
             chooses_variable.value = val
         }
 

@@ -38,11 +38,31 @@
 </template>
 
 <script lang="ts" setup>
+import { useTagsStore } from '~/src/stores/storeTags';
+
+
+const tagsStore = useTagsStore();
+
+const route = useRoute();
+
+const router = useRouter();
+
+const query = reactive({
+  page: 0,
+  nLabelsPerPage: 10,
+})
+
+
+onMounted(()=>{
+  // tagsStore.getTags();
+  
+});
+
 const list = [
-  { text: '10 меток на стр.' },
-  { text: '20 меток на стр.' },
-  { text: '30 меток на стр.' },
-  { text: '40 меток на стр.' }
+  { text: 10 },
+  { text: 20 },
+  { text: 30 },
+  { text: 40 }
 ];
 </script>
 

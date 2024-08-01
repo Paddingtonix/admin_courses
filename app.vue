@@ -7,6 +7,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue'
 import { useStoreAuth } from './src/stores/storeAuth'
+import axios from 'axios';
 
 export default defineComponent({
     setup() {
@@ -20,6 +21,11 @@ export default defineComponent({
             }
         })
 
+
+        const host = 'http://195.133.145.105:8082/' as string
+
+        axios.defaults.baseURL = host
+        
         return {}
     },
 })

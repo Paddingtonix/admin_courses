@@ -27,17 +27,17 @@
 
   <div class="tags-page__pagination-wrapper">
     <PaginationCmp :pages_count="10" />
-    <SelectorCmp class="tags-page__selector" label="10 меток на стр." :list="list" />
+    <SelectorCmp class="tags-page__selector" label="10 разделов на стр." :list="list" />
   </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 const list = [
-  { text: '10 меток на стр.' },
-  { text: '20 меток на стр.' },
-  { text: '30 меток на стр.' },
-  { text: '40 меток на стр.' }
+  { text: 10 },
+  { text: 20 },
+  { text: 30 },
+  { text: 40 }
 ];
 </script>
 
