@@ -51,7 +51,7 @@ export default defineComponent({
 
         const selectValue = (val: string) => {
             chooses_variable.value = val            
-            emit('setValue', {value: chooses_variable.value, type: props.type })
+            emit('setValue', { value: chooses_variable.value, type: props.type })
         }
 
         return {
@@ -69,17 +69,15 @@ export default defineComponent({
     border: rem(1) solid $light_gray
     border-radius: rem(8)
     background-color: $basic_white
-
     position: relative
+    cursor: pointer
     &__chooses 
         &__chevron 
             position: absolute
             right: rem(18)
             top: 50%
-            transform: rotate(0deg) translateY(-40%)
+            transform: translateY(-40%)
             transition: all .2s
-            
-
             span 
                 font-size: rem(24)
                 line-height: 150%
@@ -89,13 +87,13 @@ export default defineComponent({
 
         label 
             color: #9AA7BB
+            cursor: pointer
 
     &__list 
         position: absolute
         left: 0
         top: rem(60)
         padding: rem(8) rem(16)
-
         width: 100%
         max-height: rem(200)
         border: rem(1) solid $light_gray
@@ -103,11 +101,18 @@ export default defineComponent({
         background-color: $basic_white
         z-index: 10
         @include flex_column()
-        gap: rem(8)
         span 
             cursor: pointer
             transition: color .2s
+            height: rem(24)
+            display: flex
+            align-items: center
             &:hover 
                 color: $light_primary
 
+    &:hover
+        border-color: $basic_gray
+        .oil-selector__chooses__chevron
+            path
+                stroke: $basic_gray
 </style>

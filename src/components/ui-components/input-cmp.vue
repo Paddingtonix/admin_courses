@@ -10,7 +10,8 @@
             :placeholder="placeholder"
         />
         <input 
-            v-else v-model="input_value" 
+            v-else 
+            v-model="input_value" 
             :type="type" 
             @keyup="setValue" 
             :placeholder="placeholder"
@@ -50,10 +51,6 @@ export default defineComponent({
             type: String,
             default: ''
         },
-        value: {
-            type: String,
-            default: '',
-        },
         date_calendar: {
             type: String || Number,
             default: '',
@@ -64,10 +61,6 @@ export default defineComponent({
 
         watch(() => props.date_calendar, (new_date) => {
             input_value.value = new_date
-        })
-
-        watch(() => props.value, (new_value) => {
-            input_value.value = new_value
         })
 
         const setValue = () => {

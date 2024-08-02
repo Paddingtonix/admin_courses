@@ -19,9 +19,8 @@
                         />
                         <inputCmp 
                             v-else
-                            :label="field.label"
-                            :value="field.value"
-                            :key="field.type"
+                            :placeholder="field.label"
+                            :type="field.type"
                             @set="setValueSelector"
                         />
                     </template>
@@ -47,7 +46,7 @@
                             </i>
                             <span>Как правильно задать параметры курса?</span>
                             <i class="oil-create-course__form__fields__guide__title__chevron">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </i>
@@ -90,6 +89,7 @@
                         <BtnCmp 
                             :background_type="'_secondary'"
                             :text="'Отмена'"
+                            @click="$router.go(-1)"
                         />
                         <BtnCmp 
                             :text="'Создать'"
@@ -109,7 +109,7 @@ import type { FormField } from '~/src/ts-interface/create-course-form'
 export default defineComponent({
     setup() {
         const open_guide = reactive({
-            value: false
+            value: false as boolean
         })
 
         const form = reactive<FormField[]>([
@@ -131,7 +131,7 @@ export default defineComponent({
             {
                 id: "course_name",
                 value: "",
-                type: "text",
+                type: "title",
                 pattern: '^([a-z0-9]+(?:[._-][a-z0-9]{1,50})*)@([a-z0-9]{4,31}(?:[.-][a-z0-9]{4,31})*.[a-z]{2,4})$',
                 label: "Название курса",
                 error: ""
@@ -202,45 +202,27 @@ export default defineComponent({
             open_guide.value = !open_guide.value
         }
 
-        const setValueSelector = (val: { type: string | undefined; value: string | undefined }) => {
+        const setValueSelector = (val: { type: string | undefined, value: string | undefined }) => {
             if (val.type && val.value) {
                 const field = form.find(field => field.type === val.type)
                 if (field) {
                     field.value = val.value
-                    console.log(field.value, val.value)
                 }
             }
         }
-
-        const setValueInput = (val: { type: string | undefined; value: string | undefined }) => {
-            // if (val.type && val.value) {
-            //     const field = form.find(field => field.type === val.type)
-            //     if (field) {
-            //         field.value = val.value
-            //         console.log(field.value, val.value)
-            //     }
-            // }
-        }
-        // const validCheck = 
         
         const submitForm = () => {
-            console.log('submitForm');
-            const course_data = reactive({
+            const course_data = {
                 languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
                 title: form[1].value,
                 courseFormat: form[2].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
                 courseType: form[3].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
                 isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
                 isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
-            })
-            console.log(course_data, 'course_data')
+            }
 
             axios
                 .post('admin/v1/course', course_data)
-                .then((response) => {
-                    console.log(course_data, 'COURSE_DATA');
-                    console.log(response, 'eto ya');
-                })
                 .catch((error) => {
                     console.error('Ошибка при получении данных:', error)
                 })
@@ -251,8 +233,7 @@ export default defineComponent({
             openGuide,
             form,
             submitForm,
-            setValueSelector,
-            setValueInput
+            setValueSelector
         }
     }
 })
@@ -279,7 +260,6 @@ export default defineComponent({
                 padding: rem(16) rem(24)
                 border: rem(1) solid $dark_warning
                 background-color: rgba(249, 173, 78, 0.0509803922)
-
                 @include flex_start()
                 margin-bottom: rem(24)
                 gap: rem(12)
@@ -290,7 +270,6 @@ export default defineComponent({
 
                 &__icon
                     padding: rem(12)
-
                     background-color: #F9AD4E1A
                     border-radius: 50%
 
@@ -299,6 +278,7 @@ export default defineComponent({
                 border-radius: rem(8)
                 margin-bottom: rem(24)
                 &__title
+                    border-radius: rem(8)
                     padding: rem(16) rem(24)
                     position: relative 
                     @include flex_start()
@@ -310,6 +290,10 @@ export default defineComponent({
                         top: 50%
                         right: rem(24)
                         transform: translateY(-50%)
+                        svg
+                            transition: transform .2s
+                            &._active
+                                transform: rotate(180deg)
                 
                 &__text 
                     padding: rem(24) rem(48)
@@ -330,6 +314,4 @@ export default defineComponent({
             &__btns 
                 @include flex_center_spacing()
                 gap: rem(12)
-
-
 </style>
