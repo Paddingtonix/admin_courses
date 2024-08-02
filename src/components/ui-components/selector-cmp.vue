@@ -1,8 +1,8 @@
 <template>
     <div class="oil-selector" @click="openList">
         <div class="oil-selector__chooses">
-            <label v-if="!chooses_variable.value.length">{{ label }}</label>
-            <span>{{ chooses_variable.value }}</span>
+            <label v-if="!chooses_variable.value">{{ label }}</label>
+            <span v-else>{{ chooses_variable.value }} меток на стр.</span>
             <svg :class="{'_active-list': list_openned.value}" class="oil-selector__chooses__chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M5 7.5L10 12.5L15 7.5" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -11,8 +11,8 @@
             <span 
                 v-for="(list_item, idx) in list" 
                 :key="idx"
-                @click="selectValue(list_item)"
-            >{{ list_item }} на стр.</span>
+                @click="selectValue(list_item.text)"
+            >{{ list_item.text }} меток на стр.</span>
         </div>
     </div>
 </template>

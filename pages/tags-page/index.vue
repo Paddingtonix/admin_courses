@@ -33,7 +33,7 @@
 
   <div class="tags-page__pagination-wrapper">
     <PaginationCmp :pages_count="10" />
-    <SelectorCmp class="tags-page__selector" label="10 меток на стр." :list="list" />
+    <SelectorCmp class="tags-page__selector" :label="`${list[0].text} меток на стр.`" :list="list" />
   </div>
 </template>
 
