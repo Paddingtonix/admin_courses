@@ -9,6 +9,6 @@ export interface FormField {
     value: string
     selector?: Selector[]
     id?: string
-    pattern?: string
+    pattern?: string | RegExp
     error?: string
 }

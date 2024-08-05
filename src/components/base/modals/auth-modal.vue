@@ -120,7 +120,6 @@ export default defineComponent({
         }
 
         const loginSite = () => {
-            console.log('Функция loginSite вызвана')
             let user_data: Record<string, any> = {}
             user_valid.value = true
 

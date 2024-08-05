@@ -223,7 +223,6 @@
                             class="oil-course-setting__settings__btn"
                             :text="'Отмена'"
                             :background_type="'_secondary'"
-                            @click="setCardInfo"
                         />
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
@@ -598,22 +597,6 @@ export default defineComponent({
                 picked_directions.splice(picked_directions.indexOf(dir.id), 1)
             }
         }
-        
-        const setCardInfo = () => {
-            // console.log('Запрос отправлен')
-            // axios
-            //         .get('admin/v1/direction')
-            //         .then((response) => {
-            //             console.log('Ответ получен:', response.data)
-            //             response.data.forEach((element: Direction) => {
-            //                 directions.push(element)
-            //                 console.log(element, 'ya');
-            //             })
-            //         })
-            //         .catch((error) => {
-            //             console.error('Ошибка при получении данных:', error)
-            //         })
-        }
 
         onMounted(() => {
             nextTick(() => {
@@ -628,11 +611,11 @@ export default defineComponent({
                         console.error('Ошибка при получении данных:', error)
                     })
 
-                axios
-                    .get('admin/v1/user/authors')
-                    .then((response) => {
-                        console.log(response, 'admin/v1/user/authors')
-                    })
+                // axios
+                //     .get('admin/v1/user/authors')
+                //     .then((response) => {
+                //         console.log(response, 'admin/v1/user/authors')
+                //     })
             })
 
 
@@ -663,7 +646,6 @@ export default defineComponent({
             picked_directions,
             pick_direction,
             picked_directions_filtered,
-            setCardInfo,
             show_error,
             switcherArray
         }

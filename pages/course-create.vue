@@ -15,13 +15,18 @@
                             :list="field.selector"
                             :label="field.label"
                             :type="field.type"
+                            :error="field.error"
                             @setValue="setValueSelector"
+                            @blur="validCheck(field)"
                         />
                         <inputCmp 
                             v-else
                             :placeholder="field.label"
                             :type="field.type"
+                            :error="field.error"
+                            :maxlength="103"
                             @set="setValueSelector"
+                            @blur="validCheck(field)"
                         />
                     </template>
                 </div>
@@ -77,11 +82,13 @@
                     <div class="oil-create-course__form__fields__container">
                         <template v-for="(field, idx) in form.slice(2)" :key="idx">
                             <selectorCmp 
-                                :label="field.label"
                                 v-if="field.selector?.length"
+                                :label="field.label"
                                 :list="field.selector"
                                 :type="field.type"
+                                :error="field.error"
                                 @set="setValueSelector"
+                                @blur="validCheck(field)"
                             />
                         </template>
                     </div>
@@ -117,6 +124,7 @@ export default defineComponent({
                 label: 'Язык',
                 type: 'lang',
                 value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Русский',
@@ -132,7 +140,6 @@ export default defineComponent({
                 id: "course_name",
                 value: "",
                 type: "title",
-                pattern: '^([a-z0-9]+(?:[._-][a-z0-9]{1,50})*)@([a-z0-9]{4,31}(?:[.-][a-z0-9]{4,31})*.[a-z]{2,4})$',
                 label: "Название курса",
                 error: ""
             },
@@ -140,6 +147,7 @@ export default defineComponent({
                 label: 'Тип',
                 type: 'type',
                 value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Асинхронный',
@@ -155,6 +163,7 @@ export default defineComponent({
                 label: 'Формат',
                 type: 'format',
                 value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Онлайн',
@@ -170,6 +179,7 @@ export default defineComponent({
                 label: 'Приобретение',
                 type: "acquired",
                 value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Платно',
@@ -185,6 +195,7 @@ export default defineComponent({
                 label: 'Доступ',
                 type: "access",
                 value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Полный',
@@ -202,16 +213,31 @@ export default defineComponent({
             open_guide.value = !open_guide.value
         }
 
-        const setValueSelector = (val: { type: string | undefined, value: string | undefined }) => {
-            if (val.type && val.value) {
-                const field = form.find(field => field.type === val.type)
-                if (field) {
-                    field.value = val.value
-                }
+        const setValueSelector = (val: { type: string, value: string }) => {
+            form.find(field => field.type === val.type)!.value = val.value
+        }
+
+        const validCheck = (field: FormField) => {
+            console.log(field)
+            if(!field.value.length) {
+                field.error = 'Это поле обязательно к заполнению для авторизации'
+            } else {
+                field.error = ''
             }
         }
         
         const submitForm = () => {
+            let form_is_valid = true
+
+            form.forEach((field) => {
+                validCheck(field)
+                if (field.error) {
+                    form_is_valid = false
+                }
+            })
+
+            if (!form_is_valid) return
+
             const course_data = {
                 languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
                 title: form[1].value,
@@ -233,7 +259,8 @@ export default defineComponent({
             openGuide,
             form,
             submitForm,
-            setValueSelector
+            setValueSelector,
+            validCheck
         }
     }
 })
@@ -249,7 +276,7 @@ export default defineComponent({
             &__container 
                 display: flex
                 flex-direction: column
-                gap: rem(12)
+                gap: rem(16)
                 margin-bottom: rem(32)
             
             &__title 

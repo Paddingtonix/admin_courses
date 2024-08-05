@@ -278,8 +278,6 @@ export default defineComponent({
             axios
                 .get('/api/course_list.json')
                 .then(resp => {
-                    console.log(resp);
-                    
                     course_list.value = resp.data.courses
                 })
         })

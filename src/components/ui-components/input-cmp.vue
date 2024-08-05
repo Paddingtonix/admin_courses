@@ -15,6 +15,7 @@
             :type="type" 
             @keyup="setValue" 
             :placeholder="placeholder"
+            :maxlength="maxlength"
         />
         <div class="oil-input__message" v-if="error.length">
             <i>
@@ -54,6 +55,10 @@ export default defineComponent({
         date_calendar: {
             type: String || Number,
             default: '',
+        },
+        maxlength: {
+            type: Number,
+            default: null
         }
     },
     setup(props, { emit }) {
