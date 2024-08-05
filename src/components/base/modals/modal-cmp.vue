@@ -29,6 +29,7 @@ import { useStoreModal } from '@/src/stores/storeModal'
 import authModal from './auth-modal.vue'
 import courseCreateModal from './course-create-modal.vue'
 import formTags from '../../ui-components/forms/form-tags.vue'
+import formSections from '../../ui-components/forms/form-sections.vue'
 
 export default defineComponent({
     props: {
@@ -41,7 +42,8 @@ export default defineComponent({
         const storeModal = useStoreModal()
         // const modalComponent = ref<string>('auth-modal')
         // const modalComponent = ref<string>('course-create-modal')
-        const modalComponent = ref<string>('form-tags');
+        // const modalComponent = ref<string>('form-tags');
+        const modalComponent = ref<string>('form-sections');
         const closeModal = () => {
             storeModal.closeModal()
         }
@@ -51,12 +53,14 @@ export default defineComponent({
             storeModal,
             closeModal,
             formTags,
+            formSections
         }
     },
     components: {
         'auth-modal': authModal,
         'course-create-modal': courseCreateModal,
-        'form-tags': formTags
+        'form-tags': formTags,
+        'form-sections': formSections
     },
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
-        <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-model="input_value" :type="type" @keyup="setValue" />
+        <label :class="['oil-input__label', { _fill: modelValue && modelValue.length }]">{{ label }}</label>
+        <input :type="type" :value="modelValue" @input="updateValue" />
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -12,38 +12,46 @@
         </div>
     </div>
 </template>
+
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, toRefs } from 'vue';
 
 export default defineComponent({
     props: {
+        modelValue: {
+            type: String,
+            default: '',
+        },
         label: {
             type: String,
             default: 'Text',
         },
         type: {
             type: String,
-            default: '',
+            default: 'text',
         },
         error: {
             type: String,
             default: '',
         },
     },
+    emits: ['update:modelValue'],
     setup(props, { emit }) {
-        const input_value = ref<string>('')
+        const { modelValue } = toRefs(props);
 
-        const setValue = () => {
-            emit('set', { value: input_value.value, type: props.type })
-        }
+        const updateValue = (event: Event) => {
+            const value = (event.target as HTMLInputElement).value;
+            emit('update:modelValue', value);
+        };
 
         return {
-            input_value,
-            setValue,
-        }
+            modelValue,
+            updateValue,
+        };
     },
-})
+});
 </script>
+
 <style scoped lang="sass">
 .oil-input
     border: rem(1) solid $light_gray

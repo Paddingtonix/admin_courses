@@ -27,6 +27,7 @@ const {russian, extraLang, extraLang2} = defineProps({
 
 <style lang="sass" scoped>
 .lang-switcher
+    position: relative
     display: flex
     justify-content: space-between
     background-color: $disabled_basic
@@ -37,11 +38,17 @@ const {russian, extraLang, extraLang2} = defineProps({
         padding: rem(16) rem(24)
         font-weight: 600
         color: $basic_tab
+        z-index: 1
+        transition: all .2s ease-in-out
+        &:hover:not(.active)
+            transform: translateY(rem(-2))
+            color: $basic_primary
 
         &.active
-            background-color: #fff
-            color: $basic_text
             border-radius: rem(8)
+            background-color: #fff
             border: solid 1px $light_gray
+            color: $basic_text
+            cursor: default
 </style>
 

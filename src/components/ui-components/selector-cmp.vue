@@ -22,8 +22,8 @@ import { defineComponent, reactive } from 'vue'
 export default defineComponent({
     props: {
         list: {
-            type: Array.of(Number),
-            default: () => []
+            type: Array<{text: number}>,
+            default: []
         },
         label: {
             type: String,

@@ -9,9 +9,9 @@
         text="Перевод метки - это текст, который будет отображаться на сайте. Метку необходимо перевести на все обязательные языки (помечены звёздочкой)" 
         />
         <div class="add-tag__button-wrapper">
-        <BtnCmp type="button" background_type="_secondary" text="Отмена" @click="closeModal"></BtnCmp>
-        <BtnCmp type="submit" text="Добавить"></BtnCmp>
-    </div>
+            <BtnCmp type="button" background_type="_secondary" text="Отмена" @click="closeModal"></BtnCmp>
+            <BtnCmp type="submit" text="Добавить"></BtnCmp>
+        </div>
   </form>
 </template>
 

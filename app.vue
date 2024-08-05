@@ -24,7 +24,10 @@ export default defineComponent({
 
         const host = 'http://195.133.145.105:8082/' as string
 
+        const token = 'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJhZG1pbjFAYWRtaW4uY29tIiwidW5pcXVlX25hbWUiOiJhZG1pbjFAYWRtaW4uY29tIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzIyNTA5MzE0LCJleHAiOjE3NTQwNDUzMTQsImlhdCI6MTcyMjUwOTMxNH0.xsuhpmqlEdjq66i2knqL9Js1XD_Zd0bAKaf_hsJKm2WRG8J1p4syNqOOaNJkCwbNLTpKTpYmGaD4iK4ntzMPog'
+
         axios.defaults.baseURL = host
+        axios.defaults.headers.Authorization = token;
         
         return {}
     },
