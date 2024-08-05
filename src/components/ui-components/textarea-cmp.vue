@@ -51,6 +51,12 @@ export default defineComponent({
     height: rem(216)
     position: relative
     padding: rem(26) rem(16)
+
+    &:focus-within    
+        label
+            &:not(._fill)
+                transform: translateY(rem(-8))
+
     textarea
         resize: none
         height: 100%
@@ -59,10 +65,12 @@ export default defineComponent({
     &__label
         color: $light_gray
         position: absolute
+        pointer-events: none
+        user-select: none
         top: rem(16)
-        transform: translateY(-16)
         transition: all .2s
         left: rem(16)
+
         &._fill
             top: rem(8)
             font-size: rem(12)

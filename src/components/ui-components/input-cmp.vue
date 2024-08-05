@@ -55,6 +55,8 @@ export default defineComponent({
     &__label
         color: $light_gray
         position: absolute
+        pointer-events: none
+        user-select: none
         top: 50%
         transform: translateY(-50%)
         transition: all .2s

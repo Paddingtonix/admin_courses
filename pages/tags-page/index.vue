@@ -2,7 +2,7 @@
   <div class="tags-page__widget-wrapper">
     <SearchCmp class="tags-page__search" label="Поиск" />
     <FilterCmp />
-    <BtnCmp class="tags-page__add-tag-btn" background_type="_tertiary" text="Добавить метку">
+    <BtnCmp class="tags-page__add-tag-btn" background_type="_tertiary" text="Добавить метку" @click="addTag">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
@@ -35,17 +35,30 @@
     <PaginationCmp :pages_count="10" />
     <SelectorCmp class="tags-page__selector" :label="`${list[0].text} меток на стр.`" :list="list" />
   </div>
+
+  <Teleport to="body">
+    <ModalCmp modalComponent="form-tags" title="Добавление метки">
+      
+    </ModalCmp>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
+import { useStoreModal } from '~/src/stores/storeModal';
 import { useTagsStore } from '~/src/stores/storeTags';
 
 
 const tagsStore = useTagsStore();
 
+const modalStore = useStoreModal();
+
 const route = useRoute();
 
 const router = useRouter();
+
+const addTag = () => {
+  modalStore.openModal();
+}
 
 const query = reactive({
   page: 0,

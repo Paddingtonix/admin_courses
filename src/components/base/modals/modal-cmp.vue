@@ -3,6 +3,9 @@
         <div class="oil-modal__container-auth" v-if="modalComponent === 'auth-modal'">
             <component :main_class="'oil-modal'" :is="modalComponent"></component>
         </div>
+        <div class="oil-modal__container__content" v-if="modalComponent === 'formTags'">
+                <component :main_class="'oil-modal'" :is="formTags"></component>
+        </div>
         <div class="oil-modal__container" v-else>
             <div class="oil-modal__container__header">
                 <span class="oil-modal__container__header__title">{{ title }}</span>
@@ -13,17 +16,19 @@
                 </button>
             </div>
             <div class="oil-modal__container__content">
-                <component :main_class="'oil-modal'" :is="modalComponent"></component>
+                <component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component>
             </div>
         </div>
     </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 
 import { useStoreModal } from '@/src/stores/storeModal'
 import authModal from './auth-modal.vue'
 import courseCreateModal from './course-create-modal.vue'
+import formTags from '../../ui-components/forms/form-tags.vue'
 
 export default defineComponent({
     props: {
@@ -32,12 +37,11 @@ export default defineComponent({
             default: 'Modal title!'
         }
     },
-    setup() {
+    setup(props, {emit}) {
         const storeModal = useStoreModal()
-
         // const modalComponent = ref<string>('auth-modal')
-        const modalComponent = ref<string>('course-create-modal')
-
+        // const modalComponent = ref<string>('course-create-modal')
+        const modalComponent = ref<string>('form-tags');
         const closeModal = () => {
             storeModal.closeModal()
         }
@@ -45,12 +49,14 @@ export default defineComponent({
         return {
             modalComponent,
             storeModal,
-            closeModal
+            closeModal,
+            formTags,
         }
     },
     components: {
         'auth-modal': authModal,
-        'course-create-modal': courseCreateModal
+        'course-create-modal': courseCreateModal,
+        'form-tags': formTags
     },
 })
 </script>
