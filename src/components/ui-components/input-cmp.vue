@@ -1,7 +1,7 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-model="input_value" :type="type" @keyup="setValue" />
+        <input v-model="input_value" :type="type" @input="setValue" />
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -13,7 +13,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 
 export default defineComponent({
     props: {
@@ -29,12 +29,17 @@ export default defineComponent({
             type: String,
             default: '',
         },
+        modelValue: {
+            type: String,
+            default: '',
+        }
     },
+
     setup(props, { emit }) {
-        const input_value = ref<string>('')
+        const input_value = ref(props.modelValue)
 
         const setValue = () => {
-            emit('set', { value: input_value.value, type: props.type })
+            emit('set', input_value.value)
         }
 
         return {

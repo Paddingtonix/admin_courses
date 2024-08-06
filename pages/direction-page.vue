@@ -13,6 +13,7 @@
                 <SearchCmp
                     class="direction-page__settings__search"
                     label="Поиск"
+                    v-model="searchQuery"
                 />
                 <BtnCmp
                     class="direction-page__settings__btn"
@@ -28,35 +29,41 @@
                 <CheckboxCmp :active="true" text="Не отображающиеся на сайте"/>
             </div>
             <div class="direction-page__course-list">
-                <TableHeadCmp
-                    :date_edit="'Дата посл. ред.'"
-                    :name="'Название'"
-                    :display_page="'Отображение на сайте'"
-                    :courses_number="'Кол-во курсов'"
-                />
-                <TableRowCmp
-                    class="direction-page__course-list__table-row"
-                    v-for="(row, idx) in direction_list"
-                    :key="idx"
-                    :date_edit="row.date_edit"
-                    :name="row.name"
-                    :display_page="row.display_page"
-                    :courses_number="row.courses_number"
-                >
-                    <template v-slot:svg>
-                        <i class="direction-page__course-list__table-row__svg">
-                            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984" stroke="#FF7C7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </i>
-                    </template>
-                </TableRowCmp>
+                <template v-if="filteredDirections.length">
+                    <TableHeadCmp
+                        :date_edit="'Дата посл. ред.'"
+                        :name="'Название'"
+                        :display_page="'Отображение на сайте'"
+                        :courses_number="'Кол-во курсов'"
+                    />
+                    <TableRowCmp
+                        class="direction-page__course-list__table-row"
+                        v-for="(row, idx) in filteredDirections"
+                        :key="idx"
+                        :date_edit="row.date_edit"
+                        :name="row.name"
+                        :display_page="row.display_page"
+                        :courses_number="row.courses_number"
+                    >
+                        <template v-slot:svg>
+                            <i class="direction-page__course-list__table-row__svg">
+                                <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984" stroke="#FF7C7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </i>
+                        </template>
+                    </TableRowCmp>
+                </template>
+                <div v-else class="no-results">
+                    К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
+                </div>
             </div>
         </div>
     </section>
 </template>
+
 <script lang="ts">
-import {defineComponent, reactive, ref, computed} from 'vue';
+import {defineComponent, reactive, ref, computed, watch} from 'vue';
 import {useRouter} from "vue-router";
 
 export default defineComponent({
@@ -74,7 +81,7 @@ export default defineComponent({
             },
         ])
 
-        const direction_list = reactive([
+        const directions_list = reactive([
             {
                 date_edit: '31.05.2022',
                 name: 'Геология',
@@ -95,9 +102,19 @@ export default defineComponent({
             }
         ])
 
+        const searchQuery = ref('')
+
+        const filteredDirections = computed(() => {
+            return directions_list && directions_list.filter((direction) =>
+                direction.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            );
+        })
+
         return {
             pill_info,
-            direction_list,
+            directions_list,
+            searchQuery,
+            filteredDirections,
         }
     }
 })
@@ -144,5 +161,8 @@ export default defineComponent({
                 opacity: 0
                 position: absolute
                 right: rem(16)
+
+.no-results
+    font-size: rem(16)
 
 </style>
