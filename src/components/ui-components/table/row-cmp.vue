@@ -41,6 +41,14 @@ export default defineComponent({
             type: String,
             default: ''
         },
+        display_page: {
+            type: String,
+            default: ''
+        },
+        courses_number: {
+            type: String,
+            default: ''
+        },
     },
     setup(props) {
         const fields = props;
