@@ -47,11 +47,11 @@ export default defineComponent({
             default: ''
         },
         display_page: {
-            type: String,
+            type: Boolean,
             default: ''
         },
         courses_number: {
-            type: String,
+            type: Number,
             default: ''
         },
     },

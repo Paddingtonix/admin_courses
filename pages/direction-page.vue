@@ -40,10 +40,10 @@
                         class="direction-page__course-list__table-row"
                         v-for="(row, idx) in filteredDirections"
                         :key="idx"
-                        :date_edit="row.date_edit"
-                        :name="row.name"
-                        :display_page="row.display_page"
-                        :courses_number="row.courses_number"
+                        :date_edit="row.lastChangeDateTime"
+                        :name="row.localizedName"
+                        :display_page="row.isVisible"
+                        :courses_number="row.count"
                     >
                         <template v-slot:svg>
                             <i class="direction-page__course-list__table-row__svg">
@@ -55,7 +55,9 @@
                     </TableRowCmp>
                 </template>
                 <div v-else class="no-results">
-                    К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
+                    <span>
+                        К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
+                    </span>
                 </div>
             </div>
         </div>
@@ -63,8 +65,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, computed, watch} from 'vue';
+import {defineComponent, reactive, ref, computed, watch, onMounted} from 'vue';
+import axios from 'axios'
 import {useRouter} from "vue-router";
+import type { Direction } from '~/src/ts-interface/direction'
 
 export default defineComponent({
     setup() {
@@ -81,33 +85,48 @@ export default defineComponent({
             },
         ])
 
-        const directions_list = reactive([
-            {
-                date_edit: '31.05.2022',
-                name: 'Геология',
-                display_page: 'Отображается',
-                courses_number: '5'
-            },
-            {
-                date_edit: '31.05.2022',
-                name: 'Разработка',
-                display_page: 'Отображается',
-                courses_number: '6'
-            },
-            {
-                date_edit: '31.05.2022',
-                name: 'Бурение',
-                display_page: 'Не отображается',
-                courses_number: '9'
-            }
-        ])
+        // const directions_list = reactive([
+        //     {
+        //         date_edit: '31.05.2022',
+        //         name: 'Геология',
+        //         display_page: 'Отображается',
+        //         courses_number: '5'
+        //     },
+        //     {
+        //         date_edit: '31.05.2022',
+        //         name: 'Разработка',
+        //         display_page: 'Отображается',
+        //         courses_number: '6'
+        //     },
+        //     {
+        //         date_edit: '31.05.2022',
+        //         name: 'Бурение',
+        //         display_page: 'Не отображается',
+        //         courses_number: '9'
+        //     }
+        // ])
+
+        const directions_list = reactive<Direction[]>([])
 
         const searchQuery = ref('')
 
         const filteredDirections = computed(() => {
-            return directions_list && directions_list.filter((direction) =>
-                direction.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            return directions_list && directions_list.filter((direction: Direction) =>
+                direction.localizedName.toLowerCase().includes(searchQuery.value.toLowerCase())
             );
+        })
+
+        onMounted(() => {
+            axios
+                .get('admin/v1/Direction')
+                .then((response) => {
+                    response.data.forEach((element: Direction) => {
+                        directions_list.push(element)
+                    })
+                })
+                .catch((error) => {
+                    console.error('Ошибка при получении данных:', error)
+                })
         })
 
         return {

@@ -42,12 +42,12 @@ export default defineComponent({
             default: ''
         },
         display_page: {
-            type: String,
-            default: ''
+            type: Boolean,
+            default: false
         },
         courses_number: {
-            type: String,
-            default: ''
+            type: Number,
+            default: 0
         },
     },
     setup(props) {
