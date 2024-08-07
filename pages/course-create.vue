@@ -14,10 +14,19 @@
                             v-if="field.selector?.length"
                             :list="field.selector"
                             :label="field.label"
+                            :type="field.type"
+                            :error="field.error"
+                            @setValue="setValueSelector"
+                            @blur="validCheck(field)"
                         />
                         <inputCmp 
                             v-else
-                            :label="field.label"
+                            :placeholder="field.label"
+                            :type="field.type"
+                            :error="field.error"
+                            :maxlength="103"
+                            @set="setValueSelector"
+                            @blur="validCheck(field)"
                         />
                     </template>
                 </div>
@@ -42,7 +51,7 @@
                             </i>
                             <span>Как правильно задать параметры курса?</span>
                             <i class="oil-create-course__form__fields__guide__title__chevron">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </i>
@@ -71,11 +80,15 @@
                         </div>
                     </div>
                     <div class="oil-create-course__form__fields__container">
-                        <template v-for="(field, idx) in form.slice(3)" :key="idx">
+                        <template v-for="(field, idx) in form.slice(2)" :key="idx">
                             <selectorCmp 
-                                :label="field.label"
                                 v-if="field.selector?.length"
+                                :label="field.label"
                                 :list="field.selector"
+                                :type="field.type"
+                                :error="field.error"
+                                @set="setValueSelector"
+                                @blur="validCheck(field)"
                             />
                         </template>
                     </div>
@@ -83,9 +96,11 @@
                         <BtnCmp 
                             :background_type="'_secondary'"
                             :text="'Отмена'"
+                            @click="$router.go(-1)"
                         />
                         <BtnCmp 
                             :text="'Создать'"
+                            @click="submitForm"
                         />
                     </div>
                 </div>
@@ -95,16 +110,21 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
+import axios from 'axios'
+import type { FormField } from '~/src/ts-interface/create-course-form'
 
 export default defineComponent({
     setup() {
         const open_guide = reactive({
-            value: false
+            value: false as boolean
         })
 
-        const form = reactive([
+        const form = reactive<FormField[]>([
             {
                 label: 'Язык',
+                type: 'lang',
+                value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Русский',
@@ -119,13 +139,31 @@ export default defineComponent({
             {
                 id: "course_name",
                 value: "",
-                type: "text",
-                pattern: '^([a-z0-9]+(?:[._-][a-z0-9]{1,50})*)@([a-z0-9]{4,31}(?:[.-][a-z0-9]{4,31})*.[a-z]{2,4})$',
+                type: "title",
                 label: "Название курса",
                 error: ""
             },
             {
                 label: 'Тип',
+                type: 'type',
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Асинхронный',
+                        active: false
+                    },
+                    {
+                        text: 'Синхронный',
+                        active: false
+                    }
+                ]
+            },
+            {
+                label: 'Формат',
+                type: 'format',
+                value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Онлайн',
@@ -138,7 +176,10 @@ export default defineComponent({
                 ]
             },
             {
-                label: 'Формат',
+                label: 'Приобретение',
+                type: "acquired",
+                value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Платно',
@@ -151,7 +192,10 @@ export default defineComponent({
                 ]
             },
             {
-                label: 'Покупка',
+                label: 'Доступ',
+                type: "access",
+                value: '',
+                error: '',
                 selector: [
                     {
                         text: 'Полный',
@@ -163,29 +207,60 @@ export default defineComponent({
                     }
                 ]
             },
-            {
-                label: 'Доступ',
-                selector: [
-                    {
-                        text: 'Русский',
-                        active: false
-                    },
-                    {
-                        text: 'Английский',
-                        active: false
-                    }
-                ]
-            },
         ])
 
         const openGuide = () => {
             open_guide.value = !open_guide.value
         }
 
+        const setValueSelector = (val: { type: string, value: string }) => {
+            form.find(field => field.type === val.type)!.value = val.value
+        }
+
+        const validCheck = (field: FormField) => {
+            console.log(field)
+            if(!field.value.length) {
+                field.error = 'Это поле обязательно к заполнению для авторизации'
+            } else {
+                field.error = ''
+            }
+        }
+        
+        const submitForm = () => {
+            let form_is_valid = true
+
+            form.forEach((field) => {
+                validCheck(field)
+                if (field.error) {
+                    form_is_valid = false
+                }
+            })
+
+            if (!form_is_valid) return
+
+            const course_data = {
+                languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                title: form[1].value,
+                courseFormat: form[2].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                courseType: form[3].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
+            }
+
+            axios
+                .post('admin/v1/course', course_data)
+                .catch((error) => {
+                    console.error('Ошибка при получении данных:', error)
+                })
+        }
+
         return {
             open_guide,
             openGuide,
-            form
+            form,
+            submitForm,
+            setValueSelector,
+            validCheck
         }
     }
 })
@@ -201,7 +276,7 @@ export default defineComponent({
             &__container 
                 display: flex
                 flex-direction: column
-                gap: rem(12)
+                gap: rem(16)
                 margin-bottom: rem(32)
             
             &__title 
@@ -212,7 +287,6 @@ export default defineComponent({
                 padding: rem(16) rem(24)
                 border: rem(1) solid $dark_warning
                 background-color: rgba(249, 173, 78, 0.0509803922)
-
                 @include flex_start()
                 margin-bottom: rem(24)
                 gap: rem(12)
@@ -223,7 +297,6 @@ export default defineComponent({
 
                 &__icon
                     padding: rem(12)
-
                     background-color: #F9AD4E1A
                     border-radius: 50%
 
@@ -232,6 +305,7 @@ export default defineComponent({
                 border-radius: rem(8)
                 margin-bottom: rem(24)
                 &__title
+                    border-radius: rem(8)
                     padding: rem(16) rem(24)
                     position: relative 
                     @include flex_start()
@@ -243,6 +317,10 @@ export default defineComponent({
                         top: 50%
                         right: rem(24)
                         transform: translateY(-50%)
+                        svg
+                            transition: transform .2s
+                            &._active
+                                transform: rotate(180deg)
                 
                 &__text 
                     padding: rem(24) rem(48)
@@ -263,6 +341,4 @@ export default defineComponent({
             &__btns 
                 @include flex_center_spacing()
                 gap: rem(12)
-
-
 </style>

@@ -1,7 +1,22 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: input_value && input_value.length }]">{{ label }}</label>
-        <input v-model="input_value" :type="type" @input="setValue" />
+        <input 
+            v-if="$props.mask_type" 
+            v-model="input_value" 
+            :type="type" 
+            @keyup="setValue" 
+            v-mask="mask" 
+            :placeholder="placeholder"
+        />
+        <input 
+            v-else 
+            v-model="input_value" 
+            :type="type" 
+            @keyup="setValue" 
+            :placeholder="placeholder"
+            :maxlength="maxlength"
+        />
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +34,7 @@ export default defineComponent({
     props: {
         label: {
             type: String,
-            default: 'Text',
+            default: '',
         },
         type: {
             type: String,
@@ -29,6 +44,21 @@ export default defineComponent({
             type: String,
             default: '',
         },
+        mask_type: {
+            type: String,
+            default: '', // 'date', 'price'
+        },
+        placeholder: {
+            type: String,
+            default: ''
+        },
+        date_calendar: {
+            type: String || Number,
+            default: '',
+        },
+        maxlength: {
+            type: Number,
+            default: null
         modelValue: {
             type: String,
             default: '',
@@ -38,13 +68,34 @@ export default defineComponent({
     setup(props, { emit }) {
         const input_value = ref(props.modelValue)
 
+        watch(() => props.date_calendar, (new_date) => {
+            input_value.value = new_date
+        })
+
         const setValue = () => {
             emit('set', input_value.value)
         }
 
+        const mask_price = computed(() => {
+            if (input_value.value.length === 5) return '# ###'
+            if (input_value.value.length === 6) return '## ###'
+            // if (input_value.value.length === 9) return '# ### ###'
+            // if (input_value.value.length === 10) return '## ### ###'
+            return '### ###'
+        })
+        
+        // const mask_date = '##.##.##'
+
+        const mask = computed(() => {
+            if (props.mask_type === 'price') return mask_price.value
+        })
+
         return {
             input_value,
             setValue,
+            mask_price,
+            // mask_date,
+            mask
         }
     },
 })
@@ -87,6 +138,8 @@ export default defineComponent({
         line-height: rem(24)
         width: 100%
         height: 100%
+        &::placeholder
+            color: #9AA7BB
 
     &:hover
         border-color: $basic_gray

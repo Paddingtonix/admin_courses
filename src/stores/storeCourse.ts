@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useStoreCourses = defineStore('courseState', {
     state: () => ({
+        // МОДАЛЬНЫЕ ОКНА
         // курс создан
         createCourse: true,
         // в разработке
@@ -16,9 +17,15 @@ export const useStoreCourses = defineStore('courseState', {
         published: false,
         // снят с витрины
         removed: false,
-        // в архивк
+        // в архиве
         archived: false,
         // удаление курса
-        deleteCourse: false
+        deleteCourse: false,
+
+        // CardInfo data
+        price: 'paid', //free
+        // price: 'free', //free
+        type: 'synchronous', //asynchronous
+
     })
 })

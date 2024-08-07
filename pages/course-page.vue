@@ -149,6 +149,10 @@ export default defineComponent({
                 count: 0,
                 text: 'Снят с витрины'
             },
+            {
+                count: 0,
+                text: 'В архиве'
+            },
         ])
 
         const filter_course = reactive({
@@ -247,11 +251,19 @@ export default defineComponent({
         })
 
         const course_list = reactive({
-            value: []
+            value: [] as Array<{
+                name: string,
+                status: string,
+                email: string,
+                direction: string,
+                lang: string,
+                edit_data: string,
+                end_data: string
+            }>
         })
 
         const filter_frame = reactive({
-            value: false
+            value: false as boolean
         })
 
         const openFilter = (state: boolean) => {
@@ -266,8 +278,6 @@ export default defineComponent({
             axios
                 .get('/api/course_list.json')
                 .then(resp => {
-                    console.log(resp);
-                    
                     course_list.value = resp.data.courses
                 })
         })
