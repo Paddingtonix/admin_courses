@@ -28,7 +28,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, computed } from 'vue'
 
 export default defineComponent({
     props: {
@@ -58,7 +58,8 @@ export default defineComponent({
         },
         maxlength: {
             type: Number,
-            default: null
+            default: null,
+        },
         modelValue: {
             type: String,
             default: '',
@@ -73,7 +74,7 @@ export default defineComponent({
         })
 
         const setValue = () => {
-            emit('set', input_value.value)
+            emit('set', { value: input_value.value, type: props.type })
         }
 
         const mask_price = computed(() => {
@@ -146,6 +147,6 @@ export default defineComponent({
         label
             color: $basic_gray
 
-    &::focus
+    &:focus
         border-color: $light_primary
 </style>

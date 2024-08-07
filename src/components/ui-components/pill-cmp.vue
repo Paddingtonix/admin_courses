@@ -35,7 +35,7 @@ export default defineComponent({
         &__inner
             font-family: $font-family-inter
             font-weight: 700
-            color: $basic_tab
+            color: $basic_text
             font-size: rem(12)
             padding: rem(4) rem(8)
             white-space: nowrap

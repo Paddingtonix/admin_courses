@@ -28,9 +28,9 @@ export default defineComponent({
     setup(props, { emit }) {
         const inputValue = ref(props.modelValue)
 
-        const setValue = (value: string) => {
-            inputValue.value = value
-            emit('update:modelValue', value)
+        const setValue = (payload: { value: string, type: string }) => {
+            inputValue.value = payload.value
+            emit('update:modelValue', payload.value)
         }
 
         return {
