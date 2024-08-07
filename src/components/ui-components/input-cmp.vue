@@ -127,6 +127,12 @@ export default defineComponent({
         label
             color: $basic_error
 
+        input::placeholder
+            color: $basic_error
+
+        &:hover
+            border-color: $basic_error
+
     input
         font-size: rem(16)
         font-style: normal

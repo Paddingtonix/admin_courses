@@ -4,7 +4,7 @@ export const useStoreCourses = defineStore('courseState', {
     state: () => ({
         // МОДАЛЬНЫЕ ОКНА
         // курс создан
-        createCourse: true,
+        createCourse: false,
         // в разработке
         development: false,
         // на модерации

@@ -101,11 +101,11 @@
                     <TableRowCmp 
                         v-for="(row, idx) in course_list.value"
                         :key="idx"
-                        :name="row.name"
+                        :name="row.title"
                         :status="row.status"
-                        :authors="row.email"
-                        :direction="row.direction"
-                        :lang="row.lang"
+                        :authors="row.authorEmails[0]"
+                        :direction="formatDirectionToString(row.direction)"
+                        :lang="row.language"
                         :date_edit="row.edit_data"
                         :end_date="row.end_data"
                     />
@@ -120,8 +120,8 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 export default defineComponent({
@@ -252,11 +252,11 @@ export default defineComponent({
 
         const course_list = reactive({
             value: [] as Array<{
-                name: string,
+                title: string,
                 status: string,
-                email: string,
-                direction: string,
-                lang: string,
+                authorEmails: string[],
+                direction: string[],
+                language: string,
                 edit_data: string,
                 end_data: string
             }>
@@ -265,6 +265,12 @@ export default defineComponent({
         const filter_frame = reactive({
             value: false as boolean
         })
+
+
+        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕНН
+        const formatDirectionToString = (arr: string[]): string => {
+            return arr ? arr.join(', ') : '--'
+        }
 
         const openFilter = (state: boolean) => {
             filter_frame.value = state
@@ -275,11 +281,17 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            axios
-                .get('/api/course_list.json')
-                .then(resp => {
-                    course_list.value = resp.data.courses
-                })
+            nextTick(() => {
+                axios
+                    // .get('/api/course_list.json')
+                    .get('/admin/v1/Course')
+                    .then(resp => {
+                        console.log(resp.data, 'course_list');
+                        course_list.value = resp.data.courses
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Всего').count = resp.data.courses.length ?? 0
+                        // console.log(course_info.find((element: { count: Number, text: String }) => element.text === 'Всего'), 'ya');
+                    })
+            })
         })
 
         return {
@@ -288,7 +300,8 @@ export default defineComponent({
             course_list,
             filter_course,
             filter_frame,
-            openFilter
+            openFilter,
+            formatDirectionToString
         }
     }
 })

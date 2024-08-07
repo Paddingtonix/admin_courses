@@ -33,76 +33,74 @@
             </div>
             <div class="oil-create-course__form__fields">
                 <span class="oil-create-course__form__fields__title">Параметры курса</span>
-                <div>
-                    <div class="oil-create-course__form__fields__attention">
-                        <i class="oil-create-course__form__fields__attention__icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                                <path d="M20.0002 15.0004V21.667M20.0002 28.3337H20.0169M17.6924 6.48659L3.9843 30.1643C3.22395 31.4776 2.84378 32.1343 2.89997 32.6732C2.94898 33.1433 3.19527 33.5705 3.57753 33.8484C4.01579 34.167 4.77456 34.167 6.2921 34.167H33.7084C35.2259 34.167 35.9847 34.167 36.423 33.8484C36.8052 33.5705 37.0515 33.1433 37.1005 32.6732C37.1567 32.1343 36.7765 31.4776 36.0162 30.1643L22.308 6.48658C21.5504 5.17798 21.1716 4.52368 20.6774 4.30392C20.2463 4.11223 19.7542 4.11223 19.3231 4.30392C18.8289 4.52368 18.4501 5.17798 17.6924 6.48659Z" stroke="#F9AD4E" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                <div class="oil-create-course__form__fields__attention">
+                    <i class="oil-create-course__form__fields__attention__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20.0002 15.0004V21.667M20.0002 28.3337H20.0169M17.6924 6.48659L3.9843 30.1643C3.22395 31.4776 2.84378 32.1343 2.89997 32.6732C2.94898 33.1433 3.19527 33.5705 3.57753 33.8484C4.01579 34.167 4.77456 34.167 6.2921 34.167H33.7084C35.2259 34.167 35.9847 34.167 36.423 33.8484C36.8052 33.5705 37.0515 33.1433 37.1005 32.6732C37.1567 32.1343 36.7765 31.4776 36.0162 30.1643L22.308 6.48658C21.5504 5.17798 21.1716 4.52368 20.6774 4.30392C20.2463 4.11223 19.7542 4.11223 19.3231 4.30392C18.8289 4.52368 18.4501 5.17798 17.6924 6.48659Z" stroke="#F9AD4E" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </i>
+                    <p>Внимание! После сохранения изменений, редактирование параметров будет невозможно.</p>
+                </div>
+                <div class="oil-create-course__form__fields__guide">
+                    <div class="oil-create-course__form__fields__guide__title" @click="openGuide">
+                        <i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </i>
-                        <p>Внимание! После сохранения изменений, редактирование параметров будет невозможно.</p>
+                        <span>Как правильно задать параметры курса?</span>
+                        <i class="oil-create-course__form__fields__guide__title__chevron">
+                            <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </i>
                     </div>
-                    <div class="oil-create-course__form__fields__guide">
-                        <div class="oil-create-course__form__fields__guide__title" @click="openGuide">
-                            <i>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </i>
-                            <span>Как правильно задать параметры курса?</span>
-                            <i class="oil-create-course__form__fields__guide__title__chevron">
-                                <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </i>
-                        </div>
-                        <div class="oil-create-course__form__fields__guide__text" v-if="open_guide.value">
-                            <ul>
-                                <span>Типы курса</span>
-                                <li>Асинхронный — обучение, не привязанное к конкретному времени или месту</li>
-                                <li>Синхронный — обучение проходит в режиме реального времени сразу для всех</li>
-                            </ul>
-                            <ul>
-                                <span>Формат курса</span>
-                                <li>Онлайн — обучение происходит с помощью интернета и электронных технологий</li>
-                                <li>Оффлайн — обучение предполагает получение знаний в стенах учебного заведения</li>
-                            </ul>
-                            <ul>
-                                <span>Покупка</span>
-                                <li>Платно — платный курс</li>
-                                <li>Бесплатно — бесплатный курс</li>
-                            </ul>
-                            <ul>
-                                <span>Доступ</span>
-                                <li>Полный — пользователь может купить курс только целиком</li>
-                                <li>Частичный — пользователь может купить курс частично (по главам) или целиком</li>
-                            </ul>
-                        </div>
+                    <div class="oil-create-course__form__fields__guide__text" v-if="open_guide.value">
+                        <ul>
+                            <span>Типы курса</span>
+                            <li>Асинхронный — обучение, не привязанное к конкретному времени или месту</li>
+                            <li>Синхронный — обучение проходит в режиме реального времени сразу для всех</li>
+                        </ul>
+                        <ul>
+                            <span>Формат курса</span>
+                            <li>Онлайн — обучение происходит с помощью интернета и электронных технологий</li>
+                            <li>Оффлайн — обучение предполагает получение знаний в стенах учебного заведения</li>
+                        </ul>
+                        <ul>
+                            <span>Покупка</span>
+                            <li>Платно — платный курс</li>
+                            <li>Бесплатно — бесплатный курс</li>
+                        </ul>
+                        <ul>
+                            <span>Доступ</span>
+                            <li>Полный — пользователь может купить курс только целиком</li>
+                            <li>Частичный — пользователь может купить курс частично (по главам) или целиком</li>
+                        </ul>
                     </div>
-                    <div class="oil-create-course__form__fields__container">
-                        <template v-for="(field, idx) in form.slice(2)" :key="idx">
-                            <selectorCmp 
-                                v-if="field.selector?.length"
-                                :label="field.label"
-                                :list="field.selector"
-                                :type="field.type"
-                                :error="field.error"
-                                @set="setValueSelector"
-                                @blur="validCheck(field)"
-                            />
-                        </template>
-                    </div>
-                    <div class="oil-create-course__form__fields__btns">
-                        <BtnCmp 
-                            :background_type="'_secondary'"
-                            :text="'Отмена'"
-                            @click="$router.go(-1)"
+                </div>
+                <div class="oil-create-course__form__fields__container">
+                    <template v-for="(field, idx) in form.slice(2)" :key="idx">
+                        <selectorCmp 
+                            v-if="field.selector?.length"
+                            :label="field.label"
+                            :list="field.selector"
+                            :type="field.type"
+                            :error="field.error"
+                            @setValue="setValueSelector"
+                            @blur="validCheck(field)"
                         />
-                        <BtnCmp 
-                            :text="'Создать'"
-                            @click="submitForm"
-                        />
-                    </div>
+                    </template>
+                </div>
+                <div class="oil-create-course__form__fields__btns">
+                    <BtnCmp 
+                        :background_type="'_secondary'"
+                        :text="'Отмена'"
+                        @click="$router.go(-1)"
+                    />
+                    <BtnCmp 
+                        :text="'Создать'"
+                        @click="submitForm"
+                    />
                 </div>
             </div>
         </div>
@@ -112,9 +110,14 @@
 import { defineComponent } from 'vue'
 import axios from 'axios'
 import type { FormField } from '~/src/ts-interface/create-course-form'
+import { useStoreCourses } from '@/src/stores/storeCourse'
+import { useStoreModal } from '@/src/stores/storeModal'
 
 export default defineComponent({
     setup() {
+        const storeCourses = useStoreCourses()
+        const storeModal = useStoreModal()
+
         const open_guide = reactive({
             value: false as boolean
         })
@@ -137,7 +140,6 @@ export default defineComponent({
                 ]
             },
             {
-                id: "course_name",
                 value: "",
                 type: "title",
                 label: "Название курса",
@@ -249,6 +251,12 @@ export default defineComponent({
 
             axios
                 .post('admin/v1/course', course_data)
+                .then(response => {
+                    console.log(response, 'course-create')
+                    if(response.data) {
+                        storeModal.isOpen
+                    }
+                })
                 .catch((error) => {
                     console.error('Ошибка при получении данных:', error)
                 })
@@ -260,7 +268,9 @@ export default defineComponent({
             form,
             submitForm,
             setValueSelector,
-            validCheck
+            validCheck,
+            storeCourses,
+            storeModal
         }
     }
 })

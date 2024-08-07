@@ -138,4 +138,8 @@ export default defineComponent({
         background-color: #F845440D
         label
             color: $basic_error
+        
+        .oil-selector__chooses__chevron
+            path
+                stroke: $basic_error
 </style>

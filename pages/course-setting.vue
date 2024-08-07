@@ -122,37 +122,37 @@
                                     <span>{{ column.authors }}</span>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1]">{{ column.price }}</span>
+                                    <span v-if="course_table[1].price">{{ column.price }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1]">{{ column.duration }}</span>
+                                    <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1]">{{ column.workload }}</span>
+                                    <span v-if="course_table[1].workload">{{ column.workload }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 50</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1]">{{ column.start_date }}</span>
-                                    <span v-if="course_table[1]">—</span>
-                                    <span v-if="course_table[1]">{{ column.end_date }}</span>
+                                    <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.start_date }}</span>
+                                    <span v-if="course_table[1].start_date && course_table[1].end_date">—</span>
+                                    <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.end_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.01.24 — 01.02.24</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1]">{{ column.removed_date }}</span>
+                                    <span v-if="course_table[1].removed_date">{{ column.removed_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.02.24</span>
@@ -426,14 +426,23 @@ export default defineComponent({
                 direction: 'Направление'
             },
             {
-                authors: 'michael.smith@gmail.com',
-                price: ' 99 999',
-                duration: '100',
-                workload: '50',
-                start_date: '01.01.24',
-                end_date: '01.02.24',
-                removed_date: '01.02.24'
+                authors: '',
+                price: '',
+                duration: '',
+                workload: '',
+                start_date: '',
+                end_date: '',
+                removed_date: ''
             }
+            // {
+            //     authors: 'michael.smith@gmail.com',
+            //     price: '99 999',
+            //     duration: '100',
+            //     workload: '50',
+            //     start_date: '01.01.24',
+            //     end_date: '01.02.24',
+            //     removed_date: '01.02.24'
+            // },
         ])
 
 
@@ -611,11 +620,13 @@ export default defineComponent({
                         console.error('Ошибка при получении данных:', error)
                     })
 
-                // axios
-                //     .get('admin/v1/user/authors')
-                //     .then((response) => {
-                //         console.log(response, 'admin/v1/user/authors')
-                //     })
+                axios
+                    .get('admin/v1/user/authors')
+                    // .get('/admin/v1/Course/9')
+                    .then((response) => {
+                        course_table[1].authors = response.data[0]
+                        // console.log(response, 'response');
+                    })
             })
 
 
