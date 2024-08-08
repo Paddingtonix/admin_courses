@@ -51,39 +51,48 @@
       }
     },
     emits: ['change-page'],
-    setup(props, { emit }) {
-      const numberOfPages = ref(props.pages_count);
-      const pagesArray = ref<number[]>([]);
-      
-      const currentPage = ref(props.currentPage);
-  
-      const updatePagesArray = (pagesCount: number | null) => {
-        pagesArray.value = Array.from({ length: pagesCount ? pagesCount : 0 }, (_, i) => i + 1);
-      };
-  
-      const changePage = (page: number) => {
-          emit('change-page', page);
-          currentPage.value = page;
-      };
-  
-      watch(
-        () => props.pages_count,
-        (newVal) => {
-          numberOfPages.value = newVal;
-          updatePagesArray(newVal);
-        },
-        { immediate: true }
-      );
-  
-      return {
-        pagesArray,
-        numberOfPages,
-        changePage,
-        currentPage
-      };
-    }
-  });
-  </script>
+  setup(props, { emit }) {
+    const numberOfPages = ref(props.pages_count);
+    const localCurrentPage = ref(props.currentPage);
+    
+    const pagesArray = ref<number[]>([]);
+
+
+    const updatePagesArray = (pagesCount: number | null) => {
+      pagesArray.value = Array.from({ length: pagesCount ? pagesCount : 0 }, (_, i) => i + 1);
+    };
+
+    const changePage = (page: number) => {
+      localCurrentPage.value = page;
+      emit('change-page', page);
+    };
+
+    watch(
+      () => props.pages_count,
+      (newVal) => {
+        numberOfPages.value = newVal;
+        updatePagesArray(newVal);
+      },
+      { immediate: true }
+    );
+
+
+    watch(
+      () => props.currentPage,
+      (newVal) => {
+        localCurrentPage.value = newVal;
+      }
+    );
+
+    return {
+      pagesArray,
+      numberOfPages,
+      changePage,
+      localCurrentPage
+    };
+  }
+});
+</script>
 <style lang="sass">
 .oil-pagination
     max-width: rem(292)

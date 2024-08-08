@@ -28,7 +28,7 @@
   </template>
   <template v-if="headersStore.$state.numberOfPages">
     <div class="tags-page__pagination-wrapper">
-      <PaginationCmp :pages_count="headingsData.numberOfPages" @change-page="goToPage($event)"/>
+      <PaginationCmp :currentPage="headingsData.currentPage" :pages_count="headingsData.numberOfPages" @change-page="goToPage($event)"/>
       <SelectorCmp class="tags-page__selector" label="10 разделов на стр." :list="list" />
     </div>
   </template>
