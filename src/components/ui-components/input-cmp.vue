@@ -1,7 +1,7 @@
 <template>
     <div class="oil-input" :class="{ '_error-frame': error.length }">
         <label :class="['oil-input__label', { _fill: modelValue && modelValue.length }]">{{ label }}</label>
-        <input :type="type" :value="modelValue" @input="updateValue" />
+        <input :type="type" @input="setValue" v-model="inputValue" />
         <div class="oil-input__message" v-if="error.length">
             <i>
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,18 +35,22 @@ export default defineComponent({
             default: '',
         },
     },
-    emits: ['update:modelValue'],
+    emits: ['set_value'],
     setup(props, { emit }) {
         const { modelValue } = toRefs(props);
+        console.log(modelValue);
 
-        const updateValue = (event: Event) => {
-            const value = (event.target as HTMLInputElement).value;
-            emit('update:modelValue', value);
-        };
-
+        const inputValue = ref('');
+        
+        
+        const setValue = () => {
+            emit('set_value', inputValue.value)
+        }
+    
         return {
             modelValue,
-            updateValue,
+            inputValue,
+            setValue
         };
     },
 });

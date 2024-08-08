@@ -7,7 +7,7 @@
         <textarea 
             v-model="textarea_value" 
             :type="type" 
-            @keyup="setValue"
+            @input="setValue"
             
         />
     </div>
@@ -30,11 +30,13 @@ export default defineComponent({
             default: '',
         }
     },
+    emits:['set_textarea'],
+
     setup(props, { emit }) {
         const textarea_value = ref<string>('')
 
         const setValue = () => {
-            emit('set', { value: textarea_value.value, type: props.type })
+            emit('set_textarea', textarea_value.value)
         }
 
         return {

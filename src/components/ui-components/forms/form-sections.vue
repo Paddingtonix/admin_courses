@@ -1,7 +1,7 @@
 <template>
     <form class="add-section" action="#">
-        <InputCmp v-model="formModel.name" class="add-section__input" label="Название раздела"></InputCmp>
-        <TextareaCmp v-model="formModel.description" class="add-section__text-area" label="Описание раздела"></TextareaCmp>
+        <InputCmp :model-value="formModel.name" class="add-section__input" label="Название раздела" @set_value="formModel.name = $event"></InputCmp>
+        <TextareaCmp :model-value="formModel.description" class="add-section__text-area" @set_textarea="formModel.description = $event" label="Описание раздела"></TextareaCmp>
         <div class="add-section__button-wrapper">
             <BtnCmp type="button" background_type="_secondary" text="Отмена" @click="closeModal"></BtnCmp>
             <BtnCmp type="submit" text="Добавить" @click.prevent="sendForm"></BtnCmp>
@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts" setup>
-import axios from 'axios';
+import { useHeadersStore } from '~/src/stores/storeSections';
+
 
 
 const { closeModal } = defineProps({
@@ -20,24 +21,22 @@ const { closeModal } = defineProps({
     }
 })
 
-const formModel: {[key: string]: string} = reactive({
+const formModel = reactive({
     name: '',
     description: ''
 });
 
-console.log(formModel)
+const headersStore = useHeadersStore();
 
 const sendForm = () => {
-    axios.post('admin/v1/heading', formModel)
-    .then((res)=> {
-        console.log('zbs ', res);
+    headersStore.postHeading(formModel)
+    .then(()=>{
+        closeModal();
     })
-    .catch(error => {
-        console.log('nezbs ', error);
+    .catch((err)=>{
+        console.error('EBANAYA OSHIBKA ', err);
     })
-    .finally(
-        // TODO: ADD_LOADER
-    )
+    
 }
 
 </script>

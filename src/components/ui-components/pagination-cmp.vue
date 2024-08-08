@@ -1,45 +1,96 @@
 <template>
     <div class="oil-pagination">
+      <template v-if="pagesArray.length > 6">
         <div 
-            class="oil-pagination__cell" 
-            v-for="(page, idx) in pagesArray.value.slice(0, 3)" 
-            :key="idx"
-            :class="{ _active: true }"
+          class="oil-pagination__cell" 
+          v-for="(page, idx) in pagesArray.slice(0, 3)" 
+          :key="idx"
+          :class="{ _active: currentPage === page }"
+          @click="changePage(page)"
         >
-            <span>{{ page }}</span>
+          <span>{{ page }}</span>
         </div>
-        <span class="oil-pagination__cell" v-if="pagesArray.value.length > 6">...</span>
+    
+        <span class="oil-pagination__cell">...</span>
         <div 
-            class="oil-pagination__cell" 
-            v-for="(page, idx) in pagesArray.value.slice(-3)" 
-            :key="idx"
-            :class="{ _active: true }"
+          class="oil-pagination__cell" 
+          v-for="(page, idx) in pagesArray.slice(-3)" 
+          :key="idx"
+          :class="{ _active: currentPage === page }"
+          @click="changePage(page)"
         >
-            <span>{{ page }}</span>
+          <span>{{ page }}</span>
         </div>
+      </template>
+      <template v-else>
+        <div 
+          class="oil-pagination__cell" 
+          v-for="(page, idx) in pagesArray" 
+          :key="idx"
+          @click="changePage(page)"
+          :class="{ _active: currentPage === page }"
+        >
+          <span>{{ page }}</span>
+        </div>
+      </template>
     </div>
-</template>
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
+  </template>
+  
+  <script lang="ts">
+  import { defineComponent, ref, watch } from 'vue';
+  
+  export default defineComponent({
     props: {
-        pages_count: {
-            type: Number,
-            default: 0
-        }
+      pages_count: {
+        type: [Number, null] as PropType<null | number>,
+        required: true
+      },
+      currentPage: {
+        type: Number,
+        default: 1
+      }
     },
-    setup(props) {
-        const pagesArray = reactive({
-            value: Array.from({ length: props.pages_count }, (_, i) => i + 1)
-        })
+    emits: ['change-page'],
+    setup(props, { emit }) {
+      const numberOfPages = ref(props.pages_count);
+      const pagesArray = ref<number[]>([]);
+      
+      const currentPage = ref(props.currentPage);
+  
+      const updatePagesArray = (pagesCount: number | null) => {
+        pagesArray.value = Array.from({ length: pagesCount ? pagesCount : 0 }, (_, i) => i + 1);
+      };
+  
+      const changePage = (page: number) => {
+        emit('change-page', page);
+      };
+  
+      watch(
+        () => props.pages_count,
+        (newVal) => {
+          numberOfPages.value = newVal;
+          updatePagesArray(newVal);
+        },
+        { immediate: true }
+      );
+
+      watch(
+      () => props.currentPage,
+      (newVal) => {
+        currentPage.value = newVal;
         
-        return {
-            pagesArray
-        }
+      }
+    );
+  
+      return {
+        pagesArray,
+        numberOfPages,
+        changePage,
+        currentPage
+      };
     }
-})
-</script>
+  });
+  </script>
 <style lang="sass">
 .oil-pagination
     max-width: rem(292)
@@ -51,10 +102,13 @@ export default defineComponent({
         height: rem(40)
 
         border-radius: 50%
+        cursor: pointer
         @include flex_center()
         span 
             font-size: rem(14)
 
-        &._active 
+        &._active
             background-color: #E5F0FB
+            *
+                color: #176DC1
 </style>

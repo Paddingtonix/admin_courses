@@ -1,7 +1,7 @@
 <template>
     <div class="oil-row">
         <template v-for="field in fields">
-            <div class="oil-row__cell" v-if="field.length" :key="field">
+            <div class="oil-row__cell" v-if="field" :key="field">
                 <a>{{ field }}</a>
             </div>
         </template>
@@ -18,7 +18,7 @@ export default defineComponent({
             default: ''
         },
         status: {
-            type: String,
+            type: [String, Number],
             default: ''
         },
         authors: {
