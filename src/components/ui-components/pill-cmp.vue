@@ -1,7 +1,7 @@
 <template>
     <div class="oil-pill">
         <div class="oil-pill__inner">
-            {{ text }}: {{ value }}
+            <span>{{ text }}: {{ value }}</span>
         </div>
     </div>
 </template>
@@ -33,10 +33,9 @@ export default defineComponent({
         background-color: $disabled_basic
 
         &__inner
-            font-family: $font-family-inter
-            font-weight: 700
             color: $basic_text
             font-size: rem(12)
+            font-weight: 700
             padding: rem(4) rem(8)
             white-space: nowrap
 </style>

@@ -13,6 +13,10 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
+        edit_date: {
+            type: String,
+            default: ''
+        },
         name: {
             type: String,
             default: ''
@@ -46,8 +50,8 @@ export default defineComponent({
             default: false
         },
         courses_number: {
-            type: Number,
-            default: 0
+            type: [String, Number],
+            default: ''
         },
     },
     setup(props) {

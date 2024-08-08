@@ -18,6 +18,10 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
+        edit_date: {
+            type: String,
+            default: ''
+        },
         name: {
             type: String,
             default: ''
@@ -48,10 +52,10 @@ export default defineComponent({
         },
         display_page: {
             type: Boolean,
-            default: ''
+            default: false
         },
         courses_number: {
-            type: Number,
+            type: [String, Number],
             default: ''
         },
     },
@@ -74,6 +78,7 @@ export default defineComponent({
         cursor: pointer
         & > *
             font-size: rem(12)
+            color: $basic_table_header
 
         &:nth-child(1)
             flex: 4
