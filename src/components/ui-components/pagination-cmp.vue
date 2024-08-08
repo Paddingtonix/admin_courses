@@ -62,7 +62,8 @@
       };
   
       const changePage = (page: number) => {
-        emit('change-page', page);
+          emit('change-page', page);
+          currentPage.value = page;
       };
   
       watch(
@@ -73,14 +74,6 @@
         },
         { immediate: true }
       );
-
-      watch(
-      () => props.currentPage,
-      (newVal) => {
-        currentPage.value = newVal;
-        
-      }
-    );
   
       return {
         pagesArray,
