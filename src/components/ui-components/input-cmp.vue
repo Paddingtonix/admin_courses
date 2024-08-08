@@ -38,11 +38,9 @@ export default defineComponent({
     emits: ['set_value'],
     setup(props, { emit }) {
         const { modelValue } = toRefs(props);
-        console.log(modelValue);
+        
+        const inputValue = ref(!modelValue ? '' : modelValue.value);
 
-        const inputValue = ref('');
-        
-        
         const setValue = () => {
             emit('set_value', inputValue.value)
         }
@@ -102,6 +100,6 @@ export default defineComponent({
         label
             color: $basic_gray
 
-    &::focus
+    &:focus-within
         border-color: $light_primary
 </style>

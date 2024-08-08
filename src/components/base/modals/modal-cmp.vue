@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="oil-modal" v-if="storeModal.isOpen">
         <div class="oil-modal__container-auth" v-if="modalComponent === 'auth-modal'">
             <component :main_class="'oil-modal'" :is="modalComponent"></component>
@@ -17,6 +17,25 @@
             </div>
             <div class="oil-modal__container__content">
                 <component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component>
+            </div>
+        </div>
+    </div>
+</template> -->
+
+<template>
+    <div class="oil-modal" v-if="storeModal.isOpen">
+        <div class="oil-modal__container">
+            <div class="oil-modal__container__header">
+                <span class="oil-modal__container__header__title">{{ title }}</span>
+                <button class="oil-modal__container__header__btn-close" @click="closeModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="oil-modal__container__content" v-if="modalComponent === 'form-sections'">
+                <!-- <component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component> -->
+                 <slot class="oil-modal" :closeModal="closeModal" name="content"/>
             </div>
         </div>
     </div>

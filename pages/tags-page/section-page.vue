@@ -2,8 +2,13 @@
   <button style="display: absolute; top: 0; left: 0; border: solid black 2px;" @click="startAbomination">START ABOMINATION!</button>
   <div class="section-page">
     <div class="section-page__widget-wrapper">
-      <SearchCmp class="section-page__search" label="Поиск"/>
-      <BtnCmp class="tags-page__add-tag-btn" background_type="_tertiary" text="Добавить раздел" @click="openAddSection">
+      <SearchCmp 
+      :modelValue="searchValue" 
+      class="section-page__search" 
+      label="Поиск" 
+      @change-value="updateSearchValue($event)"/>
+
+      <BtnCmp class="tags-page__add-tag-btn" background_type="_tertiary" text="Добавить раздел" @click="openModalSection">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -16,7 +21,13 @@
     :lang="'Кол-во меток'"
   />
   <template v-for="data in headersStore.$state.headings" :key="data.id">
-    <TableRowCmp class="section-table-row" :name="data.name" :authors="data.description" :status="data.labelsCount || '0'">
+    <TableRowCmp 
+    class="section-table-row" 
+    :name="data.name" 
+    :authors="data.description" 
+    :status="data.labelsCount || '0'"
+    @click="setHeaderData(data)"
+    >
     <template v-slot:svg>
       <i class="section-table-row__svg" @click="deleteSection(data.id)">
         <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -34,8 +45,12 @@
   </template>
   </div>
   <Teleport to="body">
-    <ModalCmp modalComponent="form-sections" title="Добавление раздела">
-      
+    <ModalCmp
+    modalComponent="form-sections" 
+    :title="!headerData.id ? 'Добавление раздела' : 'Редактирование раздела'">
+      <template v-slot:content="{closeModal}">
+        <FormsFormSections :close-modal="()=>{closeModal(); clearHeaderData()}" :element-data="headerData"/>
+      </template>
     </ModalCmp>
   </Teleport>
 </template>
@@ -43,6 +58,7 @@
 <script lang="ts" setup>
 import { useStoreModal } from '~/src/stores/storeModal';
 import { useHeadersStore } from '~/src/stores/storeSections';
+import type { IHeading } from '~/src/ts-interface/storeTags.type';
 
 const list = [
   { text: 10 },
@@ -57,7 +73,24 @@ const headersStore = useHeadersStore();
 
 const headingsData = headersStore.$state;
 
-const openAddSection = () => {
+const searchValue = ref('');
+
+const headerData = ref({} as IHeading);
+
+const setHeaderData = (data: IHeading) => {
+    headerData.value = data;
+    openModalSection();
+}
+
+const updateSearchValue = (value: string) => {
+    searchValue.value = value;
+}
+
+const clearHeaderData = () => {
+    headerData.value = {} as IHeading;
+}
+
+const openModalSection = () => {
   modalStore.openModal();
 }
 

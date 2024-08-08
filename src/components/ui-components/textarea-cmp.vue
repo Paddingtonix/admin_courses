@@ -28,12 +28,17 @@ export default defineComponent({
         type: {
             type: String,
             default: '',
-        }
+        },
+        modelValue: {
+            type: String,
+            default: ''
+        },
     },
     emits:['set_textarea'],
 
     setup(props, { emit }) {
-        const textarea_value = ref<string>('')
+        const { modelValue } = toRefs(props);
+        const textarea_value = ref<string>(!modelValue ? '' : modelValue.value);
 
         const setValue = () => {
             emit('set_textarea', textarea_value.value)
