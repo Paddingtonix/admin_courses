@@ -169,7 +169,7 @@ export const useHeadersStore = defineStore({
   }),
 
   actions: {
-    getHeadings(page = 0, nHeadingsPerPage = 10) {
+    getHeadings({page = 0, nHeadingsPerPage = 10}) {
       axios.get(`/admin/v1/heading?page=${page}&nHeadingsPerPage=${nHeadingsPerPage}`)
         .then((response) => {
           const data = response.data as IStoreTags;
@@ -190,7 +190,7 @@ export const useHeadersStore = defineStore({
     postHeading(formData: { name: string, description: string }) {
       return axios.post('admin/v1/heading', formData)
         .then(() => {
-          return this.getHeadings();
+          return this.getHeadings({});
         })
         .catch(error => {
           console.error('Ошибка при добавлении раздела:', error);
@@ -215,13 +215,30 @@ export const useHeadersStore = defineStore({
       }
     },
 
-    deleteHeading(id: number) {
-      axios.delete(`admin/v1/heading/${id}`)
+    deleteHeading (id: number) {
+      return axios.delete(`admin/v1/heading/${id}`)
         .then(() => {
-          this.getHeadings(this.currentPage);
+          this.getHeadings({page: this.currentPage});
         })
         .catch(error => {
           console.error('Ошибка при удалении раздела:', error);
+        })
+        .finally(() => {
+          // TODO: ADD_LOADER
+        });
+    },
+    searchHeading(text: string) {
+      axios.get(`/admin/v1/heading?searchSubstring="${text}"`)
+        .then((response) => {
+          const data = response.data as IStoreTags;
+          this.$patch((state) => {
+            state.headings = data.headings;
+            state.numberOfPages = data.numberOfPages;
+          })
+          console.log(this.$state);
+        })
+        .catch(error => {
+          console.warn(error);
         })
         .finally(() => {
           // TODO: ADD_LOADER

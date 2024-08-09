@@ -29,7 +29,7 @@
 		@click="setHeaderData(data)"
 		>
 			<template v-slot:svg>
-				<i class="section-table-row__svg" @click.stop.capture="openModalDelete(data)">
+				<i class="section-table-row__svg" @click.stop="openModalDelete(data)">
 					<svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984" stroke="#FF7C7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 					</svg>
@@ -57,20 +57,21 @@
 				<ModalCmp
 					v-else
 					:modal-close="closeDeleteModal"
-					:title="modalDataDelete.labelsCount ? 'Внимание!' : 'Удаление раздела'"
+					:title="modalDataToDelete.labelsCount ? 'Внимание!' : 'Удаление раздела'"
 					>
 						<template v-slot:content>
 							<DeleteModal
+							:deleteData="()=>{deleteSection(modalDataToDelete.id)}"
 							:close-modal="closeDeleteModal"
 							>
 								<template v-slot:text="className">
 									<span
-									v-if="modalDataDelete.labelsCount" 
+									v-if="modalDataToDelete.labelsCount" 
 									:class="className.class"
 									>
 										В выбранном разделе меток есть метки, которые удалятся автоматически, при удалении раздела.
 									</span>
-									<span :class="className.class">Вы уверены, что хотите удалить раздел {{ modalDataDelete.name }}?</span>
+									<span :class="className.class">Вы уверены, что хотите удалить раздел {{ modalDataToDelete.name }}?</span>
 								</template>
 							</DeleteModal>
 						</template>
@@ -100,7 +101,7 @@ const searchValue = ref('');
 
 const modalComponent = ref('form-sections'); 
 
-const modalDataDelete = ref({} as IHeading);
+const modalDataToDelete = ref({} as IHeading);
 
 const headerData = ref({} as IHeading);
 
@@ -111,10 +112,12 @@ const setHeaderData = (data: IHeading) => {
 
 const updateSearchValue = (value: string) => {
     searchValue.value = value;
+
+	headersStore.searchHeading(searchValue.value);
 }
 
 const closeDeleteModal = () => {
-    modalDataDelete.value = {} as IHeading;
+    modalDataToDelete.value = {} as IHeading;
     modalStore.triggerModal();
 }
 
@@ -129,14 +132,22 @@ const openModalSection = () => {
 }
 
 const openModalDelete = (data: IHeading) => {
-    // headersStore.deleteHeading(id)
     modalComponent.value = 'delete-modal';
-	modalDataDelete.value = data;
+	modalDataToDelete.value = data;
     modalStore.triggerModal();
 }
 
+const deleteSection = (id: number) => {
+	console.log("clicked!");
+	
+	headersStore.deleteHeading(id)
+	.then(()=>{
+		closeDeleteModal();
+	})
+}
+
 const goToPage = (page: number) => {
-  headersStore.getHeadings(page);
+  headersStore.getHeadings({page});
   headersStore.$patch((state) => {
     state.currentPage = page
   })
@@ -147,7 +158,7 @@ const startAbomination = () => {
 }
 
 onMounted(()=>{
-  headersStore.getHeadings();
+  headersStore.getHeadings({});
 })
 
 </script>

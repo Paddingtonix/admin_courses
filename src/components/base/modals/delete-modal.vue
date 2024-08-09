@@ -11,6 +11,7 @@
         <BtnCmp
             :text="'Удалить'"
             background_type="_quaternary"
+            @click="deleteModalData"
         />
     </div>
 </template>
@@ -22,12 +23,19 @@ import { useStoreModal } from '~/src/stores/storeModal';
 
 const modalStore = useStoreModal();
 
-const {closeModal} = defineProps({
+const {closeModal, deleteData} = defineProps({
     closeModal: {
         type: Function as PropType<typeof modalStore.triggerModal>,
         default: ()=>{}
+    },
+    deleteData: {
+        type: Function,
+        default: ()=>{}
     }
 })
+const deleteModalData = () =>{
+    return deleteData();
+}
 
 </script>
 
