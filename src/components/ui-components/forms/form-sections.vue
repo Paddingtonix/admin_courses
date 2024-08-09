@@ -29,7 +29,6 @@ const { closeModal, elementData } = defineProps({
     }
 })
 
-
 const formModel = reactive(
     !elementData.id ?
     {
@@ -41,6 +40,12 @@ const formModel = reactive(
         description: elementData.description
     }
 );
+
+onBeforeUnmount(()=>{
+    elementData.description = '';
+    elementData.id = 0;
+    elementData.name = '';
+})
 
 const headersStore = useHeadersStore();
 

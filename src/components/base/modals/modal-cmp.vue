@@ -55,16 +55,22 @@ export default defineComponent({
         title: {
             type: String,
             default: 'Modal title!'
+        },
+        modalClose: {
+            type: Function,
+            default: undefined
         }
     },
+
     setup(props, {emit}) {
-        const storeModal = useStoreModal()
-        // const modalComponent = ref<string>('auth-modal')
-        // const modalComponent = ref<string>('course-create-modal')
-        // const modalComponent = ref<string>('form-tags');
+        const storeModal = useStoreModal();
         const modalComponent = ref<string>('form-sections');
         const closeModal = () => {
-            storeModal.closeModal()
+            if(!props.modalClose){
+                storeModal.triggerModal()
+            } else {
+                props.modalClose();
+            }
         }
 
         return {

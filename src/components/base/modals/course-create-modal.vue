@@ -170,7 +170,7 @@ export default defineComponent({
         const active_radio = ref<number | null>(null)
 
         const closeModal = () => {
-            storeModal.closeModal()
+            storeModal.triggerModal()
         }
 
         const setRadioValue = (id_radio: number) => {

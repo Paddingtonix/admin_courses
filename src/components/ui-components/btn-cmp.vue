@@ -49,5 +49,5 @@
         @include button_styles_tertiary()
 
     &._quaternary
-        @include button_styles_tertiary()
+        @include button_styles_quaternary()
 </style>

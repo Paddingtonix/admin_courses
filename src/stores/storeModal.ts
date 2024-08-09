@@ -7,11 +7,8 @@ export const useStoreModal = defineStore('modal', {
         isOpen: false,
     }),
     actions: {
-        openModal() {
-            this.isOpen = true
-        },
-        closeModal() {
-            this.isOpen = false
-        },
+        triggerModal() {
+            this.isOpen = !this.isOpen;
+        }
     },
 })
