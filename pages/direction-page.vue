@@ -9,6 +9,15 @@
                 :text="pill.text"
                 :value="pill.value"
             />
+            <BtnCmp
+                class="direction-page__settings__btn"
+                background_type="_tertiary"
+                text="Тестовые направления"
+                @click="startAbomination">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </BtnCmp>
             <div class="direction-page__container">
                 <div class="direction-page__settings">
                     <SearchCmp
@@ -19,7 +28,8 @@
                     <BtnCmp
                         class="direction-page__settings__btn"
                         background_type="_tertiary"
-                        text="Добавить направление">
+                        text="Добавить направление"
+                        @click="sendDirection">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -67,11 +77,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, computed, watch, onMounted} from 'vue';
-import axios from 'axios'
-import {useRouter} from "vue-router";
-import type { Direction } from '~/src/ts-interface/direction';
+import { defineComponent, reactive, ref, computed, watch, onMounted } from 'vue';
+import { useDirectionStore } from '~/src/stores/storeDirection';
+import { useRouter } from "vue-router";
 import { formatDate } from '~/src/utils/format-date';
+import type { DirectionData } from "~/src/ts-interface/direction-data";
 
 export default defineComponent({
     setup() {
@@ -88,48 +98,62 @@ export default defineComponent({
             },
         ])
 
-        const directions_list = reactive<Direction[]>([])
-
+        const directionStore = useDirectionStore();
         const searchQuery = ref('')
 
         const filteredDirections = computed(() => {
-            return directions_list && directions_list.filter((direction: Direction) =>
-                direction.localizedName.toLowerCase().includes(searchQuery.value.toLowerCase())
-            )
+            return directionStore.filteredDirections(searchQuery.value);
         })
 
-        const deleteDirection = async (id: string) => {
-            try {
-                await axios.delete(`admin/v1/Direction/${id}`);
-                const index = directions_list.findIndex(direction => direction.id === id);
-                if (index !== -1) {
-                    directions_list.splice(index, 1);
-                }
-            } catch (error) {
-                console.error('Уууупс, не удаляется :(', error);
+        const directionsData = [
+            { localizedName: "Frontend Development", lastChangeDateTime: new Date(), isVisible: true, count: 10,  directionId: 1},
+            { localizedName: "Backend Development", lastChangeDateTime: new Date(), isVisible: true, count: 8, directionId: 2},
+            { localizedName: "Data Science", lastChangeDateTime: new Date(), isVisible: false, count: 12, directionId: 3},
+            { localizedName: "Mobile Development", lastChangeDateTime: new Date(), isVisible: true, count: 5, directionId: 4},
+            { localizedName: "Cybersecurity", lastChangeDateTime: new Date(), isVisible: false, count: 7, directionId: 5},
+        ];
+
+        const startAbomination = () => {
+            for (const direction of directionsData) {
+                setTimeout(() => {
+                    directionStore.addDirection(direction);
+                    console.log("Оппа, добавил направление :)", direction.localizedName);
+                }, 200);
             }
+        };
+
+        const sendDirection = () => {
+            const directionToAdd = directionsData[0];
+
+            const directionPush: DirectionData = {
+                isVisible: directionToAdd.isVisible,
+                localizations: {
+                    en: '',
+                    ru: directionToAdd.localizedName,
+                    // fr: ''
+                },
+            };
+
+            directionStore.createDirection(directionPush)
         }
 
+        const deleteDirection = (id: string) => {
+            directionStore.removeDirection(id);
+        };
+
         onMounted(() => {
-            axios
-                .get('admin/v1/Direction')
-                .then((response) => {
-                    response.data.forEach((element: Direction) => {
-                        directions_list.push(element)
-                    })
-                })
-                .catch((error) => {
-                    console.error('Ууууупс :(', error)
-                })
+            directionStore.getDirections();
+            // startAbomination();
         })
 
         return {
             pill_info,
-            directions_list,
             searchQuery,
             filteredDirections,
             formatDate,
-            deleteDirection
+            deleteDirection,
+            // startAbomination,
+            sendDirection
         }
     }
 })
