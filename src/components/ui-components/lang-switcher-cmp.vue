@@ -1,28 +1,26 @@
 <template>
-  <div class="lang-switcher">
-    <button type="button" class="active">{{ russian }}</button>
-    <button type="button">{{ extraLang }}</button>
-    <button type="button">{{ extraLang2 }}</button>
-  </div>
+	<div class="lang-switcher">
+		<button type="button" class="active">{{ russian }}</button>
+		<button type="button">{{ extraLang }}</button>
+		<button type="button">{{ extraLang2 }}</button>
+	</div>
 </template>
 
 <script lang="ts" setup>
-
-const {russian, extraLang, extraLang2} = defineProps({
-    russian: {
-        type: String,
-        default: 'Русский (RU) *'
-    },
-    extraLang: {
-        type: String,
-        default: 'English (EN) *'
-    },
-    extraLang2: {
-        type: String,
-        default: 'Français (FR) *'
-    }
-})
-
+const { russian, extraLang, extraLang2 } = defineProps({
+	russian: {
+		type: String,
+		default: "Русский (RU) *",
+	},
+	extraLang: {
+		type: String,
+		default: "English (EN) *",
+	},
+	extraLang2: {
+		type: String,
+		default: "Français (FR) *",
+	},
+});
 </script>
 
 <style lang="sass" scoped>
@@ -51,4 +49,3 @@ const {russian, extraLang, extraLang2} = defineProps({
             color: $basic_text
             cursor: default
 </style>
-

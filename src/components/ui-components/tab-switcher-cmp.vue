@@ -1,30 +1,27 @@
-
 <template>
-    <nav class="navigation-switcher">
-      <NuxtLink
-        class="navigation-switcher__link" 
-        v-for="switcher in switchers"
-        :key="switcher.id"
-        :to="switcher.link"
-      >
-        {{ switcher.text }}
-      </NuxtLink>
-    </nav>
-  </template>
+	<nav class="navigation-switcher">
+		<NuxtLink
+			class="navigation-switcher__link"
+			v-for="switcher in switchers"
+			:key="switcher.id"
+			:to="switcher.link"
+		>
+			{{ switcher.text }}
+		</NuxtLink>
+	</nav>
+</template>
 
 <script lang="ts" setup>
-
-import type ISwitcher from '~/src/ts-interface/switcher.type';
-import { defineProps } from 'vue';
+import type ISwitcher from "~/src/ts-interface/switcher.type";
+import { defineProps } from "vue";
 
 const props = defineProps<{
-  switcherArray: ISwitcher[]
+	switcherArray: ISwitcher[];
 }>();
 
 const { switcherArray } = props;
 
 const switchers = switcherArray;
-
 </script>
 
 <style lang="sass">
@@ -48,14 +45,14 @@ const switchers = switcherArray;
           left: 0
           width: 0%
           height: rem(3)
-          background-color: $basic_primary  
+          background-color: $basic_primary
 
         &:hover
             color: $basic_primary
         &:active
             &::after
               width: 100%
-        
+
         &.router-link-exact-active
             color: $basic_primary
             &::after

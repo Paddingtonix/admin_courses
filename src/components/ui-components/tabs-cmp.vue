@@ -1,36 +1,40 @@
 <template>
-    <div class="oil-tabs" :class="{ _active: active === id }" @click="selectTab(id)">
-        <span class="oil-tabs__text">{{ text }}</span>
-    </div>
+	<div
+		class="oil-tabs"
+		:class="{ _active: active === id }"
+		@click="selectTab(id)"
+	>
+		<span class="oil-tabs__text">{{ text }}</span>
+	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    props: {
-        text: {
-            type: String,
-            default: 'text',
-        },
-        id: {
-            type: Number,
-            default: 1,
-        },
-        active: {
-            type: Number,
-            default: 1,
-        },
-    },
-    setup(props, { emit }) {
-        const selectTab = (tab_id: number) => {
-            emit('select-tab', tab_id)
-        }
+	props: {
+		text: {
+			type: String,
+			default: "text",
+		},
+		id: {
+			type: Number,
+			default: 1,
+		},
+		active: {
+			type: Number,
+			default: 1,
+		},
+	},
+	setup(props, { emit }) {
+		const selectTab = (tab_id: number) => {
+			emit("select-tab", tab_id);
+		};
 
-        return {
-            selectTab,
-        }
-    },
-})
+		return {
+			selectTab,
+		};
+	},
+});
 </script>
 <style scoped lang="sass">
 .oil-tabs
@@ -41,19 +45,19 @@ export default defineComponent({
     font-size: 16px
     line-height: 24px
     &:not(&._active)
-        &:hover 
+        &:hover
             // color: $hover-blue
 
         &:active
-            // color: $text-color    
+            // color: $text-color
 
-        &:after 
+        &:after
             display: block
             position: absolute
             top: 32px
             left: 0
             width: 0
-            height: 2px 
+            height: 2px
             // background-color: $btn-background
             content: ""
             transition: width 0.3s
@@ -62,9 +66,9 @@ export default defineComponent({
             width: 100%
             left: 0
             right: auto
-            
+
         &:not(&:hover)
-            &::after   
+            &::after
                 right: 0
                 left: auto
 

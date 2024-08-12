@@ -1,65 +1,64 @@
 <template>
-    <div class="oil-textarea">
-        <label 
-            class="oil-textarea__label"
-            :class="['oil-textarea__label', { _fill: textarea_value && textarea_value.length }]"
-        >{{ label }}</label>
-        <textarea 
-            v-model="textarea_value" 
-            :type="type" 
-            @input="setValue"
-            
-        />
-    </div>
+	<div class="oil-textarea">
+		<label
+			class="oil-textarea__label"
+			:class="[
+				'oil-textarea__label',
+				{ _fill: textarea_value && textarea_value.length },
+			]"
+			>{{ label }}</label
+		>
+		<textarea v-model="textarea_value" :type="type" @input="setValue" />
+	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    props: {
-        label: {
-            type: String,
-            default: 'label'
-        },
-        error: {
-            type: String,
-            default: '',
-        },
-        type: {
-            type: String,
-            default: '',
-        },
-        modelValue: {
-            type: String,
-            default: ''
-        },
-    },
-    emits:['set_textarea'],
+	props: {
+		label: {
+			type: String,
+			default: "label",
+		},
+		error: {
+			type: String,
+			default: "",
+		},
+		type: {
+			type: String,
+			default: "",
+		},
+		modelValue: {
+			type: String,
+			default: "",
+		},
+	},
+	emits: ["set_textarea"],
 
-    setup(props, { emit }) {
-        const { modelValue } = toRefs(props);
-        const textarea_value = ref<string>(!modelValue ? '' : modelValue.value);
+	setup(props, { emit }) {
+		const { modelValue } = toRefs(props);
+		const textarea_value = ref<string>(!modelValue ? "" : modelValue.value);
 
-        const setValue = () => {
-            emit('set_textarea', textarea_value.value)
-        }
+		const setValue = () => {
+			emit("set_textarea", textarea_value.value);
+		};
 
-        return {
-            textarea_value,
-            setValue,
-        }
-    }
-})
+		return {
+			textarea_value,
+			setValue,
+		};
+	},
+});
 </script>
 <style lang="sass">
-.oil-textarea 
+.oil-textarea
     border: rem(1) solid $light_gray
     border-radius: rem(8)
     height: rem(216)
     position: relative
     padding: rem(26) rem(16)
 
-    &:focus-within    
+    &:focus-within
         label
             &:not(._fill)
                 transform: translateY(rem(-8))
@@ -82,5 +81,4 @@ export default defineComponent({
             top: rem(8)
             font-size: rem(12)
             color: $light_primary
-
 </style>
