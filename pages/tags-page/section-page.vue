@@ -1,10 +1,10 @@
 <template>
-	<button
+	<!-- <button
 		style="display: absolute; top: 0; left: 0; border: solid black 2px"
 		@click="startAbomination"
 	>
 		START ABOMINATION!
-	</button>
+	</button> -->
 	<div class="section-page">
 		<div class="section-page__widget-wrapper">
 			<SearchCmp
@@ -97,11 +97,13 @@
 			</template>
 		</template>
 		<template v-else-if="!headersStore.headings.length && !searchValue">
-			<span>Пока нет разделов, но вы можете их добавить </span>
+			<span class="no-headers">
+				Пока нет разделов, но вы можете их добавить
+			</span>
 		</template>
 		<template v-else-if="searchValue && !headersStore.headings.length">
-			<span>
-				К сожалению, по вашему запросу не найдено ни одного раздела.
+			<span class="no-headers">
+				К сожалению, по вашему запросу не найдено ни одного раздела.<br />
 				Попробуйте другие параметры поиска.
 			</span>
 		</template>
@@ -211,8 +213,6 @@ const openModalDelete = (data: IHeading) => {
 };
 
 const deleteSection = (id: number) => {
-	console.log("clicked!");
-
 	headersStore.deleteHeading(id).then(() => {
 		closeDeleteModal();
 	});
@@ -242,6 +242,9 @@ onMounted(() => {
 </script>
 
 <style lang="sass">
+.no-headers
+    margin-top: rem(24)
+    display: block
 .section-page
     &__widget-wrapper
         display: grid

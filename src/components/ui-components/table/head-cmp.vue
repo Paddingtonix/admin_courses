@@ -69,7 +69,7 @@ export default defineComponent({
 <style lang="sass">
 .oil-head
     @include flex_center_spacing()
-    border-bottom: rem(1) solid #5B6C7B
+    border-bottom: rem(1) solid $disabled_basic
     &__cell
         padding: rem(8)
         @include flex_start()

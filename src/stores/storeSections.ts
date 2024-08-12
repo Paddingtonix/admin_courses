@@ -170,7 +170,7 @@ export const useHeadersStore = defineStore({
 	} => ({
 		headings: [],
 		numberOfPages: null,
-		currentPage: 0,
+		currentPage: 1,
 		nHeadingsPerPage: 10,
 	}),
 
