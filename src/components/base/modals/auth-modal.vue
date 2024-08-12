@@ -37,6 +37,7 @@ import axios from 'axios'
 import { useStoreAuth } from '~/src/stores/storeAuth'
 import type { Form } from '~/src/ts-interface/inputs'
 import { useStoreModal } from '~/src/stores/storeModal'
+import { useUserRoleStore } from '~/src/stores/storeRole'
 import { useCookies } from "vue3-cookies"
 
 export default defineComponent({
@@ -48,6 +49,7 @@ export default defineComponent({
     setup() {
         const storeAuth = useStoreAuth()
         const storeModal = useStoreModal()
+        const user_role_store = useUserRoleStore()
         const { cookies } = useCookies()
 
         const remember_me = ref<boolean>(false)
@@ -146,6 +148,7 @@ export default defineComponent({
                             }
                             storeAuth.logIn()
                             storeModal.closeModal()
+                            user_role_store.getUserRole()
                         })
                         .catch((error) => {
                             console.log('Ошибка при выполнении запроса:', error.response)
@@ -167,7 +170,8 @@ export default defineComponent({
             validCheck,
             loginSite,
             emit,
-            storeModal
+            storeModal,
+            user_role_store
         }
     },
 })

@@ -27,7 +27,7 @@
         <div class="oil-sidebar__page">
             <ul class="oil-sidebar__page__list">
                 <li class="oil-sidebar__page__list__elem"
-                    v-for="(menu, idx) in menu_bar.slice(0,3)" 
+                    v-for="(menu, idx) in roleMenu"
                     :key="idx"
                     :class="{'_active-page': menu.link === $route.path}"
                 >
@@ -55,12 +55,14 @@
     </aside>
 </template>
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, computed } from 'vue';
     import { useRouter } from 'vue-router';
+    import { useUserRoleStore } from '~/src/stores/storeRole';
 
     export default defineComponent({
         setup() {
             const router = useRouter()
+            const user_role_store = useUserRoleStore()
             
             const opened_sidebar = reactive({
                 value: false
@@ -89,6 +91,15 @@
                 },
             ]
 
+            const roleMenu = computed(() => {
+                if (user_role_store.role === 'Admin') {
+                    return menu_bar.slice(0, 3);
+                } else if (user_role_store.role === 'Author') {
+                    return menu_bar.slice(0, 1);
+                }
+                return [];
+            });
+
             const navigate = (url: string) => {
                 router.push(url)
             }
@@ -101,7 +112,9 @@
                 menu_bar,
                 navigate,
                 opened_sidebar,
-                openSidebar
+                openSidebar,
+                user_role_store,
+                roleMenu
             }
         }
     })
