@@ -14,6 +14,7 @@
 					</svg>
 			</BtnCmp>
 		</div>
+	<template v-if="headersStore.headings.length">
 		<TableHeadCmp
 		class="section-table-header"
 		:status="'Раздел меток'"
@@ -40,9 +41,19 @@
 			<template v-if="headersStore.$state.numberOfPages">
 				<div class="tags-page__pagination-wrapper">
 					<PaginationCmp :currentPage="headingsData.currentPage" :pages_count="headingsData.numberOfPages" @change-page="goToPage($event)"/>
-					<SelectorCmp class="tags-page__selector" label="10 разделов на стр." :list="list" />
+					<SelectorCmp @select-value="changeSelectorValue($event)" tab-text="разделов" class="tags-page__selector" label="10 разделов на стр." :list="list" />
 				</div>
 			</template>
+		</template>
+		<template v-else-if="!headersStore.headings.length && !searchValue">
+			<span>Пока нет разделов, но вы можете их добавить </span>
+		</template>
+		<template v-else-if="searchValue && !headersStore.headings.length">
+			<span>
+				К сожалению, по вашему запросу не найдено ни одного раздела. 
+				Попробуйте другие параметры поиска. 
+			</span>
+		</template>
 	</div>
 		<Teleport to="body">
 				<ModalCmp
@@ -85,10 +96,10 @@ import { useHeadersStore } from '~/src/stores/storeSections';
 import type { IHeading } from '~/src/ts-interface/storeTags.type';
 
 const list = [
-  { text: 10 },
-  { text: 20 },
-  { text: 30 },
-  { text: 40 }
+  	10,
+  	15,
+  	20,
+	25
 ];
 
 const modalStore = useStoreModal();
@@ -113,7 +124,7 @@ const setHeaderData = (data: IHeading) => {
 const updateSearchValue = (value: string) => {
     searchValue.value = value;
 
-	headersStore.searchHeading(searchValue.value);
+	headersStore.getHeadings({text: value});
 }
 
 const closeDeleteModal = () => {
@@ -127,8 +138,8 @@ const closeSectionsModal = () => {
 }
 
 const openModalSection = () => {
-  modalComponent.value = 'form-sections';
-  modalStore.triggerModal();
+  	modalComponent.value = 'form-sections';
+  	modalStore.triggerModal();
 }
 
 const openModalDelete = (data: IHeading) => {
@@ -146,11 +157,18 @@ const deleteSection = (id: number) => {
 	})
 }
 
+const changeSelectorValue = (value: number) => {
+	headersStore.$patch((state) => {
+		state.nHeadingsPerPage = value;
+	})
+	headersStore.getHeadings({})
+}
+
 const goToPage = (page: number) => {
-  headersStore.getHeadings({page});
-  headersStore.$patch((state) => {
-    state.currentPage = page
-  })
+	headersStore.$patch((state) => {
+	  state.currentPage = page
+	})
+	headersStore.getHeadings({});
 }
 
 const startAbomination = () => {

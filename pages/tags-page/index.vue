@@ -33,7 +33,7 @@
 
   <div class="tags-page__pagination-wrapper">
     <PaginationCmp :pages_count="10" />
-    <SelectorCmp class="tags-page__selector" :label="`${list[0].text} меток на стр.`" :list="list" />
+    <SelectorCmp class="tags-page__selector" :label="`${list[0]} меток на стр.`" :list="list" />
   </div>
 
   <Teleport to="body">
@@ -57,7 +57,7 @@ const route = useRoute();
 const router = useRouter();
 
 const addTag = () => {
-  modalStore.openModal();
+  modalStore.triggerModal();
 }
 
 const query = reactive({
@@ -72,10 +72,10 @@ onMounted(()=>{
 });
 
 const list = [
-  { text: 10 },
-  { text: 20 },
-  { text: 30 },
-  { text: 40 }
+  10,
+  15,
+  20,
+  25
 ];
 </script>
 

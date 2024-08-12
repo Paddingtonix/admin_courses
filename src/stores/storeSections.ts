@@ -162,15 +162,16 @@ const memes: {name: string, description: string}[] = [
 
 export const useHeadersStore = defineStore({
   id: 'headersStore',
-  state: (): { headings: IHeading[], numberOfPages: number | null, currentPage: number } => ({
+  state: (): { headings: IHeading[], numberOfPages: number | null, currentPage: number, nHeadingsPerPage: number } => ({
     headings: [],
     numberOfPages: null,
-    currentPage: 1,
+    currentPage: 0,
+    nHeadingsPerPage: 10,
   }),
 
   actions: {
-    getHeadings({page = 0, nHeadingsPerPage = 10}) {
-      axios.get(`/admin/v1/heading?page=${page}&nHeadingsPerPage=${nHeadingsPerPage}`)
+    getHeadings({ text = '' }) {
+      axios.get(`/admin/v1/heading?page=${this.currentPage}&nHeadingsPerPage=${this.nHeadingsPerPage}&searchSubstring=${text}`)
         .then((response) => {
           const data = response.data as IStoreTags;
           this.$patch((state) => {
@@ -218,7 +219,7 @@ export const useHeadersStore = defineStore({
     deleteHeading (id: number) {
       return axios.delete(`admin/v1/heading/${id}`)
         .then(() => {
-          this.getHeadings({page: this.currentPage});
+          this.getHeadings({});
         })
         .catch(error => {
           console.error('Ошибка при удалении раздела:', error);
