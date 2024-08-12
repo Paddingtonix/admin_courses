@@ -101,7 +101,7 @@
             @click="closeModal"
         />
     </div>
-    <!-- в архивк -->
+    <!-- в архиве -->
     <div :class="`${main_class}__course-create`" v-if="storeCourse.archived">
         <div :class="`${main_class}__course-create__text`">
             <span>Курс находится в архиве.</span>

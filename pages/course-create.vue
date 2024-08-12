@@ -216,7 +216,14 @@ export default defineComponent({
         }
 
         const setValueSelector = (val: { type: string, value: string }) => {
-            form.find(field => field.type === val.type)!.value = val.value
+            const field = form.find(field => field.type === val.type)!
+            field.value = val.value
+
+            if (field.selector) {
+                field.selector!.forEach(option => {
+                    option.active = option.text === val.value
+                })
+            }
         }
 
         const validCheck = (field: FormField) => {
@@ -226,6 +233,40 @@ export default defineComponent({
             } else {
                 field.error = ''
             }
+        }
+
+        const isFormValid = () => {
+            let course_data = {
+                languageId: form[0].selector?.find((lang: { text: String, active: Boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                title: form[1].value,
+                courseType: form[2].selector?.find((type: { text: String, active: Boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: { text: String, active: Boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                isFree: form[4].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Частичный'
+            }
+
+            if (course_data.courseType === 2 && course_data.courseFormat === 2) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
+                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
+                console.log('Валидация не пройдена: Асинхронный курс не может быть онлайн')
+                return false
+            }
+
+            if (course_data.isFree && course_data.isPartialAvailable) {
+                form.find(field => field.type === 'acquired')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+                console.log('Валидация не пройдена: Бесплатный курс не может быть частично доступен')
+                return false
+            }
+
+            if (course_data.courseType === 1 && course_data.isPartialAvailable) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+                console.log('Валидация не пройдена: Синхронный курс не может быть частично доступен')
+                return false
+            }
+
+            return true
         }
         
         const submitForm = () => {
@@ -238,16 +279,17 @@ export default defineComponent({
                 }
             })
 
-            if (!form_is_valid) return
+            if (!form_is_valid || !isFormValid()) return
 
             const course_data = {
                 languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
                 title: form[1].value,
-                courseFormat: form[2].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
-                courseType: form[3].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseType: form[2].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
                 isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
                 isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
             }
+            console.log(course_data, 'course-create')
 
             axios
                 .post('admin/v1/course', course_data)
@@ -270,7 +312,8 @@ export default defineComponent({
             setValueSelector,
             validCheck,
             storeCourses,
-            storeModal
+            storeModal,
+            isFormValid
         }
     }
 })

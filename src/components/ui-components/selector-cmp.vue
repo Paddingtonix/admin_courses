@@ -45,7 +45,7 @@ export default defineComponent({
         },
         type: {
             type: String,
-            default: 'type'
+            default: ''
         }
     },
     setup(props, { emit }) {
