@@ -1,28 +1,4 @@
 <!-- <template>
-    <div class="oil-modal" v-if="storeModal.isOpen">
-        <div class="oil-modal__container-auth" v-if="modalComponent === 'auth-modal'">
-            <component :main_class="'oil-modal'" :is="modalComponent"></component>
-        </div>
-        <div class="oil-modal__container__content" v-if="modalComponent === 'formTags'">
-                <component :main_class="'oil-modal'" :is="formTags"></component>
-        </div>
-        <div class="oil-modal__container" v-else>
-            <div class="oil-modal__container__header">
-                <span class="oil-modal__container__header__title">{{ title }}</span>
-                <button class="oil-modal__container__header__btn-close" @click="closeModal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="oil-modal__container__content">
-                <component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component>
-            </div>
-        </div>
-    </div>
-</template> -->
-
-<template>
 	<div class="oil-modal" v-if="storeModal.isOpen">
 		<div class="oil-modal__container">
 			<div class="oil-modal__container__header">
@@ -54,12 +30,51 @@
 				class="oil-modal__container__content"
 				v-if="modalComponent === 'form-sections'"
 			>
-				<!-- <component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component> -->
+				<component :main_class="'oil-modal'" :is="modalComponent" :closeModal="closeModal"></component>
 				<slot
 					class="oil-modal"
 					:closeModal="closeModal"
 					name="content"
 				/>
+			</div>
+		</div>
+	</div>
+</template> -->
+
+<template>
+	<div class="oil-modal" v-if="storeModal.isOpen">
+		<div class="oil-modal__container">
+			<div class="oil-modal__container__header">
+				<span class="oil-modal__container__header__title">{{
+					title
+				}}</span>
+				<button
+					class="oil-modal__container__header__btn-close"
+					@click="closeModal"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+					>
+						<path
+							d="M18 6L6 18M6 6L18 18"
+							stroke="#808E9D"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</button>
+			</div>
+			<div class="oil-modal__container__content">
+				<component
+					:main_class="'oil-modal'"
+					:is="modalComponent"
+					:closeModal="closeModal"
+				></component>
 			</div>
 		</div>
 	</div>
@@ -73,6 +88,7 @@ import authModal from "./auth-modal.vue";
 import courseCreateModal from "./course-create-modal.vue";
 import formTags from "../../ui-components/forms/form-tags.vue";
 import formSections from "../../ui-components/forms/form-sections.vue";
+import deleteModal from "./delete-modal.vue";
 
 export default defineComponent({
 	props: {
@@ -88,7 +104,9 @@ export default defineComponent({
 
 	setup(props, { emit }) {
 		const storeModal = useStoreModal();
-		const modalComponent = ref<string>("form-sections");
+
+		const modalComponent = ref<string>(storeModal.$state.activeModal);
+
 		const closeModal = () => {
 			if (!props.modalClose) {
 				storeModal.triggerModal();
@@ -110,6 +128,7 @@ export default defineComponent({
 		"course-create-modal": courseCreateModal,
 		"form-tags": formTags,
 		"form-sections": formSections,
+		"delete-modal": deleteModal,
 	},
 });
 </script>

@@ -126,7 +126,7 @@
 
 		<ModalCmp
 			v-else
-			:modal-close="closeDeleteModal"
+			:modalClose="closeDeleteModal"
 			:title="
 				modalDataToDelete.labelsCount ? 'Внимание!' : 'Удаление раздела'
 			"
@@ -140,19 +140,6 @@
 					"
 					:close-modal="closeDeleteModal"
 				>
-					<template v-slot:text="className">
-						<span
-							v-if="modalDataToDelete.labelsCount"
-							:class="className.class"
-						>
-							В выбранном разделе меток есть метки, которые
-							удалятся автоматически, при удалении раздела.
-						</span>
-						<span :class="className.class"
-							>Вы уверены, что хотите удалить раздел
-							{{ modalDataToDelete.name }}?</span
-						>
-					</template>
 				</DeleteModal>
 			</template>
 		</ModalCmp>
@@ -185,15 +172,15 @@ const setHeaderData = (data: IHeading) => {
 	openModalSection();
 };
 
+const openModalSection = () => {
+	modalComponent.value = "form-sections";
+	modalStore.triggerModal();
+};
+
 const updateSearchValue = (value: string) => {
 	searchValue.value = value;
 
 	headersStore.getHeadings({ text: value });
-};
-
-const closeDeleteModal = () => {
-	modalDataToDelete.value = {} as IHeading;
-	modalStore.triggerModal();
 };
 
 const closeSectionsModal = () => {
@@ -201,14 +188,14 @@ const closeSectionsModal = () => {
 	modalStore.triggerModal();
 };
 
-const openModalSection = () => {
-	modalComponent.value = "form-sections";
+const openModalDelete = (data: IHeading) => {
+	modalStore.$patch((state) => (state.activeModal = "delete-modal"));
+	modalStore.$patch((state) => (state.modalProps = data));
 	modalStore.triggerModal();
 };
 
-const openModalDelete = (data: IHeading) => {
-	modalComponent.value = "delete-modal";
-	modalDataToDelete.value = data;
+const closeDeleteModal = () => {
+	modalDataToDelete.value = {} as IHeading;
 	modalStore.triggerModal();
 };
 

@@ -1,7 +1,5 @@
 <template>
-	<div class="delete-modal">
-		<slot :class="'delete-modal__text'" name="text" />
-	</div>
+	<div class="delete-modal"></div>
 	<div class="delete-modal__btn-wrapper">
 		<BtnCmp
 			:text="'Отмена'"
@@ -21,6 +19,10 @@ import type { PropType } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 
 const modalStore = useStoreModal();
+
+const location = useRoute();
+
+console.log(location);
 
 const { closeModal, deleteData } = defineProps({
 	closeModal: {
