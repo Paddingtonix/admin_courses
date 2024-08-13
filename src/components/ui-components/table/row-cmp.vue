@@ -2,7 +2,7 @@
     <div class="oil-row">
         <template v-for="field in fields">
             <div class="oil-row__cell" v-if="field.length" :key="field">
-                <a>{{ field }}</a>
+                <span>{{ field }}</span>
             </div>
         </template>
         <slot name="svg"/>
@@ -43,7 +43,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const fields = props;
+        const fields = props
 
         return {
             fields
