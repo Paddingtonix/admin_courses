@@ -1,42 +1,35 @@
 <template>
-	<div class="delete-modal"></div>
+	<div class="delete-modal">
+		<component :is="modalData.modalProps.modalComponent"></component>
+	</div>
 	<div class="delete-modal__btn-wrapper">
 		<BtnCmp
 			:text="'Отмена'"
 			:background_type="'_secondary'"
-			@click="closeModal"
+			@click="modalStore.triggerModal"
 		/>
-		<BtnCmp
-			:text="'Удалить'"
-			background_type="_quaternary"
-			@click="deleteModalData"
-		/>
+		<BtnCmp :text="'Удалить'" background_type="_quaternary" @click="" />
 	</div>
 </template>
 
-<script lang="ts" setup>
-import type { PropType } from "vue";
+<script lang="ts">
 import { useStoreModal } from "~/src/stores/storeModal";
+import DeleteSection from "../../ui-components/forms/delete-section.vue";
+import type { IDeleteSection } from "~/src/ts-interface/storeModal.type";
 
-const modalStore = useStoreModal();
-
-const location = useRoute();
-
-console.log(location);
-
-const { closeModal, deleteData } = defineProps({
-	closeModal: {
-		type: Function as PropType<typeof modalStore.triggerModal>,
-		default: () => {},
+export default defineComponent({
+	setup() {
+		const modalStore = useStoreModal();
+		const modalData = reactive(modalStore.$state as IDeleteSection);
+		return {
+			modalData,
+			modalStore,
+		};
 	},
-	deleteData: {
-		type: Function,
-		default: () => {},
+	components: {
+		"delete-section": DeleteSection,
 	},
 });
-const deleteModalData = () => {
-	return deleteData();
-};
 </script>
 
 <style lang="sass">

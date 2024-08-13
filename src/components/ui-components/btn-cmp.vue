@@ -1,9 +1,9 @@
 <template>
 	<!-- v-wave="{ color: '#03AEE2' }" -->
-	<div class="oil-btn" :class="background_type">
+	<button class="oil-btn" :class="background_type" :disabled="disabled">
 		<slot></slot>
-		<button>{{ text }}</button>
-	</div>
+		<span>{{ text }}</span>
+	</button>
 </template>
 
 <script lang="ts">
@@ -19,6 +19,21 @@ export default defineComponent({
 			type: String,
 			default: "_primary", //_secondary, _tertiary, _quaternary
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	setup(props) {
+		const { disabled, text, background_type } = toRefs(props);
+		watch(disabled, () => {
+			console.log(disabled, "BUTTON");
+		});
+		return {
+			disabled,
+			text,
+			background_type,
+		};
 	},
 });
 </script>

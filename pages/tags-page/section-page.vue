@@ -18,7 +18,7 @@
 				class="tags-page__add-tag-btn"
 				background_type="_tertiary"
 				text="Добавить раздел"
-				@click="openModalSection"
+				@click="openAddModalHeader"
 			>
 				<svg
 					width="20"
@@ -53,7 +53,13 @@
 					:name="data.name"
 					:authors="data.description"
 					:status="data.labelsCount || '0'"
-					@click="setHeaderData(data)"
+					@click="
+						openAddModalHeader({
+							name: data.name,
+							description: data.description,
+							id: data.id,
+						})
+					"
 				>
 					<template v-slot:svg>
 						<i
@@ -108,42 +114,6 @@
 			</span>
 		</template>
 	</div>
-	<Teleport to="body">
-		<ModalCmp
-			v-if="modalComponent === 'form-sections'"
-			:modal-close="closeSectionsModal"
-			:title="
-				!headerData.id ? 'Добавление раздела' : 'Редактирование раздела'
-			"
-		>
-			<template v-slot:content>
-				<FormsFormSections
-					:close-modal="closeSectionsModal"
-					:element-data="headerData"
-				/>
-			</template>
-		</ModalCmp>
-
-		<ModalCmp
-			v-else
-			:modalClose="closeDeleteModal"
-			:title="
-				modalDataToDelete.labelsCount ? 'Внимание!' : 'Удаление раздела'
-			"
-		>
-			<template v-slot:content>
-				<DeleteModal
-					:deleteData="
-						() => {
-							deleteSection(modalDataToDelete.id);
-						}
-					"
-					:close-modal="closeDeleteModal"
-				>
-				</DeleteModal>
-			</template>
-		</ModalCmp>
-	</Teleport>
 </template>
 
 <script lang="ts" setup>
@@ -163,8 +133,6 @@ const searchValue = ref("");
 
 const modalComponent = ref("form-sections");
 
-const modalDataToDelete = ref({} as IHeading);
-
 const headerData = ref({} as IHeading);
 
 const setHeaderData = (data: IHeading) => {
@@ -183,26 +151,31 @@ const updateSearchValue = (value: string) => {
 	headersStore.getHeadings({ text: value });
 };
 
-const closeSectionsModal = () => {
-	headerData.value = {} as IHeading;
-	modalStore.triggerModal();
-};
-
 const openModalDelete = (data: IHeading) => {
-	modalStore.$patch((state) => (state.activeModal = "delete-modal"));
-	modalStore.$patch((state) => (state.modalProps = data));
-	modalStore.triggerModal();
-};
-
-const closeDeleteModal = () => {
-	modalDataToDelete.value = {} as IHeading;
-	modalStore.triggerModal();
-};
-
-const deleteSection = (id: number) => {
-	headersStore.deleteHeading(id).then(() => {
-		closeDeleteModal();
+	modalStore.$patch({
+		activeModal: "delete-modal",
+		label: "Удаление раздела",
+		modalProps: {
+			data: data,
+			modalComponent: "delete-section",
+		},
 	});
+	modalStore.triggerModal();
+};
+
+const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
+	modalStore.$patch({
+		activeModal: "form-sections",
+		label: !name.length ? "Создание раздела" : "Редактирование раздела",
+		modalProps: {
+			name,
+			description,
+			edit: !!name.length,
+			id,
+			isFieldChanged: false,
+		},
+	});
+	modalStore.triggerModal();
 };
 
 const changeSelectorValue = (value: number) => {

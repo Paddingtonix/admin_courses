@@ -1,5 +1,6 @@
 import axios from "axios";
-import type { IHeading, IStoreTags } from "../ts-interface/storeTags.type";
+import type { IStoreTags } from "../ts-interface/storeTags.type";
+import type { IStoreHeadings } from "../ts-interface/storeSections.type";
 
 const memes: { name: string; description: string }[] = [
 	{
@@ -162,12 +163,7 @@ const memes: { name: string; description: string }[] = [
 
 export const useHeadersStore = defineStore({
 	id: "headersStore",
-	state: (): {
-		headings: IHeading[];
-		numberOfPages: number | null;
-		currentPage: number;
-		nHeadingsPerPage: number;
-	} => ({
+	state: (): IStoreHeadings => ({
 		headings: [],
 		numberOfPages: null,
 		currentPage: 1,
@@ -254,6 +250,20 @@ export const useHeadersStore = defineStore({
 				.finally(() => {
 					// TODO: ADD_LOADER
 				});
+		},
+		patchHeading({
+			name,
+			description,
+			id,
+		}: {
+			name: string;
+			description: string;
+			id: number;
+		}) {
+			return axios.patch(`/admin/v1/heading?${id}`, {
+				name,
+				description,
+			});
 		},
 	},
 });

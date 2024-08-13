@@ -25,9 +25,13 @@
 @mixin button_styles_primary() 
     background-color: $basic_primary
     border: none
+
     button
         color: $basic_white
         cursor: pointer
+    &:disabled
+        pointer-events: none
+        background-color: $disabled_basic
 
     &:hover 
         background-color: $light_primary
@@ -35,9 +39,7 @@
     &:active
         background-color: $dark_primary
 
-    &:disabled
-        pointer-events: none
-        background-color: $disabled_basic
+    
 
 
 @mixin button_styles_secondary()

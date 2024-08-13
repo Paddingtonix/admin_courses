@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
+import type { IStoreModal } from "../ts-interface/storeModal.type";
 
 export const useStoreModal = defineStore("modal", {
-	state: (): { isOpen: boolean; activeModal: string; modalProps: {} } => ({
+	state: (): IStoreModal => ({
 		// стандарт - false
 		// isOpen: true,
 		isOpen: false,
 		activeModal: "",
+		label: "label",
 		modalProps: {},
 	}),
 	actions: {
