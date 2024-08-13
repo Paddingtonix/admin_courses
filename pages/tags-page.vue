@@ -1,5 +1,5 @@
 <template>
-    <section class="oil-container">
+    <section v-if="user_role_store.role === 'Admin'" class="oil-container">
         <div class="oil-page tags-page">
             <h4 class="tags-page__header">Метки</h4>
             <TabSwitcherCmp :switcherArray="switcherArray"/>
@@ -50,6 +50,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type ISwitcher from '~/src/ts-interface/switcher.type';
+import { useUserRoleStore } from '~/src/stores/storeRole';
 
 
 export default defineComponent({
@@ -59,10 +60,12 @@ export default defineComponent({
         const switcherArray: ISwitcher[] = [{text: 'Метки', id: 1, isActive: true}, {text: 'Разделы', id: 2, isActive: false}]
 
         const list = [{text: "10 меток на стр."}, {text: "20 меток на стр."}, {text: "30 меток на стр."}, {text: "40 меток на стр."}];
+        const user_role_store = useUserRoleStore()
 
         return{
             list,
-            switcherArray
+            switcherArray,
+            user_role_store
         }  
     }
 })

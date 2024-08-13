@@ -1,5 +1,5 @@
 <template>
-    <section class="oil-container">
+    <section v-if="user_role_store.role === 'Admin'" class="oil-container">
         <div class="oil-page direction-page">
             <h4 class="direction-page__header">Направления курсов</h4>
             <PillCmp
@@ -82,10 +82,12 @@ import { useDirectionStore } from '~/src/stores/storeDirection';
 import { useRouter } from "vue-router";
 import { formatDate } from '~/src/utils/format-date';
 import type { DirectionData } from "~/src/ts-interface/direction-data";
+import { useUserRoleStore } from '~/src/stores/storeRole';
 
 export default defineComponent({
     setup() {
         const router = useRouter()
+        const user_role_store = useUserRoleStore()
 
         const pill_info = reactive([
             {
@@ -151,6 +153,7 @@ export default defineComponent({
             searchQuery,
             filteredDirections,
             formatDate,
+            user_role_store,
             deleteDirection,
             // startAbomination,
             sendDirection
