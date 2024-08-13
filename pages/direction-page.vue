@@ -9,26 +9,26 @@
                 :text="pill.text"
                 :value="pill.value"
             />
-            <BtnCmp
-                class="direction-page__settings__btn"
-                background_type="_tertiary"
-                text="Тестовые направления"
-                @click="startAbomination">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </BtnCmp>
+<!--            <BtnCmp-->
+<!--                class="direction-page__settings__btn"-->
+<!--                background_type="_tertiary"-->
+<!--                text="Тестовые направления"-->
+<!--                @click="startAbomination">-->
+<!--                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--                    <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--                </svg>-->
+<!--            </BtnCmp>-->
             <div class="direction-page__container">
                 <div class="direction-page__settings">
                     <SearchCmp
                         class="direction-page__settings__search"
-                        label="Поиск"
-                        v-model="searchQuery"
+                        :label="'Поиск'"
+                        v-model="search_query"
                     />
                     <BtnCmp
                         class="direction-page__settings__btn"
-                        background_type="_tertiary"
-                        text="Добавить направление"
+                        :background_type="'_tertiary'"
+                        :text="'Добавить направление'"
                         @click="sendDirection">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -36,12 +36,13 @@
                     </BtnCmp>
                 </div>
                 <div class="direction-page__checkbox">
-                    <CheckboxCmp :active="true" text="Отображающиеся на сайте"/>
-                    <CheckboxCmp :active="true" text="Не отображающиеся на сайте"/>
+                    <CheckboxCmp :active="true" text="Отображающиеся на сайте" />
+                    <CheckboxCmp :active="true" text="Не отображающиеся на сайте" />
                 </div>
                 <div class="direction-page__course-list">
-                    <template v-if="filteredDirections.length">
+                    <template v-if="filtered_directions.length">
                         <TableHeadCmp
+                            class="direction-page__course-list__table-header"
                             :edit_date="'Дата посл. ред.'"
                             :name="'Название'"
                             :display_page="'Отображение на сайте'"
@@ -49,7 +50,7 @@
                         />
                         <TableRowCmp
                             class="direction-page__course-list__table-row"
-                            v-for="(row, idx) in filteredDirections"
+                            v-for="(row, idx) in filtered_directions"
                             :key="idx"
                             :edit_date="formatDate(row.lastChangeDateTime)"
                             :name="row.localizedName"
@@ -66,9 +67,9 @@
                         </TableRowCmp>
                     </template>
                     <div v-else class="no-results">
-                    <span>
-                        К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
-                    </span>
+                        <span>
+                            К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
+                        </span>
                     </div>
                 </div>
             </div>
@@ -98,15 +99,15 @@ export default defineComponent({
             },
         ])
 
-        const directionStore = useDirectionStore();
-        const searchQuery = ref('')
+        const direction_store = useDirectionStore();
+        const search_query = ref('')
 
-        const filteredDirections = computed(() => {
-            return directionStore.filteredDirections(searchQuery.value);
+        const filtered_directions = computed(() => {
+            return direction_store.filteredDirections(search_query.value);
         })
 
-        const directionsData = [
-            { localizedName: "Frontend Development", lastChangeDateTime: new Date(), isVisible: true, count: 10,  directionId: 1},
+        const directions_data = [
+            { localizedName: "Frontend Development", lastChangeDateTime: new Date(), isVisible: true, count: 9,  directionId: 1},
             { localizedName: "Backend Development", lastChangeDateTime: new Date(), isVisible: true, count: 8, directionId: 2},
             { localizedName: "Data Science", lastChangeDateTime: new Date(), isVisible: false, count: 12, directionId: 3},
             { localizedName: "Mobile Development", lastChangeDateTime: new Date(), isVisible: true, count: 5, directionId: 4},
@@ -114,43 +115,44 @@ export default defineComponent({
         ];
 
         const startAbomination = () => {
-            for (const direction of directionsData) {
+            for (const direction of directions_data) {
                 setTimeout(() => {
-                    directionStore.addDirection(direction);
+                    direction_store.addDirection(direction);
                     console.log("Оппа, добавил направление :)", direction.localizedName);
                 }, 200);
             }
         };
 
         const sendDirection = () => {
-            const directionToAdd = directionsData[0];
+            directions_data.forEach(direction => {
+                const direction_push: DirectionData = {
+                    isVisible: direction.isVisible,
+                    localizations: {
+                        en: '',
+                        ru: direction.localizedName,
+                        // fr: ''
+                    },
+                };
 
-            const directionPush: DirectionData = {
-                isVisible: directionToAdd.isVisible,
-                localizations: {
-                    en: '',
-                    ru: directionToAdd.localizedName,
-                    // fr: ''
-                },
-            };
-
-            directionStore.createDirection(directionPush)
+                direction_store.createDirection(direction_push);
+            });
         }
 
         const deleteDirection = (id: string) => {
-            directionStore.removeDirection(id);
+            direction_store.removeDirection(id);
         };
 
         onMounted(() => {
-            directionStore.getDirections();
+            direction_store.getDirections();
             // startAbomination();
         })
 
         return {
             pill_info,
-            searchQuery,
-            filteredDirections,
+            search_query,
+            filtered_directions,
             formatDate,
+            direction_store,
             deleteDirection,
             // startAbomination,
             sendDirection
@@ -159,7 +161,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .direction-page
     &__header
         margin-bottom: rem(12)
@@ -180,7 +182,7 @@ export default defineComponent({
             max-height: rem(40)
 
         &__btn
-            max-width: rem(248)
+            max-width: rem(280)
             padding: rem(10) rem(16) rem(10) rem(16)
 
     &__checkbox
@@ -189,6 +191,22 @@ export default defineComponent({
         margin-bottom: rem(24)
 
     &__course-list
+        &__table-header
+            .oil-head__cell
+                padding: rem(14) rem(8)
+
+                &:nth-child(1)
+                    flex: 1
+
+                &:nth-child(2)
+                    flex: 3
+
+                &:nth-child(3)
+                    flex: 1
+
+                &:nth-child(4)
+                    flex: 1
+
         &__table-row
             cursor: pointer
             position: relative
@@ -204,7 +222,26 @@ export default defineComponent({
                 position: absolute
                 right: rem(16)
 
+            .oil-row__cell
+                padding: rem(14) rem(8)
+
+                &:nth-child(1)
+                    flex: 1
+
+                &:nth-child(2)
+                    flex: 3
+                    a
+                        color: $basic_primary
+
+                &:nth-child(3)
+                    flex: 1
+
+                &:nth-child(4)
+                    flex: 1
+
 .no-results
+    margin-top: rem(48)
     font-size: rem(16)
+    width: rem(576)
 
 </style>

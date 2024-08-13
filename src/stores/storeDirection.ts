@@ -9,7 +9,8 @@ export const useDirectionStore = defineStore('directionStore', {
     }),
     actions: {
         getDirections() {
-            axios.get('admin/v1/Direction')
+            axios
+                .get('admin/v1/Direction')
                 .then(response => {
                     this.directions = response.data;
                     console.log('Направления добавились !)')
@@ -22,7 +23,8 @@ export const useDirectionStore = defineStore('directionStore', {
             this.directions.push(direction);
         },
         createDirection(data: DirectionData) {
-            axios.post('admin/v1/Direction', data)
+            axios
+                .post('admin/v1/Direction', data)
                 .then(response => {
                     this.getDirections();
                     console.log('Успешно добавил, хехе :)', response.data);
@@ -32,7 +34,8 @@ export const useDirectionStore = defineStore('directionStore', {
                 });
         },
         removeDirection(id: string) {
-            axios.delete(`admin/v1/Direction/${id}`)
+            axios
+                .delete(`admin/v1/Direction/${id}`)
                 .then(() => {
                     this.getDirections()
                 })
@@ -43,9 +46,9 @@ export const useDirectionStore = defineStore('directionStore', {
     },
     getters: {
         filteredDirections: (state) => {
-            return (searchQuery: string) => {
+            return (search_query: string) => {
                 return state.directions.filter(direction =>
-                    direction.localizedName.toLowerCase().includes(searchQuery.toLowerCase())
+                    direction.localizedName.toLowerCase().includes(search_query.toLowerCase())
                 );
             };
         },
