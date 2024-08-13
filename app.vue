@@ -11,10 +11,11 @@ import { useStoreAuth } from "./src/stores/storeAuth";
 import axios from "axios";
 import { useStoreModal } from "./src/stores/storeModal";
 
+
+
 export default defineComponent({
 	setup() {
 		const storeAuth = useStoreAuth();
-
 		const storeModal = useStoreModal();
 		onMounted(() => {
 			const token = localStorage.getItem("test_auth_token");

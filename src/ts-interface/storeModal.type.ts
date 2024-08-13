@@ -10,6 +10,7 @@ export interface IDeleteSection extends IStoreModal {
 	modalProps: {
 		data: IHeading;
 		modalComponent: string;
+		storeId: string;
 	};
 }
 

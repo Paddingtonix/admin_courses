@@ -7,7 +7,7 @@
 			]"
 			>{{ label }}</label
 		>
-		<input :type="type" @input="setValue" v-model="inputValue" />
+		<input :maxlength="max_length" :type="type" @input="setValue" v-model="inputValue" />
 		<div class="oil-input__message" v-if="error.length">
 			<i>
 				<svg
@@ -51,6 +51,10 @@ export default defineComponent({
 			type: String,
 			default: "",
 		},
+		max_length: {
+			type: Number,
+			default: 100
+		}
 	},
 	emits: ["set_value"],
 	setup(props, { emit }) {

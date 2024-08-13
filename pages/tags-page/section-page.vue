@@ -158,6 +158,7 @@ const openModalDelete = (data: IHeading) => {
 		modalProps: {
 			data: data,
 			modalComponent: "delete-section",
+			storeId: "headersStore"
 		},
 	});
 	modalStore.triggerModal();

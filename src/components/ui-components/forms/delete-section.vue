@@ -15,12 +15,15 @@
 </template>
 
 <script lang="ts" setup>
+
 import { useStoreModal } from "~/src/stores/storeModal";
 import type { IDeleteSection } from "~/src/ts-interface/storeModal.type";
 
 const modalStore = useStoreModal();
 
 const modalData = modalStore.$state as IDeleteSection;
+
+
 </script>
 
 <style lang="sass"></style>

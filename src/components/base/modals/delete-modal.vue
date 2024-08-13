@@ -8,7 +8,7 @@
 			:background_type="'_secondary'"
 			@click="modalStore.triggerModal"
 		/>
-		<BtnCmp :text="'Удалить'" background_type="_quaternary" @click="" />
+		<BtnCmp :text="'Удалить'" background_type="_quaternary" @click="deleteItem" />
 	</div>
 </template>
 
@@ -16,14 +16,36 @@
 import { useStoreModal } from "~/src/stores/storeModal";
 import DeleteSection from "../../ui-components/forms/delete-section.vue";
 import type { IDeleteSection } from "~/src/ts-interface/storeModal.type";
+import { useHeadersStore } from "~/src/stores/storeSections";
+import type { StoreGeneric } from "pinia";
 
 export default defineComponent({
 	setup() {
 		const modalStore = useStoreModal();
 		const modalData = reactive(modalStore.$state as IDeleteSection);
+		const storeMap = inject<Map<string, StoreGeneric>>('storeMap');
+		const store = storeMap?.get(modalData.modalProps.storeId) as unknown as {deleteItem:(id: number)=> Promise<void>};
+		const headersStore = useHeadersStore();
+		onMounted(()=>{
+			console.log("YA NASHOL " , store);
+			console.log("HARDCODE ", headersStore);
+		})
+		const deleteItem = () => {
+
+
+		
+		store.deleteItem(modalData.modalProps.data.id)
+		.then(()=>{
+			modalStore.triggerModal()
+		})
+		.catch(()=>{
+			console.log("DA YOBANIY TI BLAD");
+		});
+		}
 		return {
 			modalData,
 			modalStore,
+			deleteItem
 		};
 	},
 	components: {

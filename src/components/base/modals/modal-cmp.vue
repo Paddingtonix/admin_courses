@@ -27,10 +27,8 @@
 				</button>
 			</div>
 			<div class="oil-modal__container__content">
-				<component
-					:main_class="'oil-modal'"
+				<component 
 					:is="modalData.activeModal"
-					:closeModal="storeModal.triggerModal"
 				></component>
 			</div>
 		</div>

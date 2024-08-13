@@ -182,7 +182,7 @@ export const useHeadersStore = defineStore({
 						state.headings = data.headings;
 						state.numberOfPages = data.numberOfPages;
 					});
-					console.log(this.$state);
+
 				})
 				.catch((error) => {
 					console.warn(error);
@@ -220,7 +220,7 @@ export const useHeadersStore = defineStore({
 			}
 		},
 
-		deleteHeading(id: number) {
+		deleteItem(id: number) {
 			return axios
 				.delete(`admin/v1/heading/${id}`)
 				.then(() => {
@@ -242,7 +242,6 @@ export const useHeadersStore = defineStore({
 						state.headings = data.headings;
 						state.numberOfPages = data.numberOfPages;
 					});
-					console.log(this.$state);
 				})
 				.catch((error) => {
 					console.warn(error);

@@ -8,7 +8,7 @@
 			]"
 			>{{ label }}</label
 		>
-		<textarea v-model="textarea_value" :type="type" @input="setValue" />
+		<textarea :maxlength="max_length" v-model="textarea_value" :type="type" @input="setValue" />
 	</div>
 </template>
 <script lang="ts">
@@ -32,6 +32,10 @@ export default defineComponent({
 			type: String,
 			default: "",
 		},
+		max_length: {
+			type: Number,
+			default: 150
+		}
 	},
 	emits: ["set_textarea"],
 

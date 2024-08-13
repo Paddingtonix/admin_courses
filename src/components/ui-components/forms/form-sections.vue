@@ -4,11 +4,13 @@
 			:model-value="formModel.name"
 			class="add-section__input"
 			label="Название раздела"
+			:max_length="20"
 			@set_value="changeForm({ ...formModel, name: $event })"
 		></InputCmp>
 		<TextareaCmp
 			:model-value="formModel.description"
 			class="add-section__text-area"
+			:max_length="40"
 			@set_textarea="changeForm({ ...formModel, description: $event })"
 			label="Описание раздела"
 		></TextareaCmp>
@@ -55,14 +57,26 @@ const formModel = reactive({
 
 const headersStore = useHeadersStore();
 
+const {nameStart, descriptionStart} = {nameStart: modalData.modalProps.name, descriptionStart: modalData.modalProps.description};
+
 const changeForm = ({ name, description }: { [key: string]: string }) => {
 	formModel.name = name;
+	console.log(nameStart, descriptionStart);
+	
 	formModel.description = description;
+	if((formModel.name !== nameStart && formModel.description !== descriptionStart) || formModel.name && formModel.description){
 	modalStore.$patch({
 		modalProps: {
 			isFieldChanged: true,
 		},
 	});
+	}else{
+		modalStore.$patch({
+		modalProps: {
+			isFieldChanged: false,
+		},
+	})
+	};
 };
 
 const sendForm = () => {
