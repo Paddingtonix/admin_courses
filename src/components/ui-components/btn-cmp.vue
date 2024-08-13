@@ -2,7 +2,7 @@
 	<!-- v-wave="{ color: '#03AEE2' }" -->
 	<button class="oil-btn" :class="background_type" :disabled="disabled">
 		<slot></slot>
-		<span>{{ text }}</span>
+		{{ text }}
 	</button>
 </template>
 
@@ -26,9 +26,7 @@ export default defineComponent({
 	},
 	setup(props) {
 		const { disabled, text, background_type } = toRefs(props);
-		watch(disabled, () => {
-			console.log(disabled, "BUTTON");
-		});
+
 		return {
 			disabled,
 			text,
@@ -38,7 +36,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="sass">
+<style lang="sass">
 .oil-btn
     padding: rem(16) rem(32)
     cursor: pointer

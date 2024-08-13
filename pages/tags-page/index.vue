@@ -73,11 +73,6 @@
 			:list="list"
 		/>
 	</div>
-
-	<Teleport to="body">
-		<ModalCmp modalComponent="form-tags" title="Добавление метки">
-		</ModalCmp>
-	</Teleport>
 </template>
 
 <script lang="ts" setup>
