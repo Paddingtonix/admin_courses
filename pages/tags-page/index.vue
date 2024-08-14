@@ -88,6 +88,11 @@ const route = useRoute();
 const router = useRouter();
 
 const addTag = () => {
+	modalStore.$patch({
+		label: "Добавить метку",
+		activeModal: "form-tags",
+		modalProps: {},
+	});
 	modalStore.triggerModal();
 };
 

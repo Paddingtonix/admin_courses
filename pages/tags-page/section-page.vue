@@ -85,9 +85,13 @@
 					</template>
 				</TableRowCmp>
 			</template>
-			<template v-if="headersStore.$state.numberOfPages">
-				<div class="tags-page__pagination-wrapper">
+			<template v-if="headersStore.numberOfPages !== null">
+				<div class="section-page__pagination-wrapper">
 					<PaginationCmp
+						v-if="
+							headersStore.numberOfPages !== null &&
+							headersStore.numberOfPages >= 0
+						"
 						:currentPage="headingsData.currentPage"
 						:pages_count="headingsData.numberOfPages"
 						@change-page="goToPage($event)"
@@ -102,7 +106,13 @@
 				</div>
 			</template>
 		</template>
-		<template v-else-if="!headersStore.headings.length && !searchValue">
+		<template
+			v-else-if="
+				!headersStore.headings.length &&
+				!searchValue &&
+				!headersStore.numberOfPages
+			"
+		>
 			<span class="no-headers">
 				Пока нет разделов, но вы можете их добавить
 			</span>
@@ -131,37 +141,35 @@ const headingsData = headersStore.$state;
 
 const searchValue = ref("");
 
-const modalComponent = ref("form-sections");
-
-const headerData = ref({} as IHeading);
-
-const setHeaderData = (data: IHeading) => {
-	headerData.value = Object.create(data);
-	openModalSection();
-};
-
-const openModalSection = () => {
-	modalComponent.value = "form-sections";
-	modalStore.triggerModal();
-};
-
 const updateSearchValue = (value: string) => {
 	searchValue.value = value;
 
 	headersStore.getHeadings({ text: value });
 };
 
+watch(headersStore.$state, () => {
+	if (
+		!headingsData.headings.length &&
+		headingsData.numberOfPages &&
+		headingsData.currentPage > headingsData.numberOfPages
+	) {
+		headersStore.$patch({
+			currentPage: headingsData.currentPage - 1,
+		});
+		goToPage(headingsData.currentPage);
+	}
+});
+
 const openModalDelete = (data: IHeading) => {
 	console.log(data);
-	
+
 	modalStore.$patch({
 		activeModal: "delete-modal",
 		label: "Удаление раздела",
 		modalProps: {
 			data: data,
-			endpoint: 'admin/v1/heading/',
 			modalComponent: "delete-section",
-			storeId: headersStore
+			deleteFunction: headersStore.deleteItem,
 		},
 	});
 	modalStore.triggerModal();
@@ -210,6 +218,13 @@ onMounted(() => {
     margin-top: rem(24)
     display: block
 .section-page
+    &__pagination-wrapper
+        display: flex
+        justify-content: center
+        position: relative
+        min-height: rem(20)
+        margin-top: rem(16)
+
     &__widget-wrapper
         display: grid
         grid-template-columns: 4fr 1fr

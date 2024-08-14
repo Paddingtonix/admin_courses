@@ -24,12 +24,11 @@
 </template>
 
 <script lang="ts" setup>
-const { closeModal } = defineProps({
-	closeModal: {
-		type: Function as PropType<() => void>,
-		default: () => {},
-	},
-});
+import { useStoreModal } from "~/src/stores/storeModal";
+
+const storeModal = useStoreModal();
+
+const closeModal = storeModal.triggerModal;
 </script>
 
 <style lang="sass">

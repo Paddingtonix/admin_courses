@@ -182,7 +182,6 @@ export const useHeadersStore = defineStore({
 						state.headings = data.headings;
 						state.numberOfPages = data.numberOfPages;
 					});
-
 				})
 				.catch((error) => {
 					console.warn(error);
@@ -220,11 +219,11 @@ export const useHeadersStore = defineStore({
 			}
 		},
 
-		deleteItem(id: number, endpoint: string) {
-			console.log('qwerty');
-			
+		deleteItem(id: number) {
+			console.log("qwerty");
+
 			return axios
-				.delete(`${endpoint}${id}`)
+				.delete(`admin/v1/heading/${id}`)
 				.then(() => {
 					this.getHeadings({});
 				})
@@ -261,10 +260,15 @@ export const useHeadersStore = defineStore({
 			description: string;
 			id: number;
 		}) {
-			return axios.patch(`/admin/v1/heading?${id}`, {
-				name,
-				description,
-			});
+			return axios
+				.patch(`/admin/v1/heading/${id}`, {
+					name,
+					description,
+				})
+				.then((response) => {
+					this.getHeadings({});
+					return response;
+				});
 		},
 	},
 });

@@ -57,26 +57,33 @@ const formModel = reactive({
 
 const headersStore = useHeadersStore();
 
-const {nameStart, descriptionStart} = {nameStart: modalData.modalProps.name, descriptionStart: modalData.modalProps.description};
+const { nameStart, descriptionStart } = {
+	nameStart: modalData.modalProps.name,
+	descriptionStart: modalData.modalProps.description,
+};
 
 const changeForm = ({ name, description }: { [key: string]: string }) => {
 	formModel.name = name;
 	console.log(nameStart, descriptionStart);
-	
+
 	formModel.description = description;
-	if((formModel.name !== nameStart && formModel.description !== descriptionStart) || formModel.name && formModel.description){
-	modalStore.$patch({
-		modalProps: {
-			isFieldChanged: true,
-		},
-	});
-	}else{
+	if (
+		(formModel.name !== nameStart &&
+			formModel.description !== descriptionStart) ||
+		(formModel.name && formModel.description)
+	) {
 		modalStore.$patch({
-		modalProps: {
-			isFieldChanged: false,
-		},
-	})
-	};
+			modalProps: {
+				isFieldChanged: true,
+			},
+		});
+	} else {
+		modalStore.$patch({
+			modalProps: {
+				isFieldChanged: false,
+			},
+		});
+	}
 };
 
 const sendForm = () => {
