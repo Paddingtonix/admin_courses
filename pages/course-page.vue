@@ -101,6 +101,7 @@
                     />
                     <TableRowCmp 
                         v-for="(row, idx) in course_list"
+                        :id="courseId"
                         :key="idx"
                         :name="row.title"
                         :status="row.status"
@@ -287,7 +288,6 @@ export default defineComponent({
                 axios
                     .get<{ courses: CourseList[] }>('/admin/v1/Course')
                     .then(resp => {
-                        console.log(resp.data, 'resp.data/course_list');
                         course_list.push(...resp.data.courses)
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
@@ -295,13 +295,13 @@ export default defineComponent({
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
-                        console.log(resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length, 'resp.data.courses')
-                    })
+                        // console.table(resp.data.courses.find((element: { title: String, courseId: Number }) => element.title === course_list.row.title))
+                     })
 
                 axios
                     .get('admin/v1/course/filters')
                     .then(resp => {
-                        console.log(resp.data, 'lang')
+
                     })
             })
         })
