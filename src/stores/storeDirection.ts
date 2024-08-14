@@ -44,13 +44,4 @@ export const useDirectionStore = defineStore('directionStore', {
                 });
         },
     },
-    getters: {
-        filteredDirections: (state) => {
-            return (search_query: string) => {
-                return state.directions.filter(direction =>
-                    direction.localizedName.toLowerCase().includes(search_query.toLowerCase())
-                );
-            };
-        },
-    },
 });

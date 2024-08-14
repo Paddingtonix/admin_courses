@@ -36,8 +36,8 @@
                     </BtnCmp>
                 </div>
                 <div class="direction-page__checkbox">
-                    <CheckboxCmp :active="true" text="Отображающиеся на сайте" />
-                    <CheckboxCmp :active="true" text="Не отображающиеся на сайте" />
+                    <CheckboxCmp :active="showOnlyVisible" text="Отображающиеся на сайте" @click="toggleVisible" />
+                    <CheckboxCmp :active="showOnlyInvisible" text="Не отображающиеся на сайте" @click="toggleInvisible" />
                 </div>
                 <div class="direction-page__course-list">
                     <template v-if="filtered_directions.length">
@@ -87,6 +87,8 @@ import type { DirectionData } from "~/src/ts-interface/direction-data";
 export default defineComponent({
     setup() {
         const router = useRouter()
+        const showOnlyVisible = ref(true)
+        const showOnlyInvisible = ref(true)
 
         const pill_info = reactive([
             {
@@ -102,8 +104,34 @@ export default defineComponent({
         const direction_store = useDirectionStore();
         const search_query = ref('')
 
+        const toggleVisible = () => {
+            showOnlyVisible.value = !showOnlyVisible.value
+        }
+
+        const toggleInvisible = () => {
+            showOnlyInvisible.value = !showOnlyInvisible.value
+        }
+
         const filtered_directions = computed(() => {
-            return direction_store.filteredDirections(search_query.value);
+            return filtered_by_visibility.value.filter(direction => {
+                return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
+            });
+        })
+
+        const filtered_by_visibility = computed(() => {
+            if (showOnlyVisible.value && showOnlyInvisible.value) {
+                return direction_store.directions;
+            }
+
+            return direction_store.directions.filter(direction => {
+                if (showOnlyVisible.value && !showOnlyInvisible.value) {
+                    return direction.isVisible;
+                }
+                if (!showOnlyVisible.value && showOnlyInvisible.value) {
+                    return !direction.isVisible;
+                }
+                return false;
+            });
         })
 
         const directions_data = [
@@ -151,11 +179,16 @@ export default defineComponent({
             pill_info,
             search_query,
             filtered_directions,
+            filtered_by_visibility,
             formatDate,
             direction_store,
+            showOnlyVisible,
+            showOnlyInvisible,
             deleteDirection,
             // startAbomination,
-            sendDirection
+            sendDirection,
+            toggleVisible,
+            toggleInvisible
         }
     }
 })
