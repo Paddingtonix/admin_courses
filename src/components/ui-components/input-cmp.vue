@@ -59,6 +59,7 @@ export default defineComponent({
         maxlength: {
             type: Number,
             default: null
+        },
         modelValue: {
             type: String,
             default: '',

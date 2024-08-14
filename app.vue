@@ -2,7 +2,7 @@
     <div class="oil">
         <Sidebar />
         <NuxtPage />
-        <ModalCmp />
+        <!-- <ModalCmp /> -->
     </div>
 </template>
 <script lang="ts">
