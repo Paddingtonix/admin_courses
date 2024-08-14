@@ -26,21 +26,21 @@ export default defineComponent({
 		const storeMap = inject<Map<string, StoreGeneric>>('storeMap');
 		const store = storeMap?.get(modalData.modalProps.storeId) as unknown as {deleteItem:(id: number)=> Promise<void>};
 		const headersStore = useHeadersStore();
+
 		onMounted(()=>{
 			console.log("YA NASHOL " , store);
-			console.log("HARDCODE ", headersStore);
+			console.log("HARDCODE ", modalData.modalProps.storeId);
 		})
+
 		const deleteItem = () => {
-
-
-		
-		store.deleteItem(modalData.modalProps.data.id)
-		.then(()=>{
-			modalStore.triggerModal()
-		})
-		.catch(()=>{
-			console.log("DA YOBANIY TI BLAD");
-		});
+			
+			modalData.modalProps.storeId.deleteItem(modalData.modalProps.data.id, modalData.modalProps.endpoint)
+				.then(()=>{
+					modalStore.triggerModal()
+				})
+				.catch(()=>{
+					console.log("DA YOBANIY TI BLOOD");
+				});
 		}
 		return {
 			modalData,

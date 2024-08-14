@@ -152,13 +152,16 @@ const updateSearchValue = (value: string) => {
 };
 
 const openModalDelete = (data: IHeading) => {
+	console.log(data);
+	
 	modalStore.$patch({
 		activeModal: "delete-modal",
 		label: "Удаление раздела",
 		modalProps: {
 			data: data,
+			endpoint: 'admin/v1/heading/',
 			modalComponent: "delete-section",
-			storeId: "headersStore"
+			storeId: headersStore
 		},
 	});
 	modalStore.triggerModal();

@@ -220,9 +220,11 @@ export const useHeadersStore = defineStore({
 			}
 		},
 
-		deleteItem(id: number) {
+		deleteItem(id: number, endpoint: string) {
+			console.log('qwerty');
+			
 			return axios
-				.delete(`admin/v1/heading/${id}`)
+				.delete(`${endpoint}${id}`)
 				.then(() => {
 					this.getHeadings({});
 				})
