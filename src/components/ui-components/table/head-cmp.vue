@@ -12,7 +12,7 @@
                     </svg>
                 </div>
             </div>
-        </template>    
+        </template>
     </div>
 </template>
 
@@ -22,11 +22,11 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
-        edit_date: {
+        lastChangeDateTime: {
             type: String,
             default: ''
         },
-        name: {
+        localizedName: {
             type: String,
             default: ''
         },
@@ -54,11 +54,11 @@ export default defineComponent({
             type: String,
             default: ''
         },
-        display_page: {
+        isVisible: {
             type: Boolean,
             default: false
         },
-        courses_number: {
+        count: {
             type: [String, Number],
             default: ''
         },
@@ -71,7 +71,7 @@ export default defineComponent({
             emit('sort', { field_key: idx, direction });
         };
 
-        return{ 
+        return{
             fields,
             onSort
         }
@@ -79,7 +79,7 @@ export default defineComponent({
 })
 </script>
 <style lang="sass">
-.oil-head 
+.oil-head
     @include flex_center_spacing()
     border-bottom: rem(1) solid $disabled_basic
 
@@ -89,7 +89,7 @@ export default defineComponent({
         svg + svg
             margin-top: rem(-8)
 
-    &__cell 
+    &__cell
         padding: rem(8)
         @include flex_start()
         gap: rem(4)
@@ -100,7 +100,7 @@ export default defineComponent({
 
         &:nth-child(1)
             flex: 4
-            
+
         &:nth-child(2)
             flex: 2
 

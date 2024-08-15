@@ -44,19 +44,19 @@
                         <TableHeadCmp
                             @sort="onSort"
                             class="direction-page__course-list__table-header"
-                            :edit_date="'Дата посл. ред.'"
-                            :name="'Название'"
-                            :display_page="'Отображение на сайте'"
-                            :courses_number="'Кол-во курсов'"
+                            :lastChangeDateTime="'Дата посл. ред.'"
+                            :localizedName="'Название'"
+                            :isVisible="'Отображение на сайте'"
+                            :count="'Кол-во курсов'"
                         />
                         <TableRowCmp
                             class="direction-page__course-list__table-row"
                             v-for="(row, idx) in filtered_directions"
                             :key="idx"
-                            :edit_date="formatDate(row.lastChangeDateTime)"
-                            :name="row.localizedName"
-                            :display_page="row.isVisible ? 'Отображается' : 'Не отображается'"
-                            :courses_number="row.count.toString()"
+                            :lastChangeDateTime="formatDate(row.lastChangeDateTime)"
+                            :localizedName="row.localizedName"
+                            :isVisible="row.isVisible ? 'Отображается' : 'Не отображается'"
+                            :count="row.count.toString()"
                         >
                             <template v-slot:svg>
                                 <i class="direction-page__course-list__table-row__svg"  @click="deleteDirection(row.directionId)">

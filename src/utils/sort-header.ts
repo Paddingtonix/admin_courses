@@ -3,8 +3,6 @@ export const sortHeader = (array, field_key, direction) => {
         let field_a = a[field_key];
         let field_b = b[field_key];
 
-        console.log('Сравниваем:', field_a, field_b);
-
         if (typeof field_a === 'string' && typeof field_b === 'string') {
             field_a = field_a.toLowerCase();
             field_b = field_b.toLowerCase();
@@ -23,6 +21,12 @@ export const sortHeader = (array, field_key, direction) => {
             if (field_a < field_b) return direction === 'asc' ? -1 : 1;
             if (field_a > field_b) return direction === 'asc' ? 1 : -1;
             return 0;
+        }
+
+        if (typeof field_a === 'boolean' && typeof field_b === 'boolean') {
+            if (field_a === field_b) return 0;
+            if (field_a) return direction === 'asc' ? -1 : 1;
+            if (!field_a) return direction === 'asc' ? 1 : -1;
         }
 
         return 0;

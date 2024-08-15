@@ -13,11 +13,11 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
-        edit_date: {
+        lastChangeDateTime: {
             type: String,
             default: ''
         },
-        name: {
+        localizedName: {
             type: String,
             default: ''
         },
@@ -45,11 +45,11 @@ export default defineComponent({
             type: String,
             default: ''
         },
-        display_page: {
+        isVisible: {
             type: Boolean,
             default: false
         },
-        courses_number: {
+        count: {
             type: [String, Number],
             default: ''
         },
@@ -64,16 +64,16 @@ export default defineComponent({
 })
 </script>
 <style lang="sass">
-.oil-row 
+.oil-row
     @include flex_center_spacing()
     border-bottom: rem(1) solid $disabled_basic
-    &__cell 
+    &__cell
         padding: rem(8)
 
         &:nth-child(1)
             flex: 4
             color: $basic_primary
-            
+
         &:nth-child(2)
             flex: 2
             color: $basic_primary
