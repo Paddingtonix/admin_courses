@@ -1,108 +1,113 @@
 <template>
-	<div class="tags-page__widget-wrapper">
-		<SearchCmp class="tags-page__search" label="Поиск" />
-		<FilterCmp />
-		<BtnCmp
-			class="tags-page__add-tag-btn"
-			background_type="_tertiary"
-			text="Добавить метку"
-			@click="addTag"
-		>
-			<svg
-				width="20"
-				height="20"
-				viewBox="0 0 20 20"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307"
-					stroke="#176DC1"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				/>
-			</svg>
-		</BtnCmp>
-	</div>
+    <div class="tags-page__widget-wrapper">
+        <SearchCmp class="tags-page__search" label="Поиск" />
+        <FilterCmp />
+        <BtnCmp
+            class="tags-page__add-tag-btn"
+            background_type="_tertiary"
+            text="Добавить метку"
+            @click="addTag"
+        >
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307"
+                    stroke="#176DC1"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+        </BtnCmp>
+    </div>
 
-	<div class="tags-page__checkbox-wrapper">
-		<CheckboxCmp :active="true" text="Переведено" />
-		<CheckboxCmp :active="true" text="Не переведено" />
-	</div>
+    <div class="tags-page__checkbox-wrapper">
+        <CheckboxCmp :active="true" text="Переведено" />
+        <CheckboxCmp :active="true" text="Не переведено" />
+    </div>
 
-	<TableHeadCmp
-		class="tags-table-header"
-		:name="'Раздел'"
-		:status="'Метка'"
-		:lang="'Перевод метки (RU)'"
-	/>
+    <TableHeadCmp
+        class="tags-table-header"
+        :name="'Раздел'"
+        :status="'Метка'"
+        :lang="'Перевод метки (RU)'"
+    />
 
-	<TableRowCmp
-		class="tags-table-row"
-		name="sort"
-		status="course"
-		authors="Сортировка"
-	>
-		<template v-slot:svg>
-			<i class="tags-table-row__svg">
-				<svg
-					width="18"
-					height="20"
-					viewBox="0 0 18 20"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
-						stroke="#FF7C7C"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</i>
-		</template>
-	</TableRowCmp>
+    <TableRowCmp
+        class="tags-table-row"
+        name="sort"
+        status="course"
+        authors="Сортировка"
+    >
+        <template v-slot:svg>
+            <i class="tags-table-row__svg">
+                <svg
+                    width="18"
+                    height="20"
+                    viewBox="0 0 18 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
+                        stroke="#FF7C7C"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </i>
+        </template>
+    </TableRowCmp>
 
-	<div class="tags-page__pagination-wrapper">
-		<PaginationCmp :pages_count="10" />
-		<SelectorCmp
-			class="tags-page__selector"
-			:label="`${list[0]} меток на стр.`"
-			:list="list"
-		/>
-	</div>
+    <div class="tags-page__pagination-wrapper">
+        <PaginationCmp :pages_count="10" />
+        <SelectorCmp
+            class="tags-page__selector"
+            :label="`${list[0]} меток на стр.`"
+            :list="list"
+        />
+    </div>
 </template>
 
 <script lang="ts" setup>
 import { useStoreModal } from "~/src/stores/storeModal";
+import { useHeadersStore } from "~/src/stores/storeSections";
 import { useTagsStore } from "~/src/stores/storeTags";
 
 const tagsStore = useTagsStore();
 
 const modalStore = useStoreModal();
 
+const headersStore = useHeadersStore();
+
 const route = useRoute();
 
 const router = useRouter();
 
 const addTag = () => {
-	modalStore.$patch({
-		label: "Добавить метку",
-		activeModal: "form-tags",
-		modalProps: {},
-	});
-	modalStore.triggerModal();
+    modalStore.$patch({
+        label: "Добавить метку",
+        activeModal: "form-tags",
+        modalProps: {
+            headers: headersStore.headings,
+        },
+    });
+    modalStore.triggerModal();
 };
 
 const query = reactive({
-	page: 0,
-	nLabelsPerPage: 10,
+    page: 0,
+    nLabelsPerPage: 10,
 });
 
 onMounted(() => {
-	// tagsStore.getTags();
+    headersStore.getHeadings({});
 });
 
 const list = [10, 15, 20, 25];

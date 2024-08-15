@@ -1,54 +1,54 @@
 <template>
-	<div class="oil-row">
-		<template v-for="field in fields">
-			<div class="oil-row__cell" v-if="field" :key="field">
-				<a>{{ field }}</a>
-			</div>
-		</template>
-		<slot name="svg" />
-	</div>
+    <div class="oil-row">
+        <template v-for="field in fields">
+            <div class="oil-row__cell" v-if="field" :key="field">
+                <a>{{ field }}</a>
+            </div>
+        </template>
+        <slot name="svg" />
+    </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-	props: {
-		name: {
-			type: String,
-			default: "",
-		},
-		status: {
-			type: [String, Number],
-			default: "",
-		},
-		authors: {
-			type: String,
-			default: "",
-		},
-		direction: {
-			type: String,
-			default: "",
-		},
-		lang: {
-			type: String,
-			default: "",
-		},
-		date_edit: {
-			type: String,
-			default: "",
-		},
-		end_date: {
-			type: String,
-			default: "",
-		},
-	},
-	setup(props) {
-		const fields = props;
+    props: {
+        name: {
+            type: String,
+            default: "",
+        },
+        status: {
+            type: [String, Number],
+            default: "",
+        },
+        authors: {
+            type: String,
+            default: "",
+        },
+        direction: {
+            type: String,
+            default: "",
+        },
+        lang: {
+            type: String,
+            default: "",
+        },
+        date_edit: {
+            type: String,
+            default: "",
+        },
+        end_date: {
+            type: String,
+            default: "",
+        },
+    },
+    setup(props) {
+        const fields = props;
 
-		return {
-			fields,
-		};
-	},
+        return {
+            fields,
+        };
+    },
 });
 </script>
 <style lang="sass">

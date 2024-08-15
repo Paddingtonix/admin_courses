@@ -1,27 +1,27 @@
 <template>
-	<section class="oil-container">
-		<div class="oil-page tags-page">
-			<h4 class="tags-page__header">Метки</h4>
-			<TabSwitcherCmp :switcherArray="switcherArray" />
-			<hr class="tags-page__divider" />
-			<div class="tags-page__content">
-				<NuxtPage />
-			</div>
-		</div>
-	</section>
+    <section class="oil-container">
+        <div class="oil-page tags-page">
+            <h4 class="tags-page__header">Метки</h4>
+            <TabSwitcherCmp :switcherArray="switcherArray" />
+            <hr class="tags-page__divider" />
+            <div class="tags-page__content">
+                <NuxtPage />
+            </div>
+        </div>
+    </section>
 </template>
 
 <script lang="ts" setup>
 import type ISwitcher from "~/src/ts-interface/switcher.type";
 
 const switcherArray: ISwitcher[] = [
-	{ text: "Метки", id: 1, isActive: true, link: "/tags-page" },
-	{
-		text: "Разделы",
-		id: 2,
-		isActive: false,
-		link: "/tags-page/section-page",
-	},
+    { text: "Метки", id: 1, isActive: true, link: "/tags-page" },
+    {
+        text: "Разделы",
+        id: 2,
+        isActive: false,
+        link: "/tags-page/section-page",
+    },
 ];
 </script>
 
