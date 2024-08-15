@@ -1,26 +1,48 @@
 <template>
-	<div class="lang-switcher">
-		<button type="button" class="active">{{ russian }}</button>
-		<button type="button">{{ extraLang }}</button>
-		<button type="button">{{ extraLang2 }}</button>
-	</div>
+    <div class="lang-switcher">
+        <button
+            v-for="lang in langs"
+            type="button"
+            :id="lang.id"
+            :class="{ active: active === lang.id }"
+            @click="() => changeActiveLang(lang.id)"
+        >
+            {{ lang.text }}
+        </button>
+    </div>
 </template>
 
 <script lang="ts" setup>
-const { russian, extraLang, extraLang2 } = defineProps({
-	russian: {
-		type: String,
-		default: "Русский (RU) *",
-	},
-	extraLang: {
-		type: String,
-		default: "English (EN) *",
-	},
-	extraLang2: {
-		type: String,
-		default: "Français (FR) *",
-	},
+import type { PropType } from "vue";
+
+const { russian, extraLang, extraLang2, active } = defineProps({
+    russian: {
+        type: Object as PropType<{ text: string; id: string }>,
+        default: { text: "Русский (RU) *", id: "RU" },
+    },
+    extraLang: {
+        type: Object as PropType<{ text: string; id: string }>,
+        default: { text: "English (EN) *", id: "EN" },
+    },
+    extraLang2: {
+        type: Object as PropType<{ text: string; id: string }>,
+        default: { text: "Français (FR) *", id: "FR" },
+    },
+    active: {
+        type: String,
+        default: "RU",
+    },
 });
+
+const langs = {
+    russian,
+    extraLang,
+    extraLang2,
+};
+const emit = defineEmits(["change-lang"]);
+const changeActiveLang = (id: string) => {
+    emit("change-lang", id);
+};
 </script>
 
 <style lang="sass" scoped>

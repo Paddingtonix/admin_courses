@@ -1,5 +1,5 @@
 import type { StoreGeneric } from "pinia";
-import type { IHeading } from "./storeTags.type";
+import type { IHeading, ITags } from "./storeTags.type";
 
 export interface IStoreModal {
     isOpen: boolean;
@@ -29,5 +29,6 @@ export interface IFormSection extends IStoreModal {
 export interface IFormTags extends IStoreModal {
     modalProps: {
         headers: IHeading[];
+        tagForm?: ITags;
     };
 }

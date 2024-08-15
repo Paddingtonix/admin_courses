@@ -1,15 +1,32 @@
 <template>
     <form class="add-tag" action="#">
         <SelectorCmp
-            :objectList="modalData.modalProps.headers"
+            v-if="!headers"
+            :objectList="headers"
             class="add-tag__selector"
             label="Раздел"
         ></SelectorCmp>
-        <InputCmp class="add-tag__input" label="Название метки"></InputCmp>
-        <LangSwitcherCmp class="add-tag__lang-switcher" />
+        <span class="add-tag__no-selector" v-else>
+            Вы должны создать раздел, прежде, чем создать метку
+        </span>
+        <InputCmp
+            @set_value="setFormValue(tagFormEnum._name, $event)"
+            :modelValue="tagForm.name"
+            class="add-tag__input"
+            label="Название метки"
+        ></InputCmp>
+        <LangSwitcherCmp
+            :active="activeLang"
+            class="add-tag__lang-switcher"
+            @change-lang="changeLang($event)"
+        />
         <TextareaCmp
             class="add-tag__text-area"
             label="Перевод метки"
+            :modelValue="tagForm.localizations[activeLang]"
+            @set_textarea="
+                setFormValue(tagFormEnum._localizations, $event, activeLang)
+            "
         ></TextareaCmp>
         <TooltipCmp
             class="add-tag__tooltip"
@@ -30,12 +47,49 @@
 <script lang="ts" setup>
 import { useStoreModal } from "~/src/stores/storeModal";
 import type { IFormTags } from "~/src/ts-interface/storeModal.type";
+import type { ITags } from "~/src/ts-interface/storeTags.type";
 
 const storeModal = useStoreModal();
 
-const modalData = storeModal.modalProps as IFormTags;
+const modalData = storeModal.$state as IFormTags;
 
 const closeModal = storeModal.triggerModal;
+
+const headers = modalData.modalProps?.headers ?? [];
+
+const activeLang = ref("RU");
+
+const initialTagForm: ITags = {
+    headingId: null,
+    headingName: "",
+    name: "",
+    localizations: {},
+};
+
+const tagForm: ITags = reactive(
+    modalData.modalProps?.tagForm || initialTagForm
+);
+
+enum tagFormEnum {
+    _name = "name",
+    _localizations = "localizations",
+}
+
+const setFormValue = (
+    _fieldName: keyof Omit<ITags, "headingId" | "headingName">,
+    inputValue: string,
+    localization?: string
+) => {
+    if (_fieldName === "localizations" && localization) {
+        tagForm[_fieldName][localization] = inputValue;
+    } else if (_fieldName !== "localizations") {
+        tagForm[_fieldName] = inputValue;
+    }
+};
+
+const changeLang = (newLang: string) => {
+    activeLang.value = newLang;
+};
 </script>
 
 <style lang="sass">
@@ -48,6 +102,10 @@ const closeModal = storeModal.triggerModal;
 
     &__selector
         margin-bottom: rem(16)
+    &__no-selector
+        display: block
+        margin-bottom: rem(16)
+        color: $dark_error
 
     &__input
         margin-bottom: rem(16)

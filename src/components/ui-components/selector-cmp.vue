@@ -2,7 +2,11 @@
     <div class="oil-selector" @click="openList">
         <div class="oil-selector__chooses">
             <label v-if="!chooses_variable">{{ label }}</label>
-            <span v-else>{{ chooses_variable }} {{ tabText }} на стр.</span>
+
+            <span v-else-if="!objectList.length"
+                >{{ chooses_variable }} {{ tabText }} на стр.</span
+            >
+            <span v-else> {{ chooses_variable }} </span>
             <svg
                 :class="{ '_active-list': list_openned.value }"
                 class="oil-selector__chooses__chevron"
@@ -21,6 +25,7 @@
                 />
             </svg>
         </div>
+
         <div
             class="oil-selector__list"
             v-if="list_openned.value && list.length"
@@ -32,12 +37,15 @@
                 >{{ list_item }} {{ tabText }} на стр.</span
             >
         </div>
-        <div class="oil-selector__list" v-else-if="objectList.length">
+        <div
+            class="oil-selector__list"
+            v-else-if="list_openned.value && objectList.length"
+        >
             <span
                 v-for="(list_item, idx) in objectList"
                 :key="idx"
-                @click="selectValue(list_item.name)"
-                >{{ list_item }} {{ tabText }} на стр.</span
+                @click="selectObjectValue(list_item.name)"
+                >{{ list_item.name }}</span
             >
         </div>
     </div>
@@ -60,7 +68,7 @@ export default defineComponent({
             default: "меток",
         },
         objectList: {
-            type: Array as PropType<Array<{ name: string }>>,
+            type: Array as PropType<Array<{ name: string; id: number }>>,
             default: {},
         },
     },
@@ -70,7 +78,7 @@ export default defineComponent({
             value: false,
         });
 
-        const chooses_variable = ref<string | number>(0);
+        const chooses_variable = ref<string | number>("");
 
         const openList = () => {
             list_openned.value = !list_openned.value;
@@ -81,11 +89,17 @@ export default defineComponent({
             emit("select-value", val);
         };
 
+        const selectObjectValue = (val: string) => {
+            chooses_variable.value = val;
+            emit("select-value", val);
+        };
+
         return {
             list_openned,
             chooses_variable,
             openList,
             selectValue,
+            selectObjectValue,
         };
     },
 });

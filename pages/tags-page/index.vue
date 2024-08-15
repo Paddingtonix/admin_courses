@@ -6,7 +6,7 @@
             class="tags-page__add-tag-btn"
             background_type="_tertiary"
             text="Добавить метку"
-            @click="addTag"
+            @click="openModalAddTag()"
         >
             <svg
                 width="20"
@@ -43,6 +43,14 @@
         name="sort"
         status="course"
         authors="Сортировка"
+        @click="
+            openModalAddTag({
+                headingId: 0,
+                headingName: 'course',
+                name: 'sort',
+                localizations: { RU: 'Сортировка' },
+            })
+        "
     >
         <template v-slot:svg>
             <i class="tags-table-row__svg">
@@ -77,37 +85,29 @@
 
 <script lang="ts" setup>
 import { useStoreModal } from "~/src/stores/storeModal";
-import { useHeadersStore } from "~/src/stores/storeSections";
 import { useTagsStore } from "~/src/stores/storeTags";
+import type { ITags } from "~/src/ts-interface/storeTags.type";
 
 const tagsStore = useTagsStore();
 
+const tagsData = tagsStore.$state;
+
 const modalStore = useStoreModal();
 
-const headersStore = useHeadersStore();
-
-const route = useRoute();
-
-const router = useRouter();
-
-const addTag = () => {
+const openModalAddTag = (tagForm?: ITags) => {
     modalStore.$patch({
         label: "Добавить метку",
         activeModal: "form-tags",
         modalProps: {
-            headers: headersStore.headings,
+            headers: tagsData.headings,
+            tagForm,
         },
     });
     modalStore.triggerModal();
 };
 
-const query = reactive({
-    page: 0,
-    nLabelsPerPage: 10,
-});
-
 onMounted(() => {
-    headersStore.getHeadings({});
+    tagsStore.getAllHeadings();
 });
 
 const list = [10, 15, 20, 25];
