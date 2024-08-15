@@ -36,12 +36,13 @@
                     </BtnCmp>
                 </div>
                 <div class="direction-page__checkbox">
-                    <CheckboxCmp :active="showOnlyVisible" text="Отображающиеся на сайте" @click="toggleVisible" />
-                    <CheckboxCmp :active="showOnlyInvisible" text="Не отображающиеся на сайте" @click="toggleInvisible" />
+                    <CheckboxCmp :active="show_only_visible" text="Отображающиеся на сайте" @click="toggleVisible" />
+                    <CheckboxCmp :active="show_only_invisible" text="Не отображающиеся на сайте" @click="toggleInvisible" />
                 </div>
                 <div class="direction-page__course-list">
                     <template v-if="filtered_directions.length">
                         <TableHeadCmp
+                            @sort="onSort"
                             class="direction-page__course-list__table-header"
                             :edit_date="'Дата посл. ред.'"
                             :name="'Название'"
@@ -82,13 +83,18 @@ import { defineComponent, reactive, ref, computed, watch, onMounted } from 'vue'
 import { useDirectionStore } from '~/src/stores/storeDirection';
 import { useRouter } from "vue-router";
 import { formatDate } from '~/src/utils/format-date';
+import { sortHeader } from '~/src/utils/sort-header'
 import type { DirectionData } from "~/src/ts-interface/direction-data";
 
 export default defineComponent({
     setup() {
         const router = useRouter()
-        const showOnlyVisible = ref(true)
-        const showOnlyInvisible = ref(true)
+        const direction_store = useDirectionStore();
+        const search_query = ref('')
+        const show_only_visible = ref(true)
+        const show_only_invisible = ref(true)
+        const sort_field = ref('')
+        const sort_direction = ref('')
 
         const pill_info = reactive([
             {
@@ -101,33 +107,43 @@ export default defineComponent({
             },
         ])
 
-        const direction_store = useDirectionStore();
-        const search_query = ref('')
-
         const toggleVisible = () => {
-            showOnlyVisible.value = !showOnlyVisible.value
+            show_only_visible.value = !show_only_visible.value
         }
 
         const toggleInvisible = () => {
-            showOnlyInvisible.value = !showOnlyInvisible.value
+            show_only_invisible.value = !show_only_invisible.value
         }
 
+        const onSort = ({ field_key, direction }) => {
+            console.log(`Сортировка по ${field_key} в порядке ${direction}`);
+            sort_field.value = field_key;
+            sort_direction.value = direction;
+        };
+
         const filtered_directions = computed(() => {
-            return filtered_by_visibility.value.filter(direction => {
+            let filtered = filtered_by_visibility.value.filter(direction => {
                 return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
             });
+
+            if (sort_field.value && sort_direction.value) {
+                filtered = sortHeader(filtered, sort_field.value, sort_direction.value);
+                console.log('ну-ка, сука, работай', filtered)
+            }
+
+            return filtered;
         })
 
         const filtered_by_visibility = computed(() => {
-            if (showOnlyVisible.value && showOnlyInvisible.value) {
+            if (show_only_visible.value && show_only_invisible.value) {
                 return direction_store.directions;
             }
 
             return direction_store.directions.filter(direction => {
-                if (showOnlyVisible.value && !showOnlyInvisible.value) {
+                if (show_only_visible.value && !show_only_invisible.value) {
                     return direction.isVisible;
                 }
-                if (!showOnlyVisible.value && showOnlyInvisible.value) {
+                if (!show_only_visible.value && show_only_invisible.value) {
                     return !direction.isVisible;
                 }
                 return false;
@@ -182,13 +198,14 @@ export default defineComponent({
             filtered_by_visibility,
             formatDate,
             direction_store,
-            showOnlyVisible,
-            showOnlyInvisible,
+            show_only_visible,
+            show_only_invisible,
             deleteDirection,
             // startAbomination,
             sendDirection,
             toggleVisible,
-            toggleInvisible
+            toggleInvisible,
+            onSort
         }
     }
 })
