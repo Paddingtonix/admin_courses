@@ -1,67 +1,67 @@
 <template>
     <div class="oil-row">
         <template v-for="field in fields">
-            <div class="oil-row__cell" v-if="field.length" :key="field">
-                <span>{{ field }}</span>
+            <div class="oil-row__cell" v-if="field" :key="field">
+                <a>{{ field }}</a>
             </div>
         </template>
-        <slot name="svg"/>
+        <slot name="svg" />
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
     props: {
         name: {
             type: String,
-            default: ''
+            default: "",
         },
         status: {
-            type: String,
-            default: ''
+            type: [String, Number],
+            default: "",
         },
         authors: {
             type: String,
-            default: ''
+            default: "",
         },
         direction: {
             type: String,
-            default: ''
+            default: "",
         },
         lang: {
             type: String,
-            default: ''
+            default: "",
         },
         date_edit: {
             type: String,
-            default: ''
+            default: "",
         },
         end_date: {
             type: String,
-            default: ''
+            default: "",
         },
     },
     setup(props) {
         const fields = props
 
         return {
-            fields
-        }
-    }
-})
+            fields,
+        };
+    },
+});
 </script>
 <style lang="sass">
-.oil-row 
+.oil-row
     @include flex_center_spacing()
-    border-bottom: rem(1) solid #5B6C7B
-    &__cell 
+    border-bottom: rem(1) solid $disabled_basic
+    &__cell
         padding: rem(8)
 
         &:nth-child(1)
             flex: 4
             color: $basic_primary
-            
+
         &:nth-child(2)
             flex: 2
             color: $basic_primary
@@ -80,5 +80,4 @@ export default defineComponent({
 
         &:nth-child(7)
             flex: 2
-
 </style>

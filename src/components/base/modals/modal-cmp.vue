@@ -1,58 +1,73 @@
 <template>
-    <div class="oil-modal" v-if="storeModal.isOpen">
-        <div class="oil-modal__container-auth" v-if="modalComponent === 'auth-modal'">
-            <component :main_class="'oil-modal'" :is="modalComponent"></component>
-        </div>
-        <div class="oil-modal__container" v-else>
-            <div class="oil-modal__container__header">
-                <span class="oil-modal__container__header__title">{{ title }}</span>
-                <button class="oil-modal__container__header__btn-close" @click="closeModal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="oil-modal__container__content">
-                <component :main_class="'oil-modal'" :is="modalComponent"></component>
-            </div>
-        </div>
-    </div>
+	<div class="oil-modal">
+		<div class="oil-modal__container">
+			<div class="oil-modal__container__header">
+				<span class="oil-modal__container__header__title">{{
+					modalData.label
+				}}</span>
+				<button
+					class="oil-modal__container__header__btn-close"
+					@click="storeModal.triggerModal"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+					>
+						<path
+							d="M18 6L6 18M6 6L18 18"
+							stroke="#808E9D"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</button>
+			</div>
+			<div class="oil-modal__container__content">
+				<component 
+					:is="modalData.activeModal"
+				></component>
+			</div>
+		</div>
+	</div>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue'
 
-import { useStoreModal } from '@/src/stores/storeModal'
-import authModal from './auth-modal.vue'
-import courseCreateModal from './course-create-modal.vue'
+<script lang="ts">
+import { defineComponent } from "vue";
+
+import { useStoreModal } from "@/src/stores/storeModal";
+import authModal from "./auth-modal.vue";
+import courseCreateModal from "./course-create-modal.vue";
+import formTags from "../../ui-components/forms/form-tags.vue";
+import formSections from "../../ui-components/forms/form-sections.vue";
+import deleteModal from "./delete-modal.vue";
 
 export default defineComponent({
-    props: {
-        title: {
-            type: String,
-            default: 'Modal title!'
-        }
-    },
-    setup() {
-        const storeModal = useStoreModal()
+	setup(props, { emit }) {
+		const storeModal = useStoreModal();
+		const modalData = reactive(storeModal.$state);
+		onUnmounted(() => {
+			storeModal.$reset();
+		});
 
-        const modalComponent = ref<string>('auth-modal')
-        // const modalComponent = ref<string>('course-create-modal')
-
-        const closeModal = () => {
-            storeModal.closeModal()
-        }
-
-        return {
-            modalComponent,
-            storeModal,
-            closeModal
-        }
-    },
-    components: {
-        'auth-modal': authModal,
-        'course-create-modal': courseCreateModal
-    },
-})
+		return {
+			storeModal,
+			formTags,
+			formSections,
+			modalData,
+		};
+	},
+	components: {
+		"auth-modal": authModal,
+		"course-create-modal": courseCreateModal,
+		"form-tags": formTags,
+		"form-sections": formSections,
+		"delete-modal": deleteModal,
+	},
+});
 </script>
 <style scoped lang="sass">
 .oil-modal
@@ -98,8 +113,8 @@ export default defineComponent({
                 svg
                     path
                         transition: stroke .1s
-                        
-                &:hover 
+
+                &:hover
                     svg
                         path
                             stroke: #5B6C7B
@@ -107,7 +122,7 @@ export default defineComponent({
             &__title
                 font-size: 20px
                 font-weight: 700
-        
+
         &__content
             width: auto
             height: auto

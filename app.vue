@@ -2,7 +2,8 @@
     <div class="oil">
         <Sidebar />
         <NuxtPage />
-        <ModalCmp />
+        <ModalCmp v-if="storeModal.$state.isOpen" />
+        <!-- <ModalCmp  /> -->
     </div>
 </template>
 <script lang="ts">
