@@ -101,7 +101,7 @@
             @click="closeModal"
         />
     </div>
-    <!-- в архивк -->
+    <!-- в архиве -->
     <div :class="`${main_class}__course-create`" v-if="storeCourse.archived">
         <div :class="`${main_class}__course-create__text`">
             <span>Курс находится в архиве.</span>
@@ -194,7 +194,6 @@ export default defineComponent({
         @include flex_column_center
         gap: rem(32)
         width: rem(400)
-
         &__text
             align-self: flex-start
             display: flex

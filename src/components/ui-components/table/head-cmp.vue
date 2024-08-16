@@ -48,7 +48,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const fields = props;
+        const fields = props
         return{ 
             fields
         }
@@ -87,5 +87,4 @@ export default defineComponent({
 
         &:nth-child(7)
             flex: 2
-
 </style>

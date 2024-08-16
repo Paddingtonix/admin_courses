@@ -9,7 +9,7 @@
                     :text="card.text"
                 />
             </div>
-            <template v-if="!course_list.value.length">
+            <template v-if="!course_list.length">
                 <div class="oil-course__info__attention">
                     <i class="oil-course__info__attention__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -37,6 +37,7 @@
                     <div class="oil-course__create">
                         <BtnCmp 
                             :text="'Создать курс'"
+                            @click="navigate('/course-create')"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -99,15 +100,16 @@
                         :end_date="'Снятие с витрины'"               
                     />
                     <TableRowCmp 
-                        v-for="(row, idx) in course_list.value"
+                        v-for="(row, idx) in course_list"
+                        :id="courseId"
                         :key="idx"
-                        :name="row.name"
+                        :name="row.title"
                         :status="row.status"
-                        :authors="row.email"
-                        :direction="row.direction"
-                        :lang="row.lang"
-                        :date_edit="row.edit_data"
-                        :end_date="row.end_data"
+                        :authors="row.authorEmails[0]"
+                        :direction="formatDirectionToString(row.direction)"
+                        :lang="row.language.toUpperCase()"
+                        :date_edit="formatDate(row.lastChangeDateTime)"
+                        :end_date="formatDate(row.salesTerminationDate)"
                     />
                 </div>
                 <div class="oil-course__settings__pagination">
@@ -120,8 +122,9 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import type { CourseList } from '@/src/ts-interface/course-list'
 import axios from 'axios'
 
 export default defineComponent({
@@ -148,6 +151,10 @@ export default defineComponent({
             {
                 count: 0,
                 text: 'Снят с витрины'
+            },
+            {
+                count: 0,
+                text: 'В архиве'
             },
         ])
 
@@ -246,13 +253,27 @@ export default defineComponent({
             ]
         })
 
-        const course_list = reactive({
-            value: []
-        })
+        const course_list = reactive<CourseList[]>([])
 
         const filter_frame = reactive({
-            value: false
+            value: false as boolean
         })
+
+        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕНН
+        const formatDirectionToString = (arr: string[]): string => {
+            return arr ? arr.join(', ') : '--'
+        }
+        
+        const formatDate = (date_value: string | null) => {
+            if (date_value === null) {
+                return "--"
+            }
+            const date = new Date(date_value)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = date.getFullYear()
+            return `${day}.${month}.${year}`
+        }
 
         const openFilter = (state: boolean) => {
             filter_frame.value = state
@@ -263,13 +284,26 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            axios
-                .get('/api/course_list.json')
-                .then(resp => {
-                    console.log(resp);
-                    
-                    course_list.value = resp.data.courses
-                })
+            nextTick(() => {
+                axios
+                    .get<{ courses: CourseList[] }>('/admin/v1/Course')
+                    .then(resp => {
+                        course_list.push(...resp.data.courses)
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
+                        // console.table(resp.data.courses.find((element: { title: String, courseId: Number }) => element.title === course_list.row.title))
+                     })
+
+                axios
+                    .get('admin/v1/course/filters')
+                    .then(resp => {
+
+                    })
+            })
         })
 
         return {
@@ -278,7 +312,9 @@ export default defineComponent({
             course_list,
             filter_course,
             filter_frame,
-            openFilter
+            openFilter,
+            formatDirectionToString,
+            formatDate
         }
     }
 })
