@@ -11,17 +11,20 @@ import { useStoreAuth } from './src/stores/storeAuth'
 import { useStoreModal } from './src/stores/storeModal'
 import axios from 'axios'
 import { useCookies } from "vue3-cookies"
+import { useUserRoleStore } from '~/src/stores/storeRole'
 
 export default defineComponent({
     setup() {
         const storeAuth = useStoreAuth()
         const storeModal = useStoreModal()
         const { cookies } = useCookies()
+        const user_role_store = useUserRoleStore()
 
         onMounted(() => {
             const course_auth_token = cookies.get('course_auth_token')
             if (cookies.get('course_auth') === 'true') {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${course_auth_token}`
+                user_role_store.getUserRole()
                 storeAuth.logIn()
                 storeModal.closeModal()
             } else {
@@ -38,6 +41,7 @@ export default defineComponent({
         return {
             storeAuth,
             storeModal,
+            user_role_store,
             host
         }
     }

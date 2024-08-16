@@ -91,13 +91,18 @@ export default defineComponent({
             },
         ]
 
-        const roleMenu = computed(() => {
+        const roleMenu = computed(() => {            
             if (user_role_store.role === 'Admin') {
+                console.log(menu_bar);
+
                 return menu_bar.slice(0, 3);
             } else if (user_role_store.role === 'Author') {
+                console.log(menu_bar);
+
                 return menu_bar.slice(0, 1);
             }
-            return [];
+
+            return menu_bar 
         });
 
         const navigate = (url: string) => {
