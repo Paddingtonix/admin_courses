@@ -3,7 +3,7 @@
         <InputCmp 
             class="oil-search__input" 
             :label="label"
-            :modelValue="inputValue"
+            :modelValue="input_value"
             @set="setValue"
         />
         <svg class="oil-search__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -20,21 +20,21 @@ export default defineComponent({
             type: String,
             default: 'label'
         },
-        modelValue: {
+        model_value: {
             type: String,
             default: ''
         }
     },
     setup(props, { emit }) {
-        const inputValue = ref(props.modelValue)
+        const input_value = ref(props.model_value)
 
         const setValue = (payload: { value: string, type: string }) => {
-            inputValue.value = payload.value
+            input_value.value = payload.value
             emit('update:modelValue', payload.value)
         }
 
         return {
-            inputValue,
+            input_value,
             setValue,
         }
     }

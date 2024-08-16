@@ -33,6 +33,7 @@ export default defineComponent({
 
             } else {
                 storeModal.openModal()
+                preloader.value = false
             }
         })
 
