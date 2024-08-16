@@ -9,7 +9,7 @@
                 :text="pill.text"
                 :value="pill.value"
             />
-<!--            <BtnCmp-->
+           <!-- <BtnCmp-->
 <!--                class="direction-page__settings__btn"-->
 <!--                background_type="_tertiary"-->
 <!--                text="Тестовые направления"-->
@@ -17,7 +17,7 @@
 <!--                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">-->
 <!--                    <path d="M9.9974 4.1665V15.8332M4.16406 9.99984H15.8307" stroke="#176DC1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
 <!--                </svg>-->
-<!--            </BtnCmp>-->
+<!--            </BtnCmp> -->
             <div class="direction-page__container">
                 <div class="direction-page__settings">
                     <SearchCmp
@@ -36,8 +36,8 @@
                     </BtnCmp>
                 </div>
                 <div class="direction-page__checkbox">
-                    <CheckboxCmp :active="show_only_visible" text="Отображающиеся на сайте" @click="toggleVisible" />
-                    <CheckboxCmp :active="show_only_invisible" text="Не отображающиеся на сайте" @click="toggleInvisible" />
+                    <CheckboxCmp :active="visible_state.show_only_visible" text="Отображающиеся на сайте" @click="toggleVisible('visible')" />
+                    <CheckboxCmp :active="visible_state.show_only_invisible" text="Не отображающиеся на сайте" @click="toggleVisible('invisible')" />
                 </div>
                 <div class="direction-page__course-list">
                     <template v-if="filtered_directions.length">
@@ -96,6 +96,11 @@ export default defineComponent({
         const sort_field = ref('')
         const sort_direction = ref('')
 
+        const visible_state = reactive({
+            show_only_visible: true,
+            show_only_invisible: true,
+        })
+
         const pill_info = reactive([
             {
                 text: 'Всего',
@@ -107,12 +112,20 @@ export default defineComponent({
             },
         ])
 
-        const toggleVisible = () => {
-            show_only_visible.value = !show_only_visible.value
-        }
+        const toggleVisible = (state: string) => {
+            switch (state) {
+                case 'invisible':
 
-        const toggleInvisible = () => {
-            show_only_invisible.value = !show_only_invisible.value
+                    visible_state.show_only_invisible = !visible_state.show_only_invisible
+                    break;
+                case 'visible':
+
+                    visible_state.show_only_visible = !visible_state.show_only_visible
+                    break;
+                default:
+                    break;
+            }
+            
         }
 
         const onSort = ({ field_key, direction }) => {
@@ -135,18 +148,16 @@ export default defineComponent({
         })
 
         const filtered_by_visibility = computed(() => {
-            if (show_only_visible.value && show_only_invisible.value) {
+            if (visible_state.show_only_visible && visible_state.show_only_invisible) {
                 return direction_store.directions;
             }
 
             return direction_store.directions.filter(direction => {
-                if (show_only_visible.value && !show_only_invisible.value) {
+                if (visible_state.show_only_visible && !visible_state.show_only_invisible) {
                     return direction.isVisible;
-                }
-                if (!show_only_visible.value && show_only_invisible.value) {
+                } else {
                     return !direction.isVisible;
                 }
-                return false;
             });
         })
 
@@ -203,8 +214,8 @@ export default defineComponent({
             deleteDirection,
             // startAbomination,
             sendDirection,
+            visible_state,
             toggleVisible,
-            toggleInvisible,
             onSort
         }
     }

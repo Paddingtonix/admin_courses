@@ -1,5 +1,5 @@
 <template>
-    <div class="oil">
+    <div class="oil" v-if="!preloader.value">
         <Sidebar />
         <NuxtPage />
         <ModalCmp />
@@ -18,12 +18,19 @@ export default defineComponent({
         const storeModal = useStoreModal()
         const { cookies } = useCookies()
 
+        const preloader = reactive({
+            value: true
+        })
+
         onMounted(() => {
             const course_auth_token = cookies.get('course_auth_token')
             if (cookies.get('course_auth') === 'true') {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${course_auth_token}`
                 storeAuth.logIn()
                 storeModal.closeModal()
+                preloader.value = false
+                console.log(course_auth_token);
+
             } else {
                 storeModal.openModal()
             }
@@ -38,7 +45,8 @@ export default defineComponent({
         return {
             storeAuth,
             storeModal,
-            host
+            host,
+            preloader
         }
     }
 })
