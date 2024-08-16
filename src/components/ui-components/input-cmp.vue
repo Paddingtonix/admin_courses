@@ -93,8 +93,9 @@ export default defineComponent({
         transition: all .2s
         left: rem(16)
         &._fill
-            top: rem(12)
-            font-size: rem(12)
+            top: rem(0)
+            font-size: rem(16)
+            background: white
             color: $light_primary
 
     &__message

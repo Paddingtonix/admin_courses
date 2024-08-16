@@ -144,7 +144,7 @@ export default defineComponent({
     &__list
         position: absolute
         left: 0
-        overflow-y: scroll
+        overflow-y: auto
         top: rem(60)
         padding: rem(8) rem(16)
 

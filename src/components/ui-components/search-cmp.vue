@@ -68,7 +68,7 @@ export default defineComponent({
         height: rem(38)
         &__label
             &._fill
-                top: rem(6)
-                font-size: rem(11)
+                top: rem(0)
+                font-size: rem(16)
                 color: $light_primary
 </style>

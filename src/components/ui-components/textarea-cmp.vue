@@ -83,6 +83,7 @@ export default defineComponent({
         resize: none
         height: 100%
         width: 100%
+        font-size: rem(16)
 
     &__label
         color: $light_gray
@@ -94,7 +95,8 @@ export default defineComponent({
         left: rem(16)
 
         &._fill
-            top: rem(8)
-            font-size: rem(12)
+            top: rem(-8)
+            background-color: white
+            font-size: rem(16)
             color: $light_primary
 </style>

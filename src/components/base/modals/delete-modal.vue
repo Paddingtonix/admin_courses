@@ -28,14 +28,14 @@ export default defineComponent({
         const modalData = reactive(modalStore.$state as IDeleteModal);
 
         const deleteItem = () => {
-            // modalData.modalProps
-            //     .deleteFunction(modalData.modalProps.data.id)
-            //     .then(() => {
-            //         modalStore.triggerModal();
-            //     })
-            //     .catch(() => {
-            //         console.log("DA YOBANIY TI BLOOD");
-            //     });
+            modalData.modalProps
+                .deleteFunction(modalData.modalProps.data.id)
+                .then(() => {
+                    modalStore.triggerModal();
+                })
+                .catch(() => {
+                    console.log("DA YOBANIY TI BLOOD");
+                });
         };
         return {
             modalData,
