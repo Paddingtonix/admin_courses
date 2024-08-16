@@ -53,7 +53,17 @@
         "
     >
         <template v-slot:svg>
-            <i class="tags-table-row__svg">
+            <i
+                @click="
+                    openDeleteModal({
+                        headingId: 0,
+                        headingName: 'course',
+                        name: 'sort',
+                        localizations: { RU: 'Сортировка' },
+                    })
+                "
+                class="tags-table-row__svg"
+            >
                 <svg
                     width="18"
                     height="20"
@@ -86,6 +96,7 @@
 <script lang="ts" setup>
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useTagsStore } from "~/src/stores/storeTags";
+import type { IDeleteTag } from "~/src/ts-interface/storeModal.type";
 import type { ITags } from "~/src/ts-interface/storeTags.type";
 
 const tagsStore = useTagsStore();
@@ -101,6 +112,18 @@ const openModalAddTag = (tagForm?: ITags) => {
         modalProps: {
             headers: tagsData.headings,
             tagForm,
+        },
+    });
+    modalStore.triggerModal();
+};
+
+const openDeleteModal = (data: ITags) => {
+    modalStore.$patch({
+        label: "Удаление метки",
+        activeModal: "delete-modal",
+        modalProps: {
+            data,
+            modalComponent: "delete-tag",
         },
     });
     modalStore.triggerModal();

@@ -7,12 +7,29 @@ export interface IStoreModal {
     label: string;
     modalProps: {};
 }
+
+export interface IDeleteModal extends IStoreModal {
+    modalProps: {
+        data: { name: string; id: number };
+        modalComponent: string;
+        deleteFunction: (id: number) => Promise<void>;
+    };
+}
+
 export interface IDeleteSection extends IStoreModal {
     modalProps: {
         data: IHeading;
         modalComponent: string;
         deleteFunction: (id: number) => Promise<void>;
         endpoint: string;
+    };
+}
+
+export interface IDeleteTag extends IStoreModal {
+    modalProps: {
+        data: ITags;
+        modalComponent: string;
+        // deleteFunction: (id: number) => Promise<void>;
     };
 }
 

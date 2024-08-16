@@ -69,7 +69,7 @@ export default defineComponent({
         },
         objectList: {
             type: Array as PropType<Array<{ name: string; id: number }>>,
-            default: {},
+            default: [],
         },
     },
     emits: ["select-value"],

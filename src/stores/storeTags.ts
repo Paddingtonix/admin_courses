@@ -7,6 +7,8 @@ export const useTagsStore = defineStore({
     state: () => ({
         headings: [] as IHeading[],
         tags: [],
+        numberOfPages: 1,
+        currentPage: 1,
     }),
     actions: {
         async getAllHeadings() {
