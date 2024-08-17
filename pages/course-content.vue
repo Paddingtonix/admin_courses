@@ -6,6 +6,25 @@
                 :current_page="'Создание курса'"
                 class="oil-course-content__bread"
             />
+            <template v-if="courseStore.status === 'Archived'">
+                <div class="oil-course-content__info__attention">
+                    <i class="oil-course-content__info__attention__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </i>
+                    <p class="oil-course-content__info__attention__text">Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF.</p>
+                    <BtnCmp
+                        :text="'Скачать PDF'"
+                        @click="downloadPDF"
+                        :background_type="'_primary'"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 13V14.2C19 15.8802 19 16.7202 18.673 17.362C18.3854 17.9265 17.9265 18.3854 17.362 18.673C16.7202 19 15.8802 19 14.2 19H5.8C4.11984 19 3.27976 19 2.63803 18.673C2.07354 18.3854 1.6146 17.9265 1.32698 17.362C1 16.7202 1 15.8802 1 14.2V13M15 8L10 13M10 13L5 8M10 13V1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </BtnCmp>
+                </div>
+            </template>
             <template v-if="content === 'text'">
                 <div 
                     class="oil-course-content__attention"
@@ -144,7 +163,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import { useStoreCourses } from '~/src/stores/storeCourse'
 import Editor from '@tinymce/tinymce-vue'
+import html2pdf from 'html2pdf.js'
 
 export default defineComponent({
     props: {
@@ -159,6 +180,7 @@ export default defineComponent({
     },
     setup() {
         const editorVisible = ref(false);
+        const courseStore = useStoreCourses()
 
         const visible_simmary = reactive({
             value: false
@@ -191,6 +213,23 @@ export default defineComponent({
             open_question.value = open_question.value === idx ? 0 : idx
         }
 
+        const downloadPDF = () => {const element = document.querySelector('.oil-course-content');
+
+            if (element) {
+                const options = {
+                    margin: 1,
+                    filename: `course-info.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                html2pdf().from(element).set(options).save();
+            } else {
+                console.error('Не получилось, не фортмануло :(');
+            }
+        }
+
         onMounted(() => {
             editorVisible.value = true;
         });
@@ -201,7 +240,9 @@ export default defineComponent({
             openQuestion,
             visible_simmary,
             open_question,
-            general_setting
+            general_setting,
+            courseStore,
+            downloadPDF
         };
     },
     components: {
@@ -216,6 +257,30 @@ export default defineComponent({
     gap: rem(32)    
     background-color: $basic_white
     padding: rem(32)
+    &__info
+        &__attention
+            padding: rem(16) rem(24)
+            margin-bottom: rem(32)
+
+            border: 1px solid $basic-primary
+            background-color: $disabled_basic
+            max-width: rem(972)
+            @include flex_center()
+            gap: rem(10)
+            border-radius: rem(12)
+
+            &__icon
+                padding: rem(12)
+
+                border-radius: 50%
+                background-color: #176DC10D
+                @include flex_center()
+
+            &__text
+                min-width: rem(640)
+                font-size: rem(16)
+                line-height: 150%
+
     &__attention 
         padding: rem(16) rem(24)
         // margin-bottom: rem(32)
