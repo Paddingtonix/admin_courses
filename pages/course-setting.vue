@@ -213,7 +213,7 @@
                         </template>
                     </div>
                     <BtnCmp
-                        v-if="!storeEditCourseSetting.isEdit"
+                        v-if="storeStateCourse.status !== 'Archived' && !storeEditCourseSetting.isEdit"
                         class="oil-course-setting__settings__btn"
                         :text="'Редактировать'"
                         @click="editCourseSetting"
@@ -246,7 +246,7 @@
                             <span>{{ info.value ? info.value : 'Нет данных' }}</span>
                         </div>
                     </div>
-                    <BtnCmp 
+                    <BtnCmp v-if="storeStateCourse.status !== 'Archived'"
                         class="oil-course-setting__info__btn"
                         :text="'Редактировать'"
                         @click="openEditFrame"
