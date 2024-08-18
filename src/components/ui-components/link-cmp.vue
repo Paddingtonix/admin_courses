@@ -1,27 +1,33 @@
 <template>
-	<NuxtLink :to="to" class="oil-link" :class="{ '_light-svg': link_active }">
-		<slot></slot>
-		<span>{{ link_name }}</span>
-	</NuxtLink>
+    <NuxtLink :to="to" class="oil-link" :class="{ '_light-svg': link_active }">
+        <slot></slot>
+        <span :style="{ visibility: !opened_sidebar ? 'hidden' : 'visible' }">{{
+            link_name
+        }}</span>
+    </NuxtLink>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-	props: {
-		link_name: {
-			type: String,
-			default: "link",
-		},
-		link_active: {
-			type: Boolean,
-			default: false,
-		},
-		to: {
-			type: String,
-			default: "",
-		},
-	},
+    props: {
+        link_name: {
+            type: String,
+            default: "link",
+        },
+        link_active: {
+            type: Boolean,
+            default: false,
+        },
+        to: {
+            type: String,
+            default: "",
+        },
+        opened_sidebar: {
+            type: Boolean,
+            default: true,
+        },
+    },
 });
 </script>
 <style lang="sass">
