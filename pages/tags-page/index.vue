@@ -103,10 +103,10 @@ const tagsStore = useTagsStore();
 
 const tagsData = tagsStore.$state;
 
-const modalStore = useStoreModal();
+const storeModal = useStoreModal();
 
 const openModalAddTag = (tagForm?: ITags) => {
-    modalStore.$patch({
+    storeModal.$patch({
         label: "Добавить метку",
         activeModal: "form-tags",
         modalProps: {
@@ -114,11 +114,11 @@ const openModalAddTag = (tagForm?: ITags) => {
             tagForm,
         },
     });
-    modalStore.openModal();
+    storeModal.openModal();
 };
 
 const openDeleteModal = (data: ITags) => {
-    modalStore.$patch({
+    storeModal.$patch({
         label: "Удаление метки",
         activeModal: "delete-modal",
         modalProps: {
@@ -126,7 +126,7 @@ const openDeleteModal = (data: ITags) => {
             modalComponent: "delete-tag",
         },
     });
-    modalStore.openModal();
+    storeModal.openModal();
 };
 
 onMounted(() => {

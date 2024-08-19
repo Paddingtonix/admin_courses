@@ -133,7 +133,7 @@ import type { IHeading } from "~/src/ts-interface/storeTags.type";
 
 const list = [10, 15, 20, 25];
 
-const modalStore = useStoreModal();
+const storeModal = useStoreModal();
 
 const headersStore = useHeadersStore();
 
@@ -163,7 +163,7 @@ watch(headersStore.$state, () => {
 const openModalDelete = (data: IHeading) => {
 	console.log(data);
 
-	modalStore.$patch({
+	storeModal.$patch({
 		activeModal: "delete-modal",
 		label: "Удаление раздела",
 		modalProps: {
@@ -172,11 +172,11 @@ const openModalDelete = (data: IHeading) => {
 			deleteFunction: headersStore.deleteItem,
 		},
 	});
-	modalStore.triggerModal();
+	storeModal.triggerModal();
 };
 
 const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
-	modalStore.$patch({
+	storeModal.$patch({
 		activeModal: "form-sections",
 		label: !name.length ? "Создание раздела" : "Редактирование раздела",
 		modalProps: {
@@ -187,7 +187,7 @@ const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
 			isFieldChanged: false,
 		},
 	});
-	modalStore.triggerModal();
+	storeModal.triggerModal();
 };
 
 const changeSelectorValue = (value: number) => {

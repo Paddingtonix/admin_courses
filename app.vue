@@ -1,8 +1,8 @@
 <template>
-    <div class="oil">
+    <div class="oil" v-if="!preloader.value">
         <Sidebar />
         <NuxtPage />
-        <ModalCmp v-if="modalStore.$state.isOpen" />
+        <ModalCmp v-if="storeModal.$state.isOpen" />
     </div>
 </template>
 <script lang="ts">
@@ -15,26 +15,35 @@ import { useCookies } from "vue3-cookies"
 export default defineComponent({
     setup() {
         const storeAuth = useStoreAuth()
-        const modalStore = useStoreModal()
+        const storeModal = useStoreModal()
         const { cookies } = useCookies()
 
         const openDeleteModal = () => {
-                modalStore.$patch({
+                storeModal.$patch({
                     label: '',
                     activeModal: "auth-modal",
                 });
-                modalStore.openModal();
+                storeModal.openModal();
             };
+        const preloader = reactive({
+            value: false
+        })
 
         onMounted(() => {
+            preloader.value = true
             const course_auth_token = cookies.get('course_auth_token')
             if (cookies.get('course_auth') === 'true') {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${course_auth_token}`
                 storeAuth.logIn()
-                modalStore.closeModal()
+                storeModal.closeModal()
+                storeModal.closeModal()
+                preloader.value = false
+                console.log(course_auth_token);
+
             } else {
                 openDeleteModal();
-                modalStore.openModal()
+                storeModal.openModal()
+                preloader.value = false
             }
             
         })
@@ -51,8 +60,9 @@ export default defineComponent({
 
         return {
             storeAuth,
-            modalStore,
-            host
+            storeModal,
+            host,
+            preloader
         }
     }
 })

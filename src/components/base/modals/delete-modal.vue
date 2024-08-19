@@ -6,7 +6,7 @@
         <BtnCmp
             :text="'Отмена'"
             :background_type="'_secondary'"
-            @click="modalStore.triggerModal"
+            @click="storeModal.triggerModal"
         />
         <BtnCmp
             :text="'Удалить'"
@@ -24,14 +24,14 @@ import DeleteTag from "../../ui-components/forms/delete-tag.vue";
 
 export default defineComponent({
     setup() {
-        const modalStore = useStoreModal();
-        const modalData = reactive(modalStore.$state as IDeleteModal);
+        const storeModal = useStoreModal();
+        const modalData = reactive(storeModal.$state as IDeleteModal);
 
         const deleteItem = () => {
             modalData.modalProps
                 .deleteFunction(modalData.modalProps.data.id)
                 .then(() => {
-                    modalStore.openModal();
+                    storeModal.openModal();
                 })
                 .catch(() => {
                     console.log("DA YOBANIY TI BLOOD");
@@ -39,7 +39,7 @@ export default defineComponent({
         };
         return {
             modalData,
-            modalStore,
+            storeModal,
             deleteItem,
         };
     },

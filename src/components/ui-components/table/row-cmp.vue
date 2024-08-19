@@ -19,6 +19,14 @@ export default defineComponent({
         },
         name: {
             type: String,
+            default: ''
+        },
+        lastChangeDateTime: {
+            type: String,
+            default: ''
+        },
+        localizedName: {
+            type: String,
             default: "",
         },
         status: {
@@ -44,6 +52,14 @@ export default defineComponent({
         end_date: {
             type: String,
             default: "",
+        },
+        isVisible: {
+            type: Boolean,
+            default: false
+        },
+        count: {
+            type: [String, Number],
+            default: ''
         },
     },
     setup(props) {
