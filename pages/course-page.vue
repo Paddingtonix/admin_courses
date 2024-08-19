@@ -125,14 +125,18 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserRoleStore } from '~/src/stores/storeRole';
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStoreCourses } from '~/src/stores/storeCourse'
+import { useUserRoleStore } from '~/src/stores/storeRole'
+import type { CourseList } from '@/src/ts-interface/course-list'
 import axios from 'axios'
 
 export default defineComponent({
-    setup() {
-        const router = useRouter()
+	setup() {
+		const router = useRouter();
+        const courseStore = useStoreCourses()
+
         const user_role_store = useUserRoleStore()
 
         const course_info = reactive([
@@ -309,15 +313,16 @@ export default defineComponent({
         })
 
         return {
-            course_info,
             user_role_store,
             navigate,
-            course_list,
+            // course_list,
             filter_course,
             filter_frame,
             openFilter,
             formatDirectionToString,
-            formatDate
+            formatDate,
+            course_info: courseStore.course_info,
+            course_list: courseStore.course_list,
         }
     }
 })

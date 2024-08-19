@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import {CourseList} from "~/src/ts-interface/course-list";
+import axios from "axios";
 
 export const useStoreCourses = defineStore('courseState', {
     state: () => ({
@@ -27,5 +29,38 @@ export const useStoreCourses = defineStore('courseState', {
         // price: 'free', //free
         type: 'synchronous', //asynchronous
 
-    })
+        course_list: [] as CourseList[],
+        course_info: [
+            { count: 0, text: 'Всего' },
+            { count: 0, text: 'В разработке' },
+            { count: 0, text: 'На модерации' },
+            { count: 0, text: 'Опубликован' },
+            { count: 0, text: 'Снят с витрины' },
+            { count: 0, text: 'В архиве' },
+        ],
+
+        status: '',
+    }),
+    actions: {
+        getCourses() {
+            axios.get<{ courses: CourseList[] }>('/admin/v1/Course')
+                .then(response => {
+                    this.course_list = response.data.courses
+                    this.status = response.data.courses.status
+                    this.updateCourseInfo()
+                    console.log(response)
+                })
+                .catch(error => {
+                    console.error('ну где мои курсы? я за них платил так-то :(', error)
+                })
+        },
+        updateCourseInfo() {
+            this.course_info[0].count = this.course_list.filter(el => el.status === 'All').length
+            this.course_info[1].count = this.course_list.filter(el => el.status === 'InDevelopment').length
+            this.course_info[2].count = this.course_list.filter(el => el.status === 'OnModeration').length
+            this.course_info[3].count = this.course_list.filter(el => el.status === 'Published').length
+            this.course_info[4].count = this.course_list.filter(el => el.status === 'Withdrawn').length
+            this.course_info[5].count = this.course_list.filter(el => el.status === 'Archived').length
+        }
+    }
 })

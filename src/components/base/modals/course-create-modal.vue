@@ -192,6 +192,7 @@ export default defineComponent({
         @include flex_column_center
         gap: rem(32)
         width: rem(400)
+
         &__text
             align-self: flex-start
             display: flex
