@@ -211,9 +211,9 @@ export default defineComponent({
             },
         ])
 
-        const openGuide = () => {
-            open_guide.value = !open_guide.value
-        }
+		const openGuide = () => {
+			open_guide.value = !open_guide.value;
+		};
 
         const setValueSelector = (val: { type: string, value: string }) => {
             const field = form.find(field => field.type === val.type)!
@@ -320,23 +320,23 @@ export default defineComponent({
 </script>
 <style lang="sass" scoped>
 .oil-create-course
-    &__form 
-        &__bread 
+    &__form
+        &__bread
             margin-bottom: rem(40)
 
-        &__fields 
+        &__fields
             max-width: rem(600)
-            &__container 
+            &__container
                 display: flex
                 flex-direction: column
                 gap: rem(16)
                 margin-bottom: rem(32)
-            
-            &__title 
+
+            &__title
                 display: inline-block
                 margin-bottom: rem(24)
 
-            &__attention 
+            &__attention
                 padding: rem(16) rem(24)
                 border: rem(1) solid $dark_warning
                 background-color: rgba(249, 173, 78, 0.0509803922)
@@ -344,7 +344,7 @@ export default defineComponent({
                 margin-bottom: rem(24)
                 gap: rem(12)
                 border-radius: rem(12)
-                p 
+                p
                     font-size: rem(16)
                     line-height: 150%
 
@@ -353,20 +353,20 @@ export default defineComponent({
                     background-color: #F9AD4E1A
                     border-radius: 50%
 
-            &__guide 
+            &__guide
                 border: rem(1) solid $light_gray
                 border-radius: rem(8)
                 margin-bottom: rem(24)
                 &__title
                     border-radius: rem(8)
                     padding: rem(16) rem(24)
-                    position: relative 
+                    position: relative
                     @include flex_start()
                     gap: rem(12)
                     background-color: $basic_light_gray
                     cursor: pointer
                     &__chevron
-                        position: absolute      
+                        position: absolute
                         top: 50%
                         right: rem(24)
                         transform: translateY(-50%)
@@ -377,21 +377,21 @@ export default defineComponent({
                 
                 &__text 
                     padding: rem(24) rem(48)
-                    span 
+                    span
                         display: inline-block
                         font-size: rem(16)
                         margin-bottom: rem(12)
                         font-weight: bold
-                    
-                    ul 
+
+                    ul
                         list-style: inside
                         &:not(:last-child)
                             margin-bottom: rem(20)
 
-                        li 
+                        li
                             color: #5B6C7B
 
-            &__btns 
+            &__btns
                 @include flex_center_spacing()
                 gap: rem(12)
 </style>

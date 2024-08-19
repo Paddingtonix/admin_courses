@@ -5,7 +5,7 @@
             v-if="$props.mask_type" 
             v-model="input_value" 
             :type="type" 
-            @keyup="setValue" 
+            @input="setValue" 
             v-mask="mask" 
             :placeholder="placeholder"
         />
@@ -13,7 +13,7 @@
             v-else 
             v-model="input_value" 
             :type="type" 
-            @keyup="setValue" 
+            @input="setValue" 
             :placeholder="placeholder"
             :maxlength="maxlength"
         />
@@ -27,6 +27,7 @@
         </div>
     </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 
@@ -53,23 +54,30 @@ export default defineComponent({
             default: ''
         },
         date_calendar: {
-            type: String || Number,
+            type: [String, Number],
             default: '',
         },
         maxlength: {
             type: Number,
             default: null
+        },
+        modelValue: {
+            type: String,
+            default: ''
         }
     },
+	emits: ["set_value"],
     setup(props, { emit }) {
-        const input_value = ref<string>('')
+        const { modelValue } = toRefs(props);
+
+		const input_value = ref<String | Number>(!modelValue ? "" : modelValue.value)
 
         watch(() => props.date_calendar, (new_date) => {
             input_value.value = new_date
         })
 
         const setValue = () => {
-            emit('set', { value: input_value.value, type: props.type })
+            emit('set_value', { value: input_value.value, type: props.type })
         }
 
         const mask_price = computed(() => {
@@ -79,6 +87,9 @@ export default defineComponent({
             // if (input_value.value.length === 10) return '## ### ###'
             return '### ###'
         })
+
+
+
         
         // const mask_date = '##.##.##'
 
@@ -91,11 +102,13 @@ export default defineComponent({
             setValue,
             mask_price,
             // mask_date,
-            mask
+            mask,
+            modelValue,
         }
     },
 })
 </script>
+
 <style scoped lang="sass">
 .oil-input
     border: rem(1) solid $light_gray
@@ -107,13 +120,16 @@ export default defineComponent({
     &__label
         color: $light_gray
         position: absolute
+        pointer-events: none
+        user-select: none
         top: 50%
         transform: translateY(-50%)
         transition: all .2s
         left: rem(16)
         &._fill
-            top: rem(12)
-            font-size: rem(12)
+            top: rem(0)
+            font-size: rem(16)
+            background: white
             color: $light_primary
 
     &__message
@@ -148,6 +164,6 @@ export default defineComponent({
         label
             color: $basic_gray
 
-    &::focus
+    &:focus-within
         border-color: $light_primary
 </style>

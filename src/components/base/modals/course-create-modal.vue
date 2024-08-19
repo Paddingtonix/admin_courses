@@ -132,61 +132,59 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import { useStoreModal } from '~/src/stores/storeModal'
-import { useStoreCourses } from '~/src/stores/storeCourse'
-import BtnCmp from '../../ui-components/btn-cmp.vue'
-import RadioCmp from '../../ui-components/radio-cmp.vue'
+import { defineComponent, reactive } from "vue";
+import { useStoreModal } from "~/src/stores/storeModal";
+import { useStoreCourses } from "~/src/stores/storeCourse";
+import BtnCmp from "../../ui-components/btn-cmp.vue";
+import RadioCmp from "../../ui-components/radio-cmp.vue";
 
 export default defineComponent({
-    props: {
-        main_class: {
-            type: String,
-        },
-        published_date: {
-            type: String,
-            default: '28.07.2025'
-        },
-        removed_date: {
-            type: String,
-            default: '28.07.2026'
-        }
-    },
+	props: {
+		main_class: {
+			type: String,
+		},
+		published_date: {
+			type: String,
+			default: "28.07.2025",
+		},
+		removed_date: {
+			type: String,
+			default: "28.07.2026",
+		},
+	},
+	setup() {
+		const storeModal = useStoreModal();
+		const storeCourse = useStoreCourses();
 
-    setup() {
-        const storeModal = useStoreModal()
-        const storeCourse = useStoreCourses()
+		const radio_moderation = reactive([
+			{
+				text: "В разработке",
+			},
+			{
+				text: "Опубликован",
+			},
+		]);
 
-        const radio_moderation = reactive([
-            {
-                text: 'В разработке'
-            },
-            {
-                text: 'Опубликован'
-            }
+		const active_radio = ref<number | null>(null);
 
-        ])
+		const closeModal = () => {
+			storeModal.closeModal();
+		};
 
-        const active_radio = ref<number | null>(null)
+		const setRadioValue = (id_radio: number) => {
+			active_radio.value = id_radio;
+		};
 
-        const closeModal = () => {
-            storeModal.closeModal()
-        }
-
-        const setRadioValue = (id_radio: number) => {
-            active_radio.value = id_radio
-        }
-
-        return {
-            storeModal,
-            storeCourse,
-            radio_moderation,
-            active_radio,
-            closeModal,
-            setRadioValue
-        }
-    }
-})
+		return {
+			storeModal,
+			storeCourse,
+			radio_moderation,
+			active_radio,
+			closeModal,
+			setRadioValue,
+		};
+	},
+});
 </script>
 <style scoped lang="sass">
 .oil-modal
@@ -212,7 +210,7 @@ export default defineComponent({
 
         &__radio-btns
             @include flex_column
-        
+
         &__btns
             @include flex_center
             gap: rem(12)

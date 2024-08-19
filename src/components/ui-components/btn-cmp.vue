@@ -1,26 +1,42 @@
 <template>
-    <div class="oil-btn" :class="background_type" v-wave="{ color: '#03AEE2' }">
-        <slot></slot>
-        <button>{{ text }}</button>
-    </div>
+	<!-- v-wave="{ color: '#03AEE2' }" -->
+	<button class="oil-btn" :class="background_type" :disabled="disabled">
+		<slot></slot>
+		{{ text }}
+	</button>
 </template>
+
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    props: {
-        text: {
-            type: String,
-            default: 'Button',
-        },
-        background_type: {
-            type: String,
-            default: '_primary', //_secondary, _tertiary, _quaternary
-        },
-    },
-})
+	props: {
+		text: {
+			type: String,
+			default: "Button",
+		},
+		background_type: {
+			type: String,
+			default: "_primary", //_secondary, _tertiary, _quaternary
+		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	setup(props) {
+		const { disabled, text, background_type } = toRefs(props);
+
+		return {
+			disabled,
+			text,
+			background_type,
+		};
+	},
+});
 </script>
-<style scoped lang="sass">
+
+<style lang="sass">
 .oil-btn
     padding: rem(16) rem(32)
     cursor: pointer
@@ -44,5 +60,5 @@ export default defineComponent({
         @include button_styles_tertiary()
 
     &._quaternary
-        @include button_styles_tertiary()
+        @include button_styles_quaternary()
 </style>

@@ -25,9 +25,12 @@
 @mixin button_styles_primary() 
     background-color: $basic_primary
     border: none
-    button
-        color: $basic_white
-        cursor: pointer
+    color: $basic_white
+    cursor: pointer
+
+    &:disabled
+        pointer-events: none
+        background-color: $disabled_basic
 
     &:hover 
         background-color: $light_primary
@@ -35,63 +38,55 @@
     &:active
         background-color: $dark_primary
 
-    &:disabled
-        pointer-events: none
-        background-color: $disabled_basic
+    
 
 
 @mixin button_styles_secondary()
     border: rem(1) solid $basic_primary
-    button 
-        color: $basic_primary
-        cursor: pointer
+
+    color: $basic_primary
+    cursor: pointer
 
     &:hover 
         border: rem(1) solid $light_primary       
         background-color: #176DC10D
-        button
-            color: $light_primary
+        color: $light_primary
+
 
     &:active
         border: rem(1) solid $dark_primary
         background-color:#176DC11A
-        button 
-            color: $dark_primary   
+        color: $dark_primary   
+         
 
     &:disabled
         pointer-events: none
         border: rem(1) solid $light_gray
-        button 
-            color: $light_gray
+        color: $light_gray
 
 
 @mixin button_styles_tertiary()    
     border: none 
-    button
-        color: $basic_primary
-        cursor: pointer
+    cursor: pointer
+    color: $basic_primary 
         
     &:hover 
         background-color: #176DC10D
-        button 
-            color: $light_primary
+        color: $light_primary
 
     &:active
         background-color:#176DC11A
-        button 
-            color: $dark_primary
+        color: $dark_primary
 
     &:disabled
-        button 
-            color: $light_gray
+        color: $light_gray
 
 
 @mixin button_styles_quaternary() 
     background-color: $basic_error
     border: none
-    button
-        color: $basic_white
-        cursor: pointer
+    cursor: pointer
+    color: $basic_white
 
     &:hover 
         background-color: $light_error

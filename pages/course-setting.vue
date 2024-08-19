@@ -339,25 +339,28 @@ export default defineComponent({
 
         const switcherArray: ISwitcher[] = [
             {
-                text: 'Общие настройки', 
-                id: 1, 
-                isActive: true
+                text: 'Общие настройки',
+                id: 1,
+                isActive: true,
+                link: ''
             }, 
             {
-                text: 'Информация о курсе', 
-                id: 2, 
-                isActive: false
+                text: 'Информация о курсе',
+                id: 2,
+                isActive: false,
+                link: ''
             },
             {
-                text: 'Содержание', 
-                id: 3, 
-                isActive: false
+                text: 'Содержание',
+                id: 3,
+                isActive: false,
+                link: ''
             }
         ]
 
-        const active_example = reactive({
-            value: null as number | null
-        })
+		const active_example = reactive({
+			value: null as number | null,
+		});
 
         const course_info = reactive([
             {
@@ -392,9 +395,9 @@ export default defineComponent({
             },
         ])
 
-        const edit_mode = reactive({
-            value: false
-        })
+		const edit_mode = reactive({
+			value: false,
+		});
 
         const course_setting = reactive([
             {
@@ -480,86 +483,90 @@ export default defineComponent({
             }
         ])
 
-        const edit_info = reactive([
-            {
-                id: 'userName',
-                type: 'email',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
-                label: 'Название курса',
-                error: '',
-                example: ''
-            },
-            {
-                id: 'password',
-                type: 'text',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: '',
-                label: 'Авторы',
-                error: '',
-                example: ''
-            },
-            {
-                id: 'password',
-                type: 'password',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: '',
-                label: 'Описание',
-                error: '',
-                example: 'Курс посвящен методам и инструментам, применяемым для геологического моделирования нефтяных и газовых месторождений. В рамках курса слушатели ознакомятся с основными принципами и техниками создания геологических моделей, а также научатся анализировать и интерпретировать данные для оптимизации добычи углеводородов.'
-            },
-            {
-                id: 'userName',
-                type: 'email',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
-                label: 'Целевая аудитория',
-                error: '',
-                example: 'Специалисты с высшим геологическим или геофизическим образованием, инженеры-нефтяники, а также студенты старших курсов профильных вузов. Курс также будет полезен для сотрудников нефтегазовых компаний, работающих в смежных областях и желающих расширить свои знания в области геологического моделирования.'
-            },
-            {
-                id: 'password',
-                type: 'password',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: '',
-                label: 'Методика обучения',
-                error: '',
-                example: 'Обучение включает в себя лекционные занятия, проведение семинаров и практических занятий. Участники курса будут работать с современными программными комплексами для моделирования, выполнять практические задания на реальных данных и обсуждать результаты с преподавателями.'
-            },
-            {
-                id: 'userName',
-                type: 'email',
-                value: '',
-                required: true,
-                valid: false,
-                pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
-                label: 'Результаты обучения',
-                error: '',
-                example: 'По окончании курса участники смогут: создавать и анализировать геологические модели, используя специализированное программное обеспечение; применять полученные знания для оптимизации процессов разведки и добычи углеводородов; понимать основные методы и подходы к моделированию пластов, а также интегрировать полученные данные в общие проекты разработки месторождений.'
-            },
-        ])
+		const edit_info = reactive([
+			{
+				id: "userName",
+				type: "email",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+				label: "Название курса",
+				error: "",
+				example: "",
+			},
+			{
+				id: "password",
+				type: "text",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: "",
+				label: "Авторы",
+				error: "",
+				example: "",
+			},
+			{
+				id: "password",
+				type: "password",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: "",
+				label: "Описание",
+				error: "",
+				example:
+					"Курс посвящен методам и инструментам, применяемым для геологического моделирования нефтяных и газовых месторождений. В рамках курса слушатели ознакомятся с основными принципами и техниками создания геологических моделей, а также научатся анализировать и интерпретировать данные для оптимизации добычи углеводородов.",
+			},
+			{
+				id: "userName",
+				type: "email",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+				label: "Целевая аудитория",
+				error: "",
+				example:
+					"Специалисты с высшим геологическим или геофизическим образованием, инженеры-нефтяники, а также студенты старших курсов профильных вузов. Курс также будет полезен для сотрудников нефтегазовых компаний, работающих в смежных областях и желающих расширить свои знания в области геологического моделирования.",
+			},
+			{
+				id: "password",
+				type: "password",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: "",
+				label: "Методика обучения",
+				error: "",
+				example:
+					"Обучение включает в себя лекционные занятия, проведение семинаров и практических занятий. Участники курса будут работать с современными программными комплексами для моделирования, выполнять практические задания на реальных данных и обсуждать результаты с преподавателями.",
+			},
+			{
+				id: "userName",
+				type: "email",
+				value: "",
+				required: true,
+				valid: false,
+				pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+				label: "Результаты обучения",
+				error: "",
+				example:
+					"По окончании курса участники смогут: создавать и анализировать геологические модели, используя специализированное программное обеспечение; применять полученные знания для оптимизации процессов разведки и добычи углеводородов; понимать основные методы и подходы к моделированию пластов, а также интегрировать полученные данные в общие проекты разработки месторождений.",
+			},
+		]);
 
-        const selectTab = (id: number) => {
-            active_tab.value = id
-        }
+		const selectTab = (id: number) => {
+			active_tab.value = id;
+		};
 
-        const openEditFrame = () => {
-            edit_mode.value = !edit_mode.value
-        }
+		const openEditFrame = () => {
+			edit_mode.value = !edit_mode.value;
+		};
 
-        const openExample = (id: number) => {
-            active_example.value = active_example.value === id ? null : id
-        }
+		const openExample = (id: number) => {
+			active_example.value = active_example.value === id ? null : id;
+		};
 
         const picked_directions_filtered = computed(() =>
             directions.filter((direction) => picked_directions.includes(direction.directionId))
@@ -667,7 +674,7 @@ export default defineComponent({
 <style scoped lang="sass">
 .oil-course-setting
     @include flex_column()
-    &__menubar 
+    &__menubar
         margin-bottom: rem(32)
 
     &__settings
@@ -799,7 +806,7 @@ export default defineComponent({
 
     &__info
         width: rem(960)
-        &__fields 
+        &__fields
             border-bottom: rem(1) solid $disabled_basic
             @include flex_start()
             &__cell
@@ -816,24 +823,24 @@ export default defineComponent({
     &__edit 
         width: rem(672)    
         @include flex_column()
-        gap: rem(16) 
-        &__btns 
+        gap: rem(16)
+        &__btns
             width: rem(291)
             gap: rem(12)
 
             @include flex_start()
 
         &__example
-            &__btn 
+            &__btn
                 @include flex_center_spacing()
-                span 
-                    color: $basic_primary  
+                span
+                    color: $basic_primary
                     cursor: pointer
 
-                p   
+                p
                     display: inline-flex
 
-                &__frame 
+                &__frame
                     @include flex_start()
                     gap: rem(2)
 

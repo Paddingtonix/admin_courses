@@ -53,27 +53,36 @@ export default defineComponent({
             value: false
         }) 
 
-        const chooses_variable = reactive({
-            value: ''
-        })
+		const chooses_variable = ref<string | number>("");
 
-        const openList = () => {
-            list_openned.value = !list_openned.value
-        }
+		const openList = () => {
+			list_openned.value = !list_openned.value;
+		};
 
         const selectValue = (val: string) => {
             chooses_variable.value = val            
             emit('setValue', { value: chooses_variable.value, type: props.type })
         }
 
-        return {
-            list_openned,
-            chooses_variable,
-            openList,
-            selectValue
-        }
-    }
-})
+		const selectObjectValue = (val: string) => {
+			chooses_variable.value = val;
+			emit("select-value", val);
+		};
+
+		const getSelectorData = (data: object) => {
+			emit("select-object", data);
+		};
+
+		return {
+			list_openned,
+			chooses_variable,
+			openList,
+			selectValue,
+			selectObjectValue,
+			getSelectorData,
+		};
+	},
+});
 </script>
 <style lang="sass" scoped>
 .oil-selector
@@ -90,20 +99,21 @@ export default defineComponent({
             top: 50%
             transform: translateY(-40%)
             transition: all .2s
-            span 
+            span
                 font-size: rem(24)
                 line-height: 150%
 
             &._active-list
                 transform: rotate(-180deg) translateY(40%)
 
-        label 
+        label
             color: #9AA7BB
             cursor: pointer
 
-    &__list 
+    &__list
         position: absolute
         left: 0
+        overflow-y: auto
         top: rem(60)
         padding: rem(8) rem(16)
         width: 100%

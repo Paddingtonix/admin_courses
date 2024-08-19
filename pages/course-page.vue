@@ -128,8 +128,8 @@ import type { CourseList } from '@/src/ts-interface/course-list'
 import axios from 'axios'
 
 export default defineComponent({
-    setup() {
-        const router = useRouter()
+	setup() {
+		const router = useRouter();
 
         const course_info = reactive([
             {
@@ -158,100 +158,100 @@ export default defineComponent({
             },
         ])
 
-        const filter_course = reactive({
-            value: [
-                {
-                    text: 'Все',
-                    id: 'all_status',
-                    active: false
-                },
-                {
-                    text: 'В разработке',
-                    id: 'in developing',
-                    active: false
-                },
-                {
-                    text: 'На модерации',
-                    id: 'on_moderation',
-                    active: false
-                },
-                {
-                    text: 'Опубликован',
-                    id: 'public',
-                    active: false
-                },
-                {
-                    text: 'Снят с витрины',
-                    id: 'removed',
-                    active: false
-                },
-                {
-                    text: 'В архиве',
-                    id: 'archive',
-                    active: false
-                },
-                {
-                    text: 'Все',
-                    id: 'all_lang',
-                    active: false
-                },
-                {
-                    text: 'Русский',
-                    id: 'russian',
-                    active: false
-                },
-                {
-                    text: 'Английский',
-                    id: 'english',
-                    active: false
-                },
-                {
-                    text: 'Французский',
-                    id: 'french',
-                    active: false
-                },
-                {
-                    text: 'Все',
-                    id: 'all_direction',
-                    active: false
-                },
-                {
-                    text: 'Геология',
-                    id: 'geology',
-                    active: false
-                },
-                {
-                    text: 'Разработка',
-                    id: 'develop',
-                    active: false
-                },
-                {
-                    text: 'Бурение',
-                    id: 'drilling',
-                    active: false
-                },
-                {
-                    text: 'Русский',
-                    id: 'russian',
-                    active: false
-                },
-                {
-                    text: 'Технология добычи',
-                    id: 'mining',
-                    active: false
-                },
-                {
-                    text: 'Шельф',
-                    id: 'shelf',
-                    active: false
-                },
-                {
-                    text: 'Другое',
-                    id: 'other',
-                    active: false
-                },
-            ]
-        })
+		const filter_course = reactive({
+			value: [
+				{
+					text: "Все",
+					id: "all_status",
+					active: false,
+				},
+				{
+					text: "В разработке",
+					id: "in developing",
+					active: false,
+				},
+				{
+					text: "На модерации",
+					id: "on_moderation",
+					active: false,
+				},
+				{
+					text: "Опубликован",
+					id: "public",
+					active: false,
+				},
+				{
+					text: "Снят с витрины",
+					id: "removed",
+					active: false,
+				},
+				{
+					text: "В архиве",
+					id: "archive",
+					active: false,
+				},
+				{
+					text: "Все",
+					id: "all_lang",
+					active: false,
+				},
+				{
+					text: "Русский",
+					id: "russian",
+					active: false,
+				},
+				{
+					text: "Английский",
+					id: "english",
+					active: false,
+				},
+				{
+					text: "Французский",
+					id: "french",
+					active: false,
+				},
+				{
+					text: "Все",
+					id: "all_direction",
+					active: false,
+				},
+				{
+					text: "Геология",
+					id: "geology",
+					active: false,
+				},
+				{
+					text: "Разработка",
+					id: "develop",
+					active: false,
+				},
+				{
+					text: "Бурение",
+					id: "drilling",
+					active: false,
+				},
+				{
+					text: "Русский",
+					id: "russian",
+					active: false,
+				},
+				{
+					text: "Технология добычи",
+					id: "mining",
+					active: false,
+				},
+				{
+					text: "Шельф",
+					id: "shelf",
+					active: false,
+				},
+				{
+					text: "Другое",
+					id: "other",
+					active: false,
+				},
+			],
+		});
 
         const course_list = reactive<CourseList[]>([])
 
@@ -279,9 +279,9 @@ export default defineComponent({
             filter_frame.value = state
         }
 
-        const navigate = (url: string) => {
-            router.push(url)
-        }
+		const navigate = (url: string) => {
+			router.push(url);
+		};
 
         onMounted(() => {
             nextTick(() => {
@@ -295,15 +295,11 @@ export default defineComponent({
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
-                        // console.table(resp.data.courses.find((element: { title: String, courseId: Number }) => element.title === course_list.row.title))
-                        console.log(resp.data.courses, 'resp')
-                        console.log(course_list, 'course_list');
                      })
 
                 axios
                     .get('admin/v1/course/filters')
                     .then(resp => {
-                        // console.log(resp.data, 'filter');
                     })
             })
         })
@@ -324,16 +320,16 @@ export default defineComponent({
 <style lang="sass" scoped>
 .oil-course
     &__info
-        &__card 
+        &__card
             margin-bottom: rem(48)
 
             @include flex_center_spacing()
             gap: rem(12)
-        
+
         &__attention
             padding: rem(16) rem(24)
             margin-bottom: rem(32)
-            
+
             border: 1px solid $basic-primary
             background-color: $disabled_basic
             max-width: rem(972)
@@ -349,45 +345,45 @@ export default defineComponent({
 
             &__text
                 font-size: rem(16)
-                line-height: 150%   
+                line-height: 150%
 
-        &__btn 
+        &__btn
             max-width: rem(192)
 
-    &__settings 
+    &__settings
         @include flex_start()
         gap: rem(8)
         width: rem(742)
         &__course-list
             margin-bottom: rem(24)
 
-        &-container 
+        &-container
             margin-bottom: rem(16)
 
             @include flex_center_spacing()
             position: relative
-            .oil-btn 
+            .oil-btn
                 height: rem(38)
                 padding: rem(8) rem(24)
 
-        &__pagination 
-            @include flex_center()     
+        &__pagination
+            @include flex_center()
 
     &__filter
         padding: rem(32)
 
         background-color: $basic_white
         box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
-        @include flex_column() 
-        gap: rem(32)  
-        position: absolute    
-        right: 0  
+        @include flex_column()
+        gap: rem(32)
+        position: absolute
+        right: 0
         top: rem(-132)
         .oil-checkbox
             width: rem(347)
             &__text
                 font-size: rem(14)
-        
+
         &__frame
             gap: rem(12)
 
@@ -397,14 +393,13 @@ export default defineComponent({
 
                 font-size: rem(14)
 
-        &__btns 
+        &__btns
             @include flex_start()
-            gap: rem(12)        
-            
+            gap: rem(12)
+
         &__close
             position: absolute
             top: rem(24)
             right: rem(24)
             cursor: pointer
-
 </style>

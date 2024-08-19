@@ -1,24 +1,28 @@
 <template>
-    <div class="oil-link" :class="{'_light-svg': link_active}">
-        <slot></slot>
-        <a>{{ link_name }}</a>
-    </div>
+	<NuxtLink :to="to" class="oil-link" :class="{ '_light-svg': link_active }">
+		<slot></slot>
+		<span>{{ link_name }}</span>
+	</NuxtLink>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    props: {
-        link_name: {
-            type: String,
-            default: 'link'
-        },
-        link_active: {
-            type: Boolean,
-            default: false
-        }
-    }
-})
+	props: {
+		link_name: {
+			type: String,
+			default: "link",
+		},
+		link_active: {
+			type: Boolean,
+			default: false,
+		},
+		to: {
+			type: String,
+			default: "",
+		},
+	},
+});
 </script>
 <style lang="sass">
 .oil-link
@@ -31,14 +35,6 @@ export default defineComponent({
     a
         color: $dark_gray
 
-    &:hover 
+    &:hover
         background-color: $basic_light_gray
-
-    &._light-svg
-        svg path 
-            stroke: $basic_primary
-
-        a 
-            color: $basic_primary    
-
 </style>

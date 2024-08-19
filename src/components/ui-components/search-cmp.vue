@@ -1,38 +1,48 @@
 <template>
-    <div class="oil-search">
-        <InputCmp 
-            class="oil-search__input" 
-            :label="label"
-            :placeholder="placeholder"
-        />
+	<div class="oil-search">
+		<InputCmp
+			class="oil-search__input"
+			:label="label"
+			@set_value="changeSearchValue($event)"
+			:model-value="modelValue"
+		/>
         <button class="oil-search__icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M17.5 17.5L12.5001 12.5M14.1667 8.33333C14.1667 11.555 11.555 14.1667 8.33333 14.1667C5.11167 14.1667 2.5 11.555 2.5 8.33333C2.5 5.11167 5.11167 2.5 8.33333 2.5C11.555 2.5 14.1667 5.11167 14.1667 8.33333Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-    </div>
+	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    props: {
-        label: {
-            type: String,
-            default: ''
-        },
-        placeholder: {
-            type: String,
-            default: ''
-        }
-    },
-    setup() {
+	props: {
+		label: {
+			type: String,
+			default: "label",
+		},
+		modelValue: {
+			type: String,
+			default: "",
+		},
+	},
+	emits: ["change-value"],
+	setup(props, { emit }) {
+		const { modelValue } = toRefs(props);
+		const changeSearchValue = (value: string) => {
+			emit("change-value", value);
+		};
 
-    }
-})
+		return {
+			changeSearchValue,
+			modelValue,
+		};
+	},
+});
 </script>
 <style lang="sass">
-.oil-search 
+.oil-search
     position: relative
     max-width: rem(542)
     width: 100%
@@ -54,6 +64,11 @@ export default defineComponent({
         &:active
             opacity: .7
 
-    .oil-input 
+    .oil-input
         height: rem(38)
+        &__label
+            &._fill
+                top: rem(0)
+                font-size: rem(16)
+                color: $light_primary
 </style>

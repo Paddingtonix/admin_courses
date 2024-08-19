@@ -1,45 +1,27 @@
 <template>
-    <nav class="navigation-switcher">
-        <div 
-            class="navigation-switcher__link"
-            v-for="switcher in switchers" 
-            :key="switcher.id" 
-            :class="{ active: switcher.isActive }" 
-            @click="changeSwitcher(switcher.id)"
-        >
-            {{ switcher.text }}
-        </div>
-    </nav>
+	<nav class="navigation-switcher">
+		<NuxtLink
+			class="navigation-switcher__link"
+			v-for="switcher in switchers"
+			:key="switcher.id"
+			:to="switcher.link"
+		>
+			{{ switcher.text }}
+		</NuxtLink>
+	</nav>
 </template>
 
 <script lang="ts" setup>
-import type ISwitcher from '~/src/ts-interface/switcher.type'
-import { defineProps, defineEmits } from 'vue'
+import type ISwitcher from "~/src/ts-interface/switcher.type";
+import { defineProps } from "vue";
 
 const props = defineProps<{
-    switcherArray: ISwitcher[]
-}>()
+	switcherArray: ISwitcher[];
+}>();
 
 const { switcherArray } = props
 
-const switchers = reactive(switcherArray)
-
-const emit = defineEmits<{ (e: 'switch-tab', id: number): void }>()
-
-const changeSwitcher = (id: number) => {
-    const activeElement = switchers.find((el) => el.isActive)
-
-    if (activeElement?.isActive) {
-        activeElement.isActive = false
-    }
-
-    const currentElement = switchers.find((el) => el.id === id)
-
-    if (currentElement && !currentElement.isActive) {
-        currentElement.isActive = true
-        emit('switch-tab', id)
-    }
-}
+const switchers = switcherArray;
 </script>
 
 <style lang="sass">
@@ -64,7 +46,13 @@ const changeSwitcher = (id: number) => {
           height: rem(3)
           background-color: $basic_primary
 
-        &.active, &:hover
+        &:hover
+            color: $basic_primary
+        &:active
+            &::after
+              width: 100%
+
+        &.router-link-exact-active
             color: $basic_primary
             &::after
                 width: 100%
