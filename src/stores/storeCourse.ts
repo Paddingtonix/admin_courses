@@ -63,4 +63,8 @@ export const useStoreCourses = defineStore('courseState', {
             this.course_info[5].count = this.course_list.filter(el => el.status === 'Archived').length
         }
     }
+<<<<<<< HEAD
 })
+=======
+})
+>>>>>>> course-content-pdf-btn

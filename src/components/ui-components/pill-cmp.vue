@@ -30,11 +30,12 @@ export default defineComponent({
     border-radius: rem(16)
     height: rem(24)
     background-color: $disabled_basic
-
     &__inner
-        color: $basic_text
-        font-size: rem(12)
+        font-family: $font-family-inter
         font-weight: 700
+        // color: $basic_tab
+        font-size: rem(12)
         padding: rem(4) rem(8)
         white-space: nowrap
+        
 </style>
