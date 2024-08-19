@@ -1,6 +1,8 @@
 <template>
     <section class="oil-container oil-course">
         <div class="oil-course__info oil-page">
+            <div v-if="user_role_store.role === 'Author'" class="oil-course__title">Мои курсы</div>
+            <div v-else class="oil-course__title">Курсы</div>
             <div class="oil-course__info__card">
                 <CardInfo 
                     v-for="(card, idx) in course_info"
@@ -16,7 +18,8 @@
                             <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </i>
-                    <p class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием. </p>
+                    <p v-if="user_role_store.role === 'Author'" class="oil-course__info__attention__text">На данный момент у вас нет ни одного созданного курса. Нажмите на кнопку "Создать курс", чтобы начать и поделиться своими знаниями с другими!</p>
+                    <p v-else class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием.</p>
                 </div>
                 <btnCmp 
                     :text="'Создать курс'"
@@ -122,14 +125,15 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import type { CourseList } from '@/src/ts-interface/course-list'
+import { defineComponent, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserRoleStore } from '~/src/stores/storeRole';
 import axios from 'axios'
 
 export default defineComponent({
-	setup() {
-		const router = useRouter();
+    setup() {
+        const router = useRouter()
+        const user_role_store = useUserRoleStore()
 
         const course_info = reactive([
             {
@@ -306,6 +310,7 @@ export default defineComponent({
 
         return {
             course_info,
+            user_role_store,
             navigate,
             course_list,
             filter_course,
@@ -319,6 +324,12 @@ export default defineComponent({
 </script>
 <style lang="sass" scoped>
 .oil-course
+    &__title
+        font-size: rem(20)
+        line-height: rem(28)
+        font-weight: bold
+        margin-bottom: rem(32)
+
     &__info
         &__card
             margin-bottom: rem(48)

@@ -1,7 +1,7 @@
 <template>
-    <section class="oil-container">
-        <div class="oil-page oil-direction-page">
-            <h4 class="oil-direction-page__header">Направления курсов</h4>
+    <section v-if="user_role_store.role === 'Admin'" class="oil-container">
+        <div class="oil-page direction-page">
+            <h4 class="direction-page__header">Направления курсов</h4>
             <PillCmp
                 class="oil-direction-page__pill"
                 v-for="(pill, idx) in pill_info"
@@ -76,6 +76,7 @@ import { useRouter } from "vue-router";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
 import type { DirectionData } from "~/src/ts-interface/direction-data";
+import { useUserRoleStore } from '~/src/stores/storeRole';
 
 export default defineComponent({
     setup() {
@@ -91,6 +92,7 @@ export default defineComponent({
             show_only_visible: true,
             show_only_invisible: true,
         })
+        const user_role_store = useUserRoleStore()
 
         const pill_info = reactive([
             {
@@ -197,6 +199,7 @@ export default defineComponent({
             direction_store,
             show_only_visible,
             show_only_invisible,
+            user_role_store,
             deleteDirection,
             sendDirection,
             visible_state,
