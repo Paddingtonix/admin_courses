@@ -10,11 +10,24 @@ export const useTagsStore = defineStore({
 	id: "tagsStore",
 	state: () => ({
 		headings: [] as IHeading[],
-		tags: [],
-		numberOfPages: 1,
+		tags: [] as ITags[],
+		numberOfPages: null,
 		currentPage: 1,
+		nTagsPerPage: 10,
 	}),
 	actions: {
+		async getTags({ text = "" }) {
+			return axios
+				.get(
+					`admin/v1/label/?page=${this.currentPage}&nHeadingsPerPage=${this.nTagsPerPage}&searchSubstring=${text}`
+				)
+				.then((tagsData) => {
+					this.$patch({
+						tags: tagsData.data.labels as ITags[],
+					});
+				});
+		},
+
 		async getAllHeadings() {
 			return axios
 				.get("/admin/v1/heading?nHeadingsPerPage=99999")

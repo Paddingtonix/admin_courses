@@ -71,7 +71,9 @@ const initialTagForm: ITags = {
 	headingId: null,
 	headingName: "",
 	name: "",
-	localizations: {},
+	localizations: {
+		ru: "",
+	},
 };
 
 const tagForm: ITags = reactive(
