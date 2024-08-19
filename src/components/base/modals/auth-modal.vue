@@ -7,7 +7,7 @@
                 :value="form_item.value"
                 :label="form_item.label"
                 :error="form_item.error"
-                @set="setUserData"
+                @set_value="setUserData"
                 @blur="validCheck(form_item)"
                 @keyup.enter="loginSite"
             />
@@ -96,6 +96,8 @@ export default defineComponent({
         const setUserData = (user_data: { type: string, value: string }) => {
             for (let i = 0; i < form_authorization.length; i++) {
                 if (form_authorization[i].type === user_data.type) {
+                    console.log('qwertyy');
+                    
                     form_authorization[i].value = user_data.value
                 }
             }
