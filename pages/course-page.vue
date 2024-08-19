@@ -28,7 +28,7 @@
                 <div class="oil-course__settings-container">
                     <div class="oil-course__settings">
                         <SearchCmp 
-                            :label="'Поиск'"
+                            :placeholder="'Поиск'"
                         />
                         <FilterCmp 
                             @click="openFilter(true)"
@@ -101,7 +101,7 @@
                     />
                     <TableRowCmp 
                         v-for="(row, idx) in course_list"
-                        :id="courseId"
+                        :id="row.courseId"
                         :key="idx"
                         :name="row.title"
                         :status="row.status"
@@ -296,12 +296,14 @@ export default defineComponent({
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
                         // console.table(resp.data.courses.find((element: { title: String, courseId: Number }) => element.title === course_list.row.title))
+                        console.log(resp.data.courses, 'resp')
+                        console.log(course_list, 'course_list');
                      })
 
                 axios
                     .get('admin/v1/course/filters')
                     .then(resp => {
-
+                        // console.log(resp.data, 'filter');
                     })
             })
         })

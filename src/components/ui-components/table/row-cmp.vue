@@ -1,8 +1,8 @@
 <template>
     <div class="oil-row">
         <template v-for="field in fields">
-            <div class="oil-row__cell" v-if="field.length" :key="field">
-                <span>{{ field }}</span>
+            <div class="oil-row__cell" v-if="typeof field === 'string' && field.length"  :key="field">
+                <a :href="`/course-setting?search=${id}`">{{ field }}</a>
             </div>
         </template>
         <slot name="svg"/>
@@ -13,6 +13,10 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     props: {
+        id: {
+            type: Number,
+            required: true
+        },
         name: {
             type: String,
             default: ''

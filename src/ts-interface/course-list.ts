@@ -5,5 +5,6 @@ export interface CourseList {
     direction: string[],
     language: string,
     lastChangeDateTime: string,
-    salesTerminationDate: string | null
+    salesTerminationDate: string | null,
+    courseId: number
 }

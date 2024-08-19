@@ -3,10 +3,13 @@
         <InputCmp 
             class="oil-search__input" 
             :label="label"
+            :placeholder="placeholder"
         />
-        <svg class="oil-search__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M17.5 17.5L12.5001 12.5M14.1667 8.33333C14.1667 11.555 11.555 14.1667 8.33333 14.1667C5.11167 14.1667 2.5 11.555 2.5 8.33333C2.5 5.11167 5.11167 2.5 8.33333 2.5C11.555 2.5 14.1667 5.11167 14.1667 8.33333Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <button class="oil-search__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M17.5 17.5L12.5001 12.5M14.1667 8.33333C14.1667 11.555 11.555 14.1667 8.33333 14.1667C5.11167 14.1667 2.5 11.555 2.5 8.33333C2.5 5.11167 5.11167 2.5 8.33333 2.5C11.555 2.5 14.1667 5.11167 14.1667 8.33333Z" stroke="#B6C2D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     </div>
 </template>
 <script lang="ts">
@@ -16,7 +19,11 @@ export default defineComponent({
     props: {
         label: {
             type: String,
-            default: 'label'
+            default: ''
+        },
+        placeholder: {
+            type: String,
+            default: ''
         }
     },
     setup() {
@@ -29,11 +36,23 @@ export default defineComponent({
     position: relative
     max-width: rem(542)
     width: 100%
-    &__icon 
+    &__icon
+        height: 100%
+        width: rem(38)
         position: absolute
+        display: flex
+        align-items: center
+        justify-content: center
         top: 50%
-        right: rem(16)
+        right: rem(0)
         transform: translateY(-50%)
+        &:hover
+            svg
+                path
+                    stroke: $basic_gray
+        
+        &:active
+            opacity: .7
 
     .oil-input 
         height: rem(38)
