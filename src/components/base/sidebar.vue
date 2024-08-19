@@ -177,7 +177,8 @@ export default defineComponent({
             opened_sidebar,
             openSidebar,
             user_role_store,
-            roleMenu
+            roleMenu,
+            router
         }
     }
 })
