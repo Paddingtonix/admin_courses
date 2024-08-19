@@ -19,7 +19,7 @@ const props = defineProps<{
 	switcherArray: ISwitcher[];
 }>();
 
-const { switcherArray } = props;
+const { switcherArray } = props
 
 const switchers = switcherArray;
 </script>
@@ -27,7 +27,7 @@ const switchers = switcherArray;
 <style lang="sass">
 .navigation-switcher
     display: flex
-
+    cursor: pointer
     &__link
         position: relative
         display: block
@@ -35,7 +35,6 @@ const switchers = switcherArray;
         margin-right: rem(16)
         padding: rem(16) rem(8)
         transition: color .3s ease-out
-
         &::after
           content: ""
           transition: width .3s ease-in-out
@@ -56,5 +55,5 @@ const switchers = switcherArray;
         &.router-link-exact-active
             color: $basic_primary
             &::after
-                  width: 100%
+                width: 100%
 </style>

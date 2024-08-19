@@ -114,7 +114,7 @@ const openModalAddTag = (tagForm?: ITags) => {
             tagForm,
         },
     });
-    modalStore.triggerModal();
+    modalStore.openModal();
 };
 
 const openDeleteModal = (data: ITags) => {
@@ -126,7 +126,7 @@ const openDeleteModal = (data: ITags) => {
             modalComponent: "delete-tag",
         },
     });
-    modalStore.triggerModal();
+    modalStore.openModal();
 };
 
 onMounted(() => {

@@ -17,6 +17,12 @@ export default defineNuxtConfig({
             '~/src/pages',
         ],
     },
-    modules: ['@pinia/nuxt'],
+    modules: [
+        '@pinia/nuxt'
+    ],
     ssr: true,
+    plugins: [
+        '~/plugins/vue-the-mask.client.ts',
+        '~/plugins/v-calendar.ts'
+      ],
 })

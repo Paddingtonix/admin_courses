@@ -11,8 +11,11 @@ export const useStoreModal = defineStore("modal", {
 		modalProps: {},
 	}),
 	actions: {
-		triggerModal() {
-			this.isOpen = !this.isOpen;
-		},
-	},
-});
+        openModal() {
+            this.isOpen = true
+        },
+        closeModal() {
+            this.isOpen = false
+        },
+    },
+})

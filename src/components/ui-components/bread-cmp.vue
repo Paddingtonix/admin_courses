@@ -1,6 +1,6 @@
 <template>
     <div class="oil-bread">
-        <template v-if="prev_page.length">
+        <template v-if="Array.isArray(prev_page)">
             <template v-for="(bread, bread_idx) in prev_page" :key="bread_idx">
                 <span class="oil-bread__page _primary">{{ bread }}</span>
                 <svg

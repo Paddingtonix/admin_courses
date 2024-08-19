@@ -57,7 +57,7 @@ const changeActiveLang = (id: string) => {
     button
         padding: rem(16) rem(24)
         font-weight: 600
-        color: $basic_tab
+        // color: $basic_tab
         z-index: 1
         transition: all .2s ease-in-out
         &:hover:not(.active)

@@ -1,13 +1,14 @@
 <template>
 	<div class="oil-modal">
 		<div class="oil-modal__container">
-			<div class="oil-modal__container__header">
+			<div class="oil-modal__container__header" v-if="modalData.label.length">
 				<span class="oil-modal__container__header__title">{{
 					modalData.label
 				}}</span>
 				<button
+                    v-if="modalData.activeModal !== 'auth-modal'"
 					class="oil-modal__container__header__btn-close"
-					@click="storeModal.triggerModal"
+					@click="storeModal.closeModal()"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +28,7 @@
 				</button>
 			</div>
 			<div class="oil-modal__container__content">
-				<component 
+				<component
 					:is="modalData.activeModal"
 				></component>
 			</div>
@@ -46,9 +47,10 @@ import formSections from "../../ui-components/forms/form-sections.vue";
 import deleteModal from "./delete-modal.vue";
 
 export default defineComponent({
-	setup(props, { emit }) {
+	setup() {
 		const storeModal = useStoreModal();
 		const modalData = reactive(storeModal.$state);
+        
 		onUnmounted(() => {
 			storeModal.$reset();
 		});
@@ -77,23 +79,23 @@ export default defineComponent({
     right: 0
     bottom: 0
     z-index: 900
-    &__container-auth
-        width: auto
-        height: auto
-        padding: rem(56)
-        box-shadow: rem(0) rem(8) rem(28) rem(-6) rgba(24, 39, 75, 0.12), rem(0) rem(18) rem(88) rem(-4) rgba(24, 39, 75, 0.14)
-        border-radius: rem(24)
-        background-color: $basic_white
-        position: absolute
-        top: 50%
-        left: 50%
-        transform: translate(-50%, -50%)
+    // &__container-auth
+    //     width: auto
+    //     height: auto
+    //     padding: rem(56)
+    //     box-shadow: rem(0) rem(8) rem(28) rem(-6) rgba(24, 39, 75, 0.12), rem(0) rem(18) rem(88) rem(-4) rgba(24, 39, 75, 0.14)
+    //     border-radius: rem(24)
+    //     background-color: $basic_white
+    //     position: absolute
+    //     top: 50%
+    //     left: 50%
+    //     transform: translate(-50%, -50%)
 
     &__container
-        width: auto
+        width: rem(580)
         height: auto
         box-shadow: rem(0) rem(8) rem(28) rem(-6) rgba(24, 39, 75, 0.12), rem(0) rem(18) rem(88) rem(-4) rgba(24, 39, 75, 0.14)
-        border-radius: rem(12)
+        border-radius: rem(24)
         background-color: $basic_white
         position: absolute
         top: 50%
@@ -104,7 +106,7 @@ export default defineComponent({
             width: 100%
             height: rem(76)
             padding: rem(24) rem(40)
-            background-color: $modal_header
+            background-color: $basic_light_gray
             border: rem(1) solid $modal_border
             border-radius: rem(12) rem(12) 0 0
             @include flex_center_spacing

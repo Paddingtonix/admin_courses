@@ -1,200 +1,162 @@
 <template>
-	<section class="oil-container oil-course">
-		<div class="oil-course__info oil-page">
-			<div class="oil-course__info__card">
-				<CardInfo
-					v-for="(card, idx) in course_info"
-					:key="idx"
-					:count="card.count"
-					:text="card.text"
-				/>
-			</div>
-			<template v-if="!course_list.value.length">
-				<div class="oil-course__info__attention">
-					<i class="oil-course__info__attention__icon">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="40"
-							height="40"
-							viewBox="0 0 40 40"
-							fill="none"
-						>
-							<path
-								d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z"
-								stroke="#176DC1"
-								stroke-width="3.33"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-						</svg>
-					</i>
-					<p class="oil-course__info__attention__text">
-						На данный момент в системе нет ни одного курса. Как
-						только первые курсы будут созданы, здесь появится
-						таблица, которая позволит управлять их параметрами и
-						содержанием.
-					</p>
-				</div>
-				<btnCmp
-					:text="'Создать курс'"
-					class="oil-course__info__btn"
-					@click="navigate('/course-create')"
-				/>
-			</template>
-			<template v-else>
-				<div class="oil-course__settings-container">
-					<div class="oil-course__settings">
-						<SearchCmp :label="'Поиск'" />
-						<FilterCmp @click="openFilter(true)" />
-					</div>
-					<div class="oil-course__create">
-						<BtnCmp :text="'Создать курс'">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
-								fill="none"
-							>
-								<path
-									d="M12 5V19M5 12H19"
-									stroke="white"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								/>
-							</svg>
-						</BtnCmp>
-					</div>
-					<div class="oil-course__filter" v-if="filter_frame.value">
-						<svg
-							@click="openFilter(false)"
-							class="oil-course__filter__close"
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 20 20"
-							fill="none"
-						>
-							<path
-								d="M15 5L5 15M5 5L15 15"
-								stroke="#808E9D"
-								stroke-width="1.67"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-						</svg>
-						<div class="oil-course__filter__frame">
-							<span class="oil-course__filter__frame__title"
-								>Статус</span
-							>
-							<CheckboxCmp
-								v-for="(
-									checkbox, idx
-								) in filter_course.value.slice(0, 6)"
-								:key="idx"
-								:text="checkbox.text"
-								:id="checkbox.id"
-								:active="checkbox.active"
-							/>
-						</div>
-						<div class="oil-course__filter__frame">
-							<span class="oil-course__filter__frame__title"
-								>Язык</span
-							>
-							<CheckboxCmp
-								v-for="(
-									checkbox, idx
-								) in filter_course.value.slice(7, 10)"
-								:key="idx"
-								:text="checkbox.text"
-								:id="checkbox.id"
-								:active="checkbox.active"
-							/>
-						</div>
-						<div class="oil-course__filter__frame">
-							<span class="oil-course__filter__frame__title"
-								>Направления</span
-							>
-							<CheckboxCmp
-								v-for="(
-									checkbox, idx
-								) in filter_course.value.slice(11)"
-								:key="idx"
-								:text="checkbox.text"
-								:id="checkbox.id"
-								:active="checkbox.active"
-							/>
-						</div>
-						<div class="oil-course__filter__btns">
-							<BtnCmp
-								:background_type="'_secondary'"
-								:text="'Сбросить'"
-							/>
-							<BtnCmp :text="'Применить'" />
-						</div>
-					</div>
-				</div>
-				<div class="oil-course__settings__course-list">
-					<TableHeadCmp
-						:name="'Название'"
-						:status="'Статус'"
-						:authors="'Авторы'"
-						:direction="'направление'"
-						:lang="'Язык'"
-						:date_edit="'Дата посл. ред.'"
-						:end_date="'Снятие с витрины'"
-					/>
-					<TableRowCmp
-						v-for="(row, idx) in course_list.value"
-						:key="idx"
-						:name="row.name"
-						:status="row.status"
-						:authors="row.email"
-						:direction="row.direction"
-						:lang="row.lang"
-						:date_edit="row.edit_data"
-						:end_date="row.end_data"
-					/>
-				</div>
-				<div class="oil-course__settings__pagination">
-					<PaginationCmp :pages_count="14" />
-				</div>
-			</template>
-		</div>
-	</section>
+    <section class="oil-container oil-course">
+        <div class="oil-course__info oil-page">
+            <div class="oil-course__info__card">
+                <CardInfo 
+                    v-for="(card, idx) in course_info"
+                    :key="idx"
+                    :count="card.count"
+                    :text="card.text"
+                />
+            </div>
+            <template v-if="!course_list.length">
+                <div class="oil-course__info__attention">
+                    <i class="oil-course__info__attention__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </i>
+                    <p class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием. </p>
+                </div>
+                <btnCmp 
+                    :text="'Создать курс'"
+                    class="oil-course__info__btn"
+                    @click="navigate('/course-create')"
+                />
+            </template>
+            <template v-else>
+                <div class="oil-course__settings-container">
+                    <div class="oil-course__settings">
+                        <SearchCmp 
+                            :placeholder="'Поиск'"
+                        />
+                        <FilterCmp 
+                            @click="openFilter(true)"
+                        />
+                    </div>
+                    <div class="oil-course__create">
+                        <BtnCmp 
+                            :text="'Создать курс'"
+                            @click="navigate('/course-create')"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </BtnCmp>
+                    </div>
+                    <div class="oil-course__filter" v-if="filter_frame.value">
+                        <svg @click="openFilter(false)" class="oil-course__filter__close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="#808E9D" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Статус</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(0, 6)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Язык</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(7, 10)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__frame">
+                            <span class="oil-course__filter__frame__title">Направления</span>
+                            <CheckboxCmp 
+                                v-for="(checkbox, idx) in filter_course.value.slice(11)"
+                                :key="idx"
+                                :text="checkbox.text"
+                                :id="checkbox.id"
+                                :active="checkbox.active"
+                            />
+                        </div>
+                        <div class="oil-course__filter__btns">
+                            <BtnCmp 
+                                :background_type="'_secondary'"
+                                :text="'Сбросить'"
+                            />
+                            <BtnCmp 
+                                :text="'Применить'"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="oil-course__settings__course-list">
+                    <TableHeadCmp 
+                        :name="'Название'"
+                        :status="'Статус'"
+                        :authors="'Авторы'"
+                        :direction="'направление'"
+                        :lang="'Язык'"
+                        :date_edit="'Дата посл. ред.'"
+                        :end_date="'Снятие с витрины'"               
+                    />
+                    <TableRowCmp 
+                        v-for="(row, idx) in course_list"
+                        :id="row.courseId"
+                        :key="idx"
+                        :name="row.title"
+                        :status="row.status"
+                        :authors="row.authorEmails[0]"
+                        :direction="formatDirectionToString(row.direction)"
+                        :lang="row.language.toUpperCase()"
+                        :date_edit="formatDate(row.lastChangeDateTime)"
+                        :end_date="formatDate(row.salesTerminationDate)"
+                    />
+                </div>
+                <div class="oil-course__settings__pagination">
+                    <PaginationCmp 
+                        :pages_count="14"
+                    />
+                </div>
+            </template>
+        </div>
+    </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import type { CourseList } from '@/src/ts-interface/course-list'
+import axios from 'axios'
 
 export default defineComponent({
 	setup() {
 		const router = useRouter();
 
-		const course_info = reactive([
-			{
-				count: 0,
-				text: "Всего",
-			},
-			{
-				count: 0,
-				text: "В разработке",
-			},
-			{
-				count: 0,
-				text: "На модерации",
-			},
-			{
-				count: 0,
-				text: "Опубликован",
-			},
-			{
-				count: 0,
-				text: "Снят с витрины",
-			},
-		]);
+        const course_info = reactive([
+            {
+                count: 0,
+                text: 'Всего'
+            },
+            {
+                count: 0,
+                text: 'В разработке'
+            },
+            {
+                count: 0,
+                text: 'На модерации'
+            },
+            {
+                count: 0,
+                text: 'Опубликован'
+            },
+            {
+                count: 0,
+                text: 'Снят с витрины'
+            },
+            {
+                count: 0,
+                text: 'В архиве'
+            },
+        ])
 
 		const filter_course = reactive({
 			value: [
@@ -291,40 +253,69 @@ export default defineComponent({
 			],
 		});
 
-		const course_list = reactive({
-			value: [],
-		});
+        const course_list = reactive<CourseList[]>([])
 
-		const filter_frame = reactive({
-			value: false,
-		});
+        const filter_frame = reactive({
+            value: false as boolean
+        })
 
-		const openFilter = (state: boolean) => {
-			filter_frame.value = state;
-		};
+        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕНН
+        const formatDirectionToString = (arr: string[]): string => {
+            return arr ? arr.join(', ') : '--'
+        }
+        
+        const formatDate = (date_value: string | null) => {
+            if (date_value === null) {
+                return "--"
+            }
+            const date = new Date(date_value)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = date.getFullYear()
+            return `${day}.${month}.${year}`
+        }
+
+        const openFilter = (state: boolean) => {
+            filter_frame.value = state
+        }
 
 		const navigate = (url: string) => {
 			router.push(url);
 		};
 
-		onMounted(() => {
-			axios.get("/api/course_list.json").then((resp) => {
-				console.log(resp);
+        onMounted(() => {
+            nextTick(() => {
+                axios
+                    .get<{ courses: CourseList[] }>('/admin/v1/Course')
+                    .then(resp => {
+                        course_list.push(...resp.data.courses)
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
+                        course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
+                     })
 
-				course_list.value = resp.data.courses;
-			});
-		});
+                axios
+                    .get('admin/v1/course/filters')
+                    .then(resp => {
+                    })
+            })
+        })
 
-		return {
-			course_info,
-			navigate,
-			course_list,
-			filter_course,
-			filter_frame,
-			openFilter,
-		};
-	},
-});
+        return {
+            course_info,
+            navigate,
+            course_list,
+            filter_course,
+            filter_frame,
+            openFilter,
+            formatDirectionToString,
+            formatDate
+        }
+    }
+})
 </script>
 <style lang="sass" scoped>
 .oil-course

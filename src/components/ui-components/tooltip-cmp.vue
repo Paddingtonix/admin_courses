@@ -44,5 +44,5 @@ const { text } = defineProps({
         line-height: rem(24)
         word-break: break-all
         font-weight: 400
-        color: $basic_tab
+        // color: $basic_tab
 </style>

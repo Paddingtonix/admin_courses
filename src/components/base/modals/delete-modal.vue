@@ -31,7 +31,7 @@ export default defineComponent({
             modalData.modalProps
                 .deleteFunction(modalData.modalProps.data.id)
                 .then(() => {
-                    modalStore.triggerModal();
+                    modalStore.openModal();
                 })
                 .catch(() => {
                     console.log("DA YOBANIY TI BLOOD");
