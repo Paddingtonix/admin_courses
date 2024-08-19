@@ -6,7 +6,7 @@
         <BtnCmp
             :text="'Отмена'"
             :background_type="'_secondary'"
-            @click="storeModal.triggerModal"
+            @click="storeModal.closeModal()"
         />
         <BtnCmp
             :text="'Удалить'"

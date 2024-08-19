@@ -25,7 +25,7 @@
                             :type="field.type"
                             :error="field.error"
                             :maxlength="103"
-                            @set="setValueSelector"
+                            @set_value="setValueSelector"
                             @blur="validCheck(field)"
                         />
                     </template>
@@ -296,7 +296,11 @@ export default defineComponent({
                 .then(response => {
                     console.log(response, 'course-create')
                     if(response.data) {
-                        storeModal.isOpen
+                        storeModal.$patch({
+                            label: "Курс создан!",
+                            activeModal: "course-create-modal",
+                        });
+                        storeModal.openModal()
                     }
                 })
                 .catch((error) => {
