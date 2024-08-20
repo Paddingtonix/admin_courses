@@ -1,8 +1,5 @@
 <template>
-    <form
-        class="add-section"
-        action="#"
-    >
+    <form class="add-section" action="#">
         <InputCmp
             :model-value="formModel.name"
             class="add-section__input"
@@ -22,7 +19,7 @@
                 type="button"
                 background_type="_secondary"
                 text="Отмена"
-                @click="modalStore.triggerModal"
+                @click="modalStore.closeModal()"
             />
             <BtnCmp
                 v-if="modalData.modalProps.edit"
@@ -50,7 +47,6 @@ import type { IFormSection } from "~/src/ts-interface/storeModal.type";
 const modalStore = useStoreModal();
 
 const modalData = modalStore.$state as IFormSection;
-//Pinia не дает деструктуризировать объект. Просто шикарно. Храни господь React, славься Redux!
 const formModel = reactive({
     name: modalData.modalProps.edit ? modalData.modalProps.name : "",
     description: modalData.modalProps.edit
@@ -93,7 +89,7 @@ const sendForm = () => {
     headersStore
         .postHeading(formModel)
         .then(() => {
-            modalStore.triggerModal();
+            modalStore.closeModal();
         })
         .catch((err) => {
             console.error("EBANAYA OSHIBKA ", err);
@@ -111,7 +107,7 @@ const patchForm = () => {
         })
         .then((resp) => {
             console.log("allgoodies", resp);
-            modalStore.triggerModal();
+            modalStore.closeModal();
         })
         .catch((err) => {
             console.log("ДА ЕБАТЬ ЕГО В РОТ НАХУЙ", err);

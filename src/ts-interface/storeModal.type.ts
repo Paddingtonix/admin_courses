@@ -1,5 +1,5 @@
 import type { StoreGeneric } from "pinia";
-import type { IHeading, ITags } from "./storeTags.type";
+import type { IHeading, IResponseTags, ITags } from "./storeTags.type";
 
 export interface IStoreModal {
     isOpen: boolean;
@@ -27,7 +27,7 @@ export interface IDeleteSection extends IStoreModal {
 
 export interface IDeleteTag extends IStoreModal {
     modalProps: {
-        data: ITags;
+        data: IResponseTags;
         modalComponent: string;
         // deleteFunction: (id: number) => Promise<void>;
     };

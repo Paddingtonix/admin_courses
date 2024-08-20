@@ -1,38 +1,36 @@
 <template>
-	<div class="oil-modal">
-		<div class="oil-modal__container">
-			<div class="oil-modal__container__header">
-				<span class="oil-modal__container__header__title">{{
-					modalData.label
-				}}</span>
-				<button
-					class="oil-modal__container__header__btn-close"
-					@click="storeModal.triggerModal"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-					>
-						<path
-							d="M18 6L6 18M6 6L18 18"
-							stroke="#808E9D"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</button>
-			</div>
-			<div class="oil-modal__container__content">
-				<component 
-					:is="modalData.activeModal"
-				></component>
-			</div>
-		</div>
-	</div>
+    <div class="oil-modal">
+        <div class="oil-modal__container">
+            <div class="oil-modal__container__header">
+                <span class="oil-modal__container__header__title">{{
+                    modalData.label
+                }}</span>
+                <button
+                    class="oil-modal__container__header__btn-close"
+                    @click="storeModal.closeModal()"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                    >
+                        <path
+                            d="M18 6L6 18M6 6L18 18"
+                            stroke="#808E9D"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </button>
+            </div>
+            <div class="oil-modal__container__content">
+                <component :is="modalData.activeModal"></component>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -46,27 +44,27 @@ import formSections from "../../ui-components/forms/form-sections.vue";
 import deleteModal from "./delete-modal.vue";
 
 export default defineComponent({
-	setup(props, { emit }) {
-		const storeModal = useStoreModal();
-		const modalData = reactive(storeModal.$state);
-		onUnmounted(() => {
-			storeModal.$reset();
-		});
+    setup(props, { emit }) {
+        const storeModal = useStoreModal();
+        const modalData = reactive(storeModal.$state);
+        onUnmounted(() => {
+            storeModal.$reset();
+        });
 
-		return {
-			storeModal,
-			formTags,
-			formSections,
-			modalData,
-		};
-	},
-	components: {
-		"auth-modal": authModal,
-		"course-create-modal": courseCreateModal,
-		"form-tags": formTags,
-		"form-sections": formSections,
-		"delete-modal": deleteModal,
-	},
+        return {
+            storeModal,
+            formTags,
+            formSections,
+            modalData,
+        };
+    },
+    components: {
+        "auth-modal": authModal,
+        "course-create-modal": courseCreateModal,
+        "form-tags": formTags,
+        "form-sections": formSections,
+        "delete-modal": deleteModal,
+    },
 });
 </script>
 <style scoped lang="sass">

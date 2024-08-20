@@ -13,10 +13,21 @@ export interface IStoreHeaders {
 }
 
 export interface ITags {
+    id: number;
     headingId: number | null;
     headingName: string;
     name: string;
     localizations: {
+        ru: string;
         [key: string]: string;
     };
+}
+
+export interface IResponseTags {
+    headingId: number;
+    headingName: string;
+    id: number;
+    isTranslated: boolean;
+    localizationRu: string;
+    name: string;
 }

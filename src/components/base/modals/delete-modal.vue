@@ -6,7 +6,7 @@
         <BtnCmp
             :text="'Отмена'"
             :background_type="'_secondary'"
-            @click="modalStore.triggerModal"
+            @click="modalStore.closeModal()"
         />
         <BtnCmp
             :text="'Удалить'"
@@ -31,7 +31,7 @@ export default defineComponent({
             modalData.modalProps
                 .deleteFunction(modalData.modalProps.data.id)
                 .then(() => {
-                    modalStore.triggerModal();
+                    modalStore.closeModal();
                 })
                 .catch(() => {
                     console.log("DA YOBANIY TI BLOOD");
