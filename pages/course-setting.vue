@@ -7,11 +7,19 @@
                 class="oil-course-setting__bread"
             />
             <div class="oil-course-setting__menubar">
-                <TabSwitcherCmp
+                <!-- <TabSwitcherCmp
                     :switcherArray="switcherArray"
                     @switch-tab="selectTab"
+                /> -->
+                <!-- <hr> -->
+                <tabsCmp 
+                    v-for="tab in switcherArray"
+                    :key="tab.id"
+                    :id="tab.id"
+                    :text="tab.text"
+                    :active="active_tab"
+                    @select-tab="selectTab"
                 />
-                <hr>
             </div>
             <template v-if="active_tab === 1">
                 <div class="oil-course-setting__settings">
@@ -556,7 +564,7 @@ export default defineComponent({
 			},
 		]);
 
-		const selectTab = (id: number) => {
+		const selectTab = (id: number) => {            
 			active_tab.value = id;
 		};
 
@@ -675,6 +683,13 @@ export default defineComponent({
 .oil-course-setting
     @include flex_column()
     &__menubar
+        display: flex
+        align-items: baseline
+        gap: rem(16)
+
+        margin-bottom: rem(32)
+
+    &__bread 
         margin-bottom: rem(32)
 
     &__settings
