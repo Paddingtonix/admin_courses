@@ -106,6 +106,7 @@ const testIsFormChanged = () => {
             console.log("ID skipped!");
             continue;
         }
+        //@ts-ignore
         if (tagForm[field] === startForm[field] && testIsFormEmpty) {
             return true;
         } else {
