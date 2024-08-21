@@ -1,19 +1,19 @@
 <template>
-    <div class="delete-modal">
-        <component :is="modalData.modalProps.modalComponent"></component>
-    </div>
-    <div class="delete-modal__btn-wrapper">
-        <BtnCmp
-            :text="'Отмена'"
-            :background_type="'_secondary'"
-            @click="storeModal.closeModal()"
-        />
-        <BtnCmp
-            :text="'Удалить'"
-            background_type="_quaternary"
-            @click="deleteItem"
-        />
-    </div>
+	<div class="delete-modal">
+		<component :is="modalData.modalProps.modalComponent"></component>
+	</div>
+	<div class="delete-modal__btn-wrapper">
+		<BtnCmp
+			:text="'Отмена'"
+			:background_type="'_secondary'"
+			@click="storeModal.closeModal()"
+		/>
+		<BtnCmp
+			:text="'Удалить'"
+			background_type="_quaternary"
+			@click="deleteItem"
+		/>
+	</div>
 </template>
 
 <script lang="ts">
@@ -23,30 +23,30 @@ import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import DeleteTag from "../../ui-components/forms/delete-tag.vue";
 
 export default defineComponent({
-    setup() {
-        const storeModal = useStoreModal();
-        const modalData = reactive(storeModal.$state as IDeleteModal);
+	setup() {
+		const storeModal = useStoreModal();
+		const modalData = reactive(storeModal.$state as IDeleteModal);
 
-        const deleteItem = () => {
-            modalData.modalProps
-                .deleteFunction(modalData.modalProps.data.id)
-                .then(() => {
-                    storeModal.openModal();
-                })
-                .catch(() => {
-                    console.log("DA YOBANIY TI BLOOD");
-                });
-        };
-        return {
-            modalData,
-            storeModal,
-            deleteItem,
-        };
-    },
-    components: {
-        "delete-section": DeleteSection,
-        "delete-tag": DeleteTag,
-    },
+		const deleteItem = () => {
+			modalData.modalProps
+				.deleteFunction(modalData.modalProps.data.id)
+				.then(() => {
+					storeModal.closeModal();
+				})
+				.catch(() => {
+					console.log("DA YOBANIY TI BLOOD");
+				});
+		};
+		return {
+			modalData,
+			storeModal,
+			deleteItem,
+		};
+	},
+	components: {
+		"delete-section": DeleteSection,
+		"delete-tag": DeleteTag,
+	},
 });
 </script>
 
