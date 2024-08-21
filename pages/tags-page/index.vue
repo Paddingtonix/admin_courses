@@ -85,11 +85,17 @@
             </template>
         </TableRowCmp>
     </template>
-
-    <div class="tags-page__pagination-wrapper">
+    <div
+        v-if="tagsStore.$state.numberOfPages !== null"
+        class="tags-page__pagination-wrapper"
+    >
         <PaginationCmp
+            v-if="
+                tagsStore.$state.numberOfPages !== null &&
+                tagsStore.$state.numberOfPages >= 0
+            "
             @change-page="tagsStore.changePageTags($event)"
-            :pages_count="tagsData.numberOfPages"
+            :pages_count="tagsStore.$state.numberOfPages"
         />
         <SelectorCmp
             @select-value="changeTagsPerPage($event)"
@@ -98,6 +104,21 @@
             :list="list"
         />
     </div>
+    <span
+        v-else-if="
+            !tagsData.tags.length &&
+            !searchValue.length &&
+            !tagsData.numberOfPages
+        "
+        class="no-headers"
+    >
+        Пока меток нет, но вы можете их добавить
+    </span>
+
+    <span v-else-if="searchValue && !tagsData.tags.length" class="no-headers">
+        К сожалению, по вашему запросу не найдено ни одной метки.<br />
+        Попробуйте другие параметры поиска.
+    </span>
 </template>
 
 <script lang="ts" setup>
@@ -128,6 +149,8 @@ onMounted(() => {
 console.log(tagsStore.$state);
 
 const modalStore = useStoreModal();
+
+console.log(tagsData);
 
 const openModalAddTag = (tagForm?: ITags) => {
     modalStore.$patch({
