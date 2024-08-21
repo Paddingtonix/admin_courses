@@ -136,6 +136,7 @@ const openModalAddTag = (tagForm?: ITags) => {
         modalProps: {
             headers: tagsData.headings,
             tagForm,
+            isFormChanged: false,
         },
     });
     modalStore.openModal();
@@ -158,6 +159,7 @@ const openDeleteModal = (data: IResponseTags) => {
 
 const changeTagsPerPage = (val: number) => {
     tagsStore.changeTagsPerPage(val);
+    tagsStore.getTags({ text: searchValue.value });
 };
 
 const list = [10, 15, 20, 25];

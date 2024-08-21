@@ -31,3 +31,12 @@ export interface IResponseTags {
     localizationRu: string;
     name: string;
 }
+
+export interface IStoreTags {
+    headings: IHeading[];
+    tags: IResponseTags[];
+    numberOfPages: number;
+    currentPage: number;
+    nLabelsPerPage: number;
+    isTranslated: boolean | null;
+}

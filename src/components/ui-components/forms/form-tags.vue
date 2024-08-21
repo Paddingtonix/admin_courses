@@ -47,6 +47,7 @@
             <BtnCmp
                 type="submit"
                 text="Добавить"
+                :disabled="!modalData.modalProps.isFormChanged"
                 @click.prevent="sendFormTags()"
             ></BtnCmp>
         </div>
@@ -90,6 +91,29 @@ enum tagFormEnum {
     _localizations = "localizations",
 }
 
+const startForm = Object.create(tagForm);
+
+const testIsFormChanged = () => {
+    const testIsFormEmpty =
+        !!tagForm.name &&
+        !!tagForm.headingName &&
+        !!tagForm.localizations.ru &&
+        !!tagForm.localizations?.en &&
+        !!tagForm.localizations?.test;
+
+    for (const field of Object.keys(tagForm)) {
+        if (field === "id") {
+            console.log("ID skipped!");
+            continue;
+        }
+        if (tagForm[field] === startForm[field] && testIsFormEmpty) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
 const setFormValue = (
     _fieldName: keyof Omit<ITags, "headingId" | "headingName" | "id">,
     inputValue: string,
@@ -99,6 +123,14 @@ const setFormValue = (
         tagForm[_fieldName][localization] = inputValue;
     } else if (_fieldName !== "localizations") {
         tagForm[_fieldName] = inputValue;
+    }
+
+    if (testIsFormChanged()) {
+        storeModal.$patch({
+            modalProps: {
+                isFormChanged: true,
+            },
+        });
     }
 };
 

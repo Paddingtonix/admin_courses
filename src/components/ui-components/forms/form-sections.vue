@@ -63,7 +63,6 @@ const { nameStart, descriptionStart } = {
 
 const changeForm = ({ name, description }: { [key: string]: string }) => {
     formModel.name = name;
-    console.log(nameStart, descriptionStart);
 
     formModel.description = description;
     if (

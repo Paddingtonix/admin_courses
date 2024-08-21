@@ -4,17 +4,19 @@ import type {
     IHeading,
     IResponseTags,
     IStoreHeaders,
+    IStoreTags,
     ITags,
 } from "../ts-interface/storeTags.type";
 
 export const useTagsStore = defineStore({
     id: "tagsStore",
-    state: () => ({
+    state: (): IStoreTags => ({
         headings: [] as IHeading[],
         tags: [] as IResponseTags[],
         numberOfPages: 1,
         currentPage: 1,
         nLabelsPerPage: 10,
+        isTranslated: null,
     }),
     actions: {
         async getAllHeadings() {
@@ -32,12 +34,18 @@ export const useTagsStore = defineStore({
                 ();
         },
         async getTags({ text = "" }) {
+            const translated =
+                this.isTranslated !== null
+                    ? `isTranslated=${this.isTranslated}&`
+                    : "";
             return axios
                 .get(
-                    `/admin/v1/label?page=${this.currentPage}&nLabelsPerPage=${this.nLabelsPerPage}&searchSubstring=${text}`
+                    `/admin/v1/label?${translated}page=${this.currentPage}&nLabelsPerPage=${this.nLabelsPerPage}&searchSubstring=${text}`
                 )
                 .then((response) => {
                     const data = response.data;
+                    console.log(response);
+
                     this.tags = data.labels as IResponseTags[];
                     this.numberOfPages = data.numberOfPages;
                 })

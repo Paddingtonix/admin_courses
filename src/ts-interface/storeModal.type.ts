@@ -47,5 +47,6 @@ export interface IFormTags extends IStoreModal {
     modalProps: {
         headers: IHeading[];
         tagForm?: ITags;
+        isFormChanged: boolean;
     };
 }
