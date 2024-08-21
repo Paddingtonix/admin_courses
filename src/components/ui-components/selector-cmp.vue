@@ -86,7 +86,7 @@ export default defineComponent({
             listOpened.value = !listOpened.value;
         };
 
-        const selectValue = (val: string) => {
+        const selectValue = (val: string | number) => {
             choosesVariable.value = val;
             emit("setValue", {
                 value: choosesVariable.value,

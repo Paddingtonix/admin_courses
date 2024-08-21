@@ -97,7 +97,7 @@
                         :pages_count="headingsData.numberOfPages"
                         @change-page="goToPage($event)"
                     />
-                    <SelectorCmp
+                    <MarkSelector
                         @select-value="changeSelectorValue($event)"
                         tab-text="разделов"
                         class="tags-page__selector"

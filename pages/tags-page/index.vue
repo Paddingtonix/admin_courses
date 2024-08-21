@@ -185,7 +185,12 @@ const changeTagsPerPage = (val: number) => {
     tagsStore.getTags({ text: searchValue.value });
 };
 
-const list = [10, 15, 20, 25];
+const list = [
+    { text: 10, active: true },
+    { text: 15, active: false },
+    { text: 20, active: false },
+    { text: 25, active: false },
+];
 </script>
 
 <style lang="sass">
