@@ -103,22 +103,21 @@
             :label="`${list[0]} меток на стр.`"
             :list="list"
         />
-    </div>
-    <span
-        v-else-if="
-            !tagsData.tags.length &&
-            !searchValue.length &&
-            !tagsData.numberOfPages
-        "
-        class="no-headers"
-    >
-        Пока меток нет, но вы можете их добавить
-    </span>
+        <span
+            v-if="!tagsData.tags.length && !searchValue.length"
+            class="no-headers"
+        >
+            Пока меток нет, но вы можете их добавить
+        </span>
 
-    <span v-else-if="searchValue && !tagsData.tags.length" class="no-headers">
-        К сожалению, по вашему запросу не найдено ни одной метки.<br />
-        Попробуйте другие параметры поиска.
-    </span>
+        <span
+            v-else-if="searchValue && !tagsData.tags.length"
+            class="no-headers"
+        >
+            К сожалению, по вашему запросу не найдено ни одной метки.<br />
+            Попробуйте другие параметры поиска.
+        </span>
+    </div>
 </template>
 
 <script lang="ts" setup>
