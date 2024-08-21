@@ -14,7 +14,7 @@
 import { useStoreModal } from "~/src/stores/storeModal";
 import type { IDeleteTag } from "~/src/ts-interface/storeModal.type";
 
-const modalStore = useStoreModal();
+const storeModal = useStoreModal();
 
-const modalData = modalStore.$state as IDeleteTag;
+const modalData = storeModal.$state as IDeleteTag;
 </script>

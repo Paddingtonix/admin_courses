@@ -19,7 +19,7 @@
                 type="button"
                 background_type="_secondary"
                 text="Отмена"
-                @click="modalStore.closeModal()"
+                @click="storeModal.closeModal()"
             />
             <BtnCmp
                 v-if="modalData.modalProps.edit"
@@ -44,9 +44,10 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersStore } from "~/src/stores/storeSections";
 import type { IFormSection } from "~/src/ts-interface/storeModal.type";
 
-const modalStore = useStoreModal();
+const storeModal = useStoreModal();
 
-const modalData = modalStore.$state as IFormSection;
+const modalData = storeModal.$state as IFormSection;
+
 const formModel = reactive({
     name: modalData.modalProps.edit ? modalData.modalProps.name : "",
     description: modalData.modalProps.edit
@@ -70,13 +71,13 @@ const changeForm = ({ name, description }: { [key: string]: string }) => {
             formModel.description !== descriptionStart) ||
         (formModel.name && formModel.description)
     ) {
-        modalStore.$patch({
+        storeModal.$patch({
             modalProps: {
                 isFieldChanged: true,
             },
         });
     } else {
-        modalStore.$patch({
+        storeModal.$patch({
             modalProps: {
                 isFieldChanged: false,
             },
@@ -88,7 +89,7 @@ const sendForm = () => {
     headersStore
         .postHeading(formModel)
         .then(() => {
-            modalStore.closeModal();
+            storeModal.closeModal();
         })
         .catch((err) => {
             console.error("EBANAYA OSHIBKA ", err);
@@ -106,7 +107,7 @@ const patchForm = () => {
         })
         .then((resp) => {
             console.log("allgoodies", resp);
-            modalStore.closeModal();
+            storeModal.closeModal();
         })
         .catch((err) => {
             console.log("ДА ЕБАТЬ ЕГО В РОТ НАХУЙ", err);

@@ -1,267 +1,326 @@
 <template>
-	<section class="oil-container oil-create-course">
-		<div class="oil-create-course__form oil-page">
-			<breadCmp
-				:prev_page="'Курсы'"
-				:current_page="'Создание курса'"
-				class="oil-create-course__form__bread"
-			/>
-			<div class="oil-create-course__form__fields">
-				<span class="oil-create-course__form__fields__title"
-					>Общая информация</span
-				>
-				<div class="oil-create-course__form__fields__container">
-					<template
-						v-for="(field, idx) in form.slice(0, 2)"
-						:key="idx"
-					>
-						<selectorCmp
-							v-if="field.selector?.length"
-							:list="field.selector"
-							:label="field.label"
-						/>
-						<inputCmp v-else :label="field.label" />
-					</template>
-				</div>
-			</div>
-			<div class="oil-create-course__form__fields">
-				<span class="oil-create-course__form__fields__title"
-					>Параметры курса</span
-				>
-				<div>
-					<div class="oil-create-course__form__fields__attention">
-						<i
-							class="oil-create-course__form__fields__attention__icon"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="40"
-								height="40"
-								viewBox="0 0 40 40"
-								fill="none"
-							>
-								<path
-									d="M20.0002 15.0004V21.667M20.0002 28.3337H20.0169M17.6924 6.48659L3.9843 30.1643C3.22395 31.4776 2.84378 32.1343 2.89997 32.6732C2.94898 33.1433 3.19527 33.5705 3.57753 33.8484C4.01579 34.167 4.77456 34.167 6.2921 34.167H33.7084C35.2259 34.167 35.9847 34.167 36.423 33.8484C36.8052 33.5705 37.0515 33.1433 37.1005 32.6732C37.1567 32.1343 36.7765 31.4776 36.0162 30.1643L22.308 6.48658C21.5504 5.17798 21.1716 4.52368 20.6774 4.30392C20.2463 4.11223 19.7542 4.11223 19.3231 4.30392C18.8289 4.52368 18.4501 5.17798 17.6924 6.48659Z"
-									stroke="#F9AD4E"
-									stroke-width="3.33"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								/>
-							</svg>
-						</i>
-						<p>
-							Внимание! После сохранения изменений, редактирование
-							параметров будет невозможно.
-						</p>
-					</div>
-					<div class="oil-create-course__form__fields__guide">
-						<div
-							class="oil-create-course__form__fields__guide__title"
-							@click="openGuide"
-						>
-							<i>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-								>
-									<path
-										d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-										stroke="#323C46"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
-							</i>
-							<span>Как правильно задать параметры курса?</span>
-							<i
-								class="oil-create-course__form__fields__guide__title__chevron"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-								>
-									<path
-										d="M6 9L12 15L18 9"
-										stroke="#374351"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
-							</i>
-						</div>
-						<div
-							class="oil-create-course__form__fields__guide__text"
-							v-if="open_guide.value"
-						>
-							<ul>
-								<span>Типы курса</span>
-								<li>
-									Асинхронный — обучение, не привязанное к
-									конкретному времени или месту
-								</li>
-								<li>
-									Синхронный — обучение проходит в режиме
-									реального времени сразу для всех
-								</li>
-							</ul>
-							<ul>
-								<span>Формат курса</span>
-								<li>
-									Онлайн — обучение происходит с помощью
-									интернета и электронных технологий
-								</li>
-								<li>
-									Оффлайн — обучение предполагает получение
-									знаний в стенах учебного заведения
-								</li>
-							</ul>
-							<ul>
-								<span>Покупка</span>
-								<li>Платно — платный курс</li>
-								<li>Бесплатно — бесплатный курс</li>
-							</ul>
-							<ul>
-								<span>Доступ</span>
-								<li>
-									Полный — пользователь может купить курс
-									только целиком
-								</li>
-								<li>
-									Частичный — пользователь может купить курс
-									частично (по главам) или целиком
-								</li>
-							</ul>
-						</div>
-					</div>
-					<div class="oil-create-course__form__fields__container">
-						<template
-							v-for="(field, idx) in form.slice(3)"
-							:key="idx"
-						>
-							<selectorCmp
-								:label="field.label"
-								v-if="field.selector?.length"
-								:list="field.selector"
-							/>
-						</template>
-					</div>
-					<div class="oil-create-course__form__fields__btns">
-						<BtnCmp
-							:background_type="'_secondary'"
-							:text="'Отмена'"
-						/>
-						<BtnCmp :text="'Создать'" />
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+    <section class="oil-container oil-create-course">
+        <div class="oil-create-course__form oil-page">
+            <breadCmp 
+                :prev_page="'Курсы'"
+                :current_page="'Создание курса'"
+                class="oil-create-course__form__bread"
+            />
+            <div class="oil-create-course__form__fields">
+                <span class="oil-create-course__form__fields__title">Общая информация</span>
+                <div class="oil-create-course__form__fields__container">
+                    <template v-for="(field, idx) in form.slice(0, 2)" :key="idx">
+                        <selectorCmp
+                            v-if="field.selector?.length"
+                            :list="field.selector"
+                            :label="field.label"
+                            :type="field.type"
+                            :error="field.error"
+                            @setValue="setValueSelector"
+                            @blur="validCheck(field)"
+                        />
+                        <inputCmp 
+                            v-else
+                            :placeholder="field.label"
+                            :type="field.type"
+                            :error="field.error"
+                            :maxlength="103"
+                            @set_value="setValueSelector"
+                            @blur="validCheck(field)"
+                        />
+                    </template>
+                </div>
+            </div>
+            <div class="oil-create-course__form__fields">
+                <span class="oil-create-course__form__fields__title">Параметры курса</span>
+                <div class="oil-create-course__form__fields__attention">
+                    <i class="oil-create-course__form__fields__attention__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20.0002 15.0004V21.667M20.0002 28.3337H20.0169M17.6924 6.48659L3.9843 30.1643C3.22395 31.4776 2.84378 32.1343 2.89997 32.6732C2.94898 33.1433 3.19527 33.5705 3.57753 33.8484C4.01579 34.167 4.77456 34.167 6.2921 34.167H33.7084C35.2259 34.167 35.9847 34.167 36.423 33.8484C36.8052 33.5705 37.0515 33.1433 37.1005 32.6732C37.1567 32.1343 36.7765 31.4776 36.0162 30.1643L22.308 6.48658C21.5504 5.17798 21.1716 4.52368 20.6774 4.30392C20.2463 4.11223 19.7542 4.11223 19.3231 4.30392C18.8289 4.52368 18.4501 5.17798 17.6924 6.48659Z" stroke="#F9AD4E" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </i>
+                    <p>Внимание! После сохранения изменений, редактирование параметров будет невозможно.</p>
+                </div>
+                <div class="oil-create-course__form__fields__guide">
+                    <div class="oil-create-course__form__fields__guide__title" @click="openGuide">
+                        <i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </i>
+                        <span>Как правильно задать параметры курса?</span>
+                        <i class="oil-create-course__form__fields__guide__title__chevron">
+                            <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </i>
+                    </div>
+                    <div class="oil-create-course__form__fields__guide__text" v-if="open_guide.value">
+                        <ul>
+                            <span>Типы курса</span>
+                            <li>Асинхронный — обучение, не привязанное к конкретному времени или месту</li>
+                            <li>Синхронный — обучение проходит в режиме реального времени сразу для всех</li>
+                        </ul>
+                        <ul>
+                            <span>Формат курса</span>
+                            <li>Онлайн — обучение происходит с помощью интернета и электронных технологий</li>
+                            <li>Оффлайн — обучение предполагает получение знаний в стенах учебного заведения</li>
+                        </ul>
+                        <ul>
+                            <span>Покупка</span>
+                            <li>Платно — платный курс</li>
+                            <li>Бесплатно — бесплатный курс</li>
+                        </ul>
+                        <ul>
+                            <span>Доступ</span>
+                            <li>Полный — пользователь может купить курс только целиком</li>
+                            <li>Частичный — пользователь может купить курс частично (по главам) или целиком</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="oil-create-course__form__fields__container">
+                    <template v-for="(field, idx) in form.slice(2)" :key="idx">
+                        <selectorCmp 
+                            v-if="field.selector?.length"
+                            :label="field.label"
+                            :list="field.selector"
+                            :type="field.type"
+                            :error="field.error"
+                            @setValue="setValueSelector"
+                            @blur="validCheck(field)"
+                        />
+                    </template>
+                </div>
+                <div class="oil-create-course__form__fields__btns">
+                    <BtnCmp 
+                        :background_type="'_secondary'"
+                        :text="'Отмена'"
+                        @click="$router.go(-1)"
+                    />
+                    <BtnCmp 
+                        :text="'Создать'"
+                        @click="submitForm"
+                    />
+                </div>
+            </div>
+        </div>
+    </section>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
+import axios from 'axios'
+import type { FormField } from '~/src/ts-interface/create-course-form'
+import { useStoreCourses } from '@/src/stores/storeCourse'
+import { useStoreModal } from '@/src/stores/storeModal'
 
 export default defineComponent({
-	setup() {
-		const open_guide = reactive({
-			value: false,
-		});
+    setup() {
+        const storeCourses = useStoreCourses()
+        const storeModal = useStoreModal()
 
-		const form = reactive([
-			{
-				label: "Язык",
-				selector: [
-					{
-						text: "Русский",
-						active: false,
-					},
-					{
-						text: "Английский",
-						active: false,
-					},
-				],
-			},
-			{
-				id: "course_name",
-				value: "",
-				type: "text",
-				pattern:
-					"^([a-z0-9]+(?:[._-][a-z0-9]{1,50})*)@([a-z0-9]{4,31}(?:[.-][a-z0-9]{4,31})*.[a-z]{2,4})$",
-				label: "Название курса",
-				error: "",
-			},
-			{
-				label: "Тип",
-				selector: [
-					{
-						text: "Онлайн",
-						active: false,
-					},
-					{
-						text: "Оффлайн",
-						active: false,
-					},
-				],
-			},
-			{
-				label: "Формат",
-				selector: [
-					{
-						text: "Платно",
-						active: false,
-					},
-					{
-						text: "Бесплатно",
-						active: false,
-					},
-				],
-			},
-			{
-				label: "Покупка",
-				selector: [
-					{
-						text: "Полный",
-						active: false,
-					},
-					{
-						text: "Частичный",
-						active: false,
-					},
-				],
-			},
-			{
-				label: "Доступ",
-				selector: [
-					{
-						text: "Русский",
-						active: false,
-					},
-					{
-						text: "Английский",
-						active: false,
-					},
-				],
-			},
-		]);
+        const open_guide = reactive({
+            value: false as boolean
+        })
+
+        const form = reactive<FormField[]>([
+            {
+                label: 'Язык',
+                type: 'lang',
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Русский',
+                        active: false
+                    },
+                    {
+                        text: 'Английский',
+                        active: false
+                    }
+                ]
+            },
+            {
+                value: "",
+                type: "title",
+                label: "Название курса",
+                error: ""
+            },
+            {
+                label: 'Тип',
+                type: 'type',
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Асинхронный',
+                        active: false
+                    },
+                    {
+                        text: 'Синхронный',
+                        active: false
+                    }
+                ]
+            },
+            {
+                label: 'Формат',
+                type: 'format',
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Онлайн',
+                        active: false
+                    },
+                    {
+                        text: 'Оффлайн',
+                        active: false
+                    }
+                ]
+            },
+            {
+                label: 'Приобретение',
+                type: "acquired",
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Платно',
+                        active: false
+                    },
+                    {
+                        text: 'Бесплатно',
+                        active: false
+                    }
+                ]
+            },
+            {
+                label: 'Доступ',
+                type: "access",
+                value: '',
+                error: '',
+                selector: [
+                    {
+                        text: 'Полный',
+                        active: false
+                    },
+                    {
+                        text: 'Частичный',
+                        active: false
+                    }
+                ]
+            },
+        ])
 
 		const openGuide = () => {
 			open_guide.value = !open_guide.value;
 		};
 
-		return {
-			open_guide,
-			openGuide,
-			form,
-		};
-	},
-});
+        const setValueSelector = (val: { type: string, value: string }) => {
+            const field = form.find(field => field.type === val.type)!
+            field.value = val.value
+
+            if (field.selector) {
+                field.selector!.forEach(option => {
+                    option.active = option.text === val.value
+                })
+            }
+        }
+
+        const validCheck = (field: FormField) => {
+            console.log(field)
+            if(!field.value.length) {
+                field.error = 'Это поле обязательно к заполнению для авторизации'
+            } else {
+                field.error = ''
+            }
+        }
+
+        const isFormValid = () => {
+            let course_data = {
+                languageId: form[0].selector?.find((lang: { text: String, active: Boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                title: form[1].value,
+                courseType: form[2].selector?.find((type: { text: String, active: Boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: { text: String, active: Boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                isFree: form[4].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Частичный'
+            }
+
+            if (course_data.courseType === 2 && course_data.courseFormat === 2) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
+                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
+                console.log('Валидация не пройдена: Асинхронный курс не может быть онлайн')
+                return false
+            }
+
+            if (course_data.isFree && course_data.isPartialAvailable) {
+                form.find(field => field.type === 'acquired')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+                console.log('Валидация не пройдена: Бесплатный курс не может быть частично доступен')
+                return false
+            }
+
+            if (course_data.courseType === 1 && course_data.isPartialAvailable) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+                console.log('Валидация не пройдена: Синхронный курс не может быть частично доступен')
+                return false
+            }
+
+            return true
+        }
+        
+        const submitForm = () => {
+            let form_is_valid = true
+
+            form.forEach((field) => {
+                validCheck(field)
+                if (field.error) {
+                    form_is_valid = false
+                }
+            })
+
+            if (!form_is_valid || !isFormValid()) return
+
+            const course_data = {
+                languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                title: form[1].value,
+                courseType: form[2].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
+            }
+            console.log(course_data, 'course-create')
+
+            axios
+                .post('admin/v1/course', course_data)
+                .then(response => {
+                    console.log(response, 'course-create')
+                    if(response.data) {
+                        storeModal.$patch({
+                            label: "Курс создан!",
+                            activeModal: "course-create-modal",
+                        });
+                        storeModal.openModal()
+                    }
+                })
+                .catch((error) => {
+                    console.error('Ошибка при получении данных:', error)
+                })
+        }
+
+        return {
+            open_guide,
+            openGuide,
+            form,
+            submitForm,
+            setValueSelector,
+            validCheck,
+            storeCourses,
+            storeModal,
+            isFormValid
+        }
+    }
+})
 </script>
 <style lang="sass" scoped>
 .oil-create-course
@@ -274,7 +333,7 @@ export default defineComponent({
             &__container
                 display: flex
                 flex-direction: column
-                gap: rem(12)
+                gap: rem(16)
                 margin-bottom: rem(32)
 
             &__title
@@ -285,7 +344,6 @@ export default defineComponent({
                 padding: rem(16) rem(24)
                 border: rem(1) solid $dark_warning
                 background-color: rgba(249, 173, 78, 0.0509803922)
-
                 @include flex_start()
                 margin-bottom: rem(24)
                 gap: rem(12)
@@ -296,7 +354,6 @@ export default defineComponent({
 
                 &__icon
                     padding: rem(12)
-
                     background-color: #F9AD4E1A
                     border-radius: 50%
 
@@ -305,6 +362,7 @@ export default defineComponent({
                 border-radius: rem(8)
                 margin-bottom: rem(24)
                 &__title
+                    border-radius: rem(8)
                     padding: rem(16) rem(24)
                     position: relative
                     @include flex_start()
@@ -316,8 +374,12 @@ export default defineComponent({
                         top: 50%
                         right: rem(24)
                         transform: translateY(-50%)
-
-                &__text
+                        svg
+                            transition: transform .2s
+                            &._active
+                                transform: rotate(180deg)
+                
+                &__text 
                     padding: rem(24) rem(48)
                     span
                         display: inline-block

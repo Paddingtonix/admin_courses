@@ -40,7 +40,7 @@ export default defineComponent({
 .oil-tabs
     cursor: pointer
     transition: color .5s
-    color: $basic_tab
+    color: $basic_gray
     font-weight: 700
     font-size: 16px
     line-height: 24px
@@ -73,7 +73,7 @@ export default defineComponent({
                 left: auto
 
     &__text
-        color: $basic_tab
+        color: $basic_gray
 
     &._active
         // color: $btn-background

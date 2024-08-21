@@ -46,6 +46,7 @@
     <template v-for="tag in tagsData.tags" :key="tag.id">
         <TableRowCmp
             class="tags-table-row"
+            :id="tag.id"
             :name="tag.name"
             :status="tag.headingName"
             :authors="tag.localizationRu"

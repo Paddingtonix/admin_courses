@@ -1,8 +1,8 @@
 <template>
     <div class="oil-row">
         <template v-for="field in fields">
-            <div class="oil-row__cell" v-if="field" :key="field">
-                <a>{{ field }}</a>
+            <div class="oil-row__cell" v-if="typeof field === 'string' && field.length"  :key="field">
+                <a :href="`/course-setting?search=${id}`">{{ field }}</a>
             </div>
         </template>
         <slot name="svg" />
@@ -13,7 +13,19 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     props: {
+        id: {
+            type: Number,
+            required: true
+        },
         name: {
+            type: String,
+            default: ''
+        },
+        lastChangeDateTime: {
+            type: String,
+            default: ''
+        },
+        localizedName: {
             type: String,
             default: "",
         },
@@ -41,9 +53,17 @@ export default defineComponent({
             type: String,
             default: "",
         },
+        isVisible: {
+            type: Boolean,
+            default: false
+        },
+        count: {
+            type: [String, Number],
+            default: ''
+        },
     },
     setup(props) {
-        const fields = props;
+        const fields = props
 
         return {
             fields,

@@ -49,6 +49,7 @@
                 :key="data.id"
             >
                 <TableRowCmp
+                    :id="data.id"
                     class="section-table-row"
                     :name="data.name"
                     :authors="data.description"
@@ -133,7 +134,7 @@ import type { IHeading } from "~/src/ts-interface/storeTags.type";
 
 const list = [10, 15, 20, 25];
 
-const modalStore = useStoreModal();
+const storeModal = useStoreModal();
 
 const headersStore = useHeadersStore();
 
@@ -163,7 +164,7 @@ watch(headersStore.$state, () => {
 const openModalDelete = (data: IHeading) => {
     console.log(data);
 
-    modalStore.$patch({
+    storeModal.$patch({
         activeModal: "delete-modal",
         label: "Удаление раздела",
         modalProps: {
@@ -172,11 +173,11 @@ const openModalDelete = (data: IHeading) => {
             deleteFunction: headersStore.deleteItem,
         },
     });
-    modalStore.openModal();
+    storeModal.openModal();
 };
 
 const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
-    modalStore.$patch({
+    storeModal.$patch({
         activeModal: "form-sections",
         label: !name.length ? "Создание раздела" : "Редактирование раздела",
         modalProps: {
@@ -187,7 +188,7 @@ const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
             isFieldChanged: false,
         },
     });
-    modalStore.openModal();
+    storeModal.openModal();
 };
 
 const changeSelectorValue = (value: number) => {
