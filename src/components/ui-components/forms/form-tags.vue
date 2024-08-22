@@ -156,7 +156,9 @@ const patchFormTags = () => {
 		name: tagForm.name,
 		localizations: tagForm.localizations,
 	};
-	tagStore.patchTag(formData, tagForm.id);
+	tagStore.patchTag(formData, tagForm.id).catch((err) => {
+		console.warn(err);
+	});
 };
 </script>
 

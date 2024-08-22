@@ -87,7 +87,9 @@ export default defineComponent({
 	setup(props, { emit }) {
 		const { modelValue } = toRefs(props);
 
-		const input_value = ref<String | Number>(modelValue.value);
+		const input_value = ref<string | number>(
+			!modelValue ? "" : modelValue.value
+		);
 
 		watch(
 			() => props.date_calendar,

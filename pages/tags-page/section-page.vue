@@ -51,6 +51,7 @@
 				<TableRowCmp
 					:id="data.id"
 					class="section-table-row"
+					:redirect="false"
 					:name="data.name"
 					:authors="data.description"
 					:status="data.labelsCount.toString() || '0'"

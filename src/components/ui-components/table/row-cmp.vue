@@ -9,7 +9,7 @@
 				<a v-if="redirect" :href="`/course-setting?search=${id}`">{{
 					field
 				}}</a>
-				<div v-else-if="!redirect">{{ field }}</div>
+				<span v-else-if="!redirect">{{ field }}</span>
 			</div>
 		</template>
 		<slot name="svg" />
@@ -91,7 +91,8 @@ export default defineComponent({
 
         &:nth-child(1)
             flex: 4
-            color: $basic_primary
+            *
+                color: $basic_primary
 
         &:nth-child(2)
             flex: 2

@@ -32,8 +32,18 @@
 	</div>
 
 	<div class="tags-page__checkbox-wrapper">
-		<CheckboxCmp :active="true" text="Переведено" />
-		<CheckboxCmp :active="true" text="Не переведено" />
+		<CheckboxCmp
+			:id="active_checkbox.translated.name"
+			:active="active_checkbox.translated.isActive"
+			text="Переведено"
+			@set_value="setActiveCheckbox($event)"
+		/>
+		<CheckboxCmp
+			:id="active_checkbox.not_translated.name"
+			:active="active_checkbox.not_translated.isActive"
+			@set_value="setActiveCheckbox($event)"
+			text="Не переведено"
+		/>
 	</div>
 
 	<TableHeadCmp
@@ -41,6 +51,7 @@
 		:name="'Раздел'"
 		:status="'Метка'"
 		:lang="'Перевод метки (RU)'"
+		@sort="console.log($event)"
 	/>
 
 	<template v-for="tag in tagsData.tags" :key="tag.id">
@@ -143,6 +154,44 @@ const tagsData = tagsStore.$state;
 
 const searchValue = ref("");
 
+const active_checkbox = reactive({
+	translated: { name: "translated", isActive: true },
+	not_translated: { name: "not_translated", isActive: true },
+});
+
+const setActiveCheckbox = ({
+	id,
+	active,
+}: {
+	id: "translated" | "not_translated";
+	active: boolean;
+}) => {
+	active_checkbox[id].isActive = active;
+};
+
+const setActiveCheckboxSort = (): boolean | null => {
+	const isTranslatedActive = active_checkbox.translated.isActive;
+	const isNotTranslatedActive = active_checkbox.not_translated.isActive;
+
+	if (isTranslatedActive && !isNotTranslatedActive) {
+		return true;
+	}
+
+	if (!isTranslatedActive && isNotTranslatedActive) {
+		return false;
+	}
+
+	return null;
+};
+
+watch(active_checkbox, () => {
+	tagsStore.$patch({
+		isTranslated: setActiveCheckboxSort(),
+	});
+
+	tagsStore.getTags({ text: searchValue.value });
+});
+
 const changeSearchValue = (text: string) => {
 	searchValue.value = text;
 	tagsStore.getTags({ text });
@@ -153,11 +202,7 @@ onMounted(() => {
 	tagsStore.getTags({});
 });
 
-console.log(tagsStore.$state);
-
 const modalStore = useStoreModal();
-
-console.log(tagsData);
 
 const openModalAddTag = (tagForm?: ITags, edit?: boolean) => {
 	modalStore.$patch({

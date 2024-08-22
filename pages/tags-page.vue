@@ -24,35 +24,18 @@ export default defineComponent({
 				text: "Разделы",
 				id: 2,
 				isActive: false,
-				link: "tags-page/section-page",
+				link: "/tags-page/section-page",
 			},
 		];
 
-		const list = [
-			{ text: "10 меток на стр." },
-			{ text: "20 меток на стр." },
-			{ text: "30 меток на стр." },
-			{ text: "40 меток на стр." },
-		];
 		const user_role_store = useUserRoleStore();
 
 		return {
-			list,
 			switcherArray,
 			user_role_store,
 		};
 	},
 });
-
-const switcherArray: ISwitcher[] = [
-	{ text: "Метки", id: 1, isActive: true, link: "/tags-page" },
-	{
-		text: "Разделы",
-		id: 2,
-		isActive: false,
-		link: "/tags-page/section-page",
-	},
-];
 </script>
 
 <style lang="sass">

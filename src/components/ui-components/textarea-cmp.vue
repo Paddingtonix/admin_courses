@@ -46,13 +46,11 @@ export default defineComponent({
 
 	setup(props, { emit }) {
 		const { modelValue } = toRefs(props);
-		console.log(modelValue.value);
-		const textarea_value = ref<string>(
-			!modelValue.value?.length ? "" : modelValue.value
-		);
+
+		const textarea_value = ref<string>(modelValue.value || "");
 
 		watch(modelValue, (newValue) => {
-			textarea_value.value = newValue || "";
+			textarea_value.value = newValue ?? "";
 		});
 
 		const setValue = () => {
