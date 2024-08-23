@@ -248,8 +248,8 @@ const openDeleteModal = (data: ITags) => {
     modalStore.openModal();
 };
 
-const changeTagsPerPage = (val: number) => {
-    tagsStore.changeTagsPerPage(val);
+const changeTagsPerPage = (val: { value: number; type: string }) => {
+    tagsStore.changeTagsPerPage(val.value);
     tagsStore.getTags({ text: searchValue.value });
 };
 

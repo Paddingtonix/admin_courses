@@ -99,10 +99,11 @@
                         :pages_count="headingsData.numberOfPages"
                         @change-page="goToPage($event)"
                     />
-                    <MarkSelector
-                        @select-value="changeSelectorValue($event)"
+                    <SelectorCmp
+                        @setValue="changeSelectorValue($event)"
                         tab-text="разделов"
                         class="tags-page__selector"
+                        listText="разделов на стр."
                         label="10 разделов на стр."
                         :list="list"
                     />
@@ -141,7 +142,12 @@ const headersStore = useHeadersStore();
 
 const headingsData = headersStore.$state;
 
-const list = [10, 15, 20, 25];
+const list = [
+    { text: 10, active: true },
+    { text: 15, active: false },
+    { text: 20, active: false },
+    { text: 25, active: false },
+];
 
 const tableHeadFields = ["name", "status", "lang"];
 
@@ -208,11 +214,13 @@ const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
     storeModal.openModal();
 };
 
-const changeSelectorValue = (value: number) => {
+const changeSelectorValue = (value: { value: number; type: string }) => {
+    console.log(value);
+
     headersStore.$patch((state) => {
-        state.nHeadingsPerPage = value;
+        state.nHeadingsPerPage = value.value;
     });
-    headersStore.getHeadings({});
+    headersStore.getHeadings({ text: searchValue.value });
 };
 
 const goToPage = (page: number) => {
