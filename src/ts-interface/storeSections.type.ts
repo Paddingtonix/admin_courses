@@ -1,8 +1,9 @@
 import type { IHeading } from "./storeTags.type";
 
 export interface IStoreHeadings {
-	headings: IHeading[];
-	numberOfPages: number | null;
-	currentPage: number;
-	nHeadingsPerPage: number;
+    headings: IHeading[];
+    sortString: string;
+    numberOfPages: number | null;
+    currentPage: number;
+    nHeadingsPerPage: number;
 }
