@@ -40,7 +40,6 @@ export const useHeadersSort = (
         }
 
         sortOnServer(field, sortState[field]);
-        console.log("ДА ЕБАНЫЙ В РОТ ОНО НЕ ОБНОВЛЯЕТСЯ:", sortState);
     };
 
     const sortOnServer = (field: string, sortStatus: boolean | null) => {
