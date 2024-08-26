@@ -725,16 +725,16 @@ export default defineComponent({
 
         onMounted(() => {
             nextTick(() => {
-                axios
-                    .get('admin/v1/direction')
-                    .then((response) => {
-                        response.data.forEach((element: Direction) => {
-                            directions.push(element)
-                        })
-                    })
-                    .catch((error) => {
-                        console.error('Ошибка при получении данных:', error)
-                    })
+                // axios
+                //     .get('admin/v1/direction')
+                //     .then((response) => {
+                //         response.data.forEach((element: Direction) => {
+                //             directions.push(element)
+                //         })
+                //     })
+                //     .catch((error) => {
+                //         console.error('Ошибка при получении данных:', error)
+                //     })
 
                 axios
                     .get('admin/v1/user/authors')
