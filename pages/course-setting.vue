@@ -744,8 +744,6 @@ export default defineComponent({
                         // console.log(response, 'response');
                     })
             })
-
-
         })
         
         return {
