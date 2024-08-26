@@ -13,6 +13,7 @@ export const useDirectionStore = defineStore('directionStore', {
                 .get('admin/v1/Direction')
                 .then(response => {
                     this.directions = response.data;
+                    
                     console.log('Направления добавились !)')
                 })
                 .catch(error => {

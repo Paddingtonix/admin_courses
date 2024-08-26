@@ -221,8 +221,6 @@ export const useHeadersStore = defineStore({
         },
 
         deleteItem(id: number) {
-            console.log("qwerty");
-
             return axios
                 .delete(`admin/v1/heading/${id}`)
                 .then(() => {
