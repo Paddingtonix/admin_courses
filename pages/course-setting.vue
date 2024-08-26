@@ -320,7 +320,55 @@
                 </div>
             </template>
             <template v-else-if="active_tab === 3">
-                <div class="oil-course-setting__content"></div>
+                <div class="oil-course-setting__content">
+                    <div class="oil-course-setting__content__edu">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Как работать с содержанием модуля?</span>
+                        <svg class="oil-course-setting__content__edu__chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="oil-course-setting__content__container">
+                        <div
+                            v-for="(slice_content, idx) in content_inner"
+                            :key="idx"
+                            class="oil-course-setting__content__container__inner"
+                            :class="[
+                                {_chapter: slice_content.type === 'chapter' 
+                                || slice_content.type === 'test'},
+                                {_section: slice_content.type === 'section'},
+                            ]"
+                            @mousemove="createBlock($event, slice_content.type)"
+                        >
+                            <span class="oil-course-setting__content__container__inner__text">{{ slice_content.title }}</span>
+                            <trasition name="fade">
+                                <template
+                                    v-if="findBlock(slice_content) && slice_content.type !== 'final' && slice_content.type !== 'test' && visible_block.value === slice_content.type "
+                                >
+                                    <div class="oil-course-setting__content__container__inner__line"></div>
+                                    <div 
+                                        class="oil-course-setting__content__container__inner__create"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="16" height="16" fill="#F8FAFD"/>
+                                            <g clip-path="url(#clip0_5268_78470)">
+                                            <path d="M7.9987 5.3335V10.6668M5.33203 8.00016H10.6654M14.6654 8.00016C14.6654 11.6821 11.6806 14.6668 7.9987 14.6668C4.3168 14.6668 1.33203 11.6821 1.33203 8.00016C1.33203 4.31826 4.3168 1.3335 7.9987 1.3335C11.6806 1.3335 14.6654 4.31826 14.6654 8.00016Z" stroke="#176DC1" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </g>
+                                            <defs>
+                                            <clipPath id="clip0_5268_78470">
+                                            <rect width="16" height="16" fill="white"/>
+                                            </clipPath>
+                                            </defs>
+                                        </svg>
+                                        <span>Добавить {{ slice_content.type === 'part' ? 'часть' : slice_content.type === 'chapter' ? 'главу' : slice_content.type === 'section' ? 'раздел' : slice_content.type === 'introductory' ? 'вводную страницу и входной тест' : slice_content.type === 'introductory' ? 'вводную страницу' : slice_content.type === 'final_test' ? 'итоговый тест' :'входной тест' }}</span>
+                                    </div>
+                                </template>
+                            </trasition>
+                        </div>
+                    </div>
+                </div>
             </template>
         </div>
     </section>
@@ -339,7 +387,7 @@ export default defineComponent({
         const storeEditCourseSetting = useStoreEditCourseSetting()
         const storeStateCourse = useStoreCourses()
 
-        const active_tab = ref<number>(1)
+        const active_tab = ref<number>(3)
         const show_error = ref<boolean>(false)
         const tooltip_id = ref<string>('')
         const directions = reactive<Direction[]>([])
@@ -456,6 +504,44 @@ export default defineComponent({
             // },
         ])
 
+        const content_inner = reactive([
+            {
+                type: 'introductory ',
+                title: 'Вводная страница'
+            },
+            {
+                type: 'introductory_test',
+                title: 'Входной тест'
+            },
+            {
+                type: 'part',
+                title: 'Часть 1'
+            },
+            {
+                type: 'chapter',
+                title: 'Глава 1'
+            },
+            {
+                type: 'section',
+                title: 'Раздел 1'
+            },
+            {
+                type: 'section',
+                title: 'Раздел 2'
+            },
+            {
+                type: 'test',
+                title: 'Тест 1'
+            },
+            {
+                type: 'final_test',
+                title: 'Итоговый тест'
+            },
+            {
+                type: 'final',
+                title: 'Итоги'
+            }
+        ])
 
         const tooltips = ref<{ id: string, text: string}[]>([
             {
@@ -490,6 +576,10 @@ export default defineComponent({
                 mask_type: 'price'
             }
         ])
+
+        const visible_block = reactive({
+            value: ''
+        })
 
 		const edit_info = reactive([
 			{
@@ -607,6 +697,17 @@ export default defineComponent({
                 storeEditCourseSetting.saveSetting()
             }
         }
+
+        const findBlock = (block_content: any) => {                               
+            return [...content_inner].reverse().find(block => block.type === block_content.type)!.title === block_content.title
+        }
+
+        const createBlock = (e: { offsetY: number; }, block_type: string) => {
+            if(e.offsetY <= 50 && e.offsetY >= 40) {
+                
+                visible_block.value = block_type
+            } 
+        }
         
         watch(picked_directions_filtered, (new_value) => {
             if (new_value.length > 0) {
@@ -653,6 +754,7 @@ export default defineComponent({
             active_example,
             edit_mode,
             edit_info,
+            content_inner,
             selectTab,
             openEditFrame,
             openExample,
@@ -673,7 +775,10 @@ export default defineComponent({
             pick_direction,
             picked_directions_filtered,
             show_error,
-            switcherArray
+            switcherArray,
+            createBlock,
+            findBlock,
+            visible_block
         }
     },
 })
@@ -866,6 +971,76 @@ export default defineComponent({
 
         &__textarea
             margin-bottom: rem(8) 
+
+    &__content
+        &__edu 
+            padding: rem(16) rem(24)
+            @include flex_start()
+            gap: rem(12)
+            max-width: rem(972)
+            margin-bottom: rem(32)
+
+            border-radius: rem(8)
+            border: rem(1) solid $light_gray
+            background-color: $basic_light_gray
+            position: relative
+            &__chevron 
+                position: absolute
+                right: rem(24)
+                top: 50%
+                transform: translateY(-50%)
+
+        &__container 
+            border: rem(1) solid $light_gray
+            border-radius: rem(8)
+            &__inner
+                padding: rem(16) rem(24)
+                
+                position: relative
+                background-color: $basic_light_gray
+                &:first-child
+                    border-radius: rem(8) rem(8) 0 0
+
+                &:not(:last-child)
+                    border-bottom: rem(1) solid $light_gray
+                
+                &:last-child
+                    border-radius:0 0 rem(8) rem(8) 
+                
+                &._chapter
+                    padding-left: rem(48)
+                
+                &._section 
+                    padding-left: rem(64)
+                
+                &__text 
+                    color: $basic_primary
+                    font-weight: bold
+
+                &__line 
+                    position: absolute
+                    bottom: 0
+                    left: 0
+                    width: 100%
+                    height: rem(2)
+                    background-color: $light_primary
+
+                &__create 
+                    padding: rem(8) rem(16)
+                    border: rem(1) solid $light_primary
+                    border-radius: rem(8)
+                    @include flex_start()
+
+                    gap: rem(8)
+                    background-color: $basic_white
+                    position: absolute
+                    top: rem(32)
+                    left: 50%
+                    transform: translateX(-50%)
+                    z-index: 2
+                    span 
+                        color: $light_primary
+                        font-weight: bold
 
 .oil-course-setting__settings__table__column__cell
     .oil-input

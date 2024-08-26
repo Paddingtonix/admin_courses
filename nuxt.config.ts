@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     ssr: true,
     plugins: [
         '~/plugins/vue-the-mask.client.ts',
-        '~/plugins/v-calendar.ts'
+        '~/plugins/v-calendar.ts',
+        '~/plugins/directives'
       ],
 })
