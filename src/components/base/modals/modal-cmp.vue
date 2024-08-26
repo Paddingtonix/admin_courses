@@ -129,7 +129,7 @@ export default defineComponent({
         &__content
             width: auto
             height: auto
-            padding: rem(32) rem(40) rem(40) rem(40)
+            padding: rem(32) rem(40) rem(40) rem(32)
 
     &__shadow
         position: absolute
