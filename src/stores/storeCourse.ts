@@ -1,6 +1,6 @@
-import { defineStore } from "pinia";
-import {CourseList} from "~/src/ts-interface/course-list";
-import axios from "axios";
+import { defineStore } from "pinia"
+import type { CourseList } from "~/src/ts-interface/course-list"
+import axios from "axios"
 
 export const useStoreCourses = defineStore('courseState', {
     state: () => ({
@@ -43,15 +43,17 @@ export const useStoreCourses = defineStore('courseState', {
     }),
     actions: {
         getCourses() {
-            axios.get<{ courses: CourseList[] }>('/admin/v1/Course')
+            axios
+                .get<{ courses: CourseList[] }>('/admin/v1/Course')
                 .then(response => {
                     this.course_list = response.data.courses
                     this.status = response.data.courses.status
+                    this.status = this.course_list.length > 0 ? this.course_list[0].status : ''
                     this.updateCourseInfo()
-                    console.log(response)
+                    console.log(response, 'storeCourse')
                 })
                 .catch(error => {
-                    console.error('ну где мои курсы? я за них платил так-то :(', error)
+                    console.error(error)
                 })
         },
         updateCourseInfo() {

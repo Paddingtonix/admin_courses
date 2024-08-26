@@ -11,7 +11,7 @@
                     :text="card.text"
                 />
             </div>
-            <template v-if="!course_list.length">
+            <template v-if="!course_list.value.length">
                 <div class="oil-course__info__attention">
                     <i class="oil-course__info__attention__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -103,7 +103,7 @@
                         :end_date="'Снятие с витрины'"               
                     />
                     <TableRowCmp 
-                        v-for="(row, idx) in course_list"
+                        v-for="(row, idx) in course_list.value"
                         :id="row.courseId"
                         :key="idx"
                         :name="row.title"
@@ -125,7 +125,7 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from 'vue'
+import { defineComponent, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useUserRoleStore } from '~/src/stores/storeRole'
@@ -259,9 +259,15 @@ export default defineComponent({
 					active: false,
 				},
 			],
-		});
+		})
 
-        const course_list = reactive<CourseList[]>([])
+        // const course_list = reactive<CourseList[]>({
+        //     value: []
+        // })
+
+        const course_list = reactive({
+            value: [] as any
+        })
 
         const filter_frame = reactive({
             value: false as boolean
@@ -288,21 +294,34 @@ export default defineComponent({
         }
 
 		const navigate = (url: string) => {
-			router.push(url);
-		};
+			router.push(url)
+		}
+
+        watch(course_list, (new_state) => {
+            course_list.value = new_state.value
+        })
 
         onMounted(() => {
             nextTick(() => {
                 axios
-                    .get<{ courses: CourseList[] }>('/admin/v1/Course')
+                    .get('/admin/v1/Course')
+                    .then((response) => {
+                        console.log(response.data);
+                        
+                        course_list.value = response.data.courses
+                    })
+                // courseStore.getCourses()
+                axios
+                    .get('/admin/v1/Course')
                     .then(resp => {
-                        course_list.push(...resp.data.courses)
+                        // course_list.value.push(...resp.data.courses)
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
                         course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
+                        // console.log(resp.data.courses, 'resp courses-list')
                      })
 
                 axios
@@ -322,7 +341,7 @@ export default defineComponent({
             formatDirectionToString,
             formatDate,
             course_info: courseStore.course_info,
-            course_list: courseStore.course_list,
+            course_list
         }
     }
 })

@@ -1,12 +1,12 @@
 <template>
     <aside
         class="oil-sidebar"
-        :style="{ width: !opened_sidebar.value ? '72px' : '256px' }"
+        :style="{ width: !opened_sidebar ? '72px' : '256px' }"
     >
         <div
             class="oil-sidebar__logo"
             :style="{
-                clipPath: !opened_sidebar.value ? 'inset(0 115px 0 0)' : 'none',
+                clipPath: !opened_sidebar ? 'inset(0 115px 0 0)' : 'none',
             }"
         >
             <svg
@@ -59,7 +59,7 @@
         </div>
         <div class="oil-sidebar__expand" @click="openSidebar">
             <svg
-                :class="{ '_active-chevron': opened_sidebar.value }"
+                :class="{ '_active-chevron': opened_sidebar }"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -83,7 +83,7 @@
                     :class="{ '_active-page': menu.link === $route.path }"
                 >
                     <LinkCmp
-                        :opened_sidebar="opened_sidebar.value"
+                        :opened_sidebar="opened_sidebar"
                         :link_name="menu.name"
                         :link_active="menu.link === $route.path"
                         :to="menu.link"
@@ -100,7 +100,7 @@
                     :key="idx"
                 >
                     <LinkCmp
-                        :opened_sidebar="opened_sidebar.value"
+                        :opened_sidebar="opened_sidebar"
                         :link_name="menu.name"
                         :link_active="router.hasRoute(menu.link)"
                         @click="navigate(menu.link)"
@@ -113,18 +113,15 @@
     </aside>
 </template>
 <script lang="ts">
-import {defineComponent, computed, onMounted} from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserRoleStore } from '~/src/stores/storeRole';
+import { useRouter } from 'vue-router'
+import { useUserRoleStore } from '~/src/stores/storeRole'
 
 export default defineComponent({
     setup() {
         const router = useRouter()
         const user_role_store = useUserRoleStore()
 
-        const opened_sidebar = reactive({
-            value: false
-        })
+        const opened_sidebar = ref(false)
 
         const menu_bar = [
             {
@@ -151,20 +148,20 @@ export default defineComponent({
 
         const roleMenu = computed(() => {            
             if (user_role_store.role === 'Admin') {
-                console.log(menu_bar);
+                console.log(menu_bar)
 
-                return menu_bar.slice(0, 3);
+                return menu_bar.slice(0, 3)
             } else if (user_role_store.role === 'Author') {
-                console.log(menu_bar);
+                console.log(menu_bar)
 
-                return menu_bar.slice(0, 1);
+                return menu_bar.slice(0, 1)
             }
 
             return menu_bar 
-        });
+        })
 
         const navigate = (url: string) => {
-            router.push(url);
+            router.push(url)
         }
 
         const openSidebar = () => {
@@ -186,7 +183,6 @@ export default defineComponent({
 <style scoped lang="sass">
 .oil-sidebar
     padding: rem(24) rem(26)
-
     position: fixed
     z-index: 10
     gap: rem(24)
@@ -215,8 +211,6 @@ export default defineComponent({
 
                     i *
                         stroke: $basic_primary
-
-
 
     &__logo
         @include flex_start()
