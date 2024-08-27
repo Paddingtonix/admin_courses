@@ -50,7 +50,6 @@ export const useStoreCourses = defineStore('courseState', {
                     this.status = response.data.courses.status
                     this.status = this.course_list.length > 0 ? this.course_list[0].status : ''
                     this.updateCourseInfo()
-                    console.log(response, 'storeCourse')
                 })
                 .catch(error => {
                     console.error(error)
