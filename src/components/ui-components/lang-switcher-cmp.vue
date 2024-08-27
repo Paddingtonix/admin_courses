@@ -30,7 +30,7 @@ const { russian, extraLang, extraLang2, active } = defineProps({
 	},
 	active: {
 		type: String,
-		default: "RU",
+		default: "ru",
 	},
 });
 

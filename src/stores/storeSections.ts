@@ -165,6 +165,7 @@ export const useHeadersStore = defineStore({
     id: "headersStore",
     state: (): IStoreHeadings => ({
         headings: [],
+        sortString: "",
         numberOfPages: null,
         currentPage: 1,
         nHeadingsPerPage: 10,
@@ -172,9 +173,9 @@ export const useHeadersStore = defineStore({
 
     actions: {
         getHeadings({ text = "" }) {
-            axios
+            return axios
                 .get(
-                    `/admin/v1/heading?page=${this.currentPage}&nHeadingsPerPage=${this.nHeadingsPerPage}&searchSubstring=${text}`
+                    `/admin/v1/heading?page=${this.currentPage}&nHeadingsPerPage=${this.nHeadingsPerPage}&searchSubstring=${text}${this.sortString}`
                 )
                 .then((response) => {
                     const data = response.data as IStoreHeaders;
@@ -220,8 +221,6 @@ export const useHeadersStore = defineStore({
         },
 
         deleteItem(id: number) {
-            console.log("qwerty");
-
             return axios
                 .delete(`admin/v1/heading/${id}`)
                 .then(() => {
@@ -250,6 +249,10 @@ export const useHeadersStore = defineStore({
                 .finally(() => {
                     // TODO: ADD_LOADER
                 });
+        },
+        setSort(sortString: string) {
+            this.sortString = sortString;
+            return this.getHeadings({});
         },
         patchHeading({
             name,

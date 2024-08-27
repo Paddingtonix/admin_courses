@@ -1,39 +1,40 @@
 <template>
-	<div class="oil-modal">
-		<div class="oil-modal__container">
-			<div class="oil-modal__container__header" v-if="modalData.label.length">
-				<span class="oil-modal__container__header__title">{{
-					modalData.label
-				}}</span>
-				<button
+    <div class="oil-modal">
+        <div class="oil-modal__container">
+            <div
+                class="oil-modal__container__header"
+                v-if="modalData.label.length"
+            >
+                <span class="oil-modal__container__header__title">{{
+                    modalData.label
+                }}</span>
+                <button
                     v-if="modalData.activeModal !== 'auth-modal'"
-					class="oil-modal__container__header__btn-close"
-					@click="storeModal.closeModal()"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-					>
-						<path
-							d="M18 6L6 18M6 6L18 18"
-							stroke="#808E9D"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</button>
-			</div>
-			<div class="oil-modal__container__content">
-				<component
-					:is="modalData.activeModal"
-				></component>
-			</div>
-		</div>
-	</div>
+                    class="oil-modal__container__header__btn-close"
+                    @click="storeModal.closeModal()"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                    >
+                        <path
+                            d="M18 6L6 18M6 6L18 18"
+                            stroke="#808E9D"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </button>
+            </div>
+            <div class="oil-modal__container__content">
+                <component :is="modalData.activeModal"></component>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -45,30 +46,32 @@ import courseCreateModal from "./course-create-modal.vue";
 import formTags from "../../ui-components/forms/form-tags.vue";
 import formSections from "../../ui-components/forms/form-sections.vue";
 import deleteModal from "./delete-modal.vue";
+import directionModal from "./direction-modal.vue";
 
 export default defineComponent({
-	setup() {
-		const storeModal = useStoreModal();
-		const modalData = reactive(storeModal.$state);
-        
-		onUnmounted(() => {
-			storeModal.$reset();
-		});
+    setup() {
+        const storeModal = useStoreModal();
+        const modalData = reactive(storeModal.$state);
 
-		return {
-			storeModal,
-			formTags,
-			formSections,
-			modalData,
-		};
-	},
-	components: {
-		"auth-modal": authModal,
-		"course-create-modal": courseCreateModal,
-		"form-tags": formTags,
-		"form-sections": formSections,
-		"delete-modal": deleteModal,
-	},
+        onUnmounted(() => {
+            storeModal.$reset();
+        });
+
+        return {
+            storeModal,
+            formTags,
+            formSections,
+            modalData,
+        };
+    },
+    components: {
+        "auth-modal": authModal,
+        "course-create-modal": courseCreateModal,
+        "form-tags": formTags,
+        "form-sections": formSections,
+        "delete-modal": deleteModal,
+        "direction-modal": directionModal
+    },
 });
 </script>
 <style scoped lang="sass">
@@ -128,7 +131,7 @@ export default defineComponent({
         &__content
             width: auto
             height: auto
-            padding: rem(32) rem(40) rem(40) rem(40)
+            padding: rem(32) rem(40) rem(40) rem(32)
 
     &__shadow
         position: absolute

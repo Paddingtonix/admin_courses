@@ -13,6 +13,7 @@ export const useDirectionStore = defineStore('directionStore', {
                 .get('admin/v1/Direction')
                 .then(response => {
                     this.directions = response.data;
+                    
                     console.log('Направления добавились !)')
                 })
                 .catch(error => {
@@ -22,7 +23,9 @@ export const useDirectionStore = defineStore('directionStore', {
         addDirection(direction: Direction) {
             this.directions.push(direction);
         },
-        createDirection(data: DirectionData) {
+        createDirection(data: DirectionData) {    
+            console.log(data);
+                    
             axios
                 .post('admin/v1/Direction', data)
                 .then(response => {

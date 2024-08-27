@@ -73,6 +73,7 @@
 import { defineComponent, reactive, ref, computed, watch, onMounted } from 'vue';
 import { useDirectionStore } from '~/src/stores/storeDirection';
 import { useRouter } from "vue-router";
+import { useStoreModal } from "~/src/stores/storeModal";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
 import type { DirectionData } from "~/src/ts-interface/direction-data";
@@ -105,6 +106,8 @@ export default defineComponent({
             },
         ])
 
+        const modalStore = useStoreModal();
+
         const toggleVisible = (state: string) => {
             switch (state) {
                 case 'invisible':
@@ -129,16 +132,18 @@ export default defineComponent({
         };
 
         const filtered_directions = computed(() => {
-            let filtered = filtered_by_visibility.value.filter(direction => {
-                return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
-            });
+            console.log(filtered_by_visibility);
+            
+            // let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string; }) => {
+            //     return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
+            // });
 
             if (sort_field.value && sort_direction.value) {
                 filtered = sortHeader(filtered, sort_field.value, sort_direction.value);
                 console.log('ну-ка, сука, работай', filtered)
             }
 
-            return filtered;
+            return direction_store.directions;
         })
 
         const filtered_by_visibility = computed(() => {
@@ -177,6 +182,12 @@ export default defineComponent({
                         // fr: ''
                     },
                 };
+                modalStore.$patch({
+                    label: "Добавление направления ",
+                    activeModal: "direction-modal",
+                    modalProps: {},
+                });
+                modalStore.openModal();
 
                 direction_store.createDirection(direction_push);
             });
@@ -186,8 +197,10 @@ export default defineComponent({
             direction_store.removeDirection(id);
         };
 
-        onMounted(() => {
-            direction_store.getDirections();
+        onMounted(() => {            
+            nextTick(() => {
+                direction_store.getDirections();
+            })
         })
 
         return {
