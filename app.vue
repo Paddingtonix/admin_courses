@@ -27,6 +27,7 @@ export default defineComponent({
                 });
                 storeModal.openModal();
             };
+
         const preloader = reactive({
             value: false
         })
@@ -48,10 +49,8 @@ export default defineComponent({
                 storeModal.openModal()
                 preloader.value = false
             }
-            
-        })
 
-        
+        })
 
     // Iak 68
         // const host = 'http://192.168.19.204:8081/' as string

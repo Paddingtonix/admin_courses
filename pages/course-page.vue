@@ -4,7 +4,7 @@
             <div v-if="user_role_store.role === 'Author'" class="oil-course__title">Мои курсы</div>
             <div v-else class="oil-course__title">Курсы</div>
             <div class="oil-course__info__card">
-                <CardInfo 
+                <CardInfo
                     v-for="(card, idx) in course_info"
                     :key="idx"
                     :count="card.count"
@@ -21,7 +21,7 @@
                     <p v-if="user_role_store.role === 'Author'" class="oil-course__info__attention__text">На данный момент у вас нет ни одного созданного курса. Нажмите на кнопку "Создать курс", чтобы начать и поделиться своими знаниями с другими!</p>
                     <p v-else class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием.</p>
                 </div>
-                <btnCmp 
+                <btnCmp
                     :text="'Создать курс'"
                     class="oil-course__info__btn"
                     @click="navigate('/course-create')"
@@ -30,15 +30,15 @@
             <template v-else>
                 <div class="oil-course__settings-container">
                     <div class="oil-course__settings">
-                        <SearchCmp 
-                            :placeholder="'Поиск'"
+                        <SearchCmp
+                            :label="'Поиск'"
                         />
-                        <FilterCmp 
+                        <FilterCmp
                             @click="openFilter(true)"
                         />
                     </div>
                     <div class="oil-course__create">
-                        <BtnCmp 
+                        <BtnCmp
                             :text="'Создать курс'"
                             @click="navigate('/course-create')"
                         >
@@ -53,7 +53,7 @@
                         </svg>
                         <div class="oil-course__filter__frame">
                             <span class="oil-course__filter__frame__title">Статус</span>
-                            <CheckboxCmp 
+                            <CheckboxCmp
                                 v-for="(checkbox, idx) in filter_course.value.slice(0, 6)"
                                 :key="idx"
                                 :text="checkbox.text"
@@ -63,7 +63,7 @@
                         </div>
                         <div class="oil-course__filter__frame">
                             <span class="oil-course__filter__frame__title">Язык</span>
-                            <CheckboxCmp 
+                            <CheckboxCmp
                                 v-for="(checkbox, idx) in filter_course.value.slice(7, 10)"
                                 :key="idx"
                                 :text="checkbox.text"
@@ -73,7 +73,7 @@
                         </div>
                         <div class="oil-course__filter__frame">
                             <span class="oil-course__filter__frame__title">Направления</span>
-                            <CheckboxCmp 
+                            <CheckboxCmp
                                 v-for="(checkbox, idx) in filter_course.value.slice(11)"
                                 :key="idx"
                                 :text="checkbox.text"
@@ -82,27 +82,27 @@
                             />
                         </div>
                         <div class="oil-course__filter__btns">
-                            <BtnCmp 
+                            <BtnCmp
                                 :background_type="'_secondary'"
                                 :text="'Сбросить'"
                             />
-                            <BtnCmp 
+                            <BtnCmp
                                 :text="'Применить'"
                             />
                         </div>
                     </div>
                 </div>
                 <div class="oil-course__settings__course-list">
-                    <TableHeadCmp 
+                    <TableHeadCmp
                         :name="'Название'"
                         :status="'Статус'"
                         :authors="'Авторы'"
                         :direction="'направление'"
                         :lang="'Язык'"
                         :date_edit="'Дата посл. ред.'"
-                        :end_date="'Снятие с витрины'"               
+                        :end_date="'Снятие с витрины'"
                     />
-                    <TableRowCmp 
+                    <TableRowCmp
                         v-for="(row, idx) in course_list"
                         :id="row.courseId"
                         :key="idx"
@@ -116,7 +116,7 @@
                     />
                 </div>
                 <div class="oil-course__settings__pagination">
-                    <PaginationCmp 
+                    <PaginationCmp
                         :pages_count="14"
                     />
                 </div>
@@ -267,11 +267,11 @@ export default defineComponent({
             value: false as boolean
         })
 
-        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕНН
+        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕН
         const formatDirectionToString = (arr: string[]): string => {
             return arr ? arr.join(', ') : '--'
         }
-        
+
         const formatDate = (date_value: string | null) => {
             if (date_value === null) {
                 return "--"
@@ -293,22 +293,23 @@ export default defineComponent({
 
         onMounted(() => {
             nextTick(() => {
-                axios
-                    .get<{ courses: CourseList[] }>('/admin/v1/Course')
-                    .then(resp => {
-                        course_list.push(...resp.data.courses)
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
-                     })
-
-                axios
-                    .get('admin/v1/course/filters')
-                    .then(resp => {
-                    })
+                // axios
+                //     .get<{ courses: CourseList[] }>('/admin/v1/Course')
+                //     .then(resp => {
+                //         course_list.push(...resp.data.courses)
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
+                //         course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
+                //      })
+                //
+                // axios
+                //     .get('admin/v1/course/filters')
+                //     .then(resp => {
+                //     })
+                courseStore.getCourses()
             })
         })
 
