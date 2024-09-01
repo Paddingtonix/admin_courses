@@ -3,26 +3,26 @@
     align-items: center
     justify-content: center
 
-@mixin flex_start() 
-    display: flex 
+@mixin flex_start()
+    display: flex
     align-items: center
-    justify-content: flex-start    
+    justify-content: flex-start
 
 @mixin flex_center_spacing()
     display: flex
     align-items: center
     justify-content: space-between
 
-@mixin flex_column() 
+@mixin flex_column()
     display: flex
     flex-direction: column
 
-@mixin flex_column_center() 
+@mixin flex_column_center()
     display: flex
     flex-direction: column
     align-items: center
 
-@mixin button_styles_primary() 
+@mixin button_styles_primary()
     background-color: $basic_primary
     border: none
     color: $basic_white
@@ -32,13 +32,13 @@
         pointer-events: none
         background-color: $disabled_basic
 
-    &:hover 
+    &:hover
         background-color: $light_primary
 
     &:active
         background-color: $dark_primary
 
-    
+
 
 
 @mixin button_styles_secondary()
@@ -47,8 +47,8 @@
     color: $basic_primary
     cursor: pointer
 
-    &:hover 
-        border: rem(1) solid $light_primary       
+    &:hover
+        border: rem(1) solid $light_primary
         background-color: #176DC10D
         color: $light_primary
 
@@ -56,8 +56,8 @@
     &:active
         border: rem(1) solid $dark_primary
         background-color: #176DC11A
-        button 
-            color: $dark_primary   
+        button
+            color: $dark_primary
 
     &:disabled
         pointer-events: none
@@ -65,31 +65,31 @@
         color: $light_gray
 
 
-@mixin button_styles_tertiary()    
-    border: none 
+@mixin button_styles_tertiary()
+    border: none
     cursor: pointer
-    color: $basic_primary 
-        
-    &:hover 
+    color: $basic_primary
+
+    &:hover
         background-color: #176DC10D
         color: $light_primary
 
     &:active
         background-color: #176DC11A
-        button 
+        button
             color: $dark_primary
 
     &:disabled
         color: $light_gray
 
 
-@mixin button_styles_quaternary() 
+@mixin button_styles_quaternary()
     background-color: $basic_error
     border: none
     cursor: pointer
     color: $basic_white
 
-    &:hover 
+    &:hover
         background-color: $light_error
 
     &:active
@@ -98,8 +98,8 @@
     &:disabled
         pointer-events: none
         background-color: $disabled_basic
-        
-@mixin position_message_input() 
+
+@mixin position_message_input()
     @include flex_center()
     position: absolute
     bottom: rem(-18)

@@ -1,6 +1,6 @@
 <template>
     <!-- курс создан -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.createCourse">
+    <div :class="`oil-modal__course-create`" v-if="storeModal.activeModal === 'course-create-modal'">
         <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_239_29489)">
                 <circle cx="44" cy="44" r="44" fill="#27AE63" fill-opacity="0.05" />
@@ -13,29 +13,29 @@
                 </clipPath>
             </defs>
         </svg>
-        <span :class="`${main_class}__course-create__text`">Курс создан, можете приступать к наполнению</span>
+        <span :class="`oil-modal__course-create__text`">Курс создан, можете приступать к наполнению</span>
         <BtnCmp
             :text="'Понятно'"
             @click="closeModal"
         />
     </div>
     <!-- в разработке -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.development">
-        <span :class="`${main_class}__course-create__text`">Курс находится в разработке у автора. Вы не можете изменить статус курса.</span>
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.development">
+        <span :class="`oil-modal__course-create__text`">Курс находится в разработке у автора. Вы не можете изменить статус курса.</span>
         <BtnCmp
             :text="'Понятно'"
             @click="closeModal"
         />
     </div>
     <!-- на модерации -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.moderation">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.moderation">
+        <div :class="`oil-modal__course-create__text`">
             <span>Этот курс находится в статусе “На модерации”.</span>
             <span>Если вы закончили проверку курса, и курс не нуждается в изменениях от автора, измените статус на “Опубликован” и курс станет доступен к приобретению.</span>
             <span>Если курс нуждается в доработке, измените статус на “В разработке”.</span>
         </div>
-        <div :class="`${main_class}__course-create__radios`">
-            <RadioCmp 
+        <div :class="`oil-modal__course-create__radios`">
+            <RadioCmp
                 v-for="(radio, radio_idx) in radio_moderation" :key="radio_idx"
                 :text="radio.text"
                 :id="radio_idx"
@@ -43,7 +43,7 @@
                 @set_radio="setRadioValue"
             />
         </div>
-        <div :class="`${main_class}__course-create__btns`">
+        <div :class="`oil-modal__course-create__btns`">
             <BtnCmp
                 :text="'Отмена'"
                 :background_type="'_secondary'"
@@ -55,8 +55,8 @@
         </div>
     </div>
     <!-- есть ошибка по дате -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.oneError">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.oneError">
+        <div :class="`oil-modal__course-create__text`">
             <span>Вы не можете отправить курс на публикацию.</span>
             <span>Обнаружена ошибка: дата снятия курса с витрины меньше текущей даты.</span>
             <span>Исправьте ошибку и попробуйте ещё раз или убедитесь что вы совершаете правильное действие. </span>
@@ -67,8 +67,8 @@
         />
     </div>
     <!-- есть несколько ошибок -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.someError">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.someError">
+        <div :class="`oil-modal__course-create__text`">
             <span>Вы не можете отправить курс на публикацию.</span>
             <ul>Обнаружены ошибки:
                 <li>Дата снятия курса с витрины меньше текущей даты</li>
@@ -83,16 +83,16 @@
         />
     </div>
     <!-- опубликован -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.published">
-        <span :class="`${main_class}__course-create__text`">Курс размещен на витрине сайта. Дата снятия курса с витрины - {{ published_date }}</span>
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.published">
+        <span :class="`oil-modal__course-create__text`">Курс размещен на витрине сайта. Дата снятия курса с витрины - {{ published_date }}</span>
         <BtnCmp
             :text="'Понятно'"
             @click="closeModal"
         />
     </div>
     <!-- снят с витрины -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.removed">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.removed">
+        <div :class="`oil-modal__course-create__text`">
             <span>Курс снят с витрины сайта и доступен только тем пользователям, которые приобрели его ранее.</span>
             <span>Курс автоматически переместится в архив после {{ removed_date }}.</span>
         </div>
@@ -102,8 +102,8 @@
         />
     </div>
     <!-- в архиве -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.archived">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.archived">
+        <div :class="`oil-modal__course-create__text`">
             <span>Курс находится в архиве.</span>
             <span>Весь контент курса доступен в PDF-файле, который можно найти на странице просмотра курса во вкладке “Содержание”.</span>
         </div>
@@ -113,12 +113,12 @@
         />
     </div>
     <!-- удаление курса -->
-    <div :class="`${main_class}__course-create`" v-if="storeCourse.deleteCourse">
-        <div :class="`${main_class}__course-create__text`">
+    <div :class="`oil-modal__course-create`" v-if="storeCourse.deleteCourse">
+        <div :class="`oil-modal__course-create__text`">
             <span>Внимание! Если вы удалите курс, всё его содержимое удалится автоматически и не будет доступно к восстановлению.</span>
             <span>Вы уверены, что хотите удалить курс “[Название курса]”?</span>
         </div>
-        <div :class="`${main_class}__course-create__btns`">
+        <div :class="`oil-modal__course-create__btns`">
             <BtnCmp
                 :text="'Отмена'"
                 :background_type="'_secondary'"
@@ -155,6 +155,7 @@ export default defineComponent({
 	setup() {
 		const storeModal = useStoreModal();
 		const storeCourse = useStoreCourses();
+        const router = useRouter();
 
 		const radio_moderation = reactive([
 			{
@@ -169,6 +170,9 @@ export default defineComponent({
 
 		const closeModal = () => {
 			storeModal.closeModal();
+            if (storeModal.activeModal === 'course-create-modal') {
+                router.push({ name: 'course-page' });
+            }
 		};
 
 		const setRadioValue = (id_radio: number) => {
@@ -192,6 +196,7 @@ export default defineComponent({
         @include flex_column_center
         gap: rem(32)
         width: rem(400)
+        margin: 0 auto
 
         &__text
             align-self: flex-start

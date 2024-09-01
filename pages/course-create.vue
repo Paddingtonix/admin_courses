@@ -1,7 +1,7 @@
 <template>
     <section class="oil-container oil-create-course">
         <div class="oil-create-course__form oil-page">
-            <breadCmp 
+            <breadCmp
                 :prev_page="'Курсы'"
                 :current_page="'Создание курса'"
                 class="oil-create-course__form__bread"
@@ -19,7 +19,7 @@
                             @setValue="setValueSelector"
                             @blur="validCheck(field)"
                         />
-                        <inputCmp 
+                        <inputCmp
                             v-else
                             :placeholder="field.label"
                             :type="field.type"
@@ -80,7 +80,7 @@
                 </div>
                 <div class="oil-create-course__form__fields__container">
                     <template v-for="(field, idx) in form.slice(2)" :key="idx">
-                        <selectorCmp 
+                        <selectorCmp
                             v-if="field.selector?.length"
                             :label="field.label"
                             :list="field.selector"
@@ -92,12 +92,12 @@
                     </template>
                 </div>
                 <div class="oil-create-course__form__fields__btns">
-                    <BtnCmp 
+                    <BtnCmp
                         :background_type="'_secondary'"
                         :text="'Отмена'"
                         @click="$router.go(-1)"
                     />
-                    <BtnCmp 
+                    <BtnCmp
                         :text="'Создать'"
                         @click="submitForm"
                     />
@@ -268,7 +268,7 @@ export default defineComponent({
 
             return true
         }
-        
+
         const submitForm = () => {
             let form_is_valid = true
 
@@ -378,8 +378,8 @@ export default defineComponent({
                             transition: transform .2s
                             &._active
                                 transform: rotate(180deg)
-                
-                &__text 
+
+                &__text
                     padding: rem(24) rem(48)
                     span
                         display: inline-block
