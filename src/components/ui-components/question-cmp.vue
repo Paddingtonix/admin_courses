@@ -1,72 +1,83 @@
 <template>
-	<div class="oil-question">
-		<div class="oil-question__frame">
-			<div class="oil-question__body">
-				<span class="oil-question__title">Направление вопроса</span>
-				<span class="oil-question__desc"
-					>Выберите из выпадающего списка направление, которое лучше
-					всего соответствует теме вашего вопроса. Это поможет
-					правильно классифицировать вопрос и улучшить организацию
-					курса.</span
-				>
-				<SelectorCmp :label="'Направление'" />
-			</div>
-			<div class="oil-question__body">
-				<span class="oil-question__title">Тело вопроса</span>
-				<span class="oil-question__desc"
-					>Введите текст вопроса в это поле. Убедитесь, что вопрос
-					сформулирован четко и понятно. Вы можете использовать
-					инструменты форматирования, чтобы выделить важные части
-					вопроса или добавить медиа.</span
-				>
-				<CheckboxCmp
-					:text="`Отображать тело вопроса в названии (вместо “Вопрос ${name}”)`"
-				/>
-				<editor
-					v-if="editorVisible"
-					api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
-					:init="{
-						height: 233,
-						menubar: false,
-						plugins: [
-							'advlist autolink lists link image charmap print preview anchor',
-							'searchreplace visualblocks code fullscreen',
-							'insertdatetime media table paste code help wordcount',
-						],
-						toolbar:
-							'undo redo | formatselect | bold italic backcolor | \
+	<div class="oil-course-content__test__question">
+		<div class="oil-course-content__test__question__frame">
+			<span class="oil-course-content__test__question__title">
+				{{ question_title }} {{ question_id + 1 }}
+			</span>
+		</div>
+		<div class="oil-question">
+			<div
+				class="oil-question__frame"
+				v-if="question_id === active_id - 1"
+				@click.stop="() => {}"
+			>
+				<div class="oil-question__body">
+					<span class="oil-question__title">Направление вопроса</span>
+					<span class="oil-question__desc"
+						>Выберите из выпадающего списка направление, которое
+						лучше всего соответствует теме вашего вопроса. Это
+						поможет правильно классифицировать вопрос и улучшить
+						организацию курса.</span
+					>
+					<SelectorCmp :label="'Направление'" />
+				</div>
+				<div class="oil-question__body">
+					<span class="oil-question__title">Тело вопроса</span>
+					<span class="oil-question__desc"
+						>Введите текст вопроса в это поле. Убедитесь, что вопрос
+						сформулирован четко и понятно. Вы можете использовать
+						инструменты форматирования, чтобы выделить важные части
+						вопроса или добавить медиа.</span
+					>
+					<CheckboxCmp
+						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${name}”)`"
+					/>
+					<editor
+						v-if="editorVisible"
+						api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
+						:init="{
+							height: 233,
+							menubar: false,
+							plugins: [
+								'advlist autolink lists link image charmap print preview anchor',
+								'searchreplace visualblocks code fullscreen',
+								'insertdatetime media table paste code help wordcount',
+							],
+							toolbar:
+								'undo redo | formatselect | bold italic backcolor | \
                             alignleft aligncenter alignright alignjustify | \
                             bullist numlist outdent indent | removeformat | help',
-					}"
-				/>
-			</div>
-			<div class="oil-question__body">
-				<span class="oil-question__title">Ответы</span>
-				<span class="oil-question__title"
-					>Введите варианты ответов в соответствующие поля. Убедитесь,
-					что каждый ответ понятен и не вызывает двусмысленности.
-					Затем, используя радиокнопки, укажите правильный
-					ответ.</span
-				>
-				<div class="oil-question__answer" v-for="question in 4">
-					<div class="oil-question__radio"></div>
-					<InputCmp :label="`Ответ ${question}`" />
+						}"
+					/>
 				</div>
-			</div>
-			<div class="oil-question__body">
-				<span class="oil-question__title"
-					>Балл за правильный ответ</span
-				>
-				<span class="oil-question__desc"
-					>Введите количество баллов, которые будут присуждаться за
-					правильный ответ на этот вопрос. Используйте шкалу от 1 до
-					3, в зависимости от сложности вопроса.</span
-				>
-				<InputCmp :label="'Балл'" />
-			</div>
-			<div class="oil-question__btns">
-				<BtnCmp :background_type="'_secondary'" :text="'Отмена'" />
-				<BtnCmp :text="'Сохранить'" />
+				<div class="oil-question__body">
+					<span class="oil-question__title">Ответы</span>
+					<span class="oil-question__title"
+						>Введите варианты ответов в соответствующие поля.
+						Убедитесь, что каждый ответ понятен и не вызывает
+						двусмысленности. Затем, используя радиокнопки, укажите
+						правильный ответ.</span
+					>
+					<div class="oil-question__answer" v-for="question in 4">
+						<div class="oil-question__radio"></div>
+						<InputCmp :label="`Ответ ${question}`" />
+					</div>
+				</div>
+				<div class="oil-question__body">
+					<span class="oil-question__title"
+						>Балл за правильный ответ</span
+					>
+					<span class="oil-question__desc"
+						>Введите количество баллов, которые будут присуждаться
+						за правильный ответ на этот вопрос. Используйте шкалу от
+						1 до 3, в зависимости от сложности вопроса.</span
+					>
+					<InputCmp :label="'Балл'" />
+				</div>
+				<div class="oil-question__btns">
+					<BtnCmp :background_type="'_secondary'" :text="'Отмена'" />
+					<BtnCmp :text="'Сохранить'" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -80,6 +91,18 @@ export default defineComponent({
 		name: {
 			type: [String, Number],
 			default: "",
+		},
+		question_title: {
+			type: String,
+			default: "Вопрос",
+		},
+		question_id: {
+			type: Number,
+			default: 1,
+		},
+		active_id: {
+			type: Number,
+			default: null,
 		},
 	},
 	setup() {
