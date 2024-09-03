@@ -2,14 +2,22 @@
 	<div class="oil-course-content__test">
 		<div>
 			<div
-				v-for="(setting, idx) in general_setting"
+				v-for="(setting, idx) in general_settings_values"
 				:key="idx"
 				class="oil-course-content__test__general-settings"
 			>
 				<span class="oil-course-content__test__general-settings__name">
 					{{ setting.name }}
 				</span>
-				<div class="oil-course-content__test__general-settings__value">
+				<div
+					class="oil-course-content__test__general-settings__value"
+					v-if="
+						idx !==
+						general_settings_values.findIndex(
+							(item) => item.isEditing
+						)
+					"
+				>
 					<span>
 						{{
 							setting.value.length
@@ -17,11 +25,20 @@
 								: noDataText
 						}}
 					</span>
-					<span v-if="!setting.value.length">
-						{{ setting.desc }}
-					</span>
-					<i v-html="setting.icon || defaultIcon"></i>
+					<div
+						class="oil-course-content__test__general-settings__value__wrapper"
+						@click="editSetting(idx)"
+					>
+						<span v-if="!setting.value.length">
+							{{ setting.desc }}
+						</span>
+						<i v-html="setting.icon || defaultIcon"></i>
+					</div>
 				</div>
+
+				<template v-else>
+					<CourseSettingsInput />
+				</template>
 			</div>
 		</div>
 		<div class="oil-course-content__attention" @click="openSummary">
@@ -144,8 +161,10 @@ const props = defineProps({
 	},
 	defaultIcon: {
 		type: String,
-		default:
-			'<svg width="23" height="23" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="..."/></svg>',
+		default: `<svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 4.00023H5.8C4.11984 4.00023 3.27976 4.00023 2.63803 4.32721C2.07354 4.61483 1.6146 5.07377 1.32698 5.63826C1 6.27999 1 7.12007 1 8.80023V17.2002C1 18.8804 1 19.7205 1.32698 20.3622C1.6146 20.9267 2.07354 21.3856 2.63803 21.6732C3.27976 22.0002 4.11984 22.0002 5.8 22.0002H14.2C15.8802 22.0002 16.7202 22.0002 17.362 21.6732C17.9265 21.3856 18.3854 20.9267 18.673 20.3622C19 19.7205 19 18.8804 19 17.2002V13.0002M6.99997 16.0002H8.67452C9.1637 16.0002 9.40829 16.0002 9.63846 15.945C9.84254 15.896 10.0376 15.8152 10.2166 15.7055C10.4184 15.5818 10.5914 15.4089 10.9373 15.063L20.5 5.50023C21.3284 4.6718 21.3284 3.32865 20.5 2.50023C19.6716 1.6718 18.3284 1.6718 17.5 2.50022L7.93723 12.063C7.59133 12.4089 7.41838 12.5818 7.29469 12.7837C7.18504 12.9626 7.10423 13.1577 7.05523 13.3618C6.99997 13.5919 6.99997 13.8365 6.99997 14.3257V16.0002Z" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`,
 	},
 });
 console.log(props.generalSettings, "settings");
@@ -161,6 +180,19 @@ const openQuestion = (question) => {
 	openQuestionIndex.value =
 		question === openQuestionIndex.value ? null : question;
 };
+
+const general_settings_values = reactive(
+	props.general_setting.map((item) => ({
+		name: item.name,
+		value: item.value || "",
+		desc: item.desc,
+		isEditing: false,
+	}))
+);
+
+const editSetting = (id) => {
+	general_settings_values[id].isEditing = true;
+};
 </script>
 
 <style lang="sass">
@@ -174,13 +206,30 @@ const openQuestion = (question) => {
         &__value
             @include flex_column()
             gap: rem(2)
+            position: relative
+            width: 100%
 
             span
-                &:first-child
-                    font-weight: bold
-
-                &:last-child
+                font-weight: bold
+            &__wrapper
+                width: 100%
+                display: flex
+                align-items: stretch
+                cursor: pointer
+                justify-content: space-between
+                i
+                    svg
+                        path
+                            transition: stroke .3s
+                span
                     font-size: rem(12)
+                    font-weight: 400
+                &:hover
+                    i
+                        svg
+                            path
+                                stroke: $basic_primary
+
 
         &__name
             padding: rem(28) rem(108) rem(28) rem(8)
@@ -207,6 +256,15 @@ const openQuestion = (question) => {
             font-weight: bold
             user-select: none
     &__add_questuon_wrapper
+        cursor: pointer
+        opacity: 0
+        &:hover
+            opacity: 1
+        hr
+            display: block
+            border: 0
+            height: 1px
+            border-top: 2px solid $basic-primary
         .btn__add_question
             position: absolute
             padding: 0
