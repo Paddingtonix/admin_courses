@@ -46,6 +46,7 @@ import courseCreateModal from "./course-create-modal.vue";
 import formTags from "../../ui-components/forms/form-tags.vue";
 import formSections from "../../ui-components/forms/form-sections.vue";
 import deleteModal from "./delete-modal.vue";
+import directionModal from "./direction-modal.vue";
 
 export default defineComponent({
     setup() {
@@ -69,6 +70,7 @@ export default defineComponent({
         "form-tags": formTags,
         "form-sections": formSections,
         "delete-modal": deleteModal,
+        "direction-modal": directionModal
     },
 });
 </script>
