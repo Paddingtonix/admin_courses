@@ -23,7 +23,9 @@ export const useDirectionStore = defineStore('directionStore', {
         addDirection(direction: Direction) {
             this.directions.push(direction);
         },
-        createDirection(data: DirectionData) {
+        createDirection(data: DirectionData) {    
+            console.log(data);
+                    
             axios
                 .post('admin/v1/Direction', data)
                 .then(response => {
