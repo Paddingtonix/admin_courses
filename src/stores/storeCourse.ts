@@ -55,7 +55,7 @@ export const useStoreCourses = defineStore('courseState', {
                 })
         },
         updateCourseInfo() {
-            this.course_info[0].count = this.course_list.filter(el => el.status === 'All').length
+            this.course_info[0].count = this.course_list.length
             this.course_info[1].count = this.course_list.filter(el => el.status === 'InDevelopment').length
             this.course_info[2].count = this.course_list.filter(el => el.status === 'OnModeration').length
             this.course_info[3].count = this.course_list.filter(el => el.status === 'Published').length

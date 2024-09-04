@@ -97,7 +97,7 @@
                         :name="'Название'"
                         :status="'Статус'"
                         :authors="'Авторы'"
-                        :direction="'направление'"
+                        :direction="'Направление'"
                         :lang="'Язык'"
                         :date_edit="'Дата посл. ред.'"
                         :end_date="'Снятие с витрины'"
@@ -107,7 +107,7 @@
                         :id="row.courseId"
                         :key="idx"
                         :name="row.title"
-                        :status="row.status"
+                        :status="translateStatus(row.status)"
                         :authors="row.authorEmails[0]"
                         :direction="formatDirectionToString(row.direction)"
                         :lang="row.language.toUpperCase()"
@@ -289,6 +289,18 @@ export default defineComponent({
 			router.push(url);
 		};
 
+        const status_translation = {
+            'InDevelopment': 'В разработке',
+            'OnModeration': 'На модерации',
+            'Published': 'Опубликован',
+            'Withdrawn': 'Снят с витрины',
+            'Archived': 'В архиве'
+        };
+
+        const translateStatus = (status: string): string => {
+            return status_translation[status]
+        };
+
         onMounted(() => {
             nextTick(() => {
                 // axios
@@ -320,6 +332,7 @@ export default defineComponent({
             openFilter,
             formatDirectionToString,
             formatDate,
+            translateStatus,
             course_info: courseStore.course_info,
             course_list: courseStore.course_list,
         }
