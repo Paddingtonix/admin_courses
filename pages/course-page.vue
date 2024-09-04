@@ -261,8 +261,6 @@ export default defineComponent({
 			],
 		});
 
-        const course_list = reactive<CourseList[]>([])
-
         const filter_frame = reactive({
             value: false as boolean
         })

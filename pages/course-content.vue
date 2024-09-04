@@ -6,7 +6,7 @@
                 :current_page="'Создание курса'"
                 class="oil-course-content__bread"
             />
-            <template v-if="courseStore.status !== 'Archived'">
+            <template v-if="courseStore.status === 'Archived'">
                 <div class="oil-course-content__info__attention">
                     <i class="oil-course-content__info__attention__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
