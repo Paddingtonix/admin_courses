@@ -6,6 +6,10 @@ export const isFormValid = (
 	initialForm: Record<string, any>, // Исходные значения полей формы
 	requiredFields: string[] = [] // Список обязательных полей, которые должны быть заполнены
 ): boolean => {
+	if(requiredFields.find(value => {value === 'score'})){
+		
+		return (currentForm.score > 0 && currentForm.score <= 3)
+	}
 	// Проверка на наличие изменений в форме
 	const hasChanges = Object.keys(currentForm).some((field) => {
 		if (field === "id") return false; // Пропускаем проверку для поля "id"
@@ -40,3 +44,5 @@ export const isFormValid = (
 	// Возвращаем true, если форма изменилась и все обязательные поля заполнены, иначе false
 	return hasChanges && allFieldsFilled;
 };
+
+

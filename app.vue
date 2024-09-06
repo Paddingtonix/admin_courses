@@ -38,12 +38,12 @@ export default defineComponent({
 				axios.defaults.headers.common[
 					"Authorization"
 				] = `Bearer ${course_auth_token}`;
+				
 				user_role_store.getUserRole();
 				storeAuth.logIn();
 				storeModal.closeModal();
 				storeModal.closeModal();
 				preloader.value = false;
-				console.log(course_auth_token);
 			} else {
 				openDeleteModal();
 				storeModal.openModal();

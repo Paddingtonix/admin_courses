@@ -92,7 +92,7 @@
                         поможет правильно классифицировать вопрос и улучшить
                         организацию курса.</span
                     >
-                    <SelectorCmp :label="'Направление'" />
+                    <MarkSelector :label="'Направление'" :object-list="selectorObject"/>
                 </div>
                 <div class="oil-question__body">
                     <span class="oil-question__title">Тело вопроса</span>
@@ -145,7 +145,7 @@
                         за правильный ответ на этот вопрос. Используйте шкалу от
                         1 до 3, в зависимости от сложности вопроса.</span
                     >
-                    <InputCmp :label="'Балл'" />
+                    <InputCmp :error="scoreValue.error" :maxlength="1" :model-value="score" :label="'Балл'" @set_value="setScore($event.value)"/>
                 </div>
                 <div class="oil-question__btns">
                     <BtnCmp
@@ -160,8 +160,9 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, type PropType } from "vue";
 import Editor from "@tinymce/tinymce-vue";
+import { isFormValid } from "~/src/utils/validateForm";
 
 export default defineComponent({
     props: {
@@ -182,11 +183,20 @@ export default defineComponent({
             default: null,
         },
         question: {
-            type: Object,
+            type: [Object, Number],
             required: true,
         },
+        score: {
+            type: Number,
+            default: null
+        },
+        selectorObject: {
+            type: Object as PropType<{name: string, id: number}[]>,
+            required: true
+        }
     },
-    setup() {
+    emits:['set_score'],
+    setup(props, {emit}) {
         const visible_summary = reactive({
             value: false,
         });
@@ -196,6 +206,10 @@ export default defineComponent({
                 question === openQuestionIndex.value ? null : question;
         };
 
+        const scoreValue = reactive({
+            score: props.score,
+            error: '',
+        });
         const editorVisible = ref(false);
 
         onMounted(() => {
@@ -206,12 +220,26 @@ export default defineComponent({
             visible_summary.value = !visible_summary.value;
         };
 
+        const setScore = (value: number) => {
+            scoreValue.score = value;
+            emit("set_score", scoreValue.score);
+            console.log(isFormValid(scoreValue, scoreValue, ["score"]));
+            
+            if(!isFormValid(scoreValue, {}, ["score"])){
+                console.log(scoreValue.score);
+                
+                scoreValue.error = 'ошибка';
+            }
+        }
+
         return {
             visible_summary,
             openSummaryQuestion,
             editorVisible,
             openQuestion,
             openQuestionIndex,
+            setScore,
+            scoreValue
         };
     },
     components: {
