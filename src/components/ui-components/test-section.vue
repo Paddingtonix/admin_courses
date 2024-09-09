@@ -11,7 +11,7 @@
 				</span>
 				<div
 					class="oil-course-content__test__general-settings__value"
-					:class="{ 'fullfiled': setting.value.length }"
+					:class="{ fullfiled: setting.value.length }"
 					v-if="
 						idx !==
 						general_settings_values.findIndex(
@@ -93,12 +93,12 @@
 		<div>
 			<template v-for="(question, index) in questions" :key="index">
 				<QuestionCmp
-					:name="question"
+					:name="question.index"
 					:question_title="'Вопрос'"
-					:question_id="index"
-					:question="question"
-                    :isCorrectAnswer = "false"
-                    :selector-object="courseContentState.directions"
+					:question_id="question.index"
+					:questions="question"
+					:isCorrectAnswer="false"
+					:selector-object="courseContentState.directions"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
 					<hr />
@@ -130,7 +130,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
 import { ref, defineProps, type PropType } from "vue";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 
@@ -165,8 +164,16 @@ const props = defineProps({
 		default: "Вопрос",
 	},
 	questions: {
-		type: Array as PropType<number[]>,
-		default: () => [1, 2, 3, 4, 5],
+		type: Array as PropType<
+			{ index: number; isCorrect: boolean; text: string }[]
+		>,
+		default: () => [
+			{ index: 0, isCorrect: false, text: "" },
+			{ index: 1, isCorrect: false, text: "" },
+			{ index: 2, isCorrect: false, text: "" },
+			{ index: 3, isCorrect: false, text: "" },
+			{ index: 4, isCorrect: false, text: "" },
+		],
 	},
 	noDataText: {
 		type: String,
@@ -181,10 +188,10 @@ const props = defineProps({
 	},
 });
 
-onMounted(()=>{
-    courseContentStore.getDirections();
-    console.log("StateCOurse: ", courseContentState.directions);
-})
+onMounted(() => {
+	courseContentStore.getDirections();
+	console.log("StateCOurse: ", courseContentState.directions);
+});
 
 const isSummaryVisible = ref(false);
 
@@ -221,7 +228,6 @@ const cancelEditing = (id: number) => {
 const acceptEditing = (id: number) => {
 	general_settings_values[id].isEditing = false;
 };
-
 </script>
 
 <style lang="sass">

@@ -42,7 +42,7 @@
 						/>
 					</svg>
 				</i>
-				<i class="oil-edit" @click.stop="openQuestion(question)">
+				<i class="oil-edit" @click.stop="openQuestion(question_id)">
 					<svg
 						width="23"
 						height="23"
@@ -106,7 +106,9 @@
 						вопроса или добавить медиа.</span
 					>
 					<CheckboxCmp
-						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${name}”)`"
+						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${
+							question_id + 1
+						}”)`"
 					/>
 					<editor
 						v-if="editorVisible"
@@ -134,9 +136,15 @@
 						двусмысленности. Затем, используя радиокнопки, укажите
 						правильный ответ.</span
 					>
-					<div class="oil-question__answer" v-for="question in 4">
-						<div class="oil-question__radio"></div>
-						<InputCmp :label="`Ответ ${question}`" />
+					<div
+						class="oil-question__answer"
+						v-for="(answer, index) in answersForm"
+					>
+						<div
+							:class="{ active: answer.isCorrect }"
+							class="oil-question__radio"
+						></div>
+						<InputCmp :label="`Ответ ${index + 1}`" />
 					</div>
 				</div>
 				<div class="oil-question__body">
@@ -158,7 +166,7 @@
 				</div>
 				<div class="oil-question__btns">
 					<BtnCmp
-						@click="openQuestion(question)"
+						@click="openQuestion(question_id)"
 						:background_type="'_secondary'"
 						:text="'Отмена'"
 					/>
@@ -192,7 +200,12 @@ export default defineComponent({
 			default: null,
 		},
 		question: {
-			type: [Object, Number],
+			type: Array as unknown as PropType<{
+				index: number;
+				text: string;
+				isCorrect: boolean;
+			}>,
+
 			required: true,
 		},
 		score: {
@@ -209,6 +222,13 @@ export default defineComponent({
 		const visible_summary = reactive({
 			value: false,
 		});
+
+		const answers = Array.from({ length: 4 }, () => ({
+			text: "",
+			isCorrect: false,
+		}));
+
+		const answersForm = reactive(answers);
 		const openQuestionIndex = ref(null);
 		const openQuestion = (question: any) => {
 			openQuestionIndex.value =
@@ -222,6 +242,8 @@ export default defineComponent({
 		const editorVisible = ref(false);
 
 		onMounted(() => {
+			console.log("questions:", answers);
+
 			editorVisible.value = true;
 		});
 
@@ -255,6 +277,8 @@ export default defineComponent({
 			openQuestionIndex,
 			setScore,
 			scoreValue,
+			answersForm,
+			answers,
 		};
 	},
 	components: {
@@ -335,10 +359,33 @@ export default defineComponent({
 .oil-question
 
     &__radio
+        position: relative
+        cursor: pointer
         width: rem(20)
         height: rem(20)
         border-radius: 50%
         border: rem(1) solid $basic_primary
+        &:before
+            transition: opacity 0.3s
+            content: ''
+            position: absolute
+            opacity: 0
+            top: 50%
+            left: 50%
+            display: block
+            width: 101%
+            height: 101%
+            border-radius: 100%
+            background-color: $basic_primary
+            transform: translate(-50%, -50%) scale(0, 0)
+        &:hover
+            &::before
+                transform: scale(1, 1)
+                opacity: .4
+
+        &.active
+            &:before
+                opacity: 1
 
     span
         font-size: rem(16)
