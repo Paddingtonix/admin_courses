@@ -54,7 +54,7 @@ export default defineComponent({
         
 
     // Iak 68
-        // const host = 'http://192.168.19.204:8081/' as string
+        // const host = 'http://192.168.19.65:8081/' as string
 
     // Bob Safronoff
         const host = 'http://195.133.145.105:8082/' as string

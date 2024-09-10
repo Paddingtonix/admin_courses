@@ -6,7 +6,7 @@
 				v-if="typeof field === 'string' && field.length"
 				:key="field"
 			>
-				<a v-if="redirect" :href="`/course-setting?search=${id}`">{{
+				<a v-if="redirect" :href="`/course-setting?course=${id}`">{{
 					field
 				}}</a>
 				<span v-else-if="!redirect">{{ field }}</span>
