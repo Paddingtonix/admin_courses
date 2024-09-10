@@ -5,7 +5,7 @@
 				{{ question_title }} {{ question_id + 1 }}
 			</span>
 			<div
-				v-show="!openQuestionIndex"
+				v-show="openQuestionIndex === null"
 				class="oil-course-content__test__question__btn-wrapper"
 			>
 				<i class="oil-arrow-up">
@@ -106,12 +106,15 @@
 						вопроса или добавить медиа.</span
 					>
 					<CheckboxCmp
+						v-if="!isImg"
 						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${
 							question_id + 1
 						}”)`"
 					/>
 					<editor
 						v-if="editorVisible"
+						id="tiny-editor"
+						v-model="editorValue"
 						api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
 						:init="{
 							height: 233,
@@ -138,13 +141,19 @@
 					>
 					<div
 						class="oil-question__answer"
-						v-for="(answer, index) in answersForm"
+						v-for="(answer, index) in answers"
+						:key="index"
 					>
 						<div
 							:class="{ active: answer.isCorrect }"
 							class="oil-question__radio"
+							@click="setCorrectAnswer(index)"
 						></div>
-						<InputCmp :label="`Ответ ${index + 1}`" />
+						<InputCmp
+							:label="`Ответ ${index + 1}`"
+							:model-value="answer.text"
+							@set_value="setAnswerValue(index, $event.value)"
+						/>
 					</div>
 				</div>
 				<div class="oil-question__body">
@@ -177,7 +186,7 @@
 	</div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, type PropType } from "vue";
+import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 import { validateForm } from "~/src/utils/validateForm";
 
@@ -205,7 +214,6 @@ export default defineComponent({
 				text: string;
 				isCorrect: boolean;
 			}>,
-
 			required: true,
 		},
 		score: {
@@ -223,14 +231,16 @@ export default defineComponent({
 			value: false,
 		});
 
-		const answers = Array.from({ length: 4 }, () => ({
-			text: "",
-			isCorrect: false,
-		}));
+		const answers = reactive(
+			Array.from({ length: 4 }, () => ({
+				text: "",
+				isCorrect: false,
+			}))
+		);
 
-		const answersForm = reactive(answers);
-		const openQuestionIndex = ref(null);
-		const openQuestion = (question: any) => {
+		const openQuestionIndex = ref<number | null>(null);
+
+		const openQuestion = (question: number) => {
 			openQuestionIndex.value =
 				question === openQuestionIndex.value ? null : question;
 		};
@@ -239,12 +249,12 @@ export default defineComponent({
 			score: props.score,
 			error: "",
 		});
+
 		const editorVisible = ref(false);
-
+		const editorValue = ref("");
 		onMounted(() => {
-			console.log("questions:", answers);
-
 			editorVisible.value = true;
+			console.log("Mounted! Editor visibility set to true.");
 		});
 
 		const openSummaryQuestion = () => {
@@ -262,13 +272,40 @@ export default defineComponent({
 					options: { validateScore: true },
 				})
 			) {
-				console.log(scoreValue.score);
 				scoreValue.error = "ошибка";
 			} else {
 				scoreValue.error = "";
 			}
 		};
 
+		const setAnswerValue = (answerId: number, text: string) => {
+			answers[answerId].text = text;
+		};
+
+		const setCorrectAnswer = (answerId: number) => {
+			for (const answer of answers) {
+				answer.isCorrect = false;
+			}
+			answers[answerId].isCorrect = !answers[answerId].isCorrect;
+		};
+
+		const isImg = ref(false);
+		watch(editorValue, () => {
+			console.log(editorValue.value);
+			if (
+				validateForm({
+					currentForm: editorValue,
+					initialForm: {},
+					requiredFields: [],
+					options: { checkImgTag: true },
+				})
+			) {
+				console.log("contains img!");
+				isImg.value = true;
+			} else {
+				isImg.value = false;
+			}
+		});
 		return {
 			visible_summary,
 			openSummaryQuestion,
@@ -277,8 +314,11 @@ export default defineComponent({
 			openQuestionIndex,
 			setScore,
 			scoreValue,
-			answersForm,
 			answers,
+			setAnswerValue,
+			setCorrectAnswer,
+			editorValue,
+			isImg,
 		};
 	},
 	components: {
@@ -371,20 +411,23 @@ export default defineComponent({
             position: absolute
             opacity: 0
             top: 50%
-            left: 50%
+            left: 49.05%
             display: block
-            width: 101%
-            height: 101%
+            width: 50%
+            height: 50%
             border-radius: 100%
             background-color: $basic_primary
-            transform: translate(-50%, -50%) scale(0, 0)
+            transform: translate(-50%, -50%) scale(0)
+            transition: transform .3s
+
         &:hover
             &::before
-                transform: scale(1, 1)
+                transform: translate(-50%, -50%) scale(.4)
                 opacity: .4
 
-        &.active
+        &:active, &.active
             &:before
+                transform: translate(-50%, -50%) scale(1.5)
                 opacity: 1
 
     span
