@@ -388,7 +388,7 @@
                             <div
                                 class="oil-course-setting__content__container__inner"
                                 @mousemove="createBlock($event, 'part')"
-                                :class="{_filled: part}"
+                                :class="{_filled: part, _active: edit_field.type_field === 'parts' && edit_field.idx_field === idx}"
                             >
                                 <span>{{ part.title === null ? 'Вводная страница' : part.title }}</span>
                                 <input 
