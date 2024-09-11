@@ -28,7 +28,7 @@ export default defineComponent({
 			storeModal.openModal();
 		};
 		const preloader = reactive({
-			value: false,
+			value: true,
 		});
 
 		onMounted(() => {
@@ -38,10 +38,9 @@ export default defineComponent({
 				axios.defaults.headers.common[
 					"Authorization"
 				] = `Bearer ${course_auth_token}`;
-				
+
 				user_role_store.getUserRole();
 				storeAuth.logIn();
-				storeModal.closeModal();
 				storeModal.closeModal();
 				preloader.value = false;
 			} else {

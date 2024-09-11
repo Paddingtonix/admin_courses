@@ -66,7 +66,7 @@ const allFieldsFilled = (
 
 // Функция для проверки значения score(балл в course-content)
 const validateScore = (form: Record<string, any>): boolean => {
-	return form.score > 0 && form.score <= 3;
+	return form.correctAnswerScore > 0 && form.correctAnswerScore <= 3;
 };
 
 // Основная функция для проверки формы с дополнительными опциями

@@ -1,73 +1,56 @@
 import axios, { type AxiosResponse } from "axios";
 import { defineStore } from "pinia";
+import type {
+	ICourseContent,
+	ICourseContentQuestions,
+	IDirectionResponse,
+	IGeneralCourseSettings,
+	mappedDirections,
+} from "../ts-interface/course-content";
 
-interface IAnswer {
-    id: number,
-    text: string,
-    isCorrectAnswer: boolean,
-    directionId: number
-}
+export const useStoreCourseContent = defineStore("course-content", {
+	state: () => ({
+		generalSettings: {} as IGeneralCourseSettings,
+		directions: [] as mappedDirections[],
+		questions: [] as ICourseContentQuestions[],
+	}),
+	actions: {
+		async getDirections() {
+			return axios
+				.get("admin/v1/Direction")
+				.then((response) => {
+					const data = response.data as IDirectionResponse;
+					const filteredData = data.directions.map((direction) => ({
+						id: direction.directionId,
+						name: direction.localizedName,
+					}));
 
-interface IQuestion {
-      id: number,
-      correctAnswerScore: number,
-      directionId: number,
-      contentId: number,
-      content: string,
-      answers: IAnswer[]
-}
+					this.directions = filteredData;
+				})
+				.catch((err) => {
+					console.warn(
+						"ошибка storeCourseContent, getDirections: ",
+						err
+					);
+				})
+				.finally(() => {});
+		},
 
-interface IDirection {
-    directionId: number,
-    lastChangeDateTime: string,
-    localizedName: string,
-    isVisible: boolean,
-    count: number
-}
-
-interface mappedDirections {
-    id: number,
-    name: string
-}
-
-
-interface IDirectionResponse {
-        totalDirectionsCount: number,
-        visibleDirectionsCount: number,
-        directions: IDirection[]
-    }
-
-export const useStoreCourseContent = defineStore('course-content', {
-    state: () => ({
-        directions: [] as mappedDirections[],
-        questions: [] as IQuestion[],
-
-    }),
-    actions: {
-        async getDirections(){
-            axios.interceptors.request.use(
-                (request) => {
-                    console.log('Блять, а они отправляются', request);
-                    return request;
-                },
-                (error) => {
-                    console.error('Ошибка ответа:', error);
-                    return Promise.reject(error);
-                }
-            );
-            return axios.get('admin/v1/Direction')
-            .then((response) => {
-                const data = response.data as IDirectionResponse;
-                const filteredData = data.directions.map(direction => ({
-                    id: direction.directionId,
-                    name: direction.localizedName,
-                }));
-
-               this.directions = filteredData;
-               
-            }).catch(err => {
-                console.warn('ошибка storeCourseContent, getDirections: ', err);
-            })
-        }
-    },
-})
+		getCourseContent(id: number) {
+			return axios
+				.get<ICourseContent>(`admin/v1/Testing/${id}`)
+				.then((response) => {
+					const { data } = response;
+					this.questions = data.questions;
+					this.generalSettings = {
+						title: data.title,
+						cutScorePercentages: data.cutScorePercentages,
+					};
+				})
+				.catch((error) => {
+					console.log(error);
+				})
+				.finally(() => {});
+		},
+	},
+});

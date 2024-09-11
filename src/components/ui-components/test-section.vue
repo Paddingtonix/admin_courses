@@ -2,7 +2,7 @@
 	<div class="oil-course-content__test">
 		<div>
 			<div
-				v-for="(setting, idx) in general_settings_values"
+				v-for="(setting, idx) of general_settings_values"
 				:key="idx"
 				class="oil-course-content__test__general-settings"
 			>
@@ -93,11 +93,12 @@
 		<div>
 			<template v-for="(question, index) in questions" :key="index">
 				<QuestionCmp
-					:name="question.index"
-					:question_title="'Вопрос'"
-					:question_id="question.index"
-					:questions="question"
-					:isCorrectAnswer="false"
+					:question_title="
+						!question.title ? 'Вопрос' : question.title
+					"
+					:question_id="index"
+					:question="question"
+					@changeQuestion="changeQuestion($event)"
 					:selector-object="courseContentState.directions"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
@@ -132,6 +133,7 @@
 <script setup lang="ts">
 import { ref, defineProps, type PropType } from "vue";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
+import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 const courseContentStore = useStoreCourseContent();
 
@@ -164,16 +166,8 @@ const props = defineProps({
 		default: "Вопрос",
 	},
 	questions: {
-		type: Array as PropType<
-			{ index: number; isCorrect: boolean; text: string }[]
-		>,
-		default: () => [
-			{ index: 0, isCorrect: false, text: "" },
-			{ index: 1, isCorrect: false, text: "" },
-			{ index: 2, isCorrect: false, text: "" },
-			{ index: 3, isCorrect: false, text: "" },
-			{ index: 4, isCorrect: false, text: "" },
-		],
+		type: Array as PropType<ICourseContentQuestions[]>,
+		required: true,
 	},
 	noDataText: {
 		type: String,
@@ -206,6 +200,16 @@ const general_settings_values = reactive(
 		isEditing: false,
 	}))
 );
+
+const changeQuestion = ({
+	question,
+}: {
+	question: ICourseContentQuestions;
+}) => {
+	courseContentStore.$patch((state) => {
+		state.questions[question.id] = question;
+	});
+};
 
 const editSetting = (id: number) => {
 	for (const value of general_settings_values) {

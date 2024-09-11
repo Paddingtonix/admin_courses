@@ -12,14 +12,17 @@
 						наполнение на сайте. Доступна опция выгрузки курса на ПК
 						в формате PDF."
 				:buttonText="'Скачать PDF'"
-				:buttonClick="downloadPDF"
+				:buttonClick="() => {}"
 			>
 			</AttentionMessage>
 			<ContentModule
 				:general_setting="general_setting.value"
 				v-if="content === 'text'"
 			></ContentModule>
-			<TestSection v-else-if="content === 'test'">
+			<TestSection
+				:questions="courseContentStore.questions"
+				v-else-if="content === 'test'"
+			>
 				<template #summary-text>
 					<div class="oil-course-content__attention__text__frame">
 						<span>Структура теста</span>
@@ -73,6 +76,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import Editor from "@tinymce/tinymce-vue";
+import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 
 export default defineComponent({
 	props: {
@@ -88,7 +92,10 @@ export default defineComponent({
 	setup() {
 		const editorVisible = ref(false);
 		const courseStore = useStoreCourses();
+		const route = useRoute();
 
+		const { id } = route.params as unknown as { id: number };
+		const courseContentStore = useStoreCourseContent();
 		const visible_simmary = reactive({
 			value: false,
 		});
@@ -120,29 +127,12 @@ export default defineComponent({
 			open_question.value = open_question.value === idx ? 0 : idx;
 		};
 
-		const downloadPDF = () => {
-			const element = document.querySelector(".oil-course-content");
-
-			if (element) {
-				const options = {
-					margin: 1,
-					filename: `course-info.pdf`,
-					image: { type: "jpeg", quality: 0.98 },
-					html2canvas: { scale: 2 },
-					jsPDF: {
-						unit: "in",
-						format: "letter",
-						orientation: "portrait",
-					},
-				};
-			} else {
-				console.error("Не получилось, не фортмануло :(");
-			}
-		};
-
 		onMounted(() => {
-			editorVisible.value = true;
-			console.log("initial-settings", general_setting.value);
+			console.log("mounted!!");
+
+			courseContentStore.getCourseContent(id);
+
+			console.log("state: ", courseContentStore.$state);
 		});
 
 		return {
@@ -153,7 +143,7 @@ export default defineComponent({
 			open_question,
 			general_setting,
 			courseStore,
-			downloadPDF,
+			courseContentStore,
 		};
 	},
 	components: {
@@ -163,6 +153,12 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
+.spinner
+    display: block
+    margin: 0 auto
+    width: 20%
+    height: max-content
+
 .oil-course-content
     @include flex_column()
     gap: rem(32)

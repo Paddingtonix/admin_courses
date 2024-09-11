@@ -2,13 +2,13 @@
 	<div class="oil-course-content__test__question">
 		<div class="oil-course-content__test__question__frame">
 			<span class="oil-course-content__test__question__title">
-				{{ question_title }} {{ question_id + 1 }}
+				{{ question?.title }}
 			</span>
 			<div
 				v-show="openQuestionIndex === null"
 				class="oil-course-content__test__question__btn-wrapper"
 			>
-				<i class="oil-arrow-up">
+				<!-- <i class="oil-arrow-up">
 					<svg
 						width="14"
 						height="18"
@@ -41,7 +41,7 @@
 							stroke-linejoin="round"
 						/>
 					</svg>
-				</i>
+				</i> -->
 				<i class="oil-edit" @click.stop="openQuestion(question_id)">
 					<svg
 						width="23"
@@ -94,6 +94,10 @@
 					>
 					<MarkSelector
 						:label="'Направление'"
+						:choosed_variable="{
+							name: '',
+							id: question?.directionId,
+						}"
 						:object-list="selectorObject"
 					/>
 				</div>
@@ -106,7 +110,6 @@
 						вопроса или добавить медиа.</span
 					>
 					<CheckboxCmp
-						v-if="!isImg"
 						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${
 							question_id + 1
 						}”)`"
@@ -141,18 +144,18 @@
 					>
 					<div
 						class="oil-question__answer"
-						v-for="(answer, index) in answers"
+						v-for="(answer, index) in question?.answers"
 						:key="index"
 					>
 						<div
-							:class="{ active: answer.isCorrect }"
+							:class="{ active: answer.isCorrectAnswer }"
 							class="oil-question__radio"
-							@click="setCorrectAnswer(index)"
+							@click=""
 						></div>
 						<InputCmp
 							:label="`Ответ ${index + 1}`"
 							:model-value="answer.text"
-							@set_value="setAnswerValue(index, $event.value)"
+							@set_value=""
 						/>
 					</div>
 				</div>
@@ -168,7 +171,7 @@
 					<InputCmp
 						:error="scoreValue.error"
 						:maxlength="1"
-						:model-value="score"
+						:model-value="questionForm.correctAnswerScore"
 						:label="'Балл'"
 						@set_value="setScore($event.value)"
 					/>
@@ -179,7 +182,7 @@
 						:background_type="'_secondary'"
 						:text="'Отмена'"
 					/>
-					<BtnCmp :text="'Сохранить'" />
+					<BtnCmp :text="'Сохранить'" @click="changeQuestion" />
 				</div>
 			</div>
 		</div>
@@ -189,18 +192,19 @@
 import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 import { validateForm } from "~/src/utils/validateForm";
+import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
 	props: {
-		name: {
-			type: [String, Number],
-			default: "",
+		question_id: {
+			type: Number,
+			default: 1,
 		},
 		question_title: {
 			type: String,
 			default: "Вопрос",
 		},
-		question_id: {
+		question_index: {
 			type: Number,
 			default: 1,
 		},
@@ -209,11 +213,7 @@ export default defineComponent({
 			default: null,
 		},
 		question: {
-			type: Array as unknown as PropType<{
-				index: number;
-				text: string;
-				isCorrect: boolean;
-			}>,
+			type: Object as unknown as PropType<ICourseContentQuestions>,
 			required: true,
 		},
 		score: {
@@ -225,18 +225,17 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ["set_score"],
+	emits: ["set_score", "change_question"],
 	setup(props, { emit }) {
 		const visible_summary = reactive({
 			value: false,
 		});
 
-		const answers = reactive(
-			Array.from({ length: 4 }, () => ({
-				text: "",
-				isCorrect: false,
-			}))
-		);
+		const questionForm: ICourseContentQuestions = reactive(props.question);
+
+		const changeQuestion = () => {
+			emit("change_question", questionForm);
+		};
 
 		const openQuestionIndex = ref<number | null>(null);
 
@@ -254,7 +253,6 @@ export default defineComponent({
 		const editorValue = ref("");
 		onMounted(() => {
 			editorVisible.value = true;
-			console.log("Mounted! Editor visibility set to true.");
 		});
 
 		const openSummaryQuestion = () => {
@@ -262,13 +260,13 @@ export default defineComponent({
 		};
 
 		const setScore = (value: number) => {
-			scoreValue.score = value;
-			emit("set_score", scoreValue.score);
+			questionForm.correctAnswerScore = value;
+			emit("set_score", questionForm.correctAnswerScore);
 			if (
 				!validateForm({
-					currentForm: scoreValue,
-					initialForm: {},
-					requiredFields: ["score"],
+					currentForm: questionForm,
+					initialForm: props.question,
+					requiredFields: ["correctAnswerScore"],
 					options: { validateScore: true },
 				})
 			) {
@@ -278,34 +276,6 @@ export default defineComponent({
 			}
 		};
 
-		const setAnswerValue = (answerId: number, text: string) => {
-			answers[answerId].text = text;
-		};
-
-		const setCorrectAnswer = (answerId: number) => {
-			for (const answer of answers) {
-				answer.isCorrect = false;
-			}
-			answers[answerId].isCorrect = !answers[answerId].isCorrect;
-		};
-
-		const isImg = ref(false);
-		watch(editorValue, () => {
-			console.log(editorValue.value);
-			if (
-				validateForm({
-					currentForm: editorValue,
-					initialForm: {},
-					requiredFields: [],
-					options: { checkImgTag: true },
-				})
-			) {
-				console.log("contains img!");
-				isImg.value = true;
-			} else {
-				isImg.value = false;
-			}
-		});
 		return {
 			visible_summary,
 			openSummaryQuestion,
@@ -314,11 +284,9 @@ export default defineComponent({
 			openQuestionIndex,
 			setScore,
 			scoreValue,
-			answers,
-			setAnswerValue,
-			setCorrectAnswer,
 			editorValue,
-			isImg,
+			changeQuestion,
+			questionForm,
 		};
 	},
 	components: {
