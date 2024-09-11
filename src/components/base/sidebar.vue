@@ -149,15 +149,16 @@ export default defineComponent({
             },
         ]
 
-        const roleMenu = computed(() => {            
+        const roleMenu = computed(() => {
             if (user_role_store.role === 'Admin') {
                 console.log(menu_bar);
 
                 return menu_bar.slice(0, 3);
             } else if (user_role_store.role === 'Author') {
                 console.log(menu_bar);
+                const author_menu = { ...menu_bar[0], name: 'Мои курсы' };
 
-                return menu_bar.slice(0, 1);
+                return [author_menu];
             }
 
             return menu_bar 
