@@ -1,22 +1,32 @@
 <template>
 	<div class="oil-row">
-		<template v-for="field in fields">
-			<div
-				class="oil-row__cell"
-				v-if="typeof field === 'string' && field.length"
-				:key="field"
-			>
-				<a v-if="redirect" :href="`/course-setting?search=${id}`">{{
-					field
-				}}</a>
-				<span v-else-if="!redirect">{{ field }}</span>
-			</div>
-		</template>
+        <template v-for="(field, key) in fields" :key="key">
+            <div
+                class="oil-row__cell"
+                v-if="typeof field === 'string' && field.length"
+            >
+                <a
+                    v-if="redirect && key === 'name'"
+                    :href="`/course-setting?search=${id}`"
+                >
+                    {{ field }}
+                </a>
+                <span
+                    class="oil-row__cell__status"
+                    v-else-if="key === 'status'"
+                    @click="statusChange(field)"
+                >
+                    {{ field }}
+                </span>
+                <span v-else>{{ field }}</span>
+            </div>
+        </template>
 		<slot name="svg" />
 	</div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useStoreModal } from "~/src/stores/storeModal";
 
 export default defineComponent({
 	props: {
@@ -75,9 +85,54 @@ export default defineComponent({
 	},
 	setup(props) {
 		const fields = props;
+        const modalStore = useStoreModal();
+
+        const statusChange = (status: string) => {
+            switch (status) {
+                case "В разработке":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "development-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "На модерации":
+                    modalStore.$patch({
+                        label: "Изменение статуса",
+                        activeModal: "moderation-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "Опубликован":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "published-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "Снят с витрины":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "out-of-stock-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "В архиве":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "archived-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                default:
+                    break;
+            }
+            return "";
+        };
 
 		return {
 			fields,
+            statusChange
 		};
 	},
 });
@@ -88,6 +143,10 @@ export default defineComponent({
     border-bottom: rem(1) solid $disabled_basic
     &__cell
         padding: rem(8)
+
+        &__status
+            cursor: pointer
+            color: $basic_primary
 
         &:nth-child(1)
             flex: 4

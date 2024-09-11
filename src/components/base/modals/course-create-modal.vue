@@ -1,6 +1,5 @@
 <template>
-    <!-- курс создан -->
-    <div :class="`oil-modal__course-create`" v-if="storeModal.activeModal === 'course-create-modal'">
+    <div :class="`oil-modal__course-create`">
         <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_239_29489)">
                 <circle cx="44" cy="44" r="44" fill="#27AE63" fill-opacity="0.05" />
@@ -19,173 +18,22 @@
             @click="closeModal"
         />
     </div>
-    <!-- в разработке -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.development">
-        <span :class="`oil-modal__course-create__text`">Курс находится в разработке у автора. Вы не можете изменить статус курса.</span>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- на модерации -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.moderation">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Этот курс находится в статусе “На модерации”.</span>
-            <span>Если вы закончили проверку курса, и курс не нуждается в изменениях от автора, измените статус на “Опубликован” и курс станет доступен к приобретению.</span>
-            <span>Если курс нуждается в доработке, измените статус на “В разработке”.</span>
-        </div>
-        <div :class="`oil-modal__course-create__radios`">
-            <RadioCmp
-                v-for="(radio, radio_idx) in radio_moderation" :key="radio_idx"
-                :text="radio.text"
-                :id="radio_idx"
-                :active="active_radio"
-                @set_radio="setRadioValue"
-            />
-        </div>
-        <div :class="`oil-modal__course-create__btns`">
-            <BtnCmp
-                :text="'Отмена'"
-                :background_type="'_secondary'"
-                @click="closeModal"
-            />
-            <BtnCmp
-                :text="'Изменить'"
-            />
-        </div>
-    </div>
-    <!-- есть ошибка по дате -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.oneError">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Вы не можете отправить курс на публикацию.</span>
-            <span>Обнаружена ошибка: дата снятия курса с витрины меньше текущей даты.</span>
-            <span>Исправьте ошибку и попробуйте ещё раз или убедитесь что вы совершаете правильное действие. </span>
-        </div>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- есть несколько ошибок -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.someError">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Вы не можете отправить курс на публикацию.</span>
-            <ul>Обнаружены ошибки:
-                <li>Дата снятия курса с витрины меньше текущей даты</li>
-                <li>Дата снятия курса с витрины меньше текущей даты</li>
-                <li>Дата снятия курса с витрины меньше текущей даты</li>
-            </ul>
-            <span>Исправьте ошибку и попробуйте ещё раз или убедитесь что вы совершаете правильное действие. </span>
-        </div>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- опубликован -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.published">
-        <span :class="`oil-modal__course-create__text`">Курс размещен на витрине сайта. Дата снятия курса с витрины - {{ published_date }}</span>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- снят с витрины -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.removed">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Курс снят с витрины сайта и доступен только тем пользователям, которые приобрели его ранее.</span>
-            <span>Курс автоматически переместится в архив после {{ removed_date }}.</span>
-        </div>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- в архиве -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.archived">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Курс находится в архиве.</span>
-            <span>Весь контент курса доступен в PDF-файле, который можно найти на странице просмотра курса во вкладке “Содержание”.</span>
-        </div>
-        <BtnCmp
-            :text="'Понятно'"
-            @click="closeModal"
-        />
-    </div>
-    <!-- удаление курса -->
-    <div :class="`oil-modal__course-create`" v-if="storeCourse.deleteCourse">
-        <div :class="`oil-modal__course-create__text`">
-            <span>Внимание! Если вы удалите курс, всё его содержимое удалится автоматически и не будет доступно к восстановлению.</span>
-            <span>Вы уверены, что хотите удалить курс “[Название курса]”?</span>
-        </div>
-        <div :class="`oil-modal__course-create__btns`">
-            <BtnCmp
-                :text="'Отмена'"
-                :background_type="'_secondary'"
-                @click="closeModal"
-            />
-            <BtnCmp
-                :text="'Удалить'"
-                :background_type="'_quaternary'"
-            />
-        </div>
-    </div>
 </template>
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
-import { useStoreCourses } from "~/src/stores/storeCourse";
-import BtnCmp from "../../ui-components/btn-cmp.vue";
-import RadioCmp from "../../ui-components/radio-cmp.vue";
 
 export default defineComponent({
-	props: {
-		main_class: {
-			type: String,
-		},
-		published_date: {
-			type: String,
-			default: "28.07.2025",
-		},
-		removed_date: {
-			type: String,
-			default: "28.07.2026",
-		},
-	},
 	setup() {
 		const storeModal = useStoreModal();
-		const storeCourse = useStoreCourses();
-        const router = useRouter();
-
-		const radio_moderation = reactive([
-			{
-				text: "В разработке",
-			},
-			{
-				text: "Опубликован",
-			},
-		]);
-
-		const active_radio = ref<number | null>(null);
 
 		const closeModal = () => {
 			storeModal.closeModal();
-            if (storeModal.activeModal === 'course-create-modal') {
-                router.push({ name: 'course-page' });
-            }
-		};
-
-		const setRadioValue = (id_radio: number) => {
-			active_radio.value = id_radio;
 		};
 
 		return {
 			storeModal,
-			storeCourse,
-			radio_moderation,
-			active_radio,
 			closeModal,
-			setRadioValue,
 		};
 	},
 });
@@ -203,28 +51,4 @@ export default defineComponent({
             display: flex
             flex-direction: column
             gap: rem(12)
-            ul
-                list-style-type: disc
-                li
-                    margin-left: rem(24)
-
-                    &:first-child
-                        margin-top: rem(8)
-
-                    &:not(:last-child)
-                        margin-bottom: rem(8)
-
-        &__radio-btns
-            @include flex_column
-
-        &__btns
-            @include flex_center
-            gap: rem(12)
-            .oil-btn
-                width: rem(194)
-
-        &__radios
-            @include flex_column
-            gap: rem(16)
-            align-self: flex-start
 </style>
