@@ -333,7 +333,10 @@
                     <div class="oil-course-setting__content__container" v-if="!preloader.value">
                         <div
                             class="oil-course-setting__content__container__inner"
-                            :class="{_filled: content_inner.value.initialPage}"
+                            :class="{
+                                _filled: content_inner.value.initialPage, 
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
                             @mousemove="createBlock($event, 'introductory')"
                         >
                             <template v-if="content_inner.value.initialPage">
@@ -345,7 +348,7 @@
                                     @delete-trigger="reloadContent"
                                 />
                             </template>
-                            <trasition name="fade">
+                            <transition name="fade">
                                 <CourseArchitectureAddBlock 
                                     v-if="!content_inner.value.initialPage"
                                     :style="{top: -15 + 'px'}"
@@ -354,11 +357,14 @@
                                     :block_id="$route.query.course"
                                     @request-trigger="reloadContent"
                                 />     
-                            </trasition>
+                            </transition>
                         </div>
                         <div
                             class="oil-course-setting__content__container__inner"
-                            :class="{_filled: content_inner.value.initialTesting}"
+                            :class="{
+                                _filled: content_inner.value.initialTesting,
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
                             @mousemove="createBlock($event, 'start_test')"
                         >
                             <template v-if="content_inner.value.initialTesting">
@@ -370,7 +376,7 @@
                                     @delete-trigger="reloadContent"
                                 />
                             </template>
-                            <trasition name="fade">
+                            <transition name="fade">
                                 <CourseArchitectureAddBlock 
                                     v-if="!content_inner.value.initialTesting && content_inner.value.initialPage"
                                     :style="{top: -15 + 'px'}"
@@ -379,7 +385,7 @@
                                     :block_id="$route.query.course"
                                     @request-trigger="reloadContent"
                                 />       
-                            </trasition>
+                            </transition>
                         </div>
                         <template
                             v-for="(part, idx) in content_inner.value.parts"
@@ -388,11 +394,16 @@
                             <div
                                 class="oil-course-setting__content__container__inner"
                                 @mousemove="createBlock($event, 'part')"
-                                :class="{_filled: part, _active: edit_field.type_field === 'parts' && edit_field.idx_field === idx}"
+                                :class="{
+                                    _filled: part, 
+                                    _active: edit_field.type_field === 'Part' && edit_field.idx_field === idx,
+                                    _disable: (edit_field.type_field !== 'Part' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                }"
+
                             >
                                 <span>{{ part.title === null ? 'Вводная страница' : part.title }}</span>
                                 <input 
-                                    v-if="edit_field.type_field === 'parts' && edit_field.idx_field === idx"
+                                    v-if="edit_field.type_field === 'Part' && edit_field.idx_field === idx"
                                     class="oil-course-setting__content__container__inner__input"
                                     v-model="changes_value.value"
                                 />
@@ -400,10 +411,10 @@
                                     :delete_id="part.id"
                                     :delete_type="'Part'"
                                     @delete-trigger="reloadContent"
-                                    @edit-trigger="editTitle($event, idx, 'parts')"
+                                    @edit-trigger="editTitle($event, idx, 'Part', part.id)"
                                     :arrow="{up: !idx ? false: true, down: idx === content_inner.value.parts.length - 1 ? false : true}"
                                 />
-                                <trasition name="fade">
+                                <transition name="fade">
                                     <CourseArchitectureAddBlock 
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
@@ -411,22 +422,31 @@
                                         @request-trigger="reloadContent"
                                         v-if="idx === content_inner.value.parts.length - 1"
                                     />     
-                                </trasition>
+                                </transition>
                             </div>
                             <template v-for="(chapter, idx) in part.chapters" :key="idx">
                                 <div 
                                     class="oil-course-setting__content__container__inner _chapter"
                                     @mousemove="createBlock($event, 'chapter')"
-                                    :class="{_filled: chapter}"
+                                    :class="{
+                                        _filled: chapter, 
+                                        _active: edit_field.type_field === 'Chapter' && edit_field.idx_field === idx,
+                                        _disable: (edit_field.type_field !== 'Chapter' || edit_field.idx_field !== idx) && edit_field.idx_field !== null}"
                                 >
                                     <span>{{ chapter.title === null ? 'Вводная страница' : chapter.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'Chapter' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
                                     <CourseArchitectureIcons 
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
                                         @delete-trigger="reloadContent"
+                                        @edit-trigger="editTitle($event, idx, 'Chapter', chapter.id)"
                                         :arrow="{up: !idx ? false: true, down: idx ===  part.chapters.length - 1 ? false : true}"
                                     />
-                                    <trasition name="fade">
+                                    <transition name="fade">
                                         <CourseArchitectureAddBlock 
                                             :btn_text="'главу'"
                                             :request_type="{type:'Chapter', query: 'partId'}"
@@ -434,23 +454,33 @@
                                             @request-trigger="reloadContent"
                                             v-if="idx === part.chapters.length - 1"
                                         />     
-                                    </trasition>
+                                    </transition>
                                 </div>
                                 <div 
                                     class="oil-course-setting__content__container__inner _section"
                                     @mousemove="createBlock($event, 'section')"
-                                    :class="{_filled: section}"
+                                    :class="{
+                                        _filled: section, 
+                                        _active: edit_field.type_field === 'Section' && edit_field.idx_field === idx,
+                                        _disable: (edit_field.type_field !== 'Section' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                    }"
                                     v-for="(section, idx) in chapter.sections"
                                     :key="idx"
                                 >
                                     <span>{{ section.title === null ? 'Вводная страница' : section.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'Section' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
                                     <CourseArchitectureIcons 
                                         :delete_id="section.id"
                                         :delete_type="'Section'"
                                         @delete-trigger="reloadContent"
+                                        @edit-trigger="editTitle($event, idx, 'Section', section.id)"
                                         :arrow="{up: !idx ? false: true, down: idx === chapter.sections.length - 1 ? false : true}"
                                     />
-                                    <trasition name="fade">
+                                    <transition name="fade">
                                         <CourseArchitectureAddBlock 
                                             :btn_text="'раздел'"
                                             :request_type="{type:'Section', query: 'chapterId'}"
@@ -458,13 +488,22 @@
                                             @request-trigger="reloadContent"
                                             v-if="idx === chapter.sections.length - 1"
                                         />     
-                                    </trasition>
+                                    </transition>
                                 </div>
                                 <div 
                                     class="oil-course-setting__content__container__inner _chapter"
-                                    :class="{_filled: chapter}"
+                                    :class="{
+                                        _filled: chapter, 
+                                        _active: edit_field.type_field === 'testing' && edit_field.idx_field === idx,
+                                        _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                                    }"
                                 >
                                     <span>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'testing' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
                                     <CourseArchitectureIcons 
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
@@ -475,7 +514,11 @@
                         </template>
                         <div
                             class="oil-course-setting__content__container__inner"
-                            :class="{_filled: content_inner.value.finalTesting}"
+                            :class="{
+                                _filled: content_inner.value.finalTesting, 
+                                _active: edit_field.type_field === 'final_test' && edit_field.idx_field === idx,
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
                             @mousemove="createBlock($event, 'final_test')"
                         >
                             <template v-if="content_inner.value.finalTesting">
@@ -486,7 +529,7 @@
                                     @delete-trigger="reloadContent"
                                 />
                             </template>
-                            <trasition name="fade">
+                            <transition name="fade">
                                 <CourseArchitectureAddBlock 
                                     v-if="!content_inner.value.finalTesting"
                                     :style="{top: -15 + 'px'}"
@@ -495,11 +538,13 @@
                                     :block_id="$route.query.course"
                                     @request-trigger="reloadContent"
                                 />     
-                            </trasition>
+                            </transition>
                         </div>
                         <div
                             class="oil-course-setting__content__container__inner"
-                            :class="{_filled: content_inner.value.finalPage}"
+                            :class="{_filled: content_inner.value.finalPage, 
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
                         >
                             <span>{{ content_inner.value.finalPage.title === null ? 'Итоги' : content_inner.value.finalPage.title }}</span>
                         </div>
@@ -810,13 +855,22 @@ export default defineComponent({
             storeEditCourseSetting.edit()
         }
 
-        const editTitle = (state: boolean, idx: number, type: string) => {
+        const editTitle = (state: boolean, idx: number, type: string, id: number) => {
             if(state) {
                 edit_field.idx_field = idx
                 edit_field.type_field = type
             } else {
-                edit_field.idx_field = null
-                edit_field.type_field = null
+                axios
+                    .patch(`/admin/v1/${edit_field.type_field}/${id}`, {
+                        title: changes_value.value
+                    })
+                    .then((resp) => {
+                        console.log(resp);
+                    })
+                    .finally(() => {
+                        edit_field.idx_field = null
+                        edit_field.type_field = null
+                    })
             }
         }
 
@@ -1230,7 +1284,11 @@ export default defineComponent({
                         bottom: 0
                         opacity: 0
                         transition: opacity .2s
-
+                
+                &._disable 
+                    opacity: .4
+                    pointer-events: none
+                
                 &:hover 
                     background-color: $disabled_basic
                     .oil-architecture__icons
@@ -1239,6 +1297,12 @@ export default defineComponent({
                     .oil-architecture__btn
                         opacity: 1
                 
+                &._active 
+                    .oil-architecture__icons
+                        opacity: 0
+                    
+                    .oil-architecture__btn
+                        opacity: 0
 
                 &:first-child
                     border-radius: rem(8) rem(8) 0 0
