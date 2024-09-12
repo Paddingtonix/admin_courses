@@ -31,6 +31,7 @@ export interface IAnswerResponse {
 export interface ICourseContentQuestions {
 	id: number;
 	orderInTesting: number;
+	showFullTitle: boolean;
 	title: string;
 	correctAnswerScore: number;
 	directionId: number;

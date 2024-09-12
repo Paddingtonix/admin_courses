@@ -41,11 +41,41 @@ export const useStoreCourseContent = defineStore("course-content", {
 				.get<ICourseContent>(`admin/v1/Testing/${id}`)
 				.then((response) => {
 					const { data } = response;
+					console.log(data);
+
 					this.questions = data.questions;
 					this.generalSettings = {
 						title: data.title,
 						cutScorePercentages: data.cutScorePercentages,
 					};
+				})
+				.catch((error) => {
+					console.log(error);
+				})
+				.finally(() => {});
+		},
+		patchCourseContent(
+			id: number,
+			formData: { title?: string; cutScorePercentages?: number }
+		) {
+			return axios
+				.patch(`admin/v1/Testing/${id}`, formData)
+				.then((response) => {
+					console.log(response);
+				})
+				.catch((error) => {
+					console.log(error);
+				})
+				.finally(() => {});
+		},
+
+		patchQuestion(formData: ICourseContentQuestions) {
+			console.log("pidaras ebaniy ", formData);
+
+			return axios
+				.patch(`admin/v1/Question/${formData.id}`, formData)
+				.then((response) => {
+					console.log(response);
 				})
 				.catch((error) => {
 					console.log(error);

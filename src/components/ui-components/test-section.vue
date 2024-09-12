@@ -2,7 +2,7 @@
 	<div class="oil-course-content__test">
 		<div>
 			<div
-				v-for="(setting, idx) of general_settings_values"
+				v-for="(setting, idx) in general_settings_values"
 				:key="idx"
 				class="oil-course-content__test__general-settings"
 			>
@@ -11,7 +11,7 @@
 				</span>
 				<div
 					class="oil-course-content__test__general-settings__value"
-					:class="{ fullfiled: setting.value.length }"
+					:class="{ fullfiled: setting.title.length }"
 					v-if="
 						idx !==
 						general_settings_values.findIndex(
@@ -20,27 +20,33 @@
 					"
 				>
 					<span>
-						{{ setting.value.length ? setting.value : noDataText }}
+						{{ setting.title?.length ? setting.title : noDataText }}
+						{{
+							setting.title?.length && setting.type === "score"
+								? "%"
+								: null
+						}}
 					</span>
 					<div
 						class="oil-course-content__test__general-settings__value__wrapper"
 						@click="editSetting(idx)"
 					>
-						<span v-if="!setting.value.length">
+						<span v-if="!setting.title.length">
 							{{ setting.desc }}
 						</span>
 						<i v-html="setting.icon || defaultIcon"></i>
 					</div>
 				</div>
-
 				<template v-else>
 					<CourseSettingsInput
 						:id="idx"
 						:type="setting.type"
 						@set_value="changeValueSetting(idx, $event)"
-						@accept="acceptEditing($event)"
+						@accept="
+							acceptEditing($event, setting.type, setting.title)
+						"
 						@decline="cancelEditing($event)"
-						:model_value="setting.value"
+						:model_value="setting.title"
 					/>
 				</template>
 			</div>
@@ -98,7 +104,7 @@
 					"
 					:question_id="index"
 					:question="question"
-					@changeQuestion="changeQuestion($event)"
+					@change_question="changeQuestion($event)"
 					:selector-object="courseContentState.directions"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
@@ -139,23 +145,12 @@ const courseContentStore = useStoreCourseContent();
 
 const courseContentState = courseContentStore.$state;
 
+const emit = defineEmits(["change-setting"]);
+
 const props = defineProps({
 	general_setting: {
 		type: Array,
-		default: () => [
-			{
-				name: "Название теста (опционально)",
-				value: "",
-				type: "title",
-				desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
-			},
-			{
-				name: "Проходной балл *",
-				value: "",
-				type: "score",
-				desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
-			},
-		],
+		required: true,
 	},
 	attentionTitle: {
 		type: String,
@@ -184,7 +179,7 @@ const props = defineProps({
 
 onMounted(() => {
 	courseContentStore.getDirections();
-	console.log("StateCOurse: ", courseContentState.directions);
+	console.log("StateCOurse: ", courseContentState);
 });
 
 const isSummaryVisible = ref(false);
@@ -196,19 +191,15 @@ const openSummary = () => {
 const general_settings_values = reactive(
 	props.general_setting.map((item: any) => ({
 		...item,
-		value: item.value || "",
+		title: item.title || "",
 		isEditing: false,
 	}))
 );
 
-const changeQuestion = ({
-	question,
-}: {
-	question: ICourseContentQuestions;
-}) => {
-	courseContentStore.$patch((state) => {
-		state.questions[question.id] = question;
-	});
+const changeQuestion = (question: ICourseContentQuestions) => {
+	console.log("question: ", question);
+
+	courseContentStore.patchQuestion(question);
 };
 
 const editSetting = (id: number) => {
@@ -219,17 +210,16 @@ const editSetting = (id: number) => {
 };
 
 const changeValueSetting = (id: number, value: string) => {
-	console.log(value);
-
-	general_settings_values[id].value = value;
+	general_settings_values[id].title = value;
 };
 
 const cancelEditing = (id: number) => {
-	general_settings_values[id].value = "";
+	general_settings_values[id].title = "";
 	general_settings_values[id].isEditing = false;
 };
 
-const acceptEditing = (id: number) => {
+const acceptEditing = (id: number, type: string, value: string) => {
+	emit("change-setting", { type, value });
 	general_settings_values[id].isEditing = false;
 };
 </script>

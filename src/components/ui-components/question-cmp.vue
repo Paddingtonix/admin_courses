@@ -2,7 +2,12 @@
 	<div class="oil-course-content__test__question">
 		<div class="oil-course-content__test__question__frame">
 			<span class="oil-course-content__test__question__title">
-				{{ question?.title }}
+				{{
+					question?.title.replace(
+						/(?<=Вопрос )\d+/,
+						`${question_id + 1}`
+					)
+				}}
 			</span>
 			<div
 				v-show="openQuestionIndex === null"
@@ -94,11 +99,13 @@
 					>
 					<MarkSelector
 						:label="'Направление'"
-						:choosed_variable="{
-							name: '',
-							id: question?.directionId,
-						}"
+						:choosed_variable="
+							selectorObject.find(
+								(value) => value.id === questionForm.directionId
+							)
+						"
 						:object-list="selectorObject"
+						@select-object="changeActiveDirection($event)"
 					/>
 				</div>
 				<div class="oil-question__body">
@@ -110,6 +117,8 @@
 						вопроса или добавить медиа.</span
 					>
 					<CheckboxCmp
+						:active="questionForm.showFullTitle"
+						@click="setShowFullTitle"
 						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${
 							question_id + 1
 						}”)`"
@@ -117,7 +126,7 @@
 					<editor
 						v-if="editorVisible"
 						id="tiny-editor"
-						v-model="editorValue"
+						v-model="questionForm.content"
 						api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
 						:init="{
 							height: 233,
@@ -150,12 +159,12 @@
 						<div
 							:class="{ active: answer.isCorrectAnswer }"
 							class="oil-question__radio"
-							@click=""
+							@click="setCorrectAnswer(index)"
 						></div>
 						<InputCmp
 							:label="`Ответ ${index + 1}`"
 							:model-value="answer.text"
-							@set_value=""
+							@set_value="setAnswerText(index, $event.value)"
 						/>
 					</div>
 				</div>
@@ -171,7 +180,11 @@
 					<InputCmp
 						:error="scoreValue.error"
 						:maxlength="1"
-						:model-value="questionForm.correctAnswerScore"
+						:model-value="
+							!questionForm.correctAnswerScore
+								? null
+								: questionForm.correctAnswerScore
+						"
 						:label="'Балл'"
 						@set_value="setScore($event.value)"
 					/>
@@ -234,6 +247,8 @@ export default defineComponent({
 		const questionForm: ICourseContentQuestions = reactive(props.question);
 
 		const changeQuestion = () => {
+			console.log(questionForm);
+
 			emit("change_question", questionForm);
 		};
 
@@ -276,6 +291,25 @@ export default defineComponent({
 			}
 		};
 
+		const setCorrectAnswer = (index: number) => {
+			for (const answer of questionForm.answers) {
+				answer.isCorrectAnswer = false;
+			}
+
+			questionForm.answers[index].isCorrectAnswer = true;
+		};
+
+		const setAnswerText = (index: number, text: string) => {
+			questionForm.answers[index].text = text;
+		};
+
+		const setShowFullTitle = () => {
+			questionForm.showFullTitle = !questionForm.showFullTitle;
+		};
+
+		const changeActiveDirection = (direction: { id: number }) => {
+			questionForm.directionId = direction.id;
+		};
 		return {
 			visible_summary,
 			openSummaryQuestion,
@@ -287,6 +321,10 @@ export default defineComponent({
 			editorValue,
 			changeQuestion,
 			questionForm,
+			setCorrectAnswer,
+			setAnswerText,
+			setShowFullTitle,
+			changeActiveDirection,
 		};
 	},
 	components: {

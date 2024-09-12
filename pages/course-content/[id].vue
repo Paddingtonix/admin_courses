@@ -3,7 +3,7 @@
 		<div class="oil-course-content">
 			<breadCmp
 				:prev_page="['Курсы', `${course_name}`]"
-				:current_page="'Создание курса'"
+				:current_page="courseContentStore.generalSettings.title"
 				class="oil-course-content__bread"
 			/>
 			<AttentionMessage
@@ -15,11 +15,11 @@
 				:buttonClick="() => {}"
 			>
 			</AttentionMessage>
-			<ContentModule
-				:general_setting="general_setting.value"
-				v-if="content === 'text'"
-			></ContentModule>
+			<ContentModule v-if="content === 'text'"></ContentModule>
 			<TestSection
+				@change-setting="changeGeneralSetting($event)"
+				@change-question="changeQuestion($event)"
+				:general_setting="generalSettings"
 				:questions="courseContentStore.questions"
 				v-else-if="content === 'test'"
 			>
@@ -77,6 +77,7 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import Editor from "@tinymce/tinymce-vue";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
+import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
 	props: {
@@ -104,21 +105,6 @@ export default defineComponent({
 			value: 0,
 		});
 
-		const general_setting = reactive({
-			value: [
-				{
-					name: "Название теста (опционально)",
-					value: "",
-					desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
-				},
-				{
-					name: "Проходной балл *",
-					value: "",
-					desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
-				},
-			],
-		});
-
 		const openSummary = () => {
 			visible_simmary.value = !visible_simmary.value;
 		};
@@ -127,13 +113,56 @@ export default defineComponent({
 			open_question.value = open_question.value === idx ? 0 : idx;
 		};
 
+		const storeCourseContent = useStoreCourseContent();
+
 		onMounted(() => {
-			console.log("mounted!!");
-
 			courseContentStore.getCourseContent(id);
-
-			console.log("state: ", courseContentStore.$state);
 		});
+		const generalSettings = [
+			{
+				name: "Название теста (опционально)",
+				title: storeCourseContent.generalSettings.title,
+				type: "title",
+				desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
+			},
+			{
+				name: "Проходной балл *",
+				title: storeCourseContent.generalSettings.cutScorePercentages,
+				type: "score",
+				desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
+			},
+		];
+
+		const changeGeneralSetting = ({
+			type,
+			value,
+		}: {
+			type: string;
+			value: string;
+		}) => {
+			switch (type) {
+				case "title":
+					storeCourseContent.$patch({
+						generalSettings: { title: value },
+					});
+					storeCourseContent.patchCourseContent(id, { title: value });
+					return;
+				case "score":
+					storeCourseContent.$patch({
+						generalSettings: {
+							cutScorePercentages: value,
+						},
+					});
+					storeCourseContent.patchCourseContent(id, {
+						cutScorePercentages: value,
+					});
+					return;
+			}
+		};
+
+		const changeQuestion = (formdata: ICourseContentQuestions) => {
+			storeCourseContent.patchQuestion(formdata);
+		};
 
 		return {
 			editorVisible,
@@ -141,9 +170,11 @@ export default defineComponent({
 			openQuestion,
 			visible_simmary,
 			open_question,
-			general_setting,
 			courseStore,
 			courseContentStore,
+			generalSettings,
+			changeGeneralSetting,
+			changeQuestion,
 		};
 	},
 	components: {
