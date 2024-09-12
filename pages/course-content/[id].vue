@@ -1,185 +1,150 @@
 <template>
-	<section class="oil-container">
-		<div class="oil-course-content">
-			<breadCmp
-				:prev_page="['Курсы', `${course_name}`]"
-				:current_page="courseContentStore.generalSettings.title"
-				class="oil-course-content__bread"
-			/>
-			<AttentionMessage
-				v-if="courseStore.status === 'Archived'"
-				message="Курс архивирован, вы не можете просмотреть его
-						наполнение на сайте. Доступна опция выгрузки курса на ПК
-						в формате PDF."
-				:buttonText="'Скачать PDF'"
-				:buttonClick="() => {}"
-			>
-			</AttentionMessage>
-			<ContentModule v-if="content === 'text'"></ContentModule>
-			<TestSection
-				@change-setting="changeGeneralSetting($event)"
-				@change-question="changeQuestion($event)"
-				:general_setting="generalSettings"
-				:questions="courseContentStore.questions"
-				v-else-if="content === 'test'"
-			>
-				<template #summary-text>
-					<div class="oil-course-content__attention__text__frame">
-						<span>Структура теста</span>
-						<ul>
-							<li>
-								Тест должен содержать хотя бы один вопрос.
-								Наполнение вопроса включает в себя следующие
-								блоки:
-							</li>
-							<ul>
-								<li>направление вопроса</li>
-								<li>тело вопроса</li>
-								<li>четыре варианта ответа</li>
-								<li>балл за правильный ответ.</li>
-							</ul>
-							<li>
-								Проходной балл указывается отдельно от вопросов
-								(общий для всего теста).
-							</li>
-						</ul>
-					</div>
-					<div class="oil-course-content__attention__text__frame">
-						<span>Добавление нового вопроса</span>
-						<ul>
-							<li>
-								Чтобы добавить новый вопрос, наведите курсор на
-								структуру теста и нажмите на кнопку “Добавить
-								вопрос”, он появится в общем списке вопросов и
-								станет доступным для наполнения.
-							</li>
-						</ul>
-					</div>
-					<div class="oil-course-content__attention__text__frame">
-						<span>Внимание!</span>
-						<ul>
-							<li>
-								Убедитесь в том, что вы выбрали направления
-								курса во вкладке “Общие настройки курса”, так
-								как тема каждого вопроса должна соответствовать
-								одному из направлений курса.
-							</li>
-						</ul>
-					</div>
-				</template>
-			</TestSection>
-		</div>
-	</section>
+    <section class="oil-container">
+        <div class="oil-course-content">
+            <breadCmp
+                :prev_page="['Курсы', `${course_name}`]"
+                :current_page="courseContentStore.generalSettings.title"
+                class="oil-course-content__bread"
+            />
+            <AttentionMessage
+                v-if="courseStore.status === 'Archived'"
+                message="Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF."
+                :buttonText="'Скачать PDF'"
+                :buttonClick="() => {}"
+            />
+            <ContentModule v-if="content === 'text'" />
+            <TestSection
+                @change-setting="changeGeneralSetting"
+                @change-question="changeQuestion"
+                :general_setting="generalSettings"
+                :questions="courseContentStore.questions"
+                :id="id"
+                v-else-if="content === 'test'"
+            >
+                <template #summary-text>
+                    <div
+                        v-for="section in summarySections"
+                        :key="section.title"
+                        class="oil-course-content__attention__text__frame"
+                    >
+                        <span>{{ section.title }}</span>
+                        <ul>
+                            <li v-for="item in section.content" :key="item">
+                                {{ item }}
+                            </li>
+                        </ul>
+                    </div>
+                </template>
+            </TestSection>
+        </div>
+    </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
-import Editor from "@tinymce/tinymce-vue";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
-	props: {
-		course_name: {
-			type: String,
-			default: "Геологическое моделирование пласта",
-		},
-		content: {
-			type: String,
-			default: "test", //text
-		},
-	},
-	setup() {
-		const editorVisible = ref(false);
-		const courseStore = useStoreCourses();
-		const route = useRoute();
+    props: {
+        course_name: {
+            type: String,
+            default: "Геологическое моделирование пласта",
+        },
+        content: {
+            type: String,
+            default: "test", //text
+        },
+    },
+    setup() {
+        const courseStore = useStoreCourses();
+        const courseContentStore = useStoreCourseContent();
+        const route = useRoute();
+        const { id } = route.params as unknown as { id: number };
 
-		const { id } = route.params as unknown as { id: number };
-		const courseContentStore = useStoreCourseContent();
-		const visible_simmary = reactive({
-			value: false,
-		});
+        const generalSettings = reactive([
+            {
+                name: "Название теста (опционально)",
+                title: courseContentStore.generalSettings.title,
+                type: "title",
+                desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
+            },
+            {
+                name: "Проходной балл *",
+                title: courseContentStore.generalSettings.cutScorePercentages,
+                type: "score",
+                desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
+            },
+        ]);
 
-		const open_question = reactive({
-			value: 0,
-		});
+        const summarySections = [
+            {
+                title: "Структура теста",
+                content: [
+                    "Тест должен содержать хотя бы один вопрос. Наполнение вопроса включает в себя следующие блоки:",
+                    "направление вопроса",
+                    "тело вопроса",
+                    "четыре варианта ответа",
+                    "балл за правильный ответ.",
+                    "Проходной балл указывается отдельно от вопросов (общий для всего теста).",
+                ],
+            },
+            {
+                title: "Добавление нового вопроса",
+                content: [
+                    "Чтобы добавить новый вопрос, наведите курсор на структуру теста и нажмите на кнопку 'Добавить вопрос', он появится в общем списке вопросов и станет доступным для наполнения.",
+                ],
+            },
+            {
+                title: "Внимание!",
+                content: [
+                    "Убедитесь в том, что вы выбрали направления курса во вкладке 'Общие настройки курса', так как тема каждого вопроса должна соответствовать одному из направлений курса.",
+                ],
+            },
+        ];
 
-		const openSummary = () => {
-			visible_simmary.value = !visible_simmary.value;
-		};
+        onMounted(() => {
+            courseContentStore.getCourseContent(id).catch((error) => {
+                console.error("Ошибка при загрузке содержания курса:", error);
+            });
+        });
 
-		const openQuestion = (idx: number) => {
-			open_question.value = open_question.value === idx ? 0 : idx;
-		};
+        const changeGeneralSetting = ({
+            type,
+            value,
+        }: {
+            type: string;
+            value: string;
+        }) => {
+            const updateData = {
+                [type === "title" ? "title" : "cutScorePercentages"]: value,
+            };
 
-		const storeCourseContent = useStoreCourseContent();
+            courseContentStore.patchCourseContent(id, updateData).then(() => {
+                courseContentStore.$patch({
+                    generalSettings: {
+                        ...courseContentStore.generalSettings,
+                        ...updateData,
+                    },
+                });
+            });
+        };
 
-		onMounted(() => {
-			courseContentStore.getCourseContent(id);
-		});
-		const generalSettings = [
-			{
-				name: "Название теста (опционально)",
-				title: storeCourseContent.generalSettings.title,
-				type: "title",
-				desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
-			},
-			{
-				name: "Проходной балл *",
-				title: storeCourseContent.generalSettings.cutScorePercentages,
-				type: "score",
-				desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
-			},
-		];
+        const changeQuestion = (formdata: ICourseContentQuestions) => {
+            courseContentStore.patchQuestion(formdata);
+        };
 
-		const changeGeneralSetting = ({
-			type,
-			value,
-		}: {
-			type: string;
-			value: string;
-		}) => {
-			switch (type) {
-				case "title":
-					storeCourseContent.$patch({
-						generalSettings: { title: value },
-					});
-					storeCourseContent.patchCourseContent(id, { title: value });
-					return;
-				case "score":
-					storeCourseContent.$patch({
-						generalSettings: {
-							cutScorePercentages: value,
-						},
-					});
-					storeCourseContent.patchCourseContent(id, {
-						cutScorePercentages: value,
-					});
-					return;
-			}
-		};
-
-		const changeQuestion = (formdata: ICourseContentQuestions) => {
-			storeCourseContent.patchQuestion(formdata);
-		};
-
-		return {
-			editorVisible,
-			openSummary,
-			openQuestion,
-			visible_simmary,
-			open_question,
-			courseStore,
-			courseContentStore,
-			generalSettings,
-			changeGeneralSetting,
-			changeQuestion,
-		};
-	},
-	components: {
-		Editor,
-	},
+        return {
+            courseStore,
+            courseContentStore,
+            generalSettings,
+            changeGeneralSetting,
+            changeQuestion,
+            summarySections,
+            id,
+        };
+    },
 });
 </script>
 
