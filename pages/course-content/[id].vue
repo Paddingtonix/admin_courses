@@ -16,7 +16,6 @@
 			<TestSection
 				@change-setting="changeGeneralSetting"
 				@change-question="changeQuestion"
-				:general_setting="generalSettings"
 				:questions="courseContentStore.questions"
 				:id="id"
 				v-else-if="content === 'test' && !isLoading"
@@ -63,21 +62,6 @@ export default defineComponent({
 		const courseContentStore = useStoreCourseContent();
 		const route = useRoute();
 		const { id } = route.params as unknown as { id: string };
-
-		const generalSettings = reactive([
-			{
-				name: "Название теста (опционально)",
-				title: courseContentStore.generalSettings.title,
-				type: "title",
-				desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
-			},
-			{
-				name: "Проходной балл *",
-				title: courseContentStore.generalSettings.cutScorePercentages,
-				type: "score",
-				desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
-			},
-		]);
 
 		const summarySections = [
 			{
@@ -144,7 +128,6 @@ export default defineComponent({
 		return {
 			courseStore,
 			courseContentStore,
-			generalSettings,
 			changeGeneralSetting,
 			changeQuestion,
 			summarySections,

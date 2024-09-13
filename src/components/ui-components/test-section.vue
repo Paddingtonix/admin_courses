@@ -2,7 +2,7 @@
 	<div class="oil-course-content__test">
 		<div>
 			<div
-				v-for="(setting, idx) in general_settings_values"
+				v-for="(setting, idx) in general_settings"
 				:key="idx"
 				class="oil-course-content__test__general-settings"
 			>
@@ -25,7 +25,7 @@
 						@click="editSetting(idx)"
 					>
 						<span v-if="!setting.title">{{ setting.desc }}</span>
-						<i v-html="setting.icon || defaultIcon"></i>
+						<i v-html="defaultIcon"></i>
 					</div>
 				</div>
 				<template v-else>
@@ -42,7 +42,7 @@
 						@accept="
 							acceptEditing($event, setting.type, setting.title)
 						"
-						@decline="cancelEditing(idx)"
+						@decline="cancelEditing(idx, setting.type)"
 						:model_value="setting.title"
 					/>
 				</template>
@@ -143,7 +143,6 @@ const courseContentState = courseContentStore.$state;
 const emit = defineEmits(["change-setting"]);
 
 const props = defineProps({
-	general_setting: { type: Array, required: true },
 	attentionTitle: {
 		type: String,
 		default: "Как работать с содержанием теста?",
@@ -164,24 +163,35 @@ const props = defineProps({
 const isSummaryVisible = ref(false);
 const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 
-const general_settings_values = reactive(
-	props.general_setting.map((item: any) => ({
-		...item,
-		title: item.title || "",
+const general_settings = reactive([
+	{
+		name: "Название теста (опционально)",
+		title: courseContentStore.generalSettings.title,
+		type: "title",
+		desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
 		isEditing: false,
-	}))
-);
+	},
+	{
+		name: "Проходной балл *",
+		title: courseContentStore.generalSettings.cutScorePercentages,
+		type: "score",
+		desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
+		isEditing: false,
+	},
+]);
 
 const changeQuestion = (question: ICourseContentQuestions) => {
 	courseContentStore.patchQuestion(question);
 };
 
 const editSetting = (id: number) => {
-	general_settings_values.forEach((setting) => (setting.isEditing = false));
-	general_settings_values[id].isEditing = true;
+	general_settings.forEach((setting) => (setting.isEditing = false));
+	general_settings[id].isEditing = true;
 };
 
 onMounted(() => {
+	console.log("general-settings", general_settings);
+
 	courseContentStore
 		.getDirections(courseContentStore.courseId)
 		.finally(() => {});
@@ -189,17 +199,18 @@ onMounted(() => {
 });
 
 const changeValueSetting = (id: number, value: string) => {
-	general_settings_values[id].title = value;
+	general_settings[id].title = value;
 };
 
-const cancelEditing = (id: number) => {
-	general_settings_values[id].title = "";
-	general_settings_values[id].isEditing = false;
+const cancelEditing = (id: number, type: string | number) => {
+	general_settings[id].title = "";
+	emit("change-setting", { type, value: "" });
+	general_settings[id].isEditing = false;
 };
 
-const acceptEditing = (id: number, type: string, value: string) => {
+const acceptEditing = (id: number, type: string, value: string | number) => {
 	emit("change-setting", { type, value });
-	general_settings_values[id].isEditing = false;
+	general_settings[id].isEditing = false;
 };
 
 const addQuestion = () => {
