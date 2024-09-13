@@ -40,7 +40,6 @@ export default defineComponent({
                 user_role_store.getUserRole()
                 storeAuth.logIn()
                 storeModal.closeModal()
-                storeModal.closeModal()
                 preloader.value = false
                 console.log(course_auth_token);
 

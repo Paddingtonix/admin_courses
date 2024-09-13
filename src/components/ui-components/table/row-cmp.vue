@@ -93,6 +93,10 @@ export default defineComponent({
                     modalStore.$patch({
                         label: "Внимание!",
                         activeModal: "development-status",
+                        modalProps: {
+                            courseId: props.id,
+                            status: 'onModeration' // автор может только отправлять курс на модерацию
+                        }
                     });
                     modalStore.openModal()
                     break;
@@ -100,6 +104,10 @@ export default defineComponent({
                     modalStore.$patch({
                         label: "Изменение статуса",
                         activeModal: "moderation-status",
+                        modalProps: {
+                            courseId: props.id,
+                            status: props.status
+                        }
                     });
                     modalStore.openModal()
                     break;

@@ -25,6 +25,7 @@
             />
             <BtnCmp
                 :text="'Изменить'"
+                @click="changeStatus"
             />
         </div>
     </div>
@@ -47,6 +48,7 @@
 import { defineComponent, reactive } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useUserRoleStore } from "~/src/stores/storeRole";
+import axios from "axios";
 
 export default defineComponent({
     setup() {
@@ -56,9 +58,11 @@ export default defineComponent({
         const radio_moderation = reactive([
             {
                 text: "В разработке",
+                status: "inDevelopment"
             },
             {
                 text: "Опубликован",
+                status: "published"
             },
         ]);
 
@@ -68,9 +72,35 @@ export default defineComponent({
             store_modal.closeModal();
         };
 
+        const modalData = store_modal.$state;
+
+        const formModel = reactive({
+            courseId: modalData.modalProps.courseId ?? "",
+            statusToChange: modalData.modalProps.status ?? "",
+        });
+
         const setRadioValue = (id_radio: number) => {
             active_radio.value = id_radio;
+            formModel.statusToChange = radio_moderation[id_radio].status;
+            console.log(formModel.statusToChange, 'выбранный статус')
         };
+        console.log(formModel.statusToChange, 'проверяем какой статус')
+
+        const changeStatus = (() => {
+            const { courseId, statusToChange } = formModel;
+            axios
+                .patch('/admin/v1/courseStatus', {
+                    courseId,
+                    statusToChange
+                })
+                .then((response) => {
+                    console.log('статус изменен, поздравляю с  повышением!', response);
+                    store_modal.closeModal()
+                })
+                .catch(error => {
+                    console.log('статус не изменился, повышение не получил', error)
+                })
+        })
 
         return {
             store_modal,
@@ -78,6 +108,7 @@ export default defineComponent({
             active_radio,
             closeModal,
             setRadioValue,
+            changeStatus,
             store_role
         };
     },

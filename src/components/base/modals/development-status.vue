@@ -27,6 +27,7 @@
             />
             <BtnCmp
                 :text="'Изменить'"
+                @click="changeStatus"
             />
         </div>
     </div>
@@ -35,20 +36,46 @@
 import { defineComponent, reactive } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 import {useUserRoleStore} from "~/src/stores/storeRole";
+import axios from "axios";
 
 export default defineComponent({
     setup() {
         const store_modal = useStoreModal();
         const store_role = useUserRoleStore();
 
+        const modalData = store_modal.$state;
+
+        const formModel = reactive({
+            courseId: modalData.modalProps.courseId ?? "",
+            statusToChange: modalData.modalProps.status ?? "",
+        });
+        console.log(formModel, 'ну-ка, блять')
+
         const closeModal = () => {
             store_modal.closeModal();
         };
 
+        const changeStatus = (() => {
+            const { courseId, statusToChange } = formModel;
+            axios
+                .patch('/admin/v1/courseStatus', {
+                    courseId,
+                    statusToChange
+                })
+                .then((response) => {
+                    console.log('статус изменен, поздравляю с  повышением!', response);
+                    store_modal.closeModal()
+                })
+                .catch(error => {
+                    console.log('статус не изменился, повышение не получил', error)
+                })
+        })
+
         return {
             store_modal,
+            store_role,
             closeModal,
-            store_role
+            changeStatus
         };
     },
 });
