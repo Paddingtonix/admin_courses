@@ -54,6 +54,9 @@ export default defineComponent({
     // Iak 68
         // const host = 'http://192.168.19.65:8081/' as string
 
+    // Bob
+        const host = "http://195.133.145.105:8082/" as string;
+
 		axios.defaults.baseURL = host;
 
 		return {

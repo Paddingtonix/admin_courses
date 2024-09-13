@@ -22,7 +22,7 @@
                 />
             </div>
             <template v-if="active_tab === 1">
-                <div class="oil-course-setting__settings">
+                <!-- <div class="oil-course-setting__settings">
                     <div class="oil-course-setting__settings__cards">
                         <CardInfo
                             v-for="(card, card_idx) in course_setting"
@@ -238,7 +238,7 @@
                             @click="saveSettings"
                         />
                     </div>
-                </div>
+                </div> -->
             </template>
             <template v-else-if="active_tab === 2">
                 <div class="oil-course-setting__info" v-if="!edit_mode.value">
@@ -995,14 +995,18 @@ export default defineComponent({
         //     }
         // }
 
-        onMounted(() => {
-            nextTick(() => {                
+        onMounted(() => {               
+            nextTick(() => {
                 axios
-                    .get(`/admin/v1/Course/${route.query.course}/content`)
-                    .then((struct_response) => {
-                        
-                        content_inner.value = struct_response.data
-                        preloader.value = false
+                    .get('admin/v1/direction')
+                    .then((response) => {
+                        response.data.forEach((element: Direction) => {
+                            directions.push(element)
+                        })
+                        console.log(response.data, 'response.data');
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка при получении данных:', error)
                     })
 
                 axios
@@ -1010,8 +1014,15 @@ export default defineComponent({
                     .then((response) => {
                         course_table[1].authors = response.data[0]
                     })
-            })
-        })
+
+                axios
+                    .get(`/admin/v1/Course/${route.query.course}/content`)
+                    .then((struct_response) => {
+                        
+                        content_inner.value = struct_response.data
+                        preloader.value = false
+                    })
+            })})
         
         return {
             active_tab,
@@ -1048,9 +1059,7 @@ export default defineComponent({
             createBlock,
             reloadContent,
             editTitle
-        }
-    },
-})
+        }}})
 </script>
 
 <style scoped lang="sass">

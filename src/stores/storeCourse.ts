@@ -18,7 +18,6 @@ export const useStoreCourses = defineStore('courseState', {
             { count: 0, text: 'Снят с витрины' },
             { count: 0, text: 'В архиве' },
         ],
-
         status: '',
     }),
     actions: {
@@ -28,8 +27,9 @@ export const useStoreCourses = defineStore('courseState', {
                 .then(response => {
                     this.course_list = response.data.courses
                     this.status = response.data.courses.status
-                    this.status = this.course_list.length > 0 ? this.course_list[0].status : ''
+                    this.status = this.course_list.length ? this.course_list[0].status : ''
                     this.updateCourseInfo()
+                    console.log(response.data.courses, 'response.data.courses');
                 })
                 .catch(error => {
                     console.error(error)

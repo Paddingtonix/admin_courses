@@ -125,7 +125,7 @@
     </section>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted, watch } from 'vue'
+// import { defineComponent, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useUserRoleStore } from '~/src/stores/storeRole'
@@ -134,7 +134,7 @@ import axios from 'axios'
 
 export default defineComponent({
 	setup() {
-		const router = useRouter();
+		const router = useRouter()
         const courseStore = useStoreCourses()
 
         const user_role_store = useUserRoleStore()
@@ -262,7 +262,7 @@ export default defineComponent({
 		})
 
         const course_list = reactive({
-            value: [] as any
+            value: [] as CourseList[]
         })
 
         const filter_frame = reactive({
@@ -295,6 +295,7 @@ export default defineComponent({
 
         watch(course_list, (new_state) => {
             course_list.value = new_state.value
+            console.log(new_state.value, 'course-list')
         })
 
         const status_translation = {
@@ -318,23 +319,17 @@ export default defineComponent({
                 axios
                     .get('/admin/v1/Course')
                     .then((response) => {
-                        console.log(response.data);
-                        
+                        console.log(response.data, 'v1/Course')
+                        // console.log(course_list.value, 'course_list.value')
                         course_list.value = response.data.courses
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = course_list.value ? course_list.value.length : 0
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = course_list.value.filter((el: { status: string }) => el.status === 'InDevelopment') ? course_list.value.filter((el: any) => el.status === 'InDevelopment').length : 0
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = course_list.value.filter((el: { status: string }) => el.status === 'OnModeration') ? course_list.value.filter((el: any) => el.status === 'OnModeration').length : 0
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Published') ? course_list.value.filter((el: any) => el.status === 'Published').length : 0
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Withdrawn') ? course_list.value.filter((el: any) => el.status === 'Withdrawn').length : 0
+                        // course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Archived') ? course_list.value.filter((el: any) => el.status === 'Archived').length : 0
                     })
-                // courseStore.getCourses()
-                axios
-                    .get('/admin/v1/Course')
-                    .then(resp => {
-                        // course_list.value.push(...resp.data.courses)
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = resp.data.courses ? resp.data.courses.length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'InDevelopment') ? resp.data.courses.filter((el: any) => el.status === 'InDevelopment').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'OnModeration') ? resp.data.courses.filter((el: any) => el.status === 'OnModeration').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Published') ? resp.data.courses.filter((el: any) => el.status === 'Published').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Withdrawn') ? resp.data.courses.filter((el: any) => el.status === 'Withdrawn').length : 0
-                        course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = resp.data.courses.filter((el: { status: string }) => el.status === 'Archived') ? resp.data.courses.filter((el: any) => el.status === 'Archived').length : 0
-                        // console.log(resp.data.courses, 'resp courses-list')
-                     })
+                courseStore.getCourses()
 
                 axios
                     .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
