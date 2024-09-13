@@ -47,6 +47,14 @@ import formTags from "../../ui-components/forms/form-tags.vue";
 import formSections from "../../ui-components/forms/form-sections.vue";
 import deleteModal from "./delete-modal.vue";
 import directionModal from "./direction-modal.vue";
+import developmentStatus from "./development-status.vue";
+import archivedStatus from "./archived-status.vue";
+import moderationStatus from "./moderation-status.vue";
+import oneError from "./one-error.vue";
+import someError from "./some-error.vue";
+import outOfStockStatus from "./out-of-stock-status.vue";
+import publishedStatus from "./published-status.vue";
+import deleteCourse from "./delete-course.vue";
 
 export default defineComponent({
     setup() {
@@ -70,7 +78,15 @@ export default defineComponent({
         "form-tags": formTags,
         "form-sections": formSections,
         "delete-modal": deleteModal,
-        "direction-modal": directionModal
+        "direction-modal": directionModal,
+        "development-status": developmentStatus,
+        "archived-status": archivedStatus,
+        "moderation-status": moderationStatus,
+        "one-error": oneError,
+        "some-error": someError,
+        "out-of-stock-status": outOfStockStatus,
+        "published-status": publishedStatus,
+        "delete-course": deleteCourse
     },
 });
 </script>
@@ -95,7 +111,7 @@ export default defineComponent({
     //     transform: translate(-50%, -50%)
 
     &__container
-        width: rem(580)
+        max-width: rem(580)
         height: auto
         box-shadow: rem(0) rem(8) rem(28) rem(-6) rgba(24, 39, 75, 0.12), rem(0) rem(18) rem(88) rem(-4) rgba(24, 39, 75, 0.14)
         border-radius: rem(24)

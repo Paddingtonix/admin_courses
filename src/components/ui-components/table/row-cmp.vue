@@ -17,6 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useStoreModal } from "~/src/stores/storeModal";
 
 export default defineComponent({
 	props: {
@@ -75,9 +76,62 @@ export default defineComponent({
 	},
 	setup(props) {
 		const fields = props;
+        const modalStore = useStoreModal();
+
+        const statusChange = (status: string) => {
+            switch (status) {
+                case "В разработке":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "development-status",
+                        modalProps: {
+                            courseId: props.id,
+                            status: 'onModeration' // автор может только отправлять курс на модерацию
+                        }
+                    });
+                    modalStore.openModal()
+                    break;
+                case "На модерации":
+                    modalStore.$patch({
+                        label: "Изменение статуса",
+                        activeModal: "moderation-status",
+                        modalProps: {
+                            courseId: props.id,
+                            status: props.status
+                        }
+                    });
+                    modalStore.openModal()
+                    break;
+                case "Опубликован":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "published-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "Снят с витрины":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "out-of-stock-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                case "В архиве":
+                    modalStore.$patch({
+                        label: "Внимание!",
+                        activeModal: "archived-status",
+                    });
+                    modalStore.openModal()
+                    break;
+                default:
+                    break;
+            }
+            return "";
+        };
 
 		return {
 			fields,
+            statusChange
 		};
 	},
 });
@@ -88,6 +142,10 @@ export default defineComponent({
     border-bottom: rem(1) solid $disabled_basic
     &__cell
         padding: rem(8)
+
+        &__status
+            cursor: pointer
+            color: $basic_primary
 
         &:nth-child(1)
             flex: 4

@@ -27,6 +27,7 @@ export default defineComponent({
                 });
                 storeModal.openModal();
             };
+
         const preloader = reactive({
             value: false
         })
@@ -39,7 +40,6 @@ export default defineComponent({
                 user_role_store.getUserRole()
                 storeAuth.logIn()
                 storeModal.closeModal()
-                storeModal.closeModal()
                 preloader.value = false
                 console.log(course_auth_token);
 
@@ -48,10 +48,8 @@ export default defineComponent({
                 storeModal.openModal()
                 preloader.value = false
             }
-            
-        })
 
-        
+        })
 
     // Iak 68
         // const host = 'http://192.168.19.65:8081/' as string

@@ -4,26 +4,6 @@ import axios from "axios"
 
 export const useStoreCourses = defineStore('courseState', {
     state: () => ({
-        // МОДАЛЬНЫЕ ОКНА
-        // курс создан
-        createCourse: false,
-        // в разработке
-        development: false,
-        // на модерации
-        moderation: false,
-        // есть ошибка по дате
-        oneError: false,
-        // есть несколько ошибок
-        someError: false,
-        // опубликован
-        published: false,
-        // снят с витрины
-        removed: false,
-        // в архиве
-        archived: false,
-        // удаление курса
-        deleteCourse: false,
-
         // CardInfo data
         price: 'paid', //free
         // price: 'free', //free
@@ -56,12 +36,16 @@ export const useStoreCourses = defineStore('courseState', {
                 })
         },
         updateCourseInfo() {
-            this.course_info[0].count = this.course_list.filter(el => el.status === 'All').length
-            this.course_info[1].count = this.course_list.filter(el => el.status === 'InDevelopment').length
-            this.course_info[2].count = this.course_list.filter(el => el.status === 'OnModeration').length
-            this.course_info[3].count = this.course_list.filter(el => el.status === 'Published').length
-            this.course_info[4].count = this.course_list.filter(el => el.status === 'Withdrawn').length
-            this.course_info[5].count = this.course_list.filter(el => el.status === 'Archived').length
+            axios
+                .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
+                .then((response) => {
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'В разработке')!.count = response.data.inDevelopment
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'На модерации')!.count = response.data.onModeration
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'Опубликован')!.count = response.data.published
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'Снят с витрины')!.count = response.data.withdrawn
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
+                    this.course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
+                })
         }
     }
 })
