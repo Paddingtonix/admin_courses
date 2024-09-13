@@ -1,9 +1,6 @@
 export interface IDirection {
 	directionId: number;
-	lastChangeDateTime: string;
-	localizedName: string;
-	isVisible: boolean;
-	count: number;
+	name: string;
 }
 
 export interface mappedDirections {
@@ -12,9 +9,7 @@ export interface mappedDirections {
 }
 
 export interface IDirectionResponse {
-	totalDirectionsCount: number;
-	visibleDirectionsCount: number;
-	directions: IDirection[];
+	Directions: IDirection[];
 }
 
 export interface IGeneralCourseSettings {
@@ -43,6 +38,7 @@ export interface ICourseContentQuestions {
 export interface ICourseContent {
 	id: number;
 	title: string;
+	courseId: number;
 	cutScorePercentages: number;
 	questions: ICourseContentQuestions[];
 }

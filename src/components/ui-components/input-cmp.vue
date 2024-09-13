@@ -1,12 +1,8 @@
 <template>
 	<div class="oil-input" :class="{ '_error-frame': error.length }">
-		<label
-			:class="[
-				'oil-input__label',
-				{ _fill: input_value && input_value.length },
-			]"
-			>{{ label }}</label
-		>
+		<label :class="['oil-input__label', { _fill: input_value }]">{{
+			label
+		}}</label>
 		<input
 			v-if="$props.mask_type"
 			v-model="input_value"
@@ -79,7 +75,7 @@ export default defineComponent({
 			default: null,
 		},
 		modelValue: {
-			type: String,
+			type: [String, Number],
 			default: "",
 		},
 	},
@@ -103,11 +99,13 @@ export default defineComponent({
 		};
 
 		const mask_price = computed(() => {
-			if (input_value.value.length === 5) return "# ###";
-			if (input_value.value.length === 6) return "## ###";
-			// if (input_value.value.length === 9) return '# ### ###'
-			// if (input_value.value.length === 10) return '## ### ###'
-			return "### ###";
+			if (typeof input_value.value === "string") {
+				if (input_value.value.length === 5) return "# ###";
+				if (input_value.value.length === 6) return "## ###";
+				// if (input_value.value.length === 9) return '# ### ###'
+				// if (input_value.value.length === 10) return '## ### ###'
+				return "### ###";
+			}
 		});
 
 		// const mask_date = '##.##.##'

@@ -4,7 +4,7 @@
 			:label="label"
 			class="oil-settings-input__cmp"
 			:modelValue="model_value"
-			:type="type"
+			:type="input_type"
 			@set_value="changeInputValue($event)"
 		/>
 		<i class="accept" @click="emit('accept', props.id)"
@@ -65,13 +65,16 @@ const props = defineProps({
 		required: true,
 	},
 	model_value: {
-		type: String,
+		type: [String, Number],
 		default: "",
 	},
 	type: {
 		type: String as PropType<"title" | "score">,
 		default: "title",
 		required: true,
+	},
+	input_type: {
+		type: String as PropType<"text" | "number">,
 	},
 });
 
@@ -91,6 +94,9 @@ const changeInputValue = (value: { value: string; type: string }) => {
     align-items: center
     width: 100%
     column-gap: rem(8)
+    &::-webkit-outer-spin-button,
+     ::-webkit-inner-spin-button
+        -webkit-appearance: none
     &__cmp
         width: 100%
         max-height: rem(40)
