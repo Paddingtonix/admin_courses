@@ -43,7 +43,7 @@
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersStore } from "~/src/stores/storeSections";
 import type { IFormSection } from "~/src/ts-interface/storeModal.type";
-import { isFormValid } from "~/src/utils/validateForm";
+import { validateForm } from "~/src/utils/validateForm";
 
 const storeModal = useStoreModal();
 
@@ -79,7 +79,12 @@ const changeForm = ({
 const startForm = JSON.parse(JSON.stringify(formModel));
 
 watch(formModel, () => {
-	const isValid = isFormValid(formModel, startForm, ["name", "description"]);
+	const isValid = validateForm({
+		currentForm: formModel,
+		initialForm: startForm,
+		requiredFields: ["name", "description"],
+		options: { checkChanges: true, checkRequiredFields: true },
+	});
 
 	storeModal.$patch({
 		modalProps: {
