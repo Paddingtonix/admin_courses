@@ -102,7 +102,7 @@
                         :date_edit="'Дата посл. ред.'"
                         :end_date="'Снятие с витрины'"
                     />
-                    <TableRowCmp 
+                    <TableRowCmp
                         v-for="(row, idx) in course_list.value"
                         :id="row.courseId"
                         :key="idx"
