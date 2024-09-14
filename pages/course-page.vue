@@ -110,7 +110,7 @@
                         :name="row.title"
                         :status="row.status"
                         :authors="row.authorEmails[0]"
-                        :direction="formatDirectionToString(row.direction)"
+                        :direction="formatDirectionToString(row.directions)"
                         :lang="row.language.toUpperCase()"
                         :date_edit="formatDate(row.lastChangeDateTime)"
                         :end_date="formatDate(row.salesTerminationDate)"
@@ -131,7 +131,6 @@
 import { useRouter } from 'vue-router'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useUserRoleStore } from '~/src/stores/storeRole'
-import type { CourseList } from '@/src/ts-interface/course-list'
 import axios from 'axios'
 
 export default defineComponent({
@@ -236,15 +235,11 @@ export default defineComponent({
 			],
 		})
 
-        const course_list = reactive({
-            value: [] as CourseList[]
-        })
-
         const filter_frame = reactive({
             value: false as boolean
         })
 
-        const paginations_pages = ref<number>()
+        const paginations_pages = ref<number>(courseStore.$state.numberOfPages ?? 1)
         const current_page = ref<number>(1)
 
         const search_value = ref("")
@@ -255,13 +250,14 @@ export default defineComponent({
         
         const updateSearchValue = (value = '') => {            
             search_value.value = value
-            
             courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
         }
 
-        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕНН
-        const formatDirectionToString = (arr: string[]): string => {
-            return arr ? arr.join(', ') : '--'
+        const formatDirectionToString = (arr: string[] | null | undefined): string => {
+            if (!arr || arr.length === 0) {
+                return '--'
+            }
+            return arr.join(', ')
         }
         
         const formatDate = (date_value: string | null) => {
@@ -282,29 +278,18 @@ export default defineComponent({
 		const navigate = (url: string) => {
 			router.push(url)
 		}
+        watch(() => courseStore.$state.numberOfPages, (newValue) => {
+            paginations_pages.value = newValue ?? 1
+        })
 
-        // const getCourses = () => {
-        //     // axios
-        //     //     .get(`/admin/v1/Course?page=${current_page.value}&searchSubstring="${search_value.value}"`)
-        //     //     .then((response) => {
-        //     //         console.log(response.data, 'v1/Course')
-        //     //         course_list.value = response.data.courses
-        //     //         paginations_pages.value = response.data.numberOfPages
-        //     //         console.log(current_page.value, 'current_page.value axios')
-        //     //     })
-        //     //     .catch((error) => {
-        //     //         console.log(error);
-        //     //     })
-        // }
-
-        // watch(current_page, () => {
-        //     getCourses()
-        // })
+        watch(current_page, () => {
+            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
+        })
 
         onMounted(() => {
             nextTick(() => {
                 courseStore.getCourses('/admin/v1/Course')
-                                
+
                 axios
                     .get('admin/v1/course/filters')
                     .then(resp => {
@@ -315,7 +300,6 @@ export default defineComponent({
         return {
             user_role_store,
             navigate,
-            course_list,
             filter_course,
             filter_frame,
             openFilter,

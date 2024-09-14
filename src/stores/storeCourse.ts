@@ -38,16 +38,19 @@ export const useStoreCourses = defineStore('courseState', {
             { count: 0, text: 'Снят с витрины' },
             { count: 0, text: 'В архиве' },
         ],
-        numberOfPages: null,
+        numberOfPages: null as number | null,
         currentPage: 1,
         nCoursesPerPage: 10,
     }),
     actions: {
         getCourses(endpoint: string) {
             axios
-                .get<{ courses: CourseList[] }>(endpoint)
+                .get<{ courses: CourseList[], numberOfPages: number }>(endpoint)
                 .then(response => {
                     this.course_list = response.data.courses
+                    this.$patch((state) => {
+                        state.numberOfPages = response.data.numberOfPages
+                    })
                     this.updateCourseInfo()
                     console.log(response.data, 'response.data')
                 })
@@ -66,12 +69,6 @@ export const useStoreCourses = defineStore('courseState', {
                     this.course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
                     this.course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
                 })
-        },
-        // async fetchItems(params: { page: number, nCoursesPerPage: number }) {
-        //     const response = await fetch(`api/endpoint?page=${params.page}&limit=${params.nCoursesPerPage}`)
-        //     const data = await response.json()
-            
-        //     this.numberOfPages = data.totalPages // Количество страниц
-        // }
+        }
     }
 })
