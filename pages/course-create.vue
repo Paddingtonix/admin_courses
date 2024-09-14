@@ -237,13 +237,14 @@ export default defineComponent({
 
         const isFormValid = () => {
             let course_data = {
-                languageId: form[0].selector?.find((lang: { text: String, active: Boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
                 title: form[1].value,
-                courseType: form[2].selector?.find((type: { text: String, active: Boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
-                courseFormat: form[3].selector?.find((format: { text: String, active: Boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
-                isFree: form[4].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Бесплатно',
-                isPartialAvailable: form[5].selector?.find((option: { text: String, active: Boolean }) => option.active)?.text === 'Частичный'
+                courseType: form[2].selector?.find((type: { text: string | number, active: boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: { text: string | number, active: boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
             }
+
 
             if (course_data.courseType === 2 && course_data.courseFormat === 2) {
                 form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
@@ -282,12 +283,12 @@ export default defineComponent({
             if (!form_is_valid || !isFormValid()) return
 
             const course_data = {
-                languageId: form[0].selector?.find((lang: {text: String, active: Boolean}) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+                languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
                 title: form[1].value,
-                courseType: form[2].selector?.find((type: {text: String, active: Boolean}) => type.active)?.text === 'Асинхронный' ? 2 : 1,
-                courseFormat: form[3].selector?.find((format: {text: String, active: Boolean}) => format.active)?.text === 'Онлайн' ? 2 : 1,
-                isFree: form[4].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Бесплатно',
-                isPartialAvailable: form[5].selector?.find((option: {text: String, active: Boolean}) => option.active)?.text === 'Частичный'
+                courseType: form[2].selector?.find((type: { text: string | number, active: boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+                courseFormat: form[3].selector?.find((format: { text: string | number, active: boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
+                isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
+                isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
             }
             console.log(course_data, 'course-create')
 
