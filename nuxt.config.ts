@@ -14,7 +14,7 @@ export default defineNuxtConfig({
             '~/src/components/base/modals',
             '~/src/components/base',
             '~/src/components/ui-components',
-            '~/src/pages',
+            '~/pages',
         ],
     },
     modules: [
@@ -24,6 +24,7 @@ export default defineNuxtConfig({
     plugins: [
         '~/plugins/vue-the-mask.client.ts',
         '~/plugins/v-calendar.ts',
-        '~/plugins/directives'
+        '~/plugins/directives.ts',
+        '~/plugins/animation.ts'
       ],
 })

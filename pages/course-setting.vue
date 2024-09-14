@@ -224,13 +224,15 @@
                         v-if="storeStateCourse.status !== 'Archived' && !storeEditCourseSetting.isEdit"
                         class="oil-course-setting__settings__btn"
                         :text="'Редактировать'"
-                        @click="editCourseSetting"
+                        @click="openEditCourseSetting"
                     />
                     <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit">
+                        <!-- тут tyt -->
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
                             :text="'Отмена'"
                             :background_type="'_secondary'"
+                            @click="canselEditCourseSetting"
                         />
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
@@ -391,6 +393,7 @@ export default defineComponent({
         const show_error = ref<boolean>(false)
         const tooltip_id = ref<string>('')
         const directions = reactive<Direction[]>([])
+        const original_directions = ref<number[]>([])
         const picked_directions = reactive<number[]>([]) // Отправлять этот массив
 
         const switcherArray: ISwitcher[] = [
@@ -659,11 +662,11 @@ export default defineComponent({
 		};
 
 		const openEditFrame = () => {
-			edit_mode.value = !edit_mode.value;
+			edit_mode.value = !edit_mode.value
 		};
 
 		const openExample = (id: number) => {
-			active_example.value = active_example.value === id ? null : id;
+			active_example.value = active_example.value === id ? null : id
 		};
 
         const picked_directions_filtered = computed(() =>
@@ -685,8 +688,14 @@ export default defineComponent({
             }
         })
 
-        const editCourseSetting = () => {
+        const openEditCourseSetting = () => {
             storeEditCourseSetting.edit()
+            original_directions.value = [...picked_directions]
+        }
+
+        const canselEditCourseSetting = () => {
+            storeEditCourseSetting.canselEdit()
+            picked_directions.splice(0, picked_directions.length, ...original_directions.value)
         }
 
         const saveSettings = () => {
@@ -694,7 +703,8 @@ export default defineComponent({
                 show_error.value = true
             } else {
                 show_error.value = false
-                storeEditCourseSetting.saveSetting()
+                storeEditCourseSetting.canselEdit()
+                original_directions.value = [...picked_directions]
             }
         }
 
@@ -728,10 +738,10 @@ export default defineComponent({
                 axios
                     .get('admin/v1/direction')
                     .then((response) => {
-                        response.data.forEach((element: Direction) => {
+                        response.data.directions.forEach((element: Direction) => {
                             directions.push(element)
                         })
-                        console.log(response.data, 'response.data');
+                        console.log(response.data, 'response.data')
                     })
                     .catch((error) => {
                         console.error('Ошибка при получении данных:', error)
@@ -739,10 +749,8 @@ export default defineComponent({
 
                 axios
                     .get('admin/v1/user/authors')
-                    // .get('/admin/v1/Course/9')
                     .then((response) => {
                         course_table[1].authors = response.data[0]
-                        // console.log(response, 'response');
                     })
             })
         })
@@ -766,7 +774,8 @@ export default defineComponent({
             setTooltipText,
             storeEditCourseSetting,
             storeStateCourse,
-            editCourseSetting,
+            openEditCourseSetting,
+            canselEditCourseSetting,
             saveSettings,
             inputs,
             directions,
