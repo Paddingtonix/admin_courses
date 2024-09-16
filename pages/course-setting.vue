@@ -3,7 +3,7 @@
         <div class="oil-page oil-course-setting">
             <breadCmp 
                 :prev_page="'Список курсов'"
-                :current_page="'Геологическое моделирование пласта'"
+                :current_page="course_setting.value.Title"
                 class="oil-course-setting__bread"
             />
             <div class="oil-course-setting__menubar">
@@ -25,10 +25,23 @@
                 <div class="oil-course-setting__settings">
                     <div class="oil-course-setting__settings__cards">
                         <CardInfo
-                            v-for="(card, card_idx) in course_setting"
-                            :key="card_idx"
-                            :text="card.text"
-                            :count="card.count"
+                            :text="'Тип'"
+                            :count="course_setting.value.CourseType"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Формат'"
+                            :count="course_setting.value.CourseFormat"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Приобретение'"
+                            :count="!course_setting.value.PriceInRubles ? 'Бесплатно' : 'Платно'"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Доступ'"
+                            :count="!course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
                             :card_type="'texts'"
                         />
                     </div>
@@ -221,12 +234,12 @@
                         </template>
                     </div>
                     <BtnCmp
-                        v-if="storeStateCourse.status !== 'Archived' && !storeEditCourseSetting.isEdit"
+                        v-if="!storeEditCourseSetting.isEdit"
                         class="oil-course-setting__settings__btn"
                         :text="'Редактировать'"
                         @click="openEditCourseSetting"
                     />
-                    <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit"> -->
+                    <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit">
                         <!-- тут tyt -->
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
@@ -240,7 +253,7 @@
                             @click="saveSettings"
                         />
                     </div>
-                </div> -->
+                </div>
             </template>
             <template v-else-if="active_tab === 2">
                 <div class="oil-course-setting__info" v-if="!edit_mode.value">
@@ -256,7 +269,7 @@
                             <span>{{ info.value ? info.value : 'Нет данных' }}</span>
                         </div>
                     </div>
-                    <BtnCmp v-if="storeStateCourse.status !== 'Archived'"
+                    <BtnCmp
                         class="oil-course-setting__info__btn"
                         :text="'Редактировать'"
                         @click="openEditFrame"
@@ -605,6 +618,8 @@ export default defineComponent({
             }
         ]
 
+
+
 		const active_example = reactive({
 			value: null as number | null,
 		});
@@ -646,24 +661,26 @@ export default defineComponent({
 			value: false,
 		});
 
-        const course_setting = reactive([
-            {
-                count: 'Синхронный',
-                text: 'Тип'
-            },
-            {
-                count: 'Онлайн',
-                text: 'Формат'
-            },
-            {
-                count: 'Платно',
-                text: 'Приобретение'
-            },
-            {
-                count: 'Полный',
-                text: 'Доступ'
-            }
-        ])
+        const course_setting = reactive({
+            value: [
+                {
+                    count: 'Синхронный',
+                    text: 'Тип'
+                },
+                {
+                    count: 'Онлайн',
+                    text: 'Формат'
+                },
+                {
+                    count: 'Платно',
+                    text: 'Приобретение'
+                },
+                {
+                    count: 'Полный',
+                    text: 'Доступ'
+                }
+            ]
+        })
 
         const course_table = reactive([
             {
@@ -684,15 +701,6 @@ export default defineComponent({
                 end_date: '',
                 removed_date: ''
             }
-            // {
-            //     authors: 'michael.smith@gmail.com',
-            //     price: '99 999',
-            //     duration: '100',
-            //     workload: '50',
-            //     start_date: '01.01.24',
-            //     end_date: '01.02.24',
-            //     removed_date: '01.02.24'
-            // },
         ])
 
         const preloader = reactive({
@@ -909,12 +917,10 @@ export default defineComponent({
             }
         })
 
-        watch(reload_state, () => {
-            console.log('reload');
-            
+        watch(reload_state, () => {            
             if(reload_state.value) {
                 axios
-                    .get(`/admin/v1/Course/${route.query.course}/content`)
+                    .get(`/admin/v1/Course/${route.query.search}/content`)
                     .then((struct_response) => {
                         content_inner.value = struct_response.data
                         reload_state.value = false
@@ -939,73 +945,9 @@ export default defineComponent({
             }
         }
 
-        // const addBlock = (type: string) => {
-        //     switch (type) {
-        //         case 'introductory':
-        //             axios
-        //                 .post(`/admin/v1/Page?courseId=${route.query.course}`)
-        //                 .then(() => {
-        //                     axios
-        //                         .get(`/admin/v1/Course/${route.query.course}/content`)
-        //                         .then((struct_response) => {
-        //                             content_inner.value = struct_response.data
-        //                         })
-        //                 })
+        const courseId = computed(() => storeStateCourse.getCourses)
 
-        //             break;
-        //             case 'start_test':
-        //                 axios
-        //                     .post('/admin/v1/Testing', {courseId: route.query.course})
-        //                     .then(() => {
-        //                         axios
-        //                             .get(`/admin/v1/Course/${route.query.course}/content`)
-        //                             .then((struct_response) => {
-        //                                 content_inner.value = struct_response.data
-        //                             })
-        //                     })
-        //             break;
-
-        //             case 'part':
-        //                 axios
-        //                     .post('/admin/v1/Part', {courseId: route.query.course})
-        //                     .then(() => {
-        //                         axios
-        //                             .get(`/admin/v1/Course/${route.query.course}/content`)
-        //                             .then((struct_response) => {
-        //                                 content_inner.value = struct_response.data
-        //                             })
-        //                     })
-        //             break;
-
-        //             case 'chapter':
-        //                 axios
-        //                     .post('/admin/v1/Chapter', {courseId: route.query.course})
-        //                     .then(() => {
-        //                         axios
-        //                             .get(`/admin/v1/Course/${route.query.course}/content`)
-        //                             .then((struct_response) => {
-        //                                 content_inner.value = struct_response.data
-        //                             })
-        //                     })
-        //             break;
-
-        //             case 'section':
-        //                 axios
-        //                     .post('/admin/v1/Section', {courseId: route.query.course})
-        //                     .then(() => {
-        //                         axios
-        //                             .get(`/admin/v1/Course/${route.query.course}/content`)
-        //                             .then((struct_response) => {
-        //                                 content_inner.value = struct_response.data
-        //                             })
-        //                     })
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // }
-
-        onMounted(() => {               
+        onMounted(() => {
             nextTick(() => {
                 axios
                     .get('admin/v1/direction')
@@ -1019,17 +961,25 @@ export default defineComponent({
                         console.error('Ошибка при получении данных:', error)
                     })
 
+                // ЗАПРОС АВТОРА КУРСА
                 axios
                     .get('admin/v1/user/authors')
                     .then((response) => {
                         course_table[1].authors = response.data[0]
                     })
-
+                
+                
                 axios
-                    .get(`/admin/v1/Course/${route.query.course}/content`)
+                    .get(`/admin/v1/Course/${route.query.search}/content`)
                     .then((struct_response) => {
-                        
                         content_inner.value = struct_response.data
+                        preloader.value = false
+                    })
+                    
+                axios
+                    .get(`/admin/v1/Course/${route.query.search}`)
+                    .then((info_course) => {
+                        course_setting.value = info_course.data
                         preloader.value = false
                     })
             })})
@@ -1063,12 +1013,13 @@ export default defineComponent({
             openExample,
             showTooltip,
             hideTooltip,
-            editCourseSetting,
+            openEditCourseSetting,
             saveSettings,
             pick_direction,
             createBlock,
             reloadContent,
-            editTitle
+            editTitle,
+            canselEditCourseSetting
         }}})
 </script>
 

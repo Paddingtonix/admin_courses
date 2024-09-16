@@ -134,6 +134,10 @@ import { useUserRoleStore } from '~/src/stores/storeRole'
 import axios from 'axios'
 
 export default defineComponent({
+    // props: {
+    //     id: Number,
+    //     default: null as null || Number
+    // },
 	setup() {
 		const router = useRouter()
         const courseStore = useStoreCourses()
@@ -306,16 +310,16 @@ export default defineComponent({
             nextTick(() => {
                 courseStore.getCourses('/admin/v1/Course')
 
-                axios
-                    .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
-                    .then((response) => {
-                        course_info.find((element: { count: number, text: string }) => element.text === 'В разработке')!.count = response.data.inDevelopment
-                        course_info.find((element: { count: number, text: string }) => element.text === 'На модерации')!.count = response.data.onModeration
-                        course_info.find((element: { count: number, text: string }) => element.text === 'Опубликован')!.count = response.data.published
-                        course_info.find((element: { count: number, text: string }) => element.text === 'Снят с витрины')!.count = response.data.withdrawn
-                        course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
-                        course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
-                    })
+                // axios
+                //     .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
+                //     .then((response) => {
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'В разработке')!.count = response.data.inDevelopment
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'На модерации')!.count = response.data.onModeration
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'Опубликован')!.count = response.data.published
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'Снят с витрины')!.count = response.data.withdrawn
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
+                //         course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
+                //     })
             })
         })
 
@@ -331,6 +335,7 @@ export default defineComponent({
             current_page,
             isCurrentPage,
             updateSearchValue,
+            translateStatus,
             search_value,
             courseStore,
             course_info: courseStore.course_info,
