@@ -221,7 +221,7 @@
                         </template>
                     </div>
                     <BtnCmp
-                        v-if="storeStateCourse.status !== 'Archived' && !storeEditCourseSetting.isEdit"
+                        v-if="!storeEditCourseSetting.isEdit"
                         class="oil-course-setting__settings__btn"
                         :text="'Редактировать'"
                         @click="openEditCourseSetting"
@@ -256,7 +256,7 @@
                             <span>{{ info.value ? info.value : 'Нет данных' }}</span>
                         </div>
                     </div>
-                    <BtnCmp v-if="storeStateCourse.status !== 'Archived'"
+                    <BtnCmp
                         class="oil-course-setting__info__btn"
                         :text="'Редактировать'"
                         @click="openEditFrame"
@@ -496,15 +496,6 @@ export default defineComponent({
                 end_date: '',
                 removed_date: ''
             }
-            // {
-            //     authors: 'michael.smith@gmail.com',
-            //     price: '99 999',
-            //     duration: '100',
-            //     workload: '50',
-            //     start_date: '01.01.24',
-            //     end_date: '01.02.24',
-            //     removed_date: '01.02.24'
-            // },
         ])
 
         const content_inner = reactive([
@@ -733,6 +724,8 @@ export default defineComponent({
             }
         }
 
+        const courseId = computed(() => storeStateCourse.getCourses)
+
         onMounted(() => {
             nextTick(() => {
                 axios
@@ -747,10 +740,17 @@ export default defineComponent({
                         console.error('Ошибка при получении данных:', error)
                     })
 
+                // ЗАПРОС АВТОРА КУРСА
                 axios
                     .get('admin/v1/user/authors')
                     .then((response) => {
                         course_table[1].authors = response.data[0]
+                    })
+
+                axios
+                    .get(`admin/v1/course/${courseId.value}`)
+                    .then((response) => {
+                        console.log(response.data, 'id-course-info');
                     })
             })
         })

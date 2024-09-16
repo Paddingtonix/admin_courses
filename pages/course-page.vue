@@ -134,6 +134,10 @@ import { useUserRoleStore } from '~/src/stores/storeRole'
 import axios from 'axios'
 
 export default defineComponent({
+    // props: {
+    //     id: Number,
+    //     default: null as null || Number
+    // },
 	setup() {
 		const router = useRouter()
         const courseStore = useStoreCourses()

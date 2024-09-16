@@ -6,9 +6,8 @@
 				v-if="typeof field === 'string' && field.length"
 				:key="field"
 			>
-				<a v-if="redirect" :href="`/course-setting?search=${id}`">{{
-					field
-				}}</a>
+				<!-- <a v-if="redirect" :href="`/course-setting?search=${id}`">{{field}}</a> -->
+				<NuxtLink v-if="redirect" :to="{ path: '/course-setting', query: { search: id } }">{{field}}</NuxtLink>
 				<span v-else-if="!redirect">{{ field }}</span>
 			</div>
 		</template>
