@@ -422,7 +422,7 @@
                                     class="oil-course-setting__content__container__inner__input"
                                     v-model="changes_value.value"
                                 />
-                                <CourseArchitectureIcons 
+                                <CourseArchitectureIcons
                                     :delete_id="part.id"
                                     :delete_type="'Part'"
                                     @delete-trigger="reloadContent"
