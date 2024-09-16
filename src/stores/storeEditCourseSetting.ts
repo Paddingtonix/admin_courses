@@ -8,7 +8,7 @@ export const useStoreEditCourseSetting = defineStore('editCourse', {
 		edit() {
 			this.isEdit = true
 		},
-		saveSetting() {
+		canselEdit() {
 			this.isEdit = false
 		}
 	},

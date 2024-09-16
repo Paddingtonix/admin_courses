@@ -11,7 +11,7 @@
                     :text="card.text"
                 />
             </div>
-            <template v-if="!course_list.value.length">
+            <template v-if="!courseStore.course_list.length && !search_value.length">
                 <div class="oil-course__info__attention">
                     <i class="oil-course__info__attention__icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -32,6 +32,7 @@
                     <div class="oil-course__settings">
                         <SearchCmp
                             :label="'Поиск'"
+                            @change-value="updateSearchValue($event)"
                         />
                         <FilterCmp
                             @click="openFilter(true)"
@@ -102,14 +103,14 @@
                         :date_edit="'Дата посл. ред.'"
                         :end_date="'Снятие с витрины'"
                     />
-                    <TableRowCmp
-                        v-for="(row, idx) in course_list.value"
+                    <TableRowCmp 
+                        v-for="(row, idx) in courseStore.course_list"
                         :id="row.courseId"
                         :key="idx"
                         :name="row.title"
                         :status="translateStatus(row.status)"
                         :authors="row.authorEmails[0]"
-                        :direction="formatDirectionToString(row.direction)"
+                        :direction="formatDirectionToString(row.directions)"
                         :lang="row.language.toUpperCase()"
                         :date_edit="formatDate(row.lastChangeDateTime)"
                         :end_date="formatDate(row.salesTerminationDate)"
@@ -117,7 +118,9 @@
                 </div>
                 <div class="oil-course__settings__pagination">
                     <PaginationCmp
-                        :pages_count="14"
+                        :pages_count="paginations_pages!"
+                        :currentPage="current_page"
+                        @change-page="isCurrentPage"
                     />
                 </div>
             </template>
@@ -125,11 +128,9 @@
     </section>
 </template>
 <script lang="ts">
-// import { defineComponent, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useUserRoleStore } from '~/src/stores/storeRole'
-import type { CourseList } from '@/src/ts-interface/course-list'
 import axios from 'axios'
 
 export default defineComponent({
@@ -138,33 +139,6 @@ export default defineComponent({
         const courseStore = useStoreCourses()
 
         const user_role_store = useUserRoleStore()
-
-        const course_info = reactive([
-            {
-                count: 0,
-                text: 'Всего'
-            },
-            {
-                count: 0,
-                text: 'В разработке'
-            },
-            {
-                count: 0,
-                text: 'На модерации'
-            },
-            {
-                count: 0,
-                text: 'Опубликован'
-            },
-            {
-                count: 0,
-                text: 'Снят с витрины'
-            },
-            {
-                count: 0,
-                text: 'В архиве'
-            },
-        ])
 
 		const filter_course = reactive({
 			value: [
@@ -261,17 +235,29 @@ export default defineComponent({
 			],
 		})
 
-        const course_list = reactive({
-            value: [] as CourseList[]
-        })
-
         const filter_frame = reactive({
             value: false as boolean
         })
 
-        // ПЕРЕПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ФУНКЦИИ КОГДА МАССИВ БУДЕТ ЗАПОЛНЕН
-        const formatDirectionToString = (arr: string[]): string => {
-            return arr ? arr.join(', ') : '--'
+        const paginations_pages = ref<number>(courseStore.$state.numberOfPages ?? 1)
+        const current_page = ref<number>(1)
+
+        const search_value = ref("")
+
+        const isCurrentPage = (page: number) => {
+            current_page.value = page
+        }
+        
+        const updateSearchValue = (value = '') => {            
+            search_value.value = value
+            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
+        }
+
+        const formatDirectionToString = (arr: string[] | null | undefined): string => {
+            if (!arr || arr.length === 0) {
+                return '--'
+            }
+            return arr.join(', ')
         }
 
         const formatDate = (date_value: string | null) => {
@@ -292,10 +278,12 @@ export default defineComponent({
 		const navigate = (url: string) => {
 			router.push(url)
 		}
+        watch(() => courseStore.$state.numberOfPages, (newValue) => {
+            paginations_pages.value = newValue ?? 1
+        })
 
-        watch(course_list, (new_state) => {
-            course_list.value = new_state.value
-            console.log(new_state.value, 'course-list')
+        watch(current_page, () => {
+            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
         })
 
         const status_translation = {
@@ -310,26 +298,13 @@ export default defineComponent({
             return status_translation[status]
         };
 
-        watch(course_list, (new_state) => {
-            course_list.value = new_state.value
-        })
+        // watch(course_list, (new_state) => {
+        //     course_list.value = new_state.value
+        // })
 
         onMounted(() => {
             nextTick(() => {
-                axios
-                    .get('/admin/v1/Course')
-                    .then((response) => {
-                        console.log(response.data, 'v1/Course')
-                        // console.log(course_list.value, 'course_list.value')
-                        course_list.value = response.data.courses
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Всего')!.count = course_list.value ? course_list.value.length : 0
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'В разработке')!.count = course_list.value.filter((el: { status: string }) => el.status === 'InDevelopment') ? course_list.value.filter((el: any) => el.status === 'InDevelopment').length : 0
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'На модерации')!.count = course_list.value.filter((el: { status: string }) => el.status === 'OnModeration') ? course_list.value.filter((el: any) => el.status === 'OnModeration').length : 0
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Опубликован')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Published') ? course_list.value.filter((el: any) => el.status === 'Published').length : 0
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'Снят с витрины')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Withdrawn') ? course_list.value.filter((el: any) => el.status === 'Withdrawn').length : 0
-                        // course_info.find((element: { count: Number, text: String }) => element.text === 'В архиве')!.count = course_list.value.filter((el: { status: string }) => el.status === 'Archived') ? course_list.value.filter((el: any) => el.status === 'Archived').length : 0
-                    })
-                courseStore.getCourses()
+                courseStore.getCourses('/admin/v1/Course')
 
                 axios
                     .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
@@ -341,7 +316,6 @@ export default defineComponent({
                         course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
                         course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
                     })
-                // courseStore.getCourses()
             })
         })
 
@@ -353,10 +327,13 @@ export default defineComponent({
             openFilter,
             formatDirectionToString,
             formatDate,
-            translateStatus,
-            // course_info: courseStore.course_info,
-            course_info,
-            course_list
+            paginations_pages,
+            current_page,
+            isCurrentPage,
+            updateSearchValue,
+            search_value,
+            courseStore,
+            course_info: courseStore.course_info,
         }
     }
 })

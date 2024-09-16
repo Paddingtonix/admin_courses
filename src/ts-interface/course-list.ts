@@ -2,7 +2,7 @@ export interface CourseList {
     title: string,
     status: string,
     authorEmails: string[],
-    direction: string[],
+    directions: string[],
     language: string,
     lastChangeDateTime: string,
     salesTerminationDate: string | null,

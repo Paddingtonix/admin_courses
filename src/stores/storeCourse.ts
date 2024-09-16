@@ -18,18 +18,21 @@ export const useStoreCourses = defineStore('courseState', {
             { count: 0, text: 'Снят с витрины' },
             { count: 0, text: 'В архиве' },
         ],
-        status: '',
+        numberOfPages: null as number | null,
+        currentPage: 1,
+        nCoursesPerPage: 10,
     }),
     actions: {
-        getCourses() {
+        getCourses(endpoint: string) {
             axios
-                .get<{ courses: CourseList[] }>('/admin/v1/Course')
+                .get<{ courses: CourseList[], numberOfPages: number }>(endpoint)
                 .then(response => {
                     this.course_list = response.data.courses
-                    this.status = response.data.courses.status
-                    this.status = this.course_list.length ? this.course_list[0].status : ''
+                    this.$patch((state) => {
+                        state.numberOfPages = response.data.numberOfPages
+                    })
                     this.updateCourseInfo()
-                    console.log(response.data.courses, 'response.data.courses');
+                    console.log(response.data, 'response.data')
                 })
                 .catch(error => {
                     console.error(error)

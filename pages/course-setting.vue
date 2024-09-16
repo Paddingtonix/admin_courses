@@ -22,7 +22,7 @@
                 />
             </div>
             <template v-if="active_tab === 1">
-                <!-- <div class="oil-course-setting__settings">
+                <div class="oil-course-setting__settings">
                     <div class="oil-course-setting__settings__cards">
                         <CardInfo
                             v-for="(card, card_idx) in course_setting"
@@ -224,13 +224,15 @@
                         v-if="storeStateCourse.status !== 'Archived' && !storeEditCourseSetting.isEdit"
                         class="oil-course-setting__settings__btn"
                         :text="'Редактировать'"
-                        @click="editCourseSetting"
+                        @click="openEditCourseSetting"
                     />
-                    <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit">
+                    <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit"> -->
+                        <!-- тут tyt -->
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
                             :text="'Отмена'"
                             :background_type="'_secondary'"
+                            @click="canselEditCourseSetting"
                         />
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
@@ -575,6 +577,7 @@ export default defineComponent({
         const tooltip_id = ref<string>('')
         const editInput = ref(null) as any
         const directions = reactive<Direction[]>([])
+        const original_directions = ref<number[]>([])
         const picked_directions = reactive<number[]>([]) // Отправлять этот массив
 
         const reload_state = reactive({
@@ -825,11 +828,11 @@ export default defineComponent({
 		};
 
 		const openEditFrame = () => {
-			edit_mode.value = !edit_mode.value;
+			edit_mode.value = !edit_mode.value
 		};
 
 		const openExample = (id: number) => {
-			active_example.value = active_example.value === id ? null : id;
+			active_example.value = active_example.value === id ? null : id
 		};
 
         const picked_directions_filtered = computed(() =>
@@ -851,8 +854,14 @@ export default defineComponent({
             }
         })
 
-        const editCourseSetting = () => {
+        const openEditCourseSetting = () => {
             storeEditCourseSetting.edit()
+            original_directions.value = [...picked_directions]
+        }
+
+        const canselEditCourseSetting = () => {
+            storeEditCourseSetting.canselEdit()
+            picked_directions.splice(0, picked_directions.length, ...original_directions.value)
         }
 
         const editTitle = (state: boolean, idx: number, type: string, id: number) => {
@@ -879,7 +888,8 @@ export default defineComponent({
                 show_error.value = true
             } else {
                 show_error.value = false
-                storeEditCourseSetting.saveSetting()
+                storeEditCourseSetting.canselEdit()
+                original_directions.value = [...picked_directions]
             }
         }
 
@@ -1000,10 +1010,10 @@ export default defineComponent({
                 axios
                     .get('admin/v1/direction')
                     .then((response) => {
-                        response.data.forEach((element: Direction) => {
+                        response.data.directions.forEach((element: Direction) => {
                             directions.push(element)
                         })
-                        console.log(response.data, 'response.data');
+                        console.log(response.data, 'response.data')
                     })
                     .catch((error) => {
                         console.error('Ошибка при получении данных:', error)

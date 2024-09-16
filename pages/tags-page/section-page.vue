@@ -157,7 +157,7 @@ enum sortNames {
 const { sortState, sortClick } = useHeadersSort(
     tableHeadFields,
     sortNames,
-    headersStore.setSort
+    (sortQuery?: string) => headersStore.setSort(sortQuery || '')
 );
 
 const searchValue = ref("");

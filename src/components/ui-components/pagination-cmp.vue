@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch } from "vue"
 
 export default defineComponent({
 	props: {
@@ -52,47 +52,47 @@ export default defineComponent({
 	},
 	emits: ["change-page"],
 	setup(props, { emit }) {
-		const numberOfPages = ref(props.pages_count);
-		const localCurrentPage = ref(props.currentPage);
+		const numberOfPages = ref(props.pages_count)
+		const localCurrentPage = ref(props.currentPage)
 
-		const pagesArray = ref<number[]>([]);
+		const pagesArray = ref<number[]>([])
 
 		const updatePagesArray = (pagesCount: number | null) => {
 			pagesArray.value = Array.from(
 				{ length: pagesCount ? pagesCount : 0 },
 				(_, i) => i + 1
-			);
-		};
+			)
+		}
 
 		const changePage = (page: number) => {
-			localCurrentPage.value = page;
-			emit("change-page", page);
-		};
+			localCurrentPage.value = page
+			emit("change-page", page)
+		}
 
 		watch(
 			() => props.pages_count,
 			(newVal) => {
-				numberOfPages.value = newVal;
-				updatePagesArray(newVal);
+				numberOfPages.value = newVal
+				updatePagesArray(newVal)
 			},
 			{ immediate: true }
-		);
+		)
 
 		watch(
 			() => props.currentPage,
 			(newVal) => {
-				localCurrentPage.value = newVal;
+				localCurrentPage.value = newVal
 			}
-		);
+		)
 
 		return {
 			pagesArray,
 			numberOfPages,
 			changePage,
 			localCurrentPage,
-		};
+		}
 	},
-});
+})
 </script>
 <style lang="sass">
 .oil-pagination
