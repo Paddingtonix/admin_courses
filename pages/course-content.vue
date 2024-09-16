@@ -1,7 +1,7 @@
 <template>
     <section class="oil-container">
         <div class="oil-course-content">
-            <breadCmp 
+            <breadCmp
                 :prev_page="['Курсы', `${course_name}`]"
                 :current_page="'Создание курса'"
                 class="oil-course-content__bread"
@@ -16,7 +16,7 @@
                     <p class="oil-course-content__info__attention__text">Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF.</p>
                     <BtnCmp
                         :text="'Скачать PDF'"
-                        @click="downloadPDF"
+                        @click=""
                         :background_type="'_primary'"
                     >
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +26,7 @@
                 </div>
             </template>
             <template v-if="content === 'text'">
-                <div 
+                <div
                     class="oil-course-content__attention"
                     @click="openSummary"
                 >
@@ -81,7 +81,7 @@
                             bullist numlist outdent indent | removeformat | help'
                     }"
                 />
-                <btnCmp 
+                <btnCmp
                     :text="'Сохранить'"
                     class="oil-course-content__btn"
                 />
@@ -97,7 +97,7 @@
                             </div>
                         </div>
                     </div>
-                    <div 
+                    <div
                         class="oil-course-content__attention"
                         @click="openSummary"
                     >
@@ -151,13 +151,13 @@
                             <div @click="openQuestion(question)" class="oil-course-content__test__question__frame">
                                 <span class="oil-course-content__test__question__title">Вопрос {{question}}</span>
                             </div>
-                            <QuestionCmp v-if="question === open_question.value" :name="question"/>  
+                            <QuestionCmp v-if="question === open_question.value" :name="question"/>
                         </div>
                     </div>
                 </div>
             </template>
         </div>
-       
+
     </section>
 </template>
 
@@ -165,7 +165,6 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import Editor from '@tinymce/tinymce-vue'
-import html2pdf from 'html2pdf.js'
 
 export default defineComponent({
     props: {
@@ -206,28 +205,13 @@ export default defineComponent({
         })
 
         const openSummary = () => {
+            if (courseStore.status === 'Archived') return;
             visible_simmary.value = !visible_simmary.value
         }
 
         const openQuestion = (idx: number) => {
+            if (courseStore.status === 'Archived') return;
             open_question.value = open_question.value === idx ? 0 : idx
-        }
-
-        const downloadPDF = () => {const element = document.querySelector('.oil-course-content');
-
-            if (element) {
-                const options = {
-                    margin: 1,
-                    filename: `course-info.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
-
-                html2pdf().from(element).set(options).save();
-            } else {
-                console.error('Не получилось, не фортмануло :(');
-            }
         }
 
 		onMounted(() => {
@@ -241,8 +225,7 @@ export default defineComponent({
             visible_simmary,
             open_question,
             general_setting,
-            courseStore,
-            downloadPDF
+            courseStore
         };
     },
     components: {
@@ -254,7 +237,7 @@ export default defineComponent({
 <style lang="sass">
 .oil-course-content
     @include flex_column()
-    gap: rem(32)    
+    gap: rem(32)
     background-color: $basic_white
     padding: rem(32)
     &__info
@@ -281,44 +264,44 @@ export default defineComponent({
                 font-size: rem(16)
                 line-height: 150%
 
-    &__attention 
+    &__attention
         padding: rem(16) rem(24)
         // margin-bottom: rem(32)
 
-        @include flex_column()  
+        @include flex_column()
         gap: rem(12)
         background-color: $basic_light_gray
         border-radius: rem(8)
         border: rem(1) solid $light_gray
         cursor: pointer
-        &__head 
+        &__head
             gap: rem(12)
 
-            display: flex 
+            display: flex
             align-items: center
             position: relative
-            span 
+            span
                 font-weight: bold
-            
-        &__chevron 
+
+        &__chevron
             position: absolute
             top: 50%
             right: rem(16)
             transform: translateY(-50%)
 
-        &__text 
-            @include flex_column()   
-            ul 
-                list-style: inside 
-                & > ul 
+        &__text
+            @include flex_column()
+            ul
+                list-style: inside
+                & > ul
                     padding-left: rem(32)
 
-            span 
+            span
                 display: inline-flex
                 font-weight: bold
                 margin-bottom: rem(12)
-            
-            // &__frame 
+
+            // &__frame
             //     &:not(:last-child)
             //         margin-bottom: rem(20)
 
@@ -330,35 +313,35 @@ export default defineComponent({
             &__value
                 @include flex_column()
                 gap: rem(2)
-                span 
+                span
                     &:first-child
                         font-weight: bold
-                    
+
                     &:last-child
                         font-size: rem(12)
-                        
+
             &:last-child
                 margin-bottom: rem(32)
-            
-            &__name 
+
+            &__name
                 padding: rem(28) rem(108) rem(28) rem(8)
                 min-width: rem(360)
 
-        &__question 
+        &__question
             padding: rem(16) rem(24)
             background-color: $basic_light_gray
             border: rem(1) solid $light_gray
             cursor: pointer
             &:first-child
                 border-radius: rem(8) rem(8) 0 0
-            
+
             &:last-child
                 border-radius: 0 0 rem(8) rem(8)
 
-            &__title 
+            &__title
                 font-weight: bold
-            
-    &__btn 
+
+    &__btn
         width: fit-content
 
 </style>

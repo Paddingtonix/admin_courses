@@ -3,7 +3,7 @@
         <div class="oil-page oil-course-setting">
             <breadCmp 
                 :prev_page="'Список курсов'"
-                :current_page="'Геологическое моделирование пласта'"
+                :current_page="course_setting.value.Title"
                 class="oil-course-setting__bread"
             />
             <div class="oil-course-setting__menubar">
@@ -25,10 +25,23 @@
                 <div class="oil-course-setting__settings">
                     <div class="oil-course-setting__settings__cards">
                         <CardInfo
-                            v-for="(card, card_idx) in course_setting"
-                            :key="card_idx"
-                            :text="card.text"
-                            :count="card.count"
+                            :text="'Тип'"
+                            :count="course_setting.value.CourseType"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Формат'"
+                            :count="course_setting.value.CourseFormat"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Приобретение'"
+                            :count="!course_setting.value.PriceInRubles ? 'Бесплатно' : 'Платно'"
+                            :card_type="'texts'"
+                        />
+                        <CardInfo
+                            :text="'Доступ'"
+                            :count="!course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
                             :card_type="'texts'"
                         />
                     </div>
@@ -332,42 +345,223 @@
                             <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <div class="oil-course-setting__content__container">
+                    <div class="oil-course-setting__content__container" v-if="!preloader.value">
                         <div
-                            v-for="(slice_content, idx) in content_inner"
-                            :key="idx"
                             class="oil-course-setting__content__container__inner"
-                            :class="[
-                                {_chapter: slice_content.type === 'chapter' 
-                                || slice_content.type === 'test'},
-                                {_section: slice_content.type === 'section'},
-                            ]"
-                            @mousemove="createBlock($event, slice_content.type)"
+                            :class="{
+                                _filled: content_inner.value.initialPage, 
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
+                            @mousemove="createBlock($event, 'introductory')"
                         >
-                            <span class="oil-course-setting__content__container__inner__text">{{ slice_content.title }}</span>
-                            <trasition name="fade">
-                                <template
-                                    v-if="findBlock(slice_content) && slice_content.type !== 'final' && slice_content.type !== 'test' && visible_block.value === slice_content.type "
+                            <template v-if="content_inner.value.initialPage">
+                                <span>{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
+                                <CourseArchitectureIcons 
+                                    :arrow="false"
+                                    :delete_id="content_inner.value.initialPage.id"
+                                    :delete_type="'Page'"
+                                    @delete-trigger="reloadContent"
+                                />
+                            </template>
+                            <transition name="fade">
+                                <CourseArchitectureAddBlock 
+                                    v-if="!content_inner.value.initialPage"
+                                    :style="{top: -15 + 'px'}"
+                                    :btn_text="!content_inner.value.initialPage && !content_inner.value.initialTesting ? 'вводную страницу и входной тест' : 'вводную страницу'"
+                                    :request_type="{type:'Page', query: 'courseId'}"
+                                    :block_id="$route.query.course"
+                                    @request-trigger="reloadContent"
+                                />     
+                            </transition>
+                        </div>
+                        <div
+                            class="oil-course-setting__content__container__inner"
+                            :class="{
+                                _filled: content_inner.value.initialTesting,
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
+                            @mousemove="createBlock($event, 'start_test')"
+                        >
+                            <template v-if="content_inner.value.initialTesting">
+                                <span>{{ content_inner.value.initialTesting.title === null ? 'Вводная страница' : content_inner.value.initialTesting.title }}</span>
+                                <CourseArchitectureIcons 
+                                    :arrow="false"
+                                    :delete_id="content_inner.value.initialTesting.id"
+                                    :delete_type="'Testing'"
+                                    @delete-trigger="reloadContent"
+                                />
+                            </template>
+                            <transition name="fade">
+                                <CourseArchitectureAddBlock 
+                                    v-if="!content_inner.value.initialTesting && content_inner.value.initialPage"
+                                    :style="{top: -15 + 'px'}"
+                                    :btn_text="'входной тест'"
+                                    :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Entrance'}"
+                                    :block_id="$route.query.course"
+                                    @request-trigger="reloadContent"
+                                />       
+                            </transition>
+                        </div>
+                        <template
+                            v-for="(part, idx) in content_inner.value.parts"
+                            :key="idx"
+                        >
+                            <div
+                                class="oil-course-setting__content__container__inner"
+                                @mousemove="createBlock($event, 'part')"
+                                :class="{
+                                    _filled: part, 
+                                    _active: edit_field.type_field === 'Part' && edit_field.idx_field === idx,
+                                    _disable: (edit_field.type_field !== 'Part' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                }"
+
+                            >
+                                <span>{{ part.title === null ? 'Вводная страница' : part.title }}</span>
+                                <input 
+                                    v-if="edit_field.type_field === 'Part' && edit_field.idx_field === idx"
+                                    class="oil-course-setting__content__container__inner__input"
+                                    v-model="changes_value.value"
+                                />
+                                <CourseArchitectureIcons 
+                                    :delete_id="part.id"
+                                    :delete_type="'Part'"
+                                    @delete-trigger="reloadContent"
+                                    @edit-trigger="editTitle($event, idx, 'Part', part.id)"
+                                    :arrow="{up: !idx ? false: true, down: idx === content_inner.value.parts.length - 1 ? false : true}"
+                                />
+                                <transition name="fade">
+                                    <CourseArchitectureAddBlock 
+                                        :btn_text="'часть'"
+                                        :request_type="{type:'Part', query: 'courseId'}"
+                                        :block_id="$route.query.course"
+                                        @request-trigger="reloadContent"
+                                        v-if="idx === content_inner.value.parts.length - 1"
+                                    />     
+                                </transition>
+                            </div>
+                            <template v-for="(chapter, idx) in part.chapters" :key="idx">
+                                <div 
+                                    class="oil-course-setting__content__container__inner _chapter"
+                                    @mousemove="createBlock($event, 'chapter')"
+                                    :class="{
+                                        _filled: chapter, 
+                                        _active: edit_field.type_field === 'Chapter' && edit_field.idx_field === idx,
+                                        _disable: (edit_field.type_field !== 'Chapter' || edit_field.idx_field !== idx) && edit_field.idx_field !== null}"
                                 >
-                                    <div class="oil-course-setting__content__container__inner__line"></div>
-                                    <div 
-                                        class="oil-course-setting__content__container__inner__create"
-                                    >
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="16" height="16" fill="#F8FAFD"/>
-                                            <g clip-path="url(#clip0_5268_78470)">
-                                            <path d="M7.9987 5.3335V10.6668M5.33203 8.00016H10.6654M14.6654 8.00016C14.6654 11.6821 11.6806 14.6668 7.9987 14.6668C4.3168 14.6668 1.33203 11.6821 1.33203 8.00016C1.33203 4.31826 4.3168 1.3335 7.9987 1.3335C11.6806 1.3335 14.6654 4.31826 14.6654 8.00016Z" stroke="#176DC1" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </g>
-                                            <defs>
-                                            <clipPath id="clip0_5268_78470">
-                                            <rect width="16" height="16" fill="white"/>
-                                            </clipPath>
-                                            </defs>
-                                        </svg>
-                                        <span>Добавить {{ slice_content.type === 'part' ? 'часть' : slice_content.type === 'chapter' ? 'главу' : slice_content.type === 'section' ? 'раздел' : slice_content.type === 'introductory' ? 'вводную страницу и входной тест' : slice_content.type === 'introductory' ? 'вводную страницу' : slice_content.type === 'final_test' ? 'итоговый тест' :'входной тест' }}</span>
-                                    </div>
-                                </template>
-                            </trasition>
+                                    <span>{{ chapter.title === null ? 'Вводная страница' : chapter.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'Chapter' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
+                                    <CourseArchitectureIcons 
+                                        :delete_id="chapter.id"
+                                        :delete_type="'Chapter'"
+                                        @delete-trigger="reloadContent"
+                                        @edit-trigger="editTitle($event, idx, 'Chapter', chapter.id)"
+                                        :arrow="{up: !idx ? false: true, down: idx ===  part.chapters.length - 1 ? false : true}"
+                                    />
+                                    <transition name="fade">
+                                        <CourseArchitectureAddBlock 
+                                            :btn_text="'главу'"
+                                            :request_type="{type:'Chapter', query: 'partId'}"
+                                            :block_id="part.id"
+                                            @request-trigger="reloadContent"
+                                            v-if="idx === part.chapters.length - 1"
+                                        />     
+                                    </transition>
+                                </div>
+                                <div 
+                                    class="oil-course-setting__content__container__inner _section"
+                                    @mousemove="createBlock($event, 'section')"
+                                    :class="{
+                                        _filled: section, 
+                                        _active: edit_field.type_field === 'Section' && edit_field.idx_field === idx,
+                                        _disable: (edit_field.type_field !== 'Section' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                    }"
+                                    v-for="(section, idx) in chapter.sections"
+                                    :key="idx"
+                                >
+                                    <span>{{ section.title === null ? 'Вводная страница' : section.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'Section' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
+                                    <CourseArchitectureIcons 
+                                        :delete_id="section.id"
+                                        :delete_type="'Section'"
+                                        @delete-trigger="reloadContent"
+                                        @edit-trigger="editTitle($event, idx, 'Section', section.id)"
+                                        :arrow="{up: !idx ? false: true, down: idx === chapter.sections.length - 1 ? false : true}"
+                                    />
+                                    <transition name="fade">
+                                        <CourseArchitectureAddBlock 
+                                            :btn_text="'раздел'"
+                                            :request_type="{type:'Section', query: 'chapterId'}"
+                                            :block_id="chapter.id"
+                                            @request-trigger="reloadContent"
+                                            v-if="idx === chapter.sections.length - 1"
+                                        />     
+                                    </transition>
+                                </div>
+                                <div 
+                                    class="oil-course-setting__content__container__inner _chapter"
+                                    :class="{
+                                        _filled: chapter, 
+                                        _active: edit_field.type_field === 'testing' && edit_field.idx_field === idx,
+                                        _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                                    }"
+                                >
+                                    <span>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
+                                    <input 
+                                        v-if="edit_field.type_field === 'testing' && edit_field.idx_field === idx"
+                                        class="oil-course-setting__content__container__inner__input"
+                                        v-model="changes_value.value"
+                                    />
+                                    <CourseArchitectureIcons 
+                                        :delete_id="chapter.id"
+                                        :delete_type="'Chapter'"
+                                        @delete-trigger="reloadContent"
+                                    />
+                                </div>
+                            </template>
+                        </template>
+                        <div
+                            class="oil-course-setting__content__container__inner"
+                            :class="{
+                                _filled: content_inner.value.finalTesting, 
+                                _active: edit_field.type_field === 'final_test' && edit_field.idx_field === idx,
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
+                            @mousemove="createBlock($event, 'final_test')"
+                        >
+                            <template v-if="content_inner.value.finalTesting">
+                                <span>{{ content_inner.value.finalTesting.title === null ? 'Вводная страница' : content_inner.value.finalTesting.title }}</span>
+                                <CourseArchitectureIcons 
+                                    :delete_id="content_inner.value.finalTesting.id"
+                                    :delete_type="'Testing'"
+                                    @delete-trigger="reloadContent"
+                                />
+                            </template>
+                            <transition name="fade">
+                                <CourseArchitectureAddBlock 
+                                    v-if="!content_inner.value.finalTesting"
+                                    :style="{top: -15 + 'px'}"
+                                    :btn_text="'итоговый тест'"
+                                    :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Final'}"
+                                    :block_id="$route.query.course"
+                                    @request-trigger="reloadContent"
+                                />     
+                            </transition>
+                        </div>
+                        <div
+                            class="oil-course-setting__content__container__inner"
+                            :class="{_filled: content_inner.value.finalPage, 
+                                _disable: edit_field.type_field !== '' && edit_field.idx_field !== null
+                            }"
+                        >
+                            <span>{{ content_inner.value.finalPage.title === null ? 'Итоги' : content_inner.value.finalPage.title }}</span>
                         </div>
                     </div>
                 </div>
@@ -383,18 +577,25 @@ import { useStoreCourses } from '~/src/stores/storeCourse';
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
 import type { Direction } from '~/src/ts-interface/direction'
 import type ISwitcher from '~/src/ts-interface/switcher.type'
+import { useRoute } from 'vue-router'
  
 export default defineComponent({
     setup() {
         const storeEditCourseSetting = useStoreEditCourseSetting()
         const storeStateCourse = useStoreCourses()
 
+        const route = useRoute()
         const active_tab = ref<number>(3)
         const show_error = ref<boolean>(false)
         const tooltip_id = ref<string>('')
+        const editInput = ref(null) as any
         const directions = reactive<Direction[]>([])
         const original_directions = ref<number[]>([])
         const picked_directions = reactive<number[]>([]) // Отправлять этот массив
+
+        const reload_state = reactive({
+            value: false
+        })
 
         const switcherArray: ISwitcher[] = [
             {
@@ -416,6 +617,8 @@ export default defineComponent({
                 link: ''
             }
         ]
+
+
 
 		const active_example = reactive({
 			value: null as number | null,
@@ -458,24 +661,26 @@ export default defineComponent({
 			value: false,
 		});
 
-        const course_setting = reactive([
-            {
-                count: 'Синхронный',
-                text: 'Тип'
-            },
-            {
-                count: 'Онлайн',
-                text: 'Формат'
-            },
-            {
-                count: 'Платно',
-                text: 'Приобретение'
-            },
-            {
-                count: 'Полный',
-                text: 'Доступ'
-            }
-        ])
+        const course_setting = reactive({
+            value: [
+                {
+                    count: 'Синхронный',
+                    text: 'Тип'
+                },
+                {
+                    count: 'Онлайн',
+                    text: 'Формат'
+                },
+                {
+                    count: 'Платно',
+                    text: 'Приобретение'
+                },
+                {
+                    count: 'Полный',
+                    text: 'Доступ'
+                }
+            ]
+        })
 
         const course_table = reactive([
             {
@@ -498,44 +703,13 @@ export default defineComponent({
             }
         ])
 
-        const content_inner = reactive([
-            {
-                type: 'introductory ',
-                title: 'Вводная страница'
-            },
-            {
-                type: 'introductory_test',
-                title: 'Входной тест'
-            },
-            {
-                type: 'part',
-                title: 'Часть 1'
-            },
-            {
-                type: 'chapter',
-                title: 'Глава 1'
-            },
-            {
-                type: 'section',
-                title: 'Раздел 1'
-            },
-            {
-                type: 'section',
-                title: 'Раздел 2'
-            },
-            {
-                type: 'test',
-                title: 'Тест 1'
-            },
-            {
-                type: 'final_test',
-                title: 'Итоговый тест'
-            },
-            {
-                type: 'final',
-                title: 'Итоги'
-            }
-        ])
+        const preloader = reactive({
+            value: true
+        })
+
+        const content_inner = reactive({
+            value: [] as any
+        })
 
         const tooltips = ref<{ id: string, text: string}[]>([
             {
@@ -648,6 +822,15 @@ export default defineComponent({
 			},
 		]);
 
+        const edit_field = reactive({
+            idx_field: null as null | number,
+            type_field: null as null | string
+        })
+
+        const changes_value = reactive({
+            value: ''
+        })
+
 		const selectTab = (id: number) => {            
 			active_tab.value = id;
 		};
@@ -689,6 +872,25 @@ export default defineComponent({
             picked_directions.splice(0, picked_directions.length, ...original_directions.value)
         }
 
+        const editTitle = (state: boolean, idx: number, type: string, id: number) => {
+            if(state) {
+                edit_field.idx_field = idx
+                edit_field.type_field = type
+            } else {
+                axios
+                    .patch(`/admin/v1/${edit_field.type_field}/${id}`, {
+                        title: changes_value.value
+                    })
+                    .then((resp) => {
+                        console.log(resp);
+                    })
+                    .finally(() => {
+                        edit_field.idx_field = null
+                        edit_field.type_field = null
+                    })
+            }
+        }
+
         const saveSettings = () => {
             if (picked_directions_filtered.value.length === 0) {
                 show_error.value = true
@@ -699,21 +901,40 @@ export default defineComponent({
             }
         }
 
-        const findBlock = (block_content: any) => {                               
-            return [...content_inner].reverse().find(block => block.type === block_content.type)!.title === block_content.title
+        const reloadContent = (val: boolean) => {
+            reload_state.value = val
         }
 
         const createBlock = (e: { offsetY: number; }, block_type: string) => {
             if(e.offsetY <= 50 && e.offsetY >= 40) {
-                
                 visible_block.value = block_type
-            } 
+            }
         }
         
         watch(picked_directions_filtered, (new_value) => {
             if (new_value.length > 0) {
                 show_error.value = false
             }
+        })
+
+        watch(reload_state, () => {            
+            if(reload_state.value) {
+                axios
+                    .get(`/admin/v1/Course/${route.query.search}/content`)
+                    .then((struct_response) => {
+                        content_inner.value = struct_response.data
+                        reload_state.value = false
+                    })
+            }
+        })
+
+        watch(edit_field, () => {
+            nextTick(() => {
+                if(editInput.value) {
+                    
+                    editInput.value.focus()
+                }
+            })
         })
 
         const pick_direction = (dir: { id: number, picked: boolean }) => {
@@ -746,14 +967,22 @@ export default defineComponent({
                     .then((response) => {
                         course_table[1].authors = response.data[0]
                     })
-
+                
+                
                 axios
-                    .get(`admin/v1/course/${courseId.value}`)
-                    .then((response) => {
-                        console.log(response.data, 'id-course-info');
+                    .get(`/admin/v1/Course/${route.query.search}/content`)
+                    .then((struct_response) => {
+                        content_inner.value = struct_response.data
+                        preloader.value = false
                     })
-            })
-        })
+                    
+                axios
+                    .get(`/admin/v1/Course/${route.query.search}`)
+                    .then((info_course) => {
+                        course_setting.value = info_course.data
+                        preloader.value = false
+                    })
+            })})
         
         return {
             active_tab,
@@ -762,34 +991,36 @@ export default defineComponent({
             edit_mode,
             edit_info,
             content_inner,
-            selectTab,
-            openEditFrame,
-            openExample,
             course_setting,
             course_table,
             tooltip_id,
             tooltips,
-            showTooltip,
-            hideTooltip,
             setTooltipText,
             storeEditCourseSetting,
             storeStateCourse,
-            openEditCourseSetting,
-            canselEditCourseSetting,
-            saveSettings,
             inputs,
             directions,
             picked_directions,
-            pick_direction,
             picked_directions_filtered,
             show_error,
             switcherArray,
+            visible_block,
+            preloader,
+            edit_field,
+            changes_value,
+            selectTab,
+            openEditFrame,
+            openExample,
+            showTooltip,
+            hideTooltip,
+            openEditCourseSetting,
+            saveSettings,
+            pick_direction,
             createBlock,
-            findBlock,
-            visible_block
-        }
-    },
-})
+            reloadContent,
+            editTitle,
+            canselEditCourseSetting
+        }}})
 </script>
 
 <style scoped lang="sass">
@@ -1001,11 +1232,48 @@ export default defineComponent({
         &__container 
             border: rem(1) solid $light_gray
             border-radius: rem(8)
+            position: relative
+
+            max-width: rem(972)
             &__inner
-                padding: rem(16) rem(24)
-                
-                position: relative
                 background-color: $basic_light_gray
+                @include flex_start()
+                gap: rem(4)
+                position: relative
+
+                &._filled
+                    padding: rem(16) rem(24)
+         
+                    cursor: pointer
+                    transition: background .2s
+                    .oil-architecture__icons
+                        opacity: 0
+                        transition: opacity .2s
+
+                    .oil-architecture__btn
+                        bottom: 0
+                        opacity: 0
+                        transition: opacity .2s
+                
+                &._disable 
+                    opacity: .4
+                    pointer-events: none
+                
+                &:hover 
+                    background-color: $disabled_basic
+                    .oil-architecture__icons
+                        opacity: 1
+                    
+                    .oil-architecture__btn
+                        opacity: 1
+                
+                &._active 
+                    .oil-architecture__icons
+                        opacity: 0
+                    
+                    .oil-architecture__btn
+                        opacity: 0
+
                 &:first-child
                     border-radius: rem(8) rem(8) 0 0
 
@@ -1025,30 +1293,40 @@ export default defineComponent({
                     color: $basic_primary
                     font-weight: bold
 
-                &__line 
-                    position: absolute
-                    bottom: 0
-                    left: 0
-                    width: 100%
-                    height: rem(2)
-                    background-color: $light_primary
+                &__input 
+                    border: rem(1) solid $light_gray
+                    border-radius: rem(4)
+                    width: calc(100% - rem(140))
+                    padding: rem(1) rem(16)
+                // &__icons 
+                //     @include flex_start()
+                //     gap: rem(16)
 
-                &__create 
-                    padding: rem(8) rem(16)
-                    border: rem(1) solid $light_primary
-                    border-radius: rem(8)
-                    @include flex_start()
+                // &__line 
+                //     position: absolute
+                //     bottom: 0
+                //     left: 0
+                //     width: 100%
+                //     height: rem(2)
+                //     background-color: $light_primary
 
-                    gap: rem(8)
-                    background-color: $basic_white
-                    position: absolute
-                    top: rem(32)
-                    left: 50%
-                    transform: translateX(-50%)
-                    z-index: 2
-                    span 
-                        color: $light_primary
-                        font-weight: bold
+                // &__create 
+                //     padding: rem(8) rem(16)
+                //     border: rem(1) solid $light_primary
+                //     border-radius: rem(8)
+                //     @include flex_start()
+
+                //     cursor: pointer
+                //     gap: rem(8)
+                //     background-color: $basic_white
+                //     position: absolute
+                //     top: rem(32)
+                //     left: 50%
+                //     transform: translateX(-50%)
+                //     z-index: 2
+                //     span 
+                //         color: $light_primary
+                //         font-weight: bold
 
 .oil-course-setting__settings__table__column__cell
     .oil-input
