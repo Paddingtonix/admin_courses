@@ -22,12 +22,16 @@
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
 	setup() {
 		const storeModal = useStoreModal();
+        const router = useRouter();
 
 		const closeModal = () => {
+            router.push('course-page')
+
 			storeModal.closeModal();
 		};
 
