@@ -373,7 +373,8 @@
                         >
                             <template v-if="content_inner.value.initialPage">
                                 <span>{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
-                                <CourseArchitectureIcons 
+                                <CourseArchitectureIcons
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialPage.id"
                                     :delete_type="'Page'"
@@ -381,8 +382,8 @@
                                 />
                             </template>
                             <transition name="fade">
-                                <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.initialPage"
+                                <CourseArchitectureAddBlock
+                                    v-if="!content_inner.value.initialPage && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="!content_inner.value.initialPage && !content_inner.value.initialTesting ? 'вводную страницу и входной тест' : 'вводную страницу'"
                                     :request_type="{type:'Page', query: 'courseId'}"
@@ -401,7 +402,8 @@
                         >
                             <template v-if="content_inner.value.initialTesting">
                                 <span>{{ content_inner.value.initialTesting.title === null ? 'Вводная страница' : content_inner.value.initialTesting.title }}</span>
-                                <CourseArchitectureIcons 
+                                <CourseArchitectureIcons
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialTesting.id"
                                     :delete_type="'Testing'"
@@ -410,7 +412,7 @@
                             </template>
                             <transition name="fade">
                                 <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.initialTesting && content_inner.value.initialPage"
+                                    v-if="!content_inner.value.initialTesting && content_inner.value.initialPage && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'входной тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Entrance'}"
@@ -440,6 +442,7 @@
                                     v-model="changes_value.value"
                                 />
                                 <CourseArchitectureIcons
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :delete_id="part.id"
                                     :delete_type="'Part'"
                                     @delete-trigger="reloadContent"
@@ -447,12 +450,12 @@
                                     :arrow="{up: !idx ? false: true, down: idx === content_inner.value.parts.length - 1 ? false : true}"
                                 />
                                 <transition name="fade">
-                                    <CourseArchitectureAddBlock 
+                                    <CourseArchitectureAddBlock
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
                                         :block_id="$route.query.course"
                                         @request-trigger="reloadContent"
-                                        v-if="idx === content_inner.value.parts.length - 1"
+                                        v-if="idx === content_inner.value.parts.length - 1 && storeStateCourse.status !== 'Archived'"
                                     />     
                                 </transition>
                             </div>
@@ -471,7 +474,8 @@
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <CourseArchitectureIcons 
+                                    <CourseArchitectureIcons
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
                                         @delete-trigger="reloadContent"
@@ -484,7 +488,7 @@
                                             :request_type="{type:'Chapter', query: 'partId'}"
                                             :block_id="part.id"
                                             @request-trigger="reloadContent"
-                                            v-if="idx === part.chapters.length - 1"
+                                            v-if="idx === part.chapters.length - 1 && storeStateCourse.status !== 'Archived'"
                                         />     
                                     </transition>
                                 </div>
@@ -505,7 +509,8 @@
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <CourseArchitectureIcons 
+                                    <CourseArchitectureIcons
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="section.id"
                                         :delete_type="'Section'"
                                         @delete-trigger="reloadContent"
@@ -518,7 +523,7 @@
                                             :request_type="{type:'Section', query: 'chapterId'}"
                                             :block_id="chapter.id"
                                             @request-trigger="reloadContent"
-                                            v-if="idx === chapter.sections.length - 1"
+                                            v-if="idx === chapter.sections.length - 1 && storeStateCourse.status !== 'Archived'"
                                         />     
                                     </transition>
                                 </div>
@@ -536,7 +541,8 @@
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <CourseArchitectureIcons 
+                                    <CourseArchitectureIcons
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
                                         @delete-trigger="reloadContent"
@@ -555,7 +561,8 @@
                         >
                             <template v-if="content_inner.value.finalTesting">
                                 <span>{{ content_inner.value.finalTesting.title === null ? 'Вводная страница' : content_inner.value.finalTesting.title }}</span>
-                                <CourseArchitectureIcons 
+                                <CourseArchitectureIcons
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :delete_id="content_inner.value.finalTesting.id"
                                     :delete_type="'Testing'"
                                     @delete-trigger="reloadContent"
@@ -563,7 +570,7 @@
                             </template>
                             <transition name="fade">
                                 <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.finalTesting"
+                                    v-if="!content_inner.value.finalTesting && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'итоговый тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Final'}"
