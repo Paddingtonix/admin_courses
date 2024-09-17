@@ -2,12 +2,14 @@
     <div class="oil-architecture__icons" v-if="!edit.value">
         <template v-if="arrow">
             <svg 
-                :class="{_disable: !arrow.down }"  
+                :class="{_disable: !arrow.down }" 
+                @click="moveState('Down')" 
                 class="oil-architecture__icons__child"  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 4V20M12 20L18 14M12 20L6 14" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <svg
                 :class="{_disable: !arrow.up }"
+                @click="moveState('Up')" 
                 class="oil-architecture__icons__child"  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 20V4M12 4L6 10M12 4L18 10" stroke="#808E9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -44,10 +46,6 @@ export default defineComponent({
         },
         arrow: {
             type: [Object, Boolean],
-            default: () => ({
-                up: true,
-                down: true
-            })
         }
     },
     setup(props, { emit }) {
@@ -62,6 +60,10 @@ export default defineComponent({
                 })
         }
 
+        const moveState = (direction: string) => {
+            emit('move-trigger', direction)
+        }
+
         const edit = reactive({
             value: false
         })
@@ -74,7 +76,8 @@ export default defineComponent({
         return {
             edit,
             deleteBlock,
-            editActive
+            editActive,
+            moveState
         }
     }
 })
@@ -85,10 +88,10 @@ export default defineComponent({
         gap: rem(16)
         @include flex_start()
         
-        position: absolute
-        right: rem(24)
-        top:50%
-        transform: translateY(-50%)
+        // position: absolute
+        // right: rem(24)
+        // top:50%
+        // transform: translateY(-50%)
         &__child 
             cursor: pointer
             path 

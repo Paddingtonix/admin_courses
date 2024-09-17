@@ -403,7 +403,7 @@
                             </transition>
                         </div>
                         <template
-                            v-for="(part, idx) in content_inner.value.parts"
+                            v-for="(part, idx) in content_inner.value.parts.sort((a, b) => a.orderInCourse - b.orderInCourse)"
                             :key="idx"
                         >
                             <div
@@ -411,13 +411,13 @@
                                 @mousemove="createBlock($event, 'part')"
                                 :class="{
                                     _filled: part, 
-                                    _active: edit_field.type_field === 'Part' && edit_field.idx_field === idx,
-                                    _disable: (edit_field.type_field !== 'Part' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                    _active: edit_field.type_field === 'Part' && edit_field.idx_field === part.id,
+                                    _disable: (edit_field.type_field !== 'Part' || edit_field.idx_field !== part.id) && edit_field.idx_field !== null
                                 }"
 
                             >
                                 <input 
-                                    v-if="edit_field.type_field === 'Part' && edit_field.idx_field === idx"
+                                    v-if="edit_field.type_field === 'Part' && edit_field.idx_field === part.id"
                                     class="oil-course-setting__content__container__inner__input"
                                     v-model="changes_value.value"
                                 />
@@ -426,6 +426,7 @@
                                     :delete_id="part.id"
                                     :delete_type="'Part'"
                                     @delete-trigger="reloadContent"
+                                    @move-trigger="moveToStructure($event, `/admin/v1/Part/${part.id}/move`)"
                                     @edit-trigger="editTitle($event, idx, 'Part', part.id, part.title)"
                                     :arrow="{up: !idx ? false: true, down: idx === content_inner.value.parts.length - 1 ? false : true}"
                                 />
@@ -433,23 +434,23 @@
                                     <CourseArchitectureAddBlock 
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
-                                        :block_id="$route.query.course"
+                                        :block_id="$route.query.search"
                                         @request-trigger="reloadContent"
                                         v-if="idx === content_inner.value.parts.length - 1"
                                     />     
                                 </transition>
                             </div>
-                            <template v-for="(chapter, idx) in part.chapters" :key="idx">
+                            <template v-for="(chapter, idx) in part.chapters.sort((a, b) => a.orderInPart - b.orderInPart)" :key="idx">
                                 <div 
                                     class="oil-course-setting__content__container__inner _chapter"
                                     @mousemove="createBlock($event, 'chapter')"
                                     :class="{
                                         _filled: chapter, 
-                                        _active: edit_field.type_field === 'Chapter' && edit_field.idx_field === idx,
-                                        _disable: (edit_field.type_field !== 'Chapter' || edit_field.idx_field !== idx) && edit_field.idx_field !== null}"
+                                        _active: edit_field.type_field === 'Chapter' && edit_field.idx_field === chapter.id,
+                                        _disable: (edit_field.type_field !== 'Chapter' || edit_field.idx_field !== chapter.id) && edit_field.idx_field !== null}"
                                 >
                                     <input 
-                                        v-if="edit_field.type_field === 'Chapter' && edit_field.idx_field === idx"
+                                        v-if="edit_field.type_field === 'Chapter' && edit_field.idx_field === chapter.id"
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
@@ -457,6 +458,7 @@
                                     <CourseArchitectureIcons 
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
+                                        @move-trigger="moveToStructure($event, `/admin/v1/Chapter/${chapter.id}/move`)"
                                         @delete-trigger="reloadContent"
                                         @edit-trigger="editTitle($event, idx, 'Chapter', chapter.id, chapter.title)"
                                         :arrow="{up: !idx ? false: true, down: idx ===  part.chapters.length - 1 ? false : true}"
@@ -476,23 +478,24 @@
                                     @mousemove="createBlock($event, 'section')"
                                     :class="{
                                         _filled: section, 
-                                        _active: edit_field.type_field === 'Section' && edit_field.idx_field === idx,
-                                        _disable: (edit_field.type_field !== 'Section' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                        _active: edit_field.type_field === 'Section' && edit_field.idx_field === section.id,
+                                        _disable: (edit_field.type_field !== 'Section' || edit_field.idx_field !== section.id) && edit_field.idx_field !== null
                                     }"
-                                    v-for="(section, idx) in chapter.sections"
+                                    v-for="(section, idx) in chapter.sections.sort((a, b) => a.orderInChapter - b.orderInChapter)"
                                     :key="idx"
                                 >
                                     <input 
-                                        v-if="edit_field.type_field === 'Section' && edit_field.idx_field === idx"
+                                        v-if="edit_field.type_field === 'Section' && edit_field.idx_field === section.id"
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <span v-else>{{ section.title === null ? 'Вводная страница' : section.title }}</span>
+                                    <span :style="{color: '#176DC1'}" v-else @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=text`)">{{ section.title === null ? 'Вводная страница' : section.title }}</span>
                                     <CourseArchitectureIcons 
                                         :delete_id="section.id"
                                         :delete_type="'Section'"
                                         @delete-trigger="reloadContent"
                                         @edit-trigger="editTitle($event, idx, 'Section', section.id, section.title)"
+                                        @move-trigger="moveToStructure($event, `/admin/v1/Section/${section.id}/move`)"
                                         :arrow="{up: !idx ? false: true, down: idx === chapter.sections.length - 1 ? false : true}"
                                     />
                                     <transition name="fade">
@@ -509,16 +512,16 @@
                                     class="oil-course-setting__content__container__inner _chapter"
                                     :class="{
                                         _filled: chapter, 
-                                        _active: edit_field.type_field === 'Testing' && edit_field.idx_field === idx,
-                                        _disable: (edit_field.type_field !== 'Testing' || edit_field.idx_field !== idx) && edit_field.idx_field !== null
+                                        _active: edit_field.type_field === 'Testing' && edit_field.idx_field === chapter.testing.id,
+                                        _disable: (edit_field.type_field !== 'Testing' || edit_field.idx_field !== chapter.testing.id) && edit_field.idx_field !== null
                                     }"
                                 >
                                     <input 
-                                        v-if="edit_field.type_field === 'Testing' && edit_field.idx_field === idx"
+                                        v-if="edit_field.type_field === 'Testing' && edit_field.idx_field === chapter.testing.id"
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <span v-else>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
+                                    <span :style="{color: '#176DC1'}"  @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=test`)" v-else>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
                                     <CourseArchitectureIcons 
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
@@ -543,6 +546,7 @@
                                     :delete_id="content_inner.value.finalTesting.id"
                                     :delete_type="'Testing'"
                                     @delete-trigger="reloadContent"
+                                    :arrow="false"
                                 />
                             </template>
                             <transition name="fade">
@@ -873,9 +877,25 @@ export default defineComponent({
             picked_directions.splice(0, picked_directions.length, ...original_directions.value)
         }
 
-        const editTitle = (state: boolean, idx: number, type: string, id: number, title: string) => {
+        const moveToStructure = (direction: string, endpoint: string) => {
+            
+            axios
+                .patch(`${endpoint}?moveOrientation=${direction}`)
+                .finally(() => {
+                    axios
+                        .get(`/admin/v1/Course/${route.query.search}/content`)
+                        .then((struct_response) => {
+                            content_inner.value = struct_response.data
+                            reload_state.value = false
+                        })
+                })
+        }
+
+        const editTitle = (state: boolean, idx: number, type: string, id: number, title: string, parent_id: number) => {
+            console.log(parent_id, idx);
+            
             if(state) {
-                edit_field.idx_field = idx
+                edit_field.idx_field = id
                 edit_field.type_field = type
                 
                 changes_value.value = title.split(':')[1]
@@ -884,7 +904,7 @@ export default defineComponent({
 
                 axios
                     .patch(`/admin/v1/${edit_field.type_field}/${id}`, {
-                        title: changes_value.value.split(':')[1]
+                        title: changes_value.value
                     })
                     .then((resp) => {
                         console.log(resp);
@@ -1030,7 +1050,8 @@ export default defineComponent({
             createBlock,
             reloadContent,
             editTitle,
-            canselEditCourseSetting
+            canselEditCourseSetting,
+            moveToStructure
         }}})
 </script>
 
@@ -1248,9 +1269,18 @@ export default defineComponent({
             max-width: rem(972)
             &__inner
                 background-color: $basic_light_gray
-                @include flex_start()
-                gap: rem(4)
+                @include flex_center_spacing()
+                width: 100%
+
+                gap: rem(16)
                 position: relative
+
+                span 
+                    width: 100%
+                    white-space: nowrap
+                    text-overflow: ellipsis
+                    overflow: hidden
+                    font-weight: bold
 
                 &._filled
                     padding: rem(16) rem(24)
@@ -1307,7 +1337,7 @@ export default defineComponent({
                 &__input 
                     border: rem(1) solid $light_gray
                     border-radius: rem(4)
-                    width: calc(100% - rem(140))
+                    width: 100%
                     padding: rem(1) rem(16)
                     min-height: rem(20)
                     

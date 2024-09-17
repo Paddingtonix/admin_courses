@@ -2,7 +2,7 @@
 	<section class="oil-container">
 		<div class="oil-course-content">
 			<breadCmp
-				:prev_page="['Курсы', `${course_name}`]"
+				:prev_page="['Курсы', `${course_settings.title_course}`]"
 				:current_page="courseContentStore.generalSettings.title"
 				class="oil-course-content__bread"
 			/>
@@ -12,7 +12,7 @@
 				:buttonText="'Скачать PDF'"
 				:buttonClick="() => {}"
 			/>
-			<ContentModule v-if="content === 'text'" />
+			<ContentModule v-if="course_settings.type_course === 'text'" />
 			<TestSection
 				@change-setting="changeGeneralSetting"
 				@change-question="changeQuestion"
@@ -44,14 +44,11 @@
 import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
+import { useRoute } from "vue-router"
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
 	props: {
-		course_name: {
-			type: String,
-			default: "Геологическое моделирование пласта",
-		},
 		content: {
 			type: String,
 			default: "test", //text
@@ -62,6 +59,11 @@ export default defineComponent({
 		const courseContentStore = useStoreCourseContent();
 		const route = useRoute();
 		const { id } = route.params as unknown as { id: string };
+		const course_settings = reactive({
+			title_course: '',
+			type_course: ''
+		})
+
 
 		const summarySections = [
 			{
@@ -100,6 +102,8 @@ export default defineComponent({
 				})
 				.finally(() => {
 					isLoading.value = false;
+					course_settings.title_course = route.query[""][0]
+					course_settings.type_course = route.query[""][1]
 				});
 		});
 
@@ -130,6 +134,7 @@ export default defineComponent({
 			courseContentStore,
 			changeGeneralSetting,
 			changeQuestion,
+			course_settings,
 			summarySections,
 			id,
 			isLoading,

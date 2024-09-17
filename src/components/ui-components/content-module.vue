@@ -52,16 +52,22 @@
 				</ul>
 			</div>
 		</div>
-		<editor
-			v-if="editorVisible"
-			api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
-			:init="editorInitConfig"
-		/>
-		<BtnCmp :text="buttonText" class="oil-course-content__btn" />
 	</div>
+	<editor
+		v-if="editorVisible"
+		api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
+		:init="editorInitConfig"
+		v-model="editor_text.value"
+	/>
+	<BtnCmp @click="sendContent" :text="buttonText" class="oil-course-content__btn" />
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { defineComponent } from 'vue'
+import Editor from "@tinymce/tinymce-vue";
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+
 const props = defineProps({
 	title: {
 		type: String,
@@ -109,11 +115,34 @@ const props = defineProps({
 	},
 });
 
+const route = useRoute()
+
+const editor_text = reactive({
+	value: ''
+})
+
 const isSummaryVisible = ref(false);
 
 function toggleSummary() {
 	isSummaryVisible.value = !isSummaryVisible.value;
 }
+
+const sendContent = () => {
+	axios
+		.patch(`/admin/v1/Content/${route.params.id}`, {
+			text: editor_text.value
+		})
+}
+
+onMounted(() => {
+	nextTick(() => {
+		axios
+			.get(`/admin/v1/Content/${route.params.id}`)
+			.then(response_content => {
+				editor_text.value = response_content.data.text
+			})
+	})
+})
 </script>
 
 <style lang="sass">
