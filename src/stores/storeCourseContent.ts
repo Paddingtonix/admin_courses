@@ -38,10 +38,7 @@ export const useStoreCourseContent = defineStore("course-content", {
 				.get<ICourseContent>(`admin/v1/Testing/${id}`)
 				.then((response) => {
 					const { data } = response;
-					console.log(
-						"cutScorePercentages value: ",
-						data.cutScorePercentages
-					);
+					console.log("cutScorePercentages value: ", data);
 					this.courseId = data.courseId;
 					this.questions = data.questions;
 					this.generalSettings = {

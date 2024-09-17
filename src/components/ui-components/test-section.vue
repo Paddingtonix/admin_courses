@@ -203,8 +203,6 @@ const changeValueSetting = (id: number, value: string) => {
 };
 
 const cancelEditing = (id: number, type: string | number) => {
-	general_settings[id].title = "";
-	emit("change-setting", { type, value: "" });
 	general_settings[id].isEditing = false;
 };
 
