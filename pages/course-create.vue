@@ -246,10 +246,10 @@ export default defineComponent({
             }
 
 
-            if (course_data.courseType === 2 && course_data.courseFormat === 2) {
-                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
-                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
-                console.log('Валидация не пройдена: Асинхронный курс не может быть онлайн')
+            if (course_data.courseType === 2 && course_data.courseFormat === 1) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
+                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
+                console.log('Валидация не пройдена: Асинхронный курс не может быть офлайн')
                 return false
             }
 

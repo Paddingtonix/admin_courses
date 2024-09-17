@@ -7,11 +7,6 @@
                 class="oil-course-setting__bread"
             />
             <div class="oil-course-setting__menubar">
-                <!-- <TabSwitcherCmp
-                    :switcherArray="switcherArray"
-                    @switch-tab="selectTab"
-                /> -->
-                <!-- <hr> -->
                 <tabsCmp 
                     v-for="tab in switcherArray"
                     :key="tab.id"
@@ -369,7 +364,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="!content_inner.value.initialPage && !content_inner.value.initialTesting ? 'вводную страницу и входной тест' : 'вводную страницу'"
                                     :request_type="{type:'Page', query: 'courseId'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />     
                             </transition>
@@ -397,7 +392,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'входной тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Entrance'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />       
                             </transition>
@@ -433,7 +428,7 @@
                                     <CourseArchitectureAddBlock 
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
-                                        :block_id="$route.query.course"
+                                        :block_id="Number($route.query.course) || undefined"
                                         @request-trigger="reloadContent"
                                         v-if="idx === content_inner.value.parts.length - 1"
                                     />     
@@ -550,7 +545,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'итоговый тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Final'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />     
                             </transition>
