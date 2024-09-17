@@ -589,7 +589,7 @@ export default defineComponent({
         const picked_directions = reactive<number[]>([]) // Отправлять этот массив
 
         const reload_state = reactive({
-            value: false
+            value: false as boolean
         })
 
         const switcherArray: ISwitcher[] = [
@@ -654,27 +654,16 @@ export default defineComponent({
 
 		const edit_mode = reactive({
 			value: false,
-		});
+		})
 
-        const course_setting = reactive({
-            value: [
-                {
-                    count: 'Синхронный',
-                    text: 'Тип'
-                },
-                {
-                    count: 'Онлайн',
-                    text: 'Формат'
-                },
-                {
-                    count: 'Платно',
-                    text: 'Приобретение'
-                },
-                {
-                    count: 'Полный',
-                    text: 'Доступ'
-                }
-            ]
+        const course_setting = reactive<Record<string, Record<string, string>>>({
+            value: {
+                Title: '',
+                CourseType: '',
+                CourseFormat: '',
+                PriceInRubles: '',
+                IsPartialAvailable: ''
+            }
         })
 
         const course_table = reactive([
@@ -699,7 +688,7 @@ export default defineComponent({
         ])
 
         const preloader = reactive({
-            value: true
+            value: true as boolean
         })
 
         const content_inner = reactive({
@@ -815,7 +804,18 @@ export default defineComponent({
 				example:
 					"По окончании курса участники смогут: создавать и анализировать геологические модели, используя специализированное программное обеспечение; применять полученные знания для оптимизации процессов разведки и добычи углеводородов; понимать основные методы и подходы к моделированию пластов, а также интегрировать полученные данные в общие проекты разработки месторождений.",
 			},
-		]);
+		])
+            // объект собирающий данные для POST запроса
+        const formData = reactive({
+            authors: '',
+            price: '',
+            duration: '',
+            workload: '',
+            start_date: '',
+            end_date: '',
+            removed_date: '',
+            directions: [] as number[]
+        })
 
         const edit_field = reactive({
             idx_field: null as null | number,
@@ -892,7 +892,19 @@ export default defineComponent({
             } else {
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
-                original_directions.value = [...picked_directions]
+                // original_directions.value = [...picked_directions]
+                formData.directions = picked_directions
+                axios
+                // ЗАМЕНИТЬ НА ПРАВИЛЬНЫЙ АДРЕС ДЛЯ ОТПРАВКИ ДАННЫХ НАСТРОЙКИ КУРСА
+                    .post('/api/save-course-settings', formData)
+                    .then(response => {
+                        console.log('Настройки сохранены:', response.data)
+                        storeEditCourseSetting.canselEdit()
+                        original_directions.value = [...picked_directions]
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при сохранении настроек курса:', error)
+                    })
             }
         }
 
@@ -975,6 +987,7 @@ export default defineComponent({
                     .get(`/admin/v1/Course/${route.query.search}`)
                     .then((info_course) => {
                         course_setting.value = info_course.data
+                        console.log(course_setting.value, 'course_setting.value')
                         preloader.value = false
                     })
             })})
