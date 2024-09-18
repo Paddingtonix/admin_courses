@@ -1,67 +1,68 @@
 <template>
-	<div class="oil-textarea">
-		<label
-			class="oil-textarea__label"
-			:class="[
-				'oil-textarea__label',
-				{ _fill: textarea_value && textarea_value.length },
-			]"
-			>{{ label }}</label
-		>
-		<textarea
-			:maxlength="max_length"
-			v-model="textarea_value"
-			:type="type"
-			@input="setValue"
-		/>
-	</div>
+    <div class="oil-textarea">
+        <label
+            class="oil-textarea__label"
+            :class="[
+                'oil-textarea__label',
+                { _fill: textarea_value && textarea_value.length },
+            ]"
+            >{{ label }}</label
+        >
+        <textarea
+            :maxlength="max_length"
+            v-model="textarea_value"
+            :type="type"
+            @input="setValue"
+        />
+        <span>{{ error }}</span>
+    </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-	props: {
-		label: {
-			type: String,
-			default: "label",
-		},
-		error: {
-			type: String,
-			default: "",
-		},
-		type: {
-			type: String,
-			default: "",
-		},
-		modelValue: {
-			type: String,
-			default: "",
-		},
-		max_length: {
-			type: Number,
-			default: 150,
-		},
-	},
-	emits: ["set_textarea"],
+    props: {
+        label: {
+            type: String,
+            default: "label",
+        },
+        error: {
+            type: String,
+            default: "",
+        },
+        type: {
+            type: String,
+            default: "",
+        },
+        modelValue: {
+            type: String,
+            default: "",
+        },
+        max_length: {
+            type: Number,
+            default: 150,
+        },
+    },
+    emits: ["set_textarea"],
 
-	setup(props, { emit }) {
-		const { modelValue } = toRefs(props);
+    setup(props, { emit }) {
+        const { modelValue } = toRefs(props);
 
-		const textarea_value = ref<string>(modelValue.value || "");
+        const textarea_value = ref<string>(modelValue.value || "");
 
-		watch(modelValue, (newValue) => {
-			textarea_value.value = newValue ?? "";
-		});
+        watch(modelValue, (newValue) => {
+            textarea_value.value = newValue ?? "";
+        });
 
-		const setValue = () => {
-			emit("set_textarea", { value: textarea_value.value, type: "" });
-		};
+        const setValue = () => {
+            emit("set_textarea", { value: textarea_value.value, type: "" });
+        };
 
-		return {
-			textarea_value,
-			setValue,
-		};
-	},
+        return {
+            textarea_value,
+            setValue,
+        };
+    },
 });
 </script>
 <style lang="sass">
