@@ -90,12 +90,12 @@ export default defineComponent({
 		watch(
 			() => props.date_calendar,
 			(new_date) => {
-				input_value.value = new_date;
+				input_value.value = new_date
 			}
 		);
 
 		const setValue = () => {
-			emit("set_value", { value: input_value.value, type: props.type });
+			emit("set_value", { value: input_value.value, type: props.type })
 		};
 
 		const mask_price = computed(() => {

@@ -199,6 +199,7 @@
                                     <InputCmp 
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
+                                        @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
@@ -235,7 +236,6 @@
                         @click="openEditCourseSetting"
                     />
                     <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit">
-                        <!-- тут tyt -->
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
                             :text="'Отмена'"
@@ -613,8 +613,6 @@ export default defineComponent({
             }
         ]
 
-
-
 		const active_example = reactive({
 			value: null as number | null,
 		});
@@ -717,15 +715,18 @@ export default defineComponent({
         const inputs = reactive([
             {
                 placeholder: '99 999',
-                mask_type: 'price'
+                mask_type: 'price',
+                value: ''
             },
             {
                 placeholder: '999',
-                mask_type: 'price'
+                mask_type: 'price',
+                value: ''
             },
             {
                 placeholder: '999',
-                mask_type: 'price'
+                mask_type: 'price',
+                value: ''
             }
         ])
 
@@ -805,17 +806,6 @@ export default defineComponent({
 					"По окончании курса участники смогут: создавать и анализировать геологические модели, используя специализированное программное обеспечение; применять полученные знания для оптимизации процессов разведки и добычи углеводородов; понимать основные методы и подходы к моделированию пластов, а также интегрировать полученные данные в общие проекты разработки месторождений.",
 			},
 		])
-            // объект собирающий данные для POST запроса
-        const formData = reactive({
-            authors: '',
-            price: '',
-            duration: '',
-            workload: '',
-            start_date: '',
-            end_date: '',
-            removed_date: '',
-            directions: [] as number[]
-        })
 
         const edit_field = reactive({
             idx_field: null as null | number,
@@ -885,6 +875,31 @@ export default defineComponent({
                     })
             }
         }
+        // объект собирающий данные для POST запроса
+        const formData = reactive({
+            directionIds: [] as number[],
+            authorEmails: [] as string[],
+            priceInRubles: '',
+            durationAcademicHours: '',
+            durationWorkDays: '',
+            dateStart: '',
+            dateFinish: '',
+            salesTerminationDate: '',
+        })
+
+        const updateFormData = (event: { value: string, type: string }, index: number) => {
+            switch(index) {
+                case 0:
+                    inputs[0].value = event.value
+                    break
+                case 1:
+                    inputs[1].value = event.value
+                    break
+                case 2:
+                    inputs[2].value = event.value
+                    break
+            }
+        }
 
         const saveSettings = () => {
             if (picked_directions_filtered.value.length === 0) {
@@ -893,10 +908,19 @@ export default defineComponent({
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
                 // original_directions.value = [...picked_directions]
-                formData.directions = picked_directions
+                formData.directionIds = picked_directions
+                formData.authorEmails = [course_table[1].authors]
+                formData.priceInRubles = inputs[0].value
+                formData.durationAcademicHours = inputs[1].value
+                formData.durationWorkDays = inputs[2].value
+                formData.dateStart = course_table[1].start_date!
+                formData.dateFinish = course_table[1].end_date!
+                formData.salesTerminationDate = course_table[1].removed_date
+                console.log(formData, 'formData');
+
                 axios
                 // ЗАМЕНИТЬ НА ПРАВИЛЬНЫЙ АДРЕС ДЛЯ ОТПРАВКИ ДАННЫХ НАСТРОЙКИ КУРСА
-                    .post('/api/save-course-settings', formData)
+                    .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
                     .then(response => {
                         console.log('Настройки сохранены:', response.data)
                         storeEditCourseSetting.canselEdit()
@@ -1027,7 +1051,8 @@ export default defineComponent({
             createBlock,
             reloadContent,
             editTitle,
-            canselEditCourseSetting
+            canselEditCourseSetting,
+            updateFormData
         }}})
 </script>
 
