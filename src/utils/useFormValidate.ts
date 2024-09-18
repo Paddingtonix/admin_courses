@@ -1,95 +1,143 @@
 import { deepEqual } from "./deepComparsion";
+import { reactive, computed } from "vue";
 
 interface IValidationRule {
-    required?: { errorMessage: string };
-    min?: { errorMessage?: string; minValue: number };
-    max?: { errorMessage?: string; maxValue: number };
-    shouldChange?: { errorMessage: string };
-    validateNumber?: { errorMessage?: string; range: [number, number] };
-    defaultError: string;
-    isTouched: boolean;
+	required?: { errorMessage: string };
+	min?: { errorMessage?: string; minValue: number };
+	max?: { errorMessage?: string; maxValue: number };
+	shouldChange?: { errorMessage: string };
+	validateNumber?: { errorMessage?: string; range: [number, number] };
+	isName?: { errorMessage: string };
+	defaultError: string;
 }
 
-interface IValidationSchema {
-    [key: string]: IValidationRule;
+export interface IValidationSchema {
+	[key: string]: IValidationRule;
 }
 
 interface ICurrentForm {
-    [key: string]: any;
+	[key: string]: any;
 }
 
 export const useFormValidate = (
-    currentForm: ICurrentForm,
-    validationSchema: IValidationSchema
+	currentForm: ICurrentForm,
+	validationSchema: IValidationSchema,
+	backendError?: string
 ) => {
-    const initialForm = Object.create(currentForm);
+	const initialForm = JSON.parse(JSON.stringify(currentForm));
 
-    const errors = reactive<{ value: { [key: string]: string } }>({
-        value: {},
-    });
-    const touchedFields = Object.fromEntries(
-        Object.keys(currentForm).map((item) => [item, false])
-    );
+	const errors = reactive<{ [key: string]: string }>({});
 
-    (() => {
-        errors.value = {};
-        const newErrors: { value: { [key: string]: string } } = { value: {} };
-        for (const field in validationSchema) {
-            const fieldValue = currentForm[field];
-            const rules = validationSchema[field];
+	const isNameRegExp = /^[A-Za-z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~\-]+$/;
 
-            if (currentForm[field].length && !touchedFields[field]) {
-                return;
-            } else {
-                touchedFields[field] = true;
-            }
-            if (rules.required && !fieldValue) {
-                newErrors.value[field] = rules.required.errorMessage;
-            }
+	const touchedFields = reactive<{ [key: string]: boolean }>(
+		Object.fromEntries(
+			Object.keys(currentForm).map((item) => [item, false])
+		)
+	);
 
-            if (
-                rules.min?.minValue !== undefined &&
-                fieldValue.length < rules.min.minValue
-            ) {
-                newErrors.value[field] =
-                    rules.min?.errorMessage || rules.defaultError;
-            }
+	// Следим за изменениями каждого поля
+	Object.keys(currentForm).forEach((field) => {
+		watch(
+			() => currentForm[field],
+			() => {
+				touchedFields[field] = true; // Помечаем поле как изменённое
+				validateField(field); // Валидируем это конкретное поле
+				clearShouldChangeErrors(); // Убираем ошибки shouldChange со всех полей
+			}
+		);
+	});
 
-            if (
-                rules.max?.maxValue !== undefined &&
-                fieldValue.length > rules.max.maxValue
-            ) {
-                newErrors.value[field] =
-                    rules.max?.errorMessage || rules.defaultError;
-            }
+	// Валидация конкретного поля
+	const validateField = (field: string) => {
+		const fieldValue = currentForm[field];
+		const rules = validationSchema[field];
+		console.log(validationSchema["name"]);
 
-            if (rules.validateNumber) {
-                const [min, max] = rules.validateNumber.range;
-                const valueAsNumber = Number(fieldValue);
-                if (
-                    isNaN(valueAsNumber) ||
-                    valueAsNumber < min ||
-                    valueAsNumber > max
-                ) {
-                    newErrors.value[field] =
-                        rules.validateNumber?.errorMessage ||
-                        rules.defaultError;
-                }
-            }
-            if (rules.shouldChange) {
-                if (deepEqual(initialForm, currentForm)) {
-                    newErrors.value[field] =
-                        rules.shouldChange?.errorMessage || rules.defaultError;
-                }
-            }
-        }
+		// Убираем старую ошибку для данного поля
+		delete errors[field];
 
-        Object.assign(errors, newErrors);
-    })();
+		// Обязательное поле
+		if (rules.required && !fieldValue) {
+			errors[field] = rules.required.errorMessage;
+			return;
+		}
 
-    const isFormValid = computed(() => {
-        return Object.keys(errors.value).length === 0;
-    });
+		// Минимальная длина
+		if (
+			rules.min?.minValue !== undefined &&
+			fieldValue.length < rules.min.minValue
+		) {
+			errors[field] = rules.min?.errorMessage || rules.defaultError;
+		}
 
-    return { isFormValid, errors };
+		// Максимальная длина
+		if (
+			rules.max?.maxValue !== undefined &&
+			fieldValue.length > rules.max.maxValue
+		) {
+			errors[field] = rules.max?.errorMessage || rules.defaultError;
+		}
+
+		if (rules.isName && !isNameRegExp.test(fieldValue)) {
+			errors[field] = rules.isName.errorMessage || rules.defaultError;
+		}
+		if (backendError) {
+			errors[field] = backendError;
+		}
+		// Валидация числового значения
+		if (rules.validateNumber) {
+			const [min, max] = rules.validateNumber.range;
+			const valueAsNumber = Number(fieldValue);
+			if (
+				isNaN(valueAsNumber) ||
+				valueAsNumber < min ||
+				valueAsNumber > max
+			) {
+				errors[field] =
+					rules.validateNumber?.errorMessage || rules.defaultError;
+			}
+		}
+
+		// Проверка на изменение формы, если поле не пустое
+		if (
+			rules.shouldChange &&
+			fieldValue.trim() !== "" &&
+			deepEqual(initialForm, currentForm)
+		) {
+			errors[field] =
+				rules.shouldChange?.errorMessage || rules.defaultError;
+		}
+	};
+
+	// Убираем ошибки по shouldChange для всех полей, если хоть одно поле изменилось
+	const clearShouldChangeErrors = () => {
+		if (!deepEqual(initialForm, currentForm)) {
+			Object.keys(validationSchema).forEach((field) => {
+				if (validationSchema[field].shouldChange) {
+					// Убираем ошибку shouldChange только для этого правила
+					if (
+						errors[field] ===
+						validationSchema[field].shouldChange?.errorMessage
+					) {
+						delete errors[field];
+					}
+				}
+			});
+		}
+	};
+
+	// Полная валидация перед отправкой формы
+	const validateOnSubmit = () => {
+		Object.keys(currentForm).forEach((field) => {
+			touchedFields[field] = true;
+			validateField(field);
+		});
+	};
+
+	const isFormValid = computed(() => {
+		return Object.keys(errors).length === 0;
+	});
+
+	return { isFormValid, errors, validateOnSubmit };
 };
