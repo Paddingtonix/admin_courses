@@ -153,8 +153,6 @@ export const useFormValidate = (
     const clearShouldChangeErrors = () =>
         !deepEqual(initialForm, currentForm) &&
         Object.keys(validationSchema).forEach((field) => {
-            console.log(errors);
-
             const shouldChangeError =
                 validationSchema[field].shouldChange?.errorMessage;
             errors[field] === shouldChangeError && delete errors[field];
