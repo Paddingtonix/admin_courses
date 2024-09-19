@@ -42,16 +42,14 @@ export const useFormValidate = (
                 watch(
                     () => currentForm[fieldInner][lang],
                     () => {
-                        validateField(
-                            lang,
-                            validationSchema[fieldInner].isObject
-                                ?.validationSchema
-                        );
+                        validateField(lang, validationSchema[fieldInner]);
                         clearShouldChangeErrors();
                     }
                 );
             });
         });
+
+        console.log(isFormContainsObject.value);
 
         Object.keys(currentForm).forEach((field) => {
             watch(
@@ -153,6 +151,8 @@ export const useFormValidate = (
     const clearShouldChangeErrors = () =>
         !deepEqual(initialForm, currentForm) &&
         Object.keys(validationSchema).forEach((field) => {
+            console.log(errors);
+
             const shouldChangeError =
                 validationSchema[field].shouldChange?.errorMessage;
             errors[field] === shouldChangeError && delete errors[field];
@@ -160,7 +160,9 @@ export const useFormValidate = (
 
     const validateOnSubmit = () => {
         Object.keys(currentForm).forEach((field) =>
-            typeof currentForm[field] !== "object" ? validateField(field) : null
+            typeof currentForm[field] !== "object" && !isNull(field)
+                ? validateField(field)
+                : null
         );
         isFormContainsObject.value.forEach((fieldInner) => {
             validationSchema[fieldInner];
