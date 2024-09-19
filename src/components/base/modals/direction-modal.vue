@@ -25,13 +25,14 @@
             />
             <BtnCmp 
                 :text="'Добавить'"
-                @click="setDirectionServer(input_value)"
+                @click="setDirectionServer"
             />
         </div>
     </div>
 </template>
 <script type="ts">
 import { defineComponent } from 'vue'
+import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
 
 export default defineComponent({
@@ -43,6 +44,7 @@ export default defineComponent({
         const input_value = ref('')
 
         const store_modal = useStoreModal();
+        const store_direction = useDirectionStore();
 
         const closeModal = () => {
             store_modal.closeModal();
@@ -61,13 +63,17 @@ export default defineComponent({
         }
 
         const setDirectionServer = () => {
-            useDirectionStore().createDirection({
+            const sendData = {
                 isVisible: visible_direction.value,
                 localizations: {
-                    en: '',
+                    en: input_value.value,
                     ru: input_value.value,
+                    // fr: input_value.value
                 }
-            })
+            }
+
+            store_direction.createDirection(sendData);
+            store_modal.closeModal();
         }
 
 

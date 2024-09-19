@@ -90,7 +90,6 @@ import { useDirectionStore } from '~/src/stores/storeDirection';
 import { useStoreModal } from "~/src/stores/storeModal";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
-import type { DirectionData } from "~/src/ts-interface/direction-data";
 import { useUserRoleStore } from '~/src/stores/storeRole';
 
 export default defineComponent({
@@ -180,24 +179,12 @@ export default defineComponent({
         ];
 
         const sendDirection = () => {
-            directions_data.forEach(direction => {
-                const direction_push: DirectionData = {
-                    isVisible: direction.isVisible,
-                    localizations: {
-                        en: '',
-                        ru: direction.localizedName,
-                        fr: ''
-                    },
-                };
-                modalStore.$patch({
-                    label: "Добавление направления ",
-                    activeModal: "direction-modal",
-                    modalProps: {},
-                });
-                modalStore.openModal();
-
-                direction_store.createDirection(direction_push);
+            modalStore.$patch({
+                label: "Добавление направления ",
+                activeModal: "direction-modal",
+                modalProps: {},
             });
+            modalStore.openModal();
         }
 
         const deleteDirection = (id: string) => {
