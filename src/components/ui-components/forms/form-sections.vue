@@ -50,6 +50,8 @@ import {
 	useFormValidate,
 	type IValidationSchema,
 } from "~/src/utils/useFormValidate";
+import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
+const { form_sections } = validation_schemas;
 
 const storeModal = useStoreModal();
 
@@ -67,46 +69,10 @@ type TInputEvent = {
 	type: string;
 };
 
-const validationSchema = reactive<IValidationSchema>({
-	name: {
-		required: { errorMessage: "Поле обязательно к заполнению" },
-		shouldChange: { errorMessage: "Вы должны что-то изменить" },
-		min: {
-			errorMessage: "Минимальное количество символов: 4",
-			minValue: 4,
-		},
-		max: {
-			errorMessage: "Максимальное количество символов - 65",
-			maxValue: 65,
-		},
-		isName: {
-			errorMessage:
-				"Поле может содержать буквы латиницы, символы и цифры",
-		},
-		defaultError: "Что-то пошло не так",
-	},
-	description: {
-		required: { errorMessage: "Поле обязательно к заполнению" },
-		shouldChange: { errorMessage: "Вы должны что-то изменить" },
-		min: {
-			errorMessage: "Минимальное количество символов - 5",
-			minValue: 5,
-		},
-		max: {
-			errorMessage: "Максимальное количество символов - 485",
-			maxValue: 485,
-		},
-		defaultError: "Что-то пошло не так",
-	},
-});
-
 const backendError = ref<undefined | string>(undefined);
 
-const { isFormValid, errors, validateOnSubmit } = useFormValidate(
-	formModel,
-	validationSchema,
-	backendError.value
-);
+const { isFormValid, errors, validateOnSubmit, setCustomError } =
+	useFormValidate(formModel, form_sections);
 
 const changeForm = ({
 	name,
@@ -134,10 +100,11 @@ const sendForm = () => {
 				storeModal.closeModal();
 			})
 			.catch((err) => {
-				if (err instanceof AxiosError) {
-					backendError.value = err.message;
+				console.log("form-sections: ", err);
+				if (err instanceof AxiosError && err.status === 409) {
+					setCustomError("name", err.message);
 				} else {
-					backendError.value = err.message;
+					alert(err.message);
 				}
 			});
 	}
@@ -160,8 +127,11 @@ const patchForm = () => {
 				storeModal.closeModal();
 			})
 			.catch((err) => {
+				console.log("form-sections: ", err);
 				if (err instanceof AxiosError && err.status === 409) {
-					backendError.value = err.message;
+					setCustomError("name", err.message);
+				} else {
+					alert(err.message);
 				}
 			});
 	}

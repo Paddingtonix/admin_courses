@@ -21,8 +21,7 @@ interface ICurrentForm {
 
 export const useFormValidate = (
 	currentForm: ICurrentForm,
-	validationSchema: IValidationSchema,
-	backendError?: string
+	validationSchema: IValidationSchema
 ) => {
 	const initialForm = JSON.parse(JSON.stringify(currentForm));
 
@@ -52,7 +51,6 @@ export const useFormValidate = (
 	const validateField = (field: string) => {
 		const fieldValue = currentForm[field];
 		const rules = validationSchema[field];
-		console.log(validationSchema["name"]);
 
 		// Убираем старую ошибку для данного поля
 		delete errors[field];
@@ -81,9 +79,6 @@ export const useFormValidate = (
 
 		if (rules.isName && !isNameRegExp.test(fieldValue)) {
 			errors[field] = rules.isName.errorMessage || rules.defaultError;
-		}
-		if (backendError) {
-			errors[field] = backendError;
 		}
 		// Валидация числового значения
 		if (rules.validateNumber) {
@@ -135,9 +130,13 @@ export const useFormValidate = (
 		});
 	};
 
+	const setCustomError = (field: string, msg: string) => {
+		errors[field] = msg;
+	};
+
 	const isFormValid = computed(() => {
 		return Object.keys(errors).length === 0;
 	});
 
-	return { isFormValid, errors, validateOnSubmit };
+	return { isFormValid, errors, validateOnSubmit, setCustomError };
 };
