@@ -27,8 +27,18 @@
                     </BtnCmp>
                 </div>
                 <div class="oil-direction-page__checkbox">
-                    <CheckboxCmp :active="visible_state.show_only_visible" text="Отображающиеся на сайте" @click="toggleVisible('visible')" />
-                    <CheckboxCmp :active="visible_state.show_only_invisible" text="Не отображающиеся на сайте" @click="toggleVisible('invisible')" />
+                    <CheckboxCmp
+                        :id="active_checkbox.show_only_visible.name"
+                        :active="active_checkbox.show_only_visible.isActive"
+                        text="Отображающиеся на сайте"
+                        @set_value="toggleVisible"
+                    />
+                    <CheckboxCmp
+                        :id="active_checkbox.show_only_invisible.name"
+                        :active="active_checkbox.show_only_invisible.isActive"
+                        text="Не отображающиеся на сайте"
+                        @set_value="toggleVisible"
+                    />
                 </div>
                 <div class="oil-direction-page__course-list">
                     <template v-if="filtered_directions.length">
@@ -72,7 +82,6 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, computed, watch, onMounted } from 'vue';
 import { useDirectionStore } from '~/src/stores/storeDirection';
-import { useRouter } from "vue-router";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
@@ -81,19 +90,19 @@ import { useUserRoleStore } from '~/src/stores/storeRole';
 
 export default defineComponent({
     setup() {
-        const router = useRouter()
         const direction_store = useDirectionStore();
         const search_query = ref('')
         const show_only_visible = ref(true)
         const show_only_invisible = ref(true)
         const sort_field = ref('')
         const sort_direction = ref<'asc' | 'desc'>('asc')
+        const user_role_store = useUserRoleStore()
+        const modalStore = useStoreModal();
 
         const visible_state = reactive({
             show_only_visible: true,
             show_only_invisible: true,
         })
-        const user_role_store = useUserRoleStore()
 
         const pill_info = reactive([
             {
@@ -106,23 +115,14 @@ export default defineComponent({
             },
         ])
 
-        const modalStore = useStoreModal();
+        const active_checkbox = reactive({
+            show_only_visible: { name: "show_only_visible", isActive: true },
+            show_only_invisible: { name: "show_only_invisible", isActive: true },
+        });
 
-        const toggleVisible = (state: string) => {
-            switch (state) {
-                case 'invisible':
-
-                    visible_state.show_only_invisible = !visible_state.show_only_invisible
-                    break;
-                case 'visible':
-
-                    visible_state.show_only_visible = !visible_state.show_only_visible
-                    break;
-                default:
-                    break;
-            }
-            
-        }
+        const toggleVisible = ({ id, active }: { id: "show_only_visible" | "show_only_invisible"; active: boolean }) => {
+            active_checkbox[id].isActive = active;
+        };
 
         const onSort = ({ field_key }) => {
             const direction = sort_direction.value === 'asc' ? 'desc' : 'asc';
@@ -131,37 +131,39 @@ export default defineComponent({
             sort_direction.value = direction;
         };
 
+        const filtered_by_visibility = computed(() => {
+            console.log('direction_store.directions:', direction_store.directions);
+
+            if (active_checkbox.show_only_visible.isActive && active_checkbox.show_only_invisible.isActive) {
+                return direction_store.directions;
+            }
+
+            if (!active_checkbox.show_only_visible.isActive && !active_checkbox.show_only_invisible.isActive) {
+                return [];
+            }
+
+            return direction_store.directions.filter(direction => {
+                if (active_checkbox.show_only_visible.isActive && !active_checkbox.show_only_invisible.isActive) {
+                    return direction.isVisible;
+                } else {
+                    return !direction.isVisible;
+                }
+            });
+        })
+
         const filtered_directions = computed(() => {
-            console.log(filtered_by_visibility);
-            
-            // let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string; }) => {
-            //     return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
-            // });
+            console.log(filtered_by_visibility.value, 'filtered_by_visibility ');
+
+            let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string }) => {
+                return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
+            });
 
             if (sort_field.value && sort_direction.value) {
                 filtered = sortHeader(filtered, sort_field.value, sort_direction.value);
                 console.log('ну-ка, сука, работай', filtered)
             }
 
-            return direction_store.directions;
-        })
-
-        const filtered_by_visibility = computed(() => {
-            if (visible_state.show_only_visible && visible_state.show_only_invisible) {
-                return direction_store.directions;
-            }
-
-            if (!visible_state.show_only_visible && !visible_state.show_only_invisible) {
-                return [];
-            }
-
-            return direction_store.directions.filter(direction => {
-                if (visible_state.show_only_visible && !visible_state.show_only_invisible) {
-                    return direction.isVisible;
-                } else {
-                    return !direction.isVisible;
-                }
-            });
+            return filtered;
         })
 
         const directions_data = [
@@ -179,7 +181,7 @@ export default defineComponent({
                     localizations: {
                         en: '',
                         ru: direction.localizedName,
-                        // fr: ''
+                        fr: ''
                     },
                 };
                 modalStore.$patch({
@@ -212,6 +214,7 @@ export default defineComponent({
             direction_store,
             show_only_visible,
             show_only_invisible,
+            active_checkbox,
             user_role_store,
             deleteDirection,
             sendDirection,

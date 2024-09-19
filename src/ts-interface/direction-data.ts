@@ -3,6 +3,6 @@ export interface DirectionData {
     localizations: {
         en?: string;
         ru?: string;
-        // fr?: string;
+        fr?: string;
     };
 }
