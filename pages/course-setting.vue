@@ -31,12 +31,12 @@
                         />
                         <CardInfo
                             :text="'Приобретение'"
-                            :count="!course_setting.value.PriceInRubles ? 'Бесплатно' : 'Платно'"
+                            :count="course_setting.value.IsFree ? 'Бесплатно' : 'Платно'"
                             :card_type="'texts'"
                         />
                         <CardInfo
                             :text="'Доступ'"
-                            :count="!course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
+                            :count="course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
                             :card_type="'texts'"
                         />
                     </div>
@@ -147,12 +147,12 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <template v-if="!course_setting.DurationAcademicHours">
-                                            {{ course_setting.DurationAcademicHours }}
+                                        <template v-if="!course_table[1].duration">
+                                            {{ course_table[1].duration }}
                                             <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                             <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
                                         </template>
-                                        <span v-else> {{ course_setting.DurationAcademicHours  }}</span>
+                                        <span v-else> {{ course_table[1].duration }}</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
@@ -664,13 +664,15 @@ export default defineComponent({
 			value: false,
 		})
 
-        const course_setting = reactive<Record<string, Record<string, string>>>({
+        const course_setting = reactive({
             value: {
-                Title: '',
-                CourseType: '',
-                CourseFormat: '',
-                PriceInRubles: '',
-                IsPartialAvailable: ''
+                Title: '' as string,
+                CourseType: '' as string,
+                CourseFormat: '' as string,
+                PriceInRubles: 0 as number,
+                IsPartialAvailable: false as boolean,
+                IsFree: false as boolean,
+                DurationAcademicHours: 0 as number
             }
         })
 
@@ -916,8 +918,11 @@ export default defineComponent({
             directionIds: [] as number[],
             authorEmails: [] as string[],
             // priceInRubles: '',
-            durationAcademicHours: '',
-            durationWorkDays: 0,
+            // durationAcademicHours: '',
+            // durationWorkDays: '',
+            priceInRubles: 0 as number,
+            durationAcademicHours: 0 as number,
+            durationWorkDays: 0 as number,
             dateStart: '',
             dateFinish: '',
             salesTerminationDate: '',
@@ -945,15 +950,16 @@ export default defineComponent({
                 storeEditCourseSetting.canselEdit()
                 formData.directionIds = picked_directions
                 formData.authorEmails = [course_table[1].authors]
-                // formData.priceInRubles = course_table[1].price!
-                formData.durationAcademicHours = course_table[1].duration!
-                // formData.durationWorkDays = course_table[1].workload!
-                formData.durationWorkDays = Number(course_table[1].workload)
+                formData.priceInRubles = parseFloat(course_table[1].price.replace(/\s/g, ''))
+                formData.durationAcademicHours = parseFloat(course_table[1].duration.replace(/\s/g, ''))
+                formData.durationWorkDays = parseFloat(course_table[1].workload.replace(/\s/g, ''))
+                // formData.priceInRubles = course_table[1].price
+                // formData.durationAcademicHours = course_table[1].duration
+                // formData.durationWorkDays = course_table[1].workload
                 formData.dateStart = new Date(course_table[1].start_date!).toISOString()
                 formData.dateFinish = new Date(course_table[1].end_date!).toISOString()
                 formData.salesTerminationDate = new Date(course_table[1].removed_date!).toISOString()
                 console.log(formData, 'formData')
-
                 axios
                     .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
                     .then(response => {
@@ -965,19 +971,18 @@ export default defineComponent({
                         console.error('Ошибка при сохранении настроек курса:', error)
                     })
                     .finally(() => {
-                        console.log('final');
                         axios
                             .get(`/admin/v1/Course/${route.query.search}`)
                             .then((info_course) => {
                                 course_setting.value = info_course.data
-                                course_table[1].duration = info_course.data.durationAcademicHours ? info_course.data.durationAcademicHours.toString() : "0"
-                                course_table[1].workload = info_course.data.durationWorkDays ? info_course.data.durationWorkDays.toString() : "0"
+                                // course_table[1].price = info_course.data.PriceInRubles.toString()
+                                // course_table[1].duration = info_course.data.durationAcademicHours.toString()
+                                // course_table[1].workload = info_course.data.durationWorkDays.toString()
                                 course_table[1].start_date = formatDate(info_course.data.DateStart)
                                 course_table[1].end_date = formatDate(info_course.data.DateFinish)
                                 course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
                                 preloader.value = false
                                 console.log(info_course.data, 'info_course.data');
-                                console.log(course_table[1].removed_date, 'info_course.data.SalesTerminationDate')
                             })
                             .catch(error => {
                                 console.error('Ошибка при загрузке данных курса:', error)

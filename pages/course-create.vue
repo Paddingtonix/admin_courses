@@ -306,6 +306,7 @@ export default defineComponent({
                 })
                 .catch((error) => {
                     console.error('Ошибка при получении данных:', error)
+                    console.log(course_data, 'course-create-final')
                 })
         }
 
