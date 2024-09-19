@@ -14,7 +14,7 @@ export const useDirectionStore = defineStore('directionStore', {
                 .then(response => {
                     this.directions = response.data;
                     
-                    console.log('Направления добавились !)')
+                    console.log('Направления добавились !)', response.data)
                 })
                 .catch(error => {
                     console.error('Ууупс, ошибка при загрузке :(', error);

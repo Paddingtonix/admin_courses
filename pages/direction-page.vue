@@ -107,11 +107,11 @@ export default defineComponent({
         const pill_info = reactive([
             {
                 text: 'Всего',
-                value: '25'
+                value: direction_store.directions.totalDirectionsCount
             },
             {
                 text: 'На сайте',
-                value: '23'
+                value: direction_store.directions.visibleDirectionsCount
             },
         ])
 
