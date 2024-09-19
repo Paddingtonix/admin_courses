@@ -73,6 +73,12 @@ export const validation_schemas: { [key: string]: IValidationSchema } = {
                 regExp: regExps.isDescription,
                 errorMessage:
                     "Поле может содержать буквы латиницы, символы и цифры",
+                specialField: {
+                    name: "ru",
+                    regExp: regExps.isCDescription,
+                    errorMessage:
+                        "Поле может содержать буквы кириллицы, символы и цифры",
+                },
             },
             defaultError: "Что-то пошло не так",
         },

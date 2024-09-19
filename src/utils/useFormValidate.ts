@@ -8,7 +8,15 @@ interface IValidationRule {
     max?: { errorMessage?: string; maxValue: number };
     shouldChange?: { errorMessage: string };
     validateNumber?: { errorMessage?: string; range: [number, number] };
-    validateString?: { errorMessage: string; regExp: RegExp };
+    validateString?: {
+        errorMessage: string;
+        regExp: RegExp;
+        specialField?: {
+            name: string;
+            errorMessage: string;
+            regExp: RegExp;
+        };
+    };
     isObject?: { validationSchema: IValidationRule };
     defaultError: string;
 }
@@ -49,8 +57,6 @@ export const useFormValidate = (
             });
         });
 
-        console.log(isFormContainsObject.value);
-
         Object.keys(currentForm).forEach((field) => {
             watch(
                 () => currentForm[field],
@@ -64,7 +70,8 @@ export const useFormValidate = (
 
     const checkRules = (
         rules: IValidationRule,
-        fieldValue: string | number
+        fieldValue: string | number,
+        fieldName: string
     ): string | null => {
         const errorChecks: Record<string, () => string | null> = {
             required: () =>
@@ -74,12 +81,18 @@ export const useFormValidate = (
                     ? rules.required.errorMessage
                     : null,
             validateString: () => {
-                const currentRegExp = rules.validateString?.regExp;
+                const specialField = rules.validateString?.specialField;
+                const currentRegExp =
+                    specialField && fieldName === specialField.name
+                        ? specialField.regExp
+                        : rules.validateString?.regExp;
 
                 return currentRegExp && typeof fieldValue === "string"
                     ? !currentRegExp.test(fieldValue)
-                        ? rules.validateString?.errorMessage ||
-                          rules.defaultError
+                        ? fieldName === specialField?.name
+                            ? specialField?.errorMessage || rules.defaultError
+                            : rules.validateString?.errorMessage ||
+                              rules.defaultError
                         : null
                     : null;
             },
@@ -140,10 +153,10 @@ export const useFormValidate = (
     ): void => {
         const rules = customSchema || validationSchema[field];
         const fieldValue = customSchema
-            ? currentForm[isFormContainsObject.value[0]][field] // я тут ишачил, как мог, но пока что это не совсем универсальная валидация. Если вложенных объектов будет больше, то пизда))
+            ? currentForm[isFormContainsObject.value[0]][field]
             : currentForm[field];
 
-        const error = checkRules(rules, fieldValue);
+        const error = checkRules(rules, fieldValue, field);
 
         error ? (errors[field] = error) : delete errors[field];
     };
@@ -151,8 +164,6 @@ export const useFormValidate = (
     const clearShouldChangeErrors = () =>
         !deepEqual(initialForm, currentForm) &&
         Object.keys(validationSchema).forEach((field) => {
-            console.log(errors);
-
             const shouldChangeError =
                 validationSchema[field].shouldChange?.errorMessage;
             errors[field] === shouldChangeError && delete errors[field];
