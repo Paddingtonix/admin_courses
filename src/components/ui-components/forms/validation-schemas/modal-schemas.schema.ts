@@ -1,7 +1,7 @@
 import type { IValidationSchema } from "~/src/utils/useFormValidate";
 
 export const validation_schemas: { [key: string]: IValidationSchema } = {
-	form_sections: {
+	form_sections_schema: {
 		name: {
 			required: { errorMessage: "Поле обязательно к заполнению" },
 			shouldChange: { errorMessage: "Вы должны что-то изменить" },

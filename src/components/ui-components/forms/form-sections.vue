@@ -51,7 +51,7 @@ import {
 	type IValidationSchema,
 } from "~/src/utils/useFormValidate";
 import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
-const { form_sections } = validation_schemas;
+const { form_sections_schema } = validation_schemas;
 
 const storeModal = useStoreModal();
 
@@ -72,7 +72,7 @@ type TInputEvent = {
 const backendError = ref<undefined | string>(undefined);
 
 const { isFormValid, errors, validateOnSubmit, setCustomError } =
-	useFormValidate(formModel, form_sections);
+	useFormValidate(formModel, form_sections_schema);
 
 const changeForm = ({
 	name,
