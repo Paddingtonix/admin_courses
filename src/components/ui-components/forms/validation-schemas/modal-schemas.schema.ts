@@ -66,18 +66,13 @@ export const validation_schemas: { [key: string]: IValidationSchema } = {
             defaultError: "Что-то пошло не так",
         },
         localizations: {
-            isObject: {
-                validationSchema: {
-                    required: {
-                        errorMessage: "Поле обязательно к заполнению",
-                    },
-                    validateString: {
-                        regExp: regExps.isDescription,
-                        errorMessage:
-                            "Поле может содержать буквы латиницы, символы и цифры",
-                    },
-                    defaultError: "Что-то пошло не так",
-                },
+            required: {
+                errorMessage: "Поле обязательно к заполнению",
+            },
+            validateString: {
+                regExp: regExps.isDescription,
+                errorMessage:
+                    "Поле может содержать буквы латиницы, символы и цифры",
             },
             defaultError: "Что-то пошло не так",
         },

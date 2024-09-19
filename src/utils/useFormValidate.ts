@@ -1,3 +1,4 @@
+import { isNull } from "lodash";
 import { deepEqual } from "./deepComparsion";
 import { reactive, computed, watch } from "vue";
 
@@ -28,28 +29,28 @@ export const useFormValidate = (
     const errors = reactive<{ [key: string]: string }>({});
 
     const isFormContainsObject = computed(() =>
-        Object.keys(validationSchema).filter(
-            (field) => validationSchema[field]?.isObject
+        Object.keys(currentForm).filter(
+            (field) =>
+                typeof currentForm[field] === "object" &&
+                !isNull(currentForm[field])
         )
     );
 
     const watchFieldChanges = () => {
         isFormContainsObject.value.forEach((fieldInner) => {
-            if (typeof currentForm[fieldInner] === "object") {
-                Object.keys(currentForm[fieldInner]).forEach((lang) => {
-                    watch(
-                        () => currentForm[fieldInner][lang],
-                        () => {
-                            validateField(
-                                lang,
-                                validationSchema[fieldInner].isObject
-                                    ?.validationSchema
-                            );
-                            clearShouldChangeErrors();
-                        }
-                    );
-                });
-            }
+            Object.keys(currentForm[fieldInner]).forEach((lang) => {
+                watch(
+                    () => currentForm[fieldInner][lang],
+                    () => {
+                        validateField(
+                            lang,
+                            validationSchema[fieldInner].isObject
+                                ?.validationSchema
+                        );
+                        clearShouldChangeErrors();
+                    }
+                );
+            });
         });
 
         Object.keys(currentForm).forEach((field) => {
@@ -113,28 +114,6 @@ export const useFormValidate = (
                     : null;
             },
 
-            isObject: () => {
-                if (
-                    rules?.isObject?.validationSchema &&
-                    typeof fieldValue === "object" &&
-                    fieldValue !== null
-                ) {
-                    return Object.keys(fieldValue).reduce<string | null>(
-                        (acc, key) => {
-                            return (
-                                acc ||
-                                checkRules(
-                                    rules.isObject!.validationSchema,
-                                    fieldValue[key]
-                                )
-                            );
-                        },
-                        null
-                    );
-                }
-                return null;
-            },
-
             shouldChange: () =>
                 typeof fieldValue === "string" &&
                 fieldValue.trim() !== "" &&
@@ -186,11 +165,9 @@ export const useFormValidate = (
             typeof currentForm[field] !== "object" ? validateField(field) : null
         );
         isFormContainsObject.value.forEach((fieldInner) => {
+            validationSchema[fieldInner];
             Object.keys(currentForm[fieldInner]).forEach((lang) => {
-                validateField(
-                    lang,
-                    validationSchema[fieldInner].isObject?.validationSchema
-                );
+                validateField(lang, validationSchema[fieldInner]);
             });
         });
     };
