@@ -147,8 +147,12 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
+                                        <template v-if="!course_setting.DurationAcademicHours">
+                                            {{ course_setting.DurationAcademicHours }}
+                                            <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                            <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
+                                        </template>
+                                        <span v-else> {{ course_setting.DurationAcademicHours  }}</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
@@ -204,13 +208,19 @@
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <div class="oil-course-setting__settings__table__column__cell__dates">
-                                        <CalendarCmp />
+                                        <CalendarCmp
+                                            @update-date="handleDateUpdate($event, 'start')"
+                                        />
                                         <span>—</span>
-                                        <CalendarCmp />
+                                        <CalendarCmp 
+                                            @update-date="handleDateUpdate($event, 'end')"
+                                        />
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <CalendarCmp />
+                                    <CalendarCmp 
+                                        @update-date="handleDateUpdate($event, 'remove')"
+                                    />
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <div class="oil-course-setting__settings__table__column__cell__direction">
@@ -715,18 +725,15 @@ export default defineComponent({
         const inputs = reactive([
             {
                 placeholder: '99 999',
-                mask_type: 'price',
-                value: ''
+                mask_type: 'price'
             },
             {
                 placeholder: '999',
-                mask_type: 'price',
-                value: ''
+                mask_type: 'price'
             },
             {
                 placeholder: '999',
-                mask_type: 'price',
-                value: ''
+                mask_type: 'price'
             }
         ])
 
@@ -857,6 +864,25 @@ export default defineComponent({
             picked_directions.splice(0, picked_directions.length, ...original_directions.value)
         }
 
+        const handleDateUpdate = (date: string, type: string) => {
+            switch (type) {
+                case 'start':                    
+                    course_table[1].start_date = date
+                    break
+            
+                case 'end':
+                    course_table[1].end_date = date
+                    break
+            
+                case 'remove':
+                    course_table[1].removed_date = date
+                    break
+            
+                default:
+                    break
+            }
+        }
+
         const editTitle = (state: boolean, idx: number, type: string, id: number) => {
             if(state) {
                 edit_field.idx_field = idx
@@ -867,7 +893,7 @@ export default defineComponent({
                         title: changes_value.value
                     })
                     .then((resp) => {
-                        console.log(resp);
+                        console.log(resp)
                     })
                     .finally(() => {
                         edit_field.idx_field = null
@@ -875,13 +901,23 @@ export default defineComponent({
                     })
             }
         }
+
+        const formatDate = (date_value: string): string => {
+            const date = new Date(date_value)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = String(date.getFullYear()).slice(-2)
+
+            return `${day}.${month}.${year}`
+        }
+
         // объект собирающий данные для POST запроса
         const formData = reactive({
             directionIds: [] as number[],
             authorEmails: [] as string[],
-            priceInRubles: '',
+            // priceInRubles: '',
             durationAcademicHours: '',
-            durationWorkDays: '',
+            durationWorkDays: 0,
             dateStart: '',
             dateFinish: '',
             salesTerminationDate: '',
@@ -890,13 +926,13 @@ export default defineComponent({
         const updateFormData = (event: { value: string, type: string }, index: number) => {
             switch(index) {
                 case 0:
-                    inputs[0].value = event.value
+                    course_table[1].price = event.value
                     break
                 case 1:
-                    inputs[1].value = event.value
+                    course_table[1].duration = event.value
                     break
                 case 2:
-                    inputs[2].value = event.value
+                    course_table[1].workload = event.value
                     break
             }
         }
@@ -907,19 +943,18 @@ export default defineComponent({
             } else {
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
-                // original_directions.value = [...picked_directions]
                 formData.directionIds = picked_directions
                 formData.authorEmails = [course_table[1].authors]
-                formData.priceInRubles = inputs[0].value
-                formData.durationAcademicHours = inputs[1].value
-                formData.durationWorkDays = inputs[2].value
-                formData.dateStart = course_table[1].start_date!
-                formData.dateFinish = course_table[1].end_date!
-                formData.salesTerminationDate = course_table[1].removed_date
-                console.log(formData, 'formData');
+                // formData.priceInRubles = course_table[1].price!
+                formData.durationAcademicHours = course_table[1].duration!
+                // formData.durationWorkDays = course_table[1].workload!
+                formData.durationWorkDays = Number(course_table[1].workload)
+                formData.dateStart = new Date(course_table[1].start_date!).toISOString()
+                formData.dateFinish = new Date(course_table[1].end_date!).toISOString()
+                formData.salesTerminationDate = new Date(course_table[1].removed_date!).toISOString()
+                console.log(formData, 'formData')
 
                 axios
-                // ЗАМЕНИТЬ НА ПРАВИЛЬНЫЙ АДРЕС ДЛЯ ОТПРАВКИ ДАННЫХ НАСТРОЙКИ КУРСА
                     .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
                     .then(response => {
                         console.log('Настройки сохранены:', response.data)
@@ -928,6 +963,25 @@ export default defineComponent({
                     })
                     .catch(error => {
                         console.error('Ошибка при сохранении настроек курса:', error)
+                    })
+                    .finally(() => {
+                        console.log('final');
+                        axios
+                            .get(`/admin/v1/Course/${route.query.search}`)
+                            .then((info_course) => {
+                                course_setting.value = info_course.data
+                                course_table[1].duration = info_course.data.durationAcademicHours ? info_course.data.durationAcademicHours.toString() : "0"
+                                course_table[1].workload = info_course.data.durationWorkDays ? info_course.data.durationWorkDays.toString() : "0"
+                                course_table[1].start_date = formatDate(info_course.data.DateStart)
+                                course_table[1].end_date = formatDate(info_course.data.DateFinish)
+                                course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
+                                preloader.value = false
+                                console.log(info_course.data, 'info_course.data');
+                                console.log(course_table[1].removed_date, 'info_course.data.SalesTerminationDate')
+                            })
+                            .catch(error => {
+                                console.error('Ошибка при загрузке данных курса:', error)
+                            })
                     })
             }
         }
@@ -962,7 +1016,6 @@ export default defineComponent({
         watch(edit_field, () => {
             nextTick(() => {
                 if(editInput.value) {
-                    
                     editInput.value.focus()
                 }
             })
@@ -1052,7 +1105,9 @@ export default defineComponent({
             reloadContent,
             editTitle,
             canselEditCourseSetting,
-            updateFormData
+            updateFormData,
+            handleDateUpdate,
+            formatDate
         }}})
 </script>
 

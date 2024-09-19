@@ -92,19 +92,19 @@ export default defineComponent({
 			(new_date) => {
 				input_value.value = new_date
 			}
-		);
+		)
 
 		const setValue = () => {
 			emit("set_value", { value: input_value.value, type: props.type })
-		};
+		}
 
 		const mask_price = computed(() => {
 			if (typeof input_value.value === "string") {
-				if (input_value.value.length === 5) return "# ###";
-				if (input_value.value.length === 6) return "## ###";
+				if (input_value.value.length === 5) return "# ###"
+				if (input_value.value.length === 6) return "## ###"
 				// if (input_value.value.length === 9) return '# ### ###'
 				// if (input_value.value.length === 10) return '## ### ###'
-				return "### ###";
+				return "### ###"
 			}
 		});
 
@@ -112,7 +112,7 @@ export default defineComponent({
 
 		const mask = computed(() => {
 			if (props.mask_type === "price") return mask_price.value;
-		});
+		})
 
 		return {
 			input_value,
@@ -121,9 +121,9 @@ export default defineComponent({
 			// mask_date,
 			mask,
 			modelValue,
-		};
+		}
 	},
-});
+})
 </script>
 
 <style scoped lang="sass">
