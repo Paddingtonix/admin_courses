@@ -33,4 +33,48 @@ export const validation_schemas: { [key: string]: IValidationSchema } = {
 			defaultError: "Что-то пошло не так",
 		},
 	},
+	tags_form_schema: {
+		headingId: {
+			shouldChange: { errorMessage: "Вы должны что-то изменить" },
+			required: { errorMessage: "Поле обязательно к заполнению" },
+			defaultError: "Что-то пошло не так",
+		},
+		headingName: {
+			required: { errorMessage: "Поле обязательно к заполнению" },
+			shouldChange: { errorMessage: "Вы должны что-то изменить" },
+			defaultError: "Что-то пошло не так",
+		},
+		name: {
+			required: { errorMessage: "Поле обязательно к заполнению" },
+			shouldChange: { errorMessage: "Вы должны что-то изменить" },
+			isName: {
+				errorMessage:
+					"Поле может содержать буквы латиницы, символы и цифры",
+			},
+			min: {
+				errorMessage: "Минимальное количество символов - 3",
+				minValue: 3,
+			},
+			max: {
+				errorMessage: "Максимальное количество символов - 65",
+				maxValue: 65,
+			},
+			defaultError: "Что-то пошло не так",
+		},
+		localizations: {
+			isObject: {
+				validationSchema: {
+					required: {
+						errorMessage: "Поле обязательно к заполнению",
+					},
+					isName: {
+						errorMessage:
+							"Поле может содержать буквы латиницы, символы и цифры",
+					},
+					defaultError: "Что-то пошло не так",
+				},
+			},
+			defaultError: "Что-то пошло не так",
+		},
+	},
 };

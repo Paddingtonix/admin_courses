@@ -40,8 +40,7 @@ export const useHeadersStore = defineStore({
 					return this.getHeadings({});
 				})
 				.catch((error) => {
-					console.error("Ошибка при добавлении раздела:", error);
-					throw new Error(error);
+					throw error;
 				})
 				.finally(() => {
 					// TODO: ADD_LOADER

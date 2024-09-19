@@ -4,14 +4,14 @@
 			:model-value="formModel.name"
 			class="add-section__input"
 			label="Название раздела"
-			:error="errors.name ? errors.name : ''"
+			:error="errors.name ?? ''"
 			:max_length="70"
 			@set_value="changeForm({ name: $event })"
 		></InputCmp>
 		<TextareaCmp
 			:model-value="formModel.description"
 			class="add-section__text-area"
-			:error="errors.description ? errors.description : ''"
+			:error="errors.description ?? ''"
 			:max_length="490"
 			@set_textarea="changeForm({ description: $event })"
 			label="Описание раздела"
@@ -46,10 +46,7 @@ import { AxiosError } from "axios";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersStore } from "~/src/stores/storeSections";
 import type { IFormSection } from "~/src/ts-interface/storeModal.type";
-import {
-	useFormValidate,
-	type IValidationSchema,
-} from "~/src/utils/useFormValidate";
+import { useFormValidate } from "~/src/utils/useFormValidate";
 import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
 const { form_sections_schema } = validation_schemas;
 
@@ -68,8 +65,6 @@ type TInputEvent = {
 	value: string;
 	type: string;
 };
-
-const backendError = ref<undefined | string>(undefined);
 
 const { isFormValid, errors, validateOnSubmit, setCustomError } =
 	useFormValidate(formModel, form_sections_schema);
@@ -90,7 +85,6 @@ const changeForm = ({
 };
 
 const sendForm = () => {
-	backendError.value = undefined;
 	validateOnSubmit();
 
 	if (isFormValid.value) {
@@ -100,10 +94,15 @@ const sendForm = () => {
 				storeModal.closeModal();
 			})
 			.catch((err) => {
-				console.log("form-sections: ", err);
-				if (err instanceof AxiosError && err.status === 409) {
-					setCustomError("name", err.message);
+				if (err instanceof AxiosError && err.response?.status === 409) {
+					setCustomError("name", err.response.data);
 				} else {
+					console.log(
+						err instanceof AxiosError,
+						err.response?.status
+					);
+					console.log(err);
+
 					alert(err.message);
 				}
 			});
@@ -112,7 +111,6 @@ const sendForm = () => {
 
 const patchForm = () => {
 	const { name, description } = formModel;
-	backendError.value = undefined;
 	validateOnSubmit();
 
 	if (isFormValid.value) {
@@ -127,9 +125,8 @@ const patchForm = () => {
 				storeModal.closeModal();
 			})
 			.catch((err) => {
-				console.log("form-sections: ", err);
-				if (err instanceof AxiosError && err.status === 409) {
-					setCustomError("name", err.message);
+				if (err instanceof AxiosError && err.response?.status === 409) {
+					setCustomError("name", err.response.data);
 				} else {
 					alert(err.message);
 				}

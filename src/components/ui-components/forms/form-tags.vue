@@ -17,6 +17,7 @@
 		<InputCmp
 			@set_value="setFormValue(tagFormEnum._name, $event)"
 			:modelValue="tagForm.name"
+			:error="errors.name ? errors.name : ''"
 			class="add-tag__input"
 			label="Название метки"
 		></InputCmp>
@@ -29,6 +30,7 @@
 			class="add-tag__text-area"
 			label="Перевод метки"
 			:modelValue="tagForm.localizations[activeLang]"
+			:error="errors[activeLang] ?? ''"
 			@set_textarea="
 				setFormValue(tagFormEnum._localizations, $event, activeLang)
 			"
@@ -48,15 +50,15 @@
 				v-if="!modalData.modalProps.edit"
 				type="submit"
 				text="Добавить"
-				:disabled="!modalData.modalProps.isFormChanged"
-				@click.prevent="sendFormTags()"
+				:disabled="!isFormValid"
+				@click.prevent="sendFormTags"
 			></BtnCmp>
 			<BtnCmp
 				v-if="modalData.modalProps.edit"
 				type="submit"
 				text="Сохранить"
-				:disabled="!modalData.modalProps.isFormChanged"
-				@click.prevent="patchFormTags()"
+				:disabled="!isFormValid"
+				@click.prevent="patchFormTags"
 			></BtnCmp>
 		</div>
 	</form>
@@ -67,7 +69,11 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import { useTagsStore } from "~/src/stores/storeTags";
 import type { IFormTags } from "~/src/ts-interface/storeModal.type";
 import type { IHeading, ITags } from "~/src/ts-interface/storeTags.type";
+import { useFormValidate } from "~/src/utils/useFormValidate";
 import { validateForm } from "~/src/utils/validateForm";
+import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
+
+const { tags_form_schema } = validation_schemas;
 
 const storeModal = useStoreModal();
 
@@ -102,23 +108,8 @@ enum tagFormEnum {
 	_name = "name",
 	_localizations = "localizations",
 }
-
-const startForm = JSON.parse(JSON.stringify(tagForm));
-
-watch(tagForm, () => {
-	const isValid = validateForm({
-		currentForm: tagForm,
-		initialForm: startForm,
-		requiredFields: ["name", "headingName", "localizations"],
-		options: { checkChanges: true, checkRequiredFields: true },
-	});
-
-	storeModal.$patch({
-		modalProps: {
-			isFormChanged: isValid,
-		},
-	});
-});
+const { validateOnSubmit, isFormValid, setCustomError, errors } =
+	useFormValidate(tagForm, tags_form_schema);
 
 const setFormValue = (
 	_fieldName: keyof Omit<
@@ -145,9 +136,12 @@ const setHeading = (data: IHeading) => {
 };
 
 const sendFormTags = () => {
-	tagStore.postTag(tagForm).then(() => {
-		storeModal.closeModal();
-	});
+	validateOnSubmit();
+	if (isFormValid.value) {
+		tagStore.postTag(tagForm).then(() => {
+			storeModal.closeModal();
+		});
+	}
 };
 
 const patchFormTags = () => {
