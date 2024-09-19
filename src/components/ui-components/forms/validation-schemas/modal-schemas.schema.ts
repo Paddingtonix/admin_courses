@@ -42,7 +42,7 @@ export const validation_schemas: { [key: string]: IValidationSchema } = {
         },
     },
     tags_form_schema: {
-        headingId: {
+        headingName: {
             shouldChange: { errorMessage: "Вы должны что-то изменить" },
             required: { errorMessage: "Поле обязательно к заполнению" },
             defaultError: "Что-то пошло не так",
