@@ -21,6 +21,7 @@
             <BtnCmp 
                 :text="'Отмена'"
                 :background_type="'_secondary'"
+                @click="closeModal"
             />
             <BtnCmp 
                 :text="'Добавить'"
@@ -40,6 +41,12 @@ export default defineComponent({
         const visible_direction = ref(false)
 
         const input_value = ref('')
+
+        const store_modal = useStoreModal();
+
+        const closeModal = () => {
+            store_modal.closeModal();
+        };
 
         const setLang = (active_lang) => {            
             lang.value = active_lang
@@ -70,7 +77,8 @@ export default defineComponent({
             setLang,
             setCheckbox,
             setDirectionName,
-            setDirectionServer
+            setDirectionServer,
+            closeModal
         }
     }
 })
