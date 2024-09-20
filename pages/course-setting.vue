@@ -179,15 +179,14 @@
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell" :style="{ pointerEvents: 'none' }">
-                                    <div v-if="picked_directions_filtered.length" class="oil-course-setting__settings__table__column__cell__direction">
+                                    <div v-if="chooses_direction.value.length" class="oil-course-setting__settings__table__column__cell__direction">
                                         <DirectionCmp
-                                            v-for="(direction, direction_idx) in picked_directions_filtered"
+                                            v-for="(direction, direction_idx) in chooses_direction.value"
                                             :key="direction_idx"
-                                            :text="direction.localizedName"
-                                            :id="direction.directionId"
-                                            :is_visible="direction.isVisible"
-                                            :picked="picked_directions.includes(direction.directionId)"
-                                        >{{ direction.localizedName }}</DirectionCmp>
+                                            :text="direction.name"
+                                            :id="direction.id"
+                                            :picked="picked_directions.includes(direction.id)"
+                                        >{{ direction.name }}</DirectionCmp>
                                     </div>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
@@ -596,7 +595,7 @@ export default defineComponent({
         const editInput = ref(null) as any
         const directions = reactive<Direction[]>([])
         const original_directions = ref<number[]>([])
-        const picked_directions = reactive<number[]>([]) // Отправлять этот массив
+        const picked_directions = reactive<any>([])
 
         const reload_state = reactive({
             value: false as boolean
@@ -672,7 +671,11 @@ export default defineComponent({
                 PriceInRubles: 0 as number,
                 IsPartialAvailable: false as boolean,
                 IsFree: false as boolean,
-                DurationAcademicHours: 0 as number
+                DurationAcademicHours: 0 as number,
+                DurationWorkDays: 0 as number,
+                DateStart: '' as string,
+                DateFinish: '' as string,
+                SalesTerminationDate: '' as string,
             }
         })
 
@@ -821,6 +824,10 @@ export default defineComponent({
             type_field: null as null | string
         })
 
+        const chooses_direction = reactive({
+            value: []
+        })
+
         const changes_value = reactive({
             value: ''
         })
@@ -917,9 +924,6 @@ export default defineComponent({
         const formData = reactive({
             directionIds: [] as number[],
             authorEmails: [] as string[],
-            // priceInRubles: '',
-            // durationAcademicHours: '',
-            // durationWorkDays: '',
             priceInRubles: 0 as number,
             durationAcademicHours: 0 as number,
             durationWorkDays: 0 as number,
@@ -948,14 +952,12 @@ export default defineComponent({
             } else {
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
-                formData.directionIds = picked_directions
+                // formData.directionIds = picked_directions
+                formData.directionIds = picked_directions.filter(dir => typeof dir === 'number')
                 formData.authorEmails = [course_table[1].authors]
                 formData.priceInRubles = parseFloat(course_table[1].price.replace(/\s/g, ''))
                 formData.durationAcademicHours = parseFloat(course_table[1].duration.replace(/\s/g, ''))
                 formData.durationWorkDays = parseFloat(course_table[1].workload.replace(/\s/g, ''))
-                // formData.priceInRubles = course_table[1].price
-                // formData.durationAcademicHours = course_table[1].duration
-                // formData.durationWorkDays = course_table[1].workload
                 formData.dateStart = new Date(course_table[1].start_date!).toISOString()
                 formData.dateFinish = new Date(course_table[1].end_date!).toISOString()
                 formData.salesTerminationDate = new Date(course_table[1].removed_date!).toISOString()
@@ -965,7 +967,8 @@ export default defineComponent({
                     .then(response => {
                         console.log('Настройки сохранены:', response.data)
                         storeEditCourseSetting.canselEdit()
-                        original_directions.value = [...picked_directions]
+                        original_directions.value = [...picked_directions.filter(dir => typeof dir === 'number')]
+                        console.log(response.data, 'info_course.data')
                     })
                     .catch(error => {
                         console.error('Ошибка при сохранении настроек курса:', error)
@@ -975,14 +978,13 @@ export default defineComponent({
                             .get(`/admin/v1/Course/${route.query.search}`)
                             .then((info_course) => {
                                 course_setting.value = info_course.data
-                                // course_table[1].price = info_course.data.PriceInRubles.toString()
-                                // course_table[1].duration = info_course.data.durationAcademicHours.toString()
-                                // course_table[1].workload = info_course.data.durationWorkDays.toString()
+                                course_table[1].price = String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                                course_table[1].duration = String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                                course_table[1].workload = String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
                                 course_table[1].start_date = formatDate(info_course.data.DateStart)
                                 course_table[1].end_date = formatDate(info_course.data.DateFinish)
                                 course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
                                 preloader.value = false
-                                console.log(info_course.data, 'info_course.data');
                             })
                             .catch(error => {
                                 console.error('Ошибка при загрузке данных курса:', error)
@@ -1044,10 +1046,10 @@ export default defineComponent({
                         response.data.directions.forEach((element: Direction) => {
                             directions.push(element)
                         })
-                        console.log(response.data, 'response.data')
+                        // console.log(response.data, 'response.data-direction')
                     })
                     .catch((error) => {
-                        console.error('Ошибка при получении данных:', error)
+                        console.error('Ошибка при получении данных направлений:', error)
                     })
 
                 // ЗАПРОС АВТОРА КУРСА
@@ -1069,8 +1071,23 @@ export default defineComponent({
                     .get(`/admin/v1/Course/${route.query.search}`)
                     .then((info_course) => {
                         course_setting.value = info_course.data
-                        console.log(course_setting.value, 'course_setting.value')
+                        // Обновление данных в таблице
+                        course_table[1].price = String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                        course_table[1].duration = String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                        course_table[1].workload = String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                        course_table[1].start_date = formatDate(info_course.data.DateStart)
+                        course_table[1].end_date = formatDate(info_course.data.DateFinish)
+                        course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
+                        // Обновление направлений
+                        chooses_direction.value = info_course.data.Directions
+                        // picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions)
                         preloader.value = false
+                        console.log(picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions), 'picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions)');
+                        console.log(picked_directions_filtered.value, 'picked_directions_filtered.value');
+                        console.log(directions, 'directions');
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при загрузке данных курса:', error)
                     })
             })})
         
@@ -1098,6 +1115,7 @@ export default defineComponent({
             preloader,
             edit_field,
             changes_value,
+            chooses_direction,
             selectTab,
             openEditFrame,
             openExample,

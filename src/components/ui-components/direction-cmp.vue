@@ -1,5 +1,5 @@
 <template>
-    <div v-if="is_visible" class="oil-direction" :class="{ _active: picked}" @click="setDirection()"><span>{{ text }}</span></div>
+    <div class="oil-direction" :class="{ _active: picked}" @click="setDirection()"><span>{{ text }}</span></div>
 </template>
 
 <script lang="ts">
