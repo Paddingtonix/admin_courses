@@ -4,6 +4,7 @@
             v-if="headers.length"
             :objectList="headers"
             class="add-tag__selector"
+            :error="errors.headingName"
             label="Раздел"
             :choosed_variable="{
                 name: tagForm.headingName,
@@ -19,16 +20,19 @@
             :modelValue="tagForm.name"
             :error="errors.name ? errors.name : ''"
             class="add-tag__input"
+            :class="{ error: errors.name }"
             label="Название метки"
         ></InputCmp>
         <LangSwitcherCmp
             :active="activeLang"
             class="add-tag__lang-switcher"
+            :errors="Object.keys(errors)"
             @change-lang="changeLang($event)"
         />
         <TextareaCmp
             class="add-tag__text-area"
             label="Перевод метки"
+            :class="{ error: errors[activeLang] }"
             :modelValue="tagForm.localizations[activeLang]"
             :error="errors[activeLang] ?? ''"
             @set_textarea="
@@ -135,16 +139,13 @@ const setHeading = (data: IHeading) => {
 };
 
 const sendFormTags = () => {
-    try {
-        validateOnSubmit();
-        if (isFormValid.value) {
-            tagStore.postTag(tagForm).then(() => {
-                storeModal.closeModal();
-            });
-        }
-    } catch (e) {
-        console.log(e);
+    validateOnSubmit();
+    if (isFormValid.value) {
+        tagStore.postTag(tagForm).then(() => {
+            storeModal.closeModal();
+        });
     }
+    console.log(errors);
 };
 
 const patchFormTags = () => {
@@ -189,12 +190,16 @@ const patchFormTags = () => {
 
     &__input
         margin-bottom: rem(16)
+        &.error
+            margin-bottom: rem(24)
 
     &__lang-switcher
         margin-bottom: rem(8)
 
     &__text-area
         margin-bottom: rem(4)
+        &.error
+            margin-bottom: rem(16)
 
     &__tooltip
         margin-bottom: rem(32)

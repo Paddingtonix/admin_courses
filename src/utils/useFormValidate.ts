@@ -3,22 +3,23 @@ import { deepEqual } from "./deepComparsion";
 import { reactive, computed, watch } from "vue";
 
 interface IValidationRule {
-    required?: { errorMessage: string };
-    min?: { errorMessage?: string; minValue: number };
-    max?: { errorMessage?: string; maxValue: number };
-    shouldChange?: { errorMessage: string };
-    validateNumber?: { errorMessage?: string; range: [number, number] };
+    required?: { errorMessage: string }; //поле обязательно
+    min?: { errorMessage?: string; minValue: number }; // минимальное кол-во символов
+    max?: { errorMessage?: string; maxValue: number }; // максимальное кол-во символов
+    shouldChange?: { errorMessage: string }; // должно ли поле быть изменено или плевать вообще
+    validateNumber?: { errorMessage?: string; range: [number, number] }; // валидация числа range [min, max]
     validateString?: {
+        // валидация строки по регулярному выражению
         errorMessage: string;
         regExp: RegExp;
         specialField?: {
+            // особое поле(как было у меня с ебаным ru)
             name: string;
             errorMessage: string;
             regExp: RegExp;
         };
     };
-    isObject?: { validationSchema: IValidationRule };
-    defaultError: string;
+    defaultError: string; //стандартная ошибка, если вы их не хотите передавать)
 }
 
 export interface IValidationSchema {
