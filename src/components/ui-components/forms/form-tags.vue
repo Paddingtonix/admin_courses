@@ -145,30 +145,27 @@ const sendFormTags = () => {
             storeModal.closeModal();
         });
     }
-    console.log(errors);
+    //TODO: добавть валидацию на ошибки с сервера
 };
 
 const patchFormTags = () => {
-    try {
-        validateOnSubmit();
-        if (isFormValid.value) {
-            const formData = {
-                headingId: tagForm.headingId,
-                headingName: tagForm.headingName,
-                name: tagForm.name,
-                localizations: tagForm.localizations,
-            };
-            tagStore
-                .patchTag(formData, tagForm.id)
-                .then(() => {
-                    storeModal.closeModal();
-                })
-                .catch((err) => {
-                    console.warn(err);
-                });
-        }
-    } catch (e) {
-        console.log(e);
+    validateOnSubmit();
+    if (isFormValid.value) {
+        const formData = {
+            headingId: tagForm.headingId,
+            headingName: tagForm.headingName,
+            name: tagForm.name,
+            localizations: tagForm.localizations,
+        };
+        tagStore
+            .patchTag(formData, tagForm.id)
+            .then(() => {
+                storeModal.closeModal();
+            })
+            .catch((err) => {
+                //TODO: добавть валидацию на ошибки с сервера
+                console.warn(err);
+            });
     }
 };
 </script>
