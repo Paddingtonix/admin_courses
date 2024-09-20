@@ -97,9 +97,8 @@
 						@change-page="goToPage($event)"
 					/>
 					<SelectorCmp
-						@setValue="changeSelectorValue($event)"
-						tab-text="разделов"
 						class="tags-page__selector"
+						@setValue="changeSelectorValue($event)"
 						listText="разделов на стр."
 						label="10 разделов на стр."
 						:list="list"
