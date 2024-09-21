@@ -183,10 +183,10 @@
                                         <DirectionCmp
                                             v-for="(direction, direction_idx) in chooses_direction.value"
                                             :key="direction_idx"
-                                            :text="direction.name"
-                                            :id="direction.id"
-                                            :picked="picked_directions.includes(direction.id)"
-                                        >{{ direction.name }}</DirectionCmp>
+                                            :text="direction.localizedName"
+                                            :id="direction.directionId"
+                                            :picked=true
+                                        >{{ direction.localizedName }}</DirectionCmp>
                                     </div>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
@@ -577,7 +577,7 @@
 <script lang="ts">
 import axios from 'axios'
 import { defineComponent } from 'vue'
-import { useStoreCourses } from '~/src/stores/storeCourse';
+import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
 import type { Direction } from '~/src/ts-interface/direction'
 import type ISwitcher from '~/src/ts-interface/switcher.type'
@@ -596,6 +596,9 @@ export default defineComponent({
         const directions = reactive<Direction[]>([])
         const original_directions = ref<number[]>([])
         const picked_directions = reactive<any>([])
+        const chooses_direction = reactive({
+            value: [] as Direction[]
+        })
 
         const reload_state = reactive({
             value: false as boolean
@@ -824,9 +827,6 @@ export default defineComponent({
             type_field: null as null | string
         })
 
-        const chooses_direction = reactive({
-            value: []
-        })
 
         const changes_value = reactive({
             value: ''
@@ -952,8 +952,7 @@ export default defineComponent({
             } else {
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
-                // formData.directionIds = picked_directions
-                formData.directionIds = picked_directions.filter(dir => typeof dir === 'number')
+                formData.directionIds = picked_directions
                 formData.authorEmails = [course_table[1].authors]
                 formData.priceInRubles = parseFloat(course_table[1].price.replace(/\s/g, ''))
                 formData.durationAcademicHours = parseFloat(course_table[1].duration.replace(/\s/g, ''))
@@ -965,9 +964,8 @@ export default defineComponent({
                 axios
                     .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
                     .then(response => {
-                        console.log('Настройки сохранены:', response.data)
                         storeEditCourseSetting.canselEdit()
-                        original_directions.value = [...picked_directions.filter(dir => typeof dir === 'number')]
+                        original_directions.value = [...picked_directions]
                         console.log(response.data, 'info_course.data')
                     })
                     .catch(error => {
@@ -985,6 +983,11 @@ export default defineComponent({
                                 course_table[1].end_date = formatDate(info_course.data.DateFinish)
                                 course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
                                 preloader.value = false
+                                chooses_direction.value = info_course.data.Directions.map((direction: any) => ({
+                                    directionId: direction.id,
+                                    localizedName: direction.name
+                                }))
+                                console.log(info_course.data, 'info_course.data');
                             })
                             .catch(error => {
                                 console.error('Ошибка при загрузке данных курса:', error)
@@ -1034,19 +1037,16 @@ export default defineComponent({
             } else {
                 picked_directions.splice(picked_directions.indexOf(dir.id), 1)
             }
+            console.log('Выбранные направления:', picked_directions)
         }
-
-        const courseId = computed(() => storeStateCourse.getCourses)
 
         onMounted(() => {
             nextTick(() => {
                 axios
                     .get('admin/v1/direction')
                     .then((response) => {
-                        response.data.directions.forEach((element: Direction) => {
-                            directions.push(element)
-                        })
-                        // console.log(response.data, 'response.data-direction')
+                        directions.splice(0, directions.length, ...response.data.directions)
+                        console.log(response.data.directions, 'server-direction')
                     })
                     .catch((error) => {
                         console.error('Ошибка при получении данных направлений:', error)
@@ -1078,13 +1078,14 @@ export default defineComponent({
                         course_table[1].start_date = formatDate(info_course.data.DateStart)
                         course_table[1].end_date = formatDate(info_course.data.DateFinish)
                         course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
-                        // Обновление направлений
-                        chooses_direction.value = info_course.data.Directions
-                        // picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions)
+                        chooses_direction.value = info_course.data.Directions.map((direction: {id: number, name: string}) => ({
+                            directionId: direction.id,
+                            localizedName: direction.name
+                        }))
                         preloader.value = false
-                        console.log(picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions), 'picked_directions.splice(0, picked_directions.length, ...info_course.data.Directions)');
-                        console.log(picked_directions_filtered.value, 'picked_directions_filtered.value');
-                        console.log(directions, 'directions');
+                        console.log(chooses_direction.value, 'chooses_direction.value');
+                        console.log(info_course.data.Directions, 'info_course.data.Directions');
+                        console.log(info_course.data, 'info_course.data');
                     })
                     .catch(error => {
                         console.error('Ошибка при загрузке данных курса:', error)
@@ -1214,8 +1215,9 @@ export default defineComponent({
 
                     &__direction
                         display: flex
+                        flex-wrap: wrap
                         gap: rem(8)
-                        height: rem(40)
+                        min-height: rem(40)
                         align-items: center
                         span
                             position: absolute
@@ -1226,6 +1228,7 @@ export default defineComponent({
 
                 &:first-child
                     width: rem(360)
+                    flex-shrink: 0
                     .oil-course-setting__settings__table__column__cell
                         span
                             color: $basic_gray

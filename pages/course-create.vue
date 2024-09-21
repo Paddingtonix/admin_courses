@@ -227,7 +227,6 @@ export default defineComponent({
         }
 
         const validCheck = (field: FormField) => {
-            console.log(field)
             if(!field.value.length) {
                 field.error = 'Это поле обязательно к заполнению для авторизации'
             } else {
@@ -290,12 +289,10 @@ export default defineComponent({
                 isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
                 isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
             }
-            console.log(course_data, 'course-create')
 
             axios
                 .post('admin/v1/course', course_data)
                 .then(response => {
-                    console.log(response, 'course-create')
                     if(response.data) {
                         storeModal.$patch({
                             label: "Курс создан!",
@@ -306,7 +303,6 @@ export default defineComponent({
                 })
                 .catch((error) => {
                     console.error('Ошибка при получении данных:', error)
-                    console.log(course_data, 'course-create-final')
                 })
         }
 
