@@ -60,7 +60,7 @@
                             :count="row.count.toString()"
                         >
                             <template v-slot:svg>
-                                <i class="oil-direction-page__course-list__table-row__svg"  @click="deleteDirection(row.directionId)">
+                                <i class="oil-direction-page__course-list__table-row__svg"  @click="deleteDirection(row)">
                                     <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984" stroke="#FF7C7C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
@@ -91,6 +91,8 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
 import { useUserRoleStore } from '~/src/stores/storeRole';
+import type { IDirection } from "~/src/ts-interface/direction";
+import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 
 export default defineComponent({
     setup() {
@@ -187,11 +189,20 @@ export default defineComponent({
             modalStore.openModal();
         }
 
-        const deleteDirection = (id: string) => {
-            direction_store.removeDirection(id);
+        const deleteDirection = (data: IDirection) => {
+            modalStore.$patch({
+                label: "Удаление направления",
+                activeModal: "delete-modal",
+                modalProps: {
+                    data,
+                    modalComponent: "delete-direction",
+                    deleteFunction: direction_store.removeDirection(data.directionId),
+                },
+            } as unknown as IDeleteModal);
+            modalStore.openModal();
         };
 
-        onMounted(() => {            
+        onMounted(() => {
             nextTick(() => {
                 direction_store.getDirections();
             })

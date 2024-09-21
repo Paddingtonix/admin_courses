@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { Direction } from '~/src/ts-interface/direction';
+import type { IDirection } from '~/src/ts-interface/direction';
 import { DirectionData } from "~/src/ts-interface/direction-data";
 
 export const useDirectionStore = defineStore('directionStore', {
     state: () => ({
-        directions: [] as Direction[],
+        directions: [] as IDirection[],
     }),
     actions: {
         getDirections() {
@@ -13,7 +13,7 @@ export const useDirectionStore = defineStore('directionStore', {
                 .get('admin/v1/Direction')
                 .then(response => {
                     this.directions = response.data;
-                    
+
                     console.log('Направления добавились !)', response.data)
                 })
                 .catch(error => {
@@ -23,9 +23,9 @@ export const useDirectionStore = defineStore('directionStore', {
         addDirection(direction: Direction) {
             this.directions.push(direction);
         },
-        createDirection(data: DirectionData) {    
+        createDirection(data: DirectionData) {
             console.log(data);
-                    
+
             axios
                 .post('admin/v1/Direction', data)
                 .then(response => {

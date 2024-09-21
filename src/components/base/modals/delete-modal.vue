@@ -21,6 +21,7 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import DeleteSection from "../../ui-components/forms/delete-section.vue";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import DeleteTag from "../../ui-components/forms/delete-tag.vue";
+import DeleteDirection from "~/src/components/ui-components/forms/delete-direction.vue";
 
 export default defineComponent({
 	setup() {
@@ -46,6 +47,7 @@ export default defineComponent({
 	components: {
 		"delete-section": DeleteSection,
 		"delete-tag": DeleteTag,
+        "delete-direction": DeleteDirection
 	},
 });
 </script>
