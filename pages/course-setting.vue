@@ -36,7 +36,7 @@
                         />
                         <CardInfo
                             :text="'Доступ'"
-                            :count="course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
+                            :count="course_setting.value.IsPartialAvailable ? 'Частичный' : 'Полный'"
                             :card_type="'texts'"
                         />
                     </div>
@@ -63,16 +63,16 @@
                                         </transition>
                                     </div>
                                 </div>
-                                <div v-if="storeStateCourse.price === 'paid'" class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="!course_setting.value.IsFree" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.price }}</span>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.duration }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.workload }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.start_end_dates }}</span>
                                     <div class="oil-course-setting__settings__table__column__cell__tooltip-container">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('dates_start_end')" @mouseleave="hideTooltip()">
@@ -137,14 +137,19 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.authors }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1].price">{{ column.price }}</span>
+                                <div v-if="!course_setting.value.IsFree" class="oil-course-setting__settings__table__column__cell">
+                                    <span v-if="course_table[1].price">
+                                        {{ column.price }}
+                                        <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell__partial-available">
+                                            <span class="oil-course-setting__settings__table__column__cell__partial-available__title">Суммарная стоимость всех глав, созданных во вкладке <a>Содержание</a></span>
+                                        </div>
+                                    </span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <template v-if="!course_table[1].duration">
@@ -162,7 +167,7 @@
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 50</span>
                                     </div>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.start_date }}</span>
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">—</span>
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.end_date }}</span>
@@ -198,14 +203,14 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.authors }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in inputs" :key="input_idx">
+                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in filtered_inputs" :key="input_idx + 1">
                                     <InputCmp 
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
                                         @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <div class="oil-course-setting__settings__table__column__cell__dates">
                                         <CalendarCmp
                                             @update-date="handleDateUpdate($event, 'start')"
@@ -745,6 +750,21 @@ export default defineComponent({
             }
         ])
 
+        const filtered_inputs = computed(() => {
+            if (course_setting.value.CourseType === 'Asynchronous' && course_setting.value.IsFree) {
+                return inputs.filter((_, input_idx) => input_idx === 1)
+
+            } else if (course_setting.value.CourseType === 'Asynchronous') {
+                return inputs.slice(0, 2)
+
+            } else if (course_setting.value.IsFree) {
+                return inputs.slice(1)
+
+            } else {
+                return inputs
+            }
+        })
+
         const visible_block = reactive({
             value: ''
         })
@@ -1117,6 +1137,7 @@ export default defineComponent({
             edit_field,
             changes_value,
             chooses_direction,
+            filtered_inputs,
             selectTab,
             openEditFrame,
             openExample,
@@ -1226,9 +1247,25 @@ export default defineComponent({
                             line-height: 16px
                             color: $basic_error
 
+                    &__partial-available
+                        position: absolute
+                        font-size: rem(12)
+                        top: rem(42)
+                        &__title
+                            color: #9AA7BB
+                        
+                        a
+                            color: $light_primary
+                            cursor: pointer
+                            transition: color 0.2s
+                            &:hover
+                                color: $basic_primary
+
                 &:first-child
                     width: rem(360)
                     flex-shrink: 0
+                    display: flex
+                    flex-direction: column
                     .oil-course-setting__settings__table__column__cell
                         span
                             color: $basic_gray
@@ -1240,6 +1277,10 @@ export default defineComponent({
                                 path
                                     transition: stroke .2s
                                     stroke: #398BDB
+                                    
+                        &:last-child
+                            flex-grow: 1
+                            align-items: center
 
                 &:not(:first-child)
                     flex-grow: 1

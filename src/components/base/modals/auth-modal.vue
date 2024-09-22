@@ -121,9 +121,9 @@ export default defineComponent({
             },
         ] as Array<Form>);
 
-        // const emit = (eventName: string, eventData: any) => {
-        //     console.log(`emit событие '${eventName}' с data:`, eventData);
-        // };
+        const emit = (eventName: string, eventData: any) => {
+            console.log(`emit событие '${eventName}' с data:`, eventData);
+        }
 
         const visiblePassword = (type: string) => {
             if (type === "password") {
