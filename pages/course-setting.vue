@@ -160,11 +160,10 @@
                                     </span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
-                                        <span v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Суммарная стоимость всех глав, созданных во вкладке <a>Содержание</a></span>
-                                        <span v-else class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
-                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
+                                <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <template v-if="!course_table[1].duration">
@@ -175,7 +174,7 @@
                                         <span v-else> {{ course_table[1].duration }}</span>
                                     </div>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].workload">{{ column.workload }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
@@ -228,6 +227,7 @@
                                     <InputCmp 
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
+                                        :type="input.type"
                                         @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
@@ -626,7 +626,7 @@ export default defineComponent({
         const storeStateCourse = useStoreCourses()
 
         const route = useRoute()
-        const active_tab = ref<number>(3)
+        const active_tab = ref<number>(1)
         const show_error = ref<boolean>(false)
         const tooltip_id = ref<string>('')
         const editInput = ref(null) as any
@@ -769,19 +769,19 @@ export default defineComponent({
 
         const inputs = reactive([
             {
-                placeholder: '99 999 цена',
+                placeholder: '99 999',
                 mask_type: 'price',
-                input_id: 'price'
+                type: 'price'
             },
             {
-                placeholder: '999 часы',
+                placeholder: '999',
                 mask_type: 'price',
-                input_id: 'duration'
+                type: 'duration'
             },
             {
-                placeholder: '999 дни',
+                placeholder: '999',
                 mask_type: 'price',
-                input_id: 'workload'
+                type: 'workload'
             }
         ])
 
@@ -1013,15 +1013,17 @@ export default defineComponent({
             salesTerminationDate: '',
         })
 
-        const updateFormData = (event: { value: string, type: string }, index: number) => {
-            switch(index) {
-                case 0:
+        const updateFormData = (event: { value: string, type: string }, index: string) => {
+            console.log(event);
+            
+            switch(event.type) {
+                case 'price':
                     course_table[1].price = event.value
                     break
-                case 1:
+                case 'duration':
                     course_table[1].duration = event.value
                     break
-                case 2:
+                case 'workload':
                     course_table[1].workload = event.value
                     break
             }
@@ -1037,15 +1039,13 @@ export default defineComponent({
                 storeEditCourseSetting.canselEdit()
                 formData.directionIds = picked_directions
                 formData.authorEmails = [course_table[1].authors]
-                formData.priceInRubles = parseFloat(course_table[1].price.replace(/\s/g, ''))
-                formData.durationAcademicHours = parseFloat(course_table[1].duration.replace(/\s/g, ''))
-                formData.durationWorkDays = parseFloat(course_table[1].workload.replace(/\s/g, ''))
-                formData.dateStart = new Date(course_table[1].start_date!).toISOString()
-                formData.dateFinish = new Date(course_table[1].end_date!).toISOString()
+                formData.priceInRubles = course_table[1].price ? parseFloat(course_table[1].price.replace(/\s/g, '')) : null
+                formData.durationAcademicHours = course_table[1].duration ? parseFloat(course_table[1].duration.replace(/\s/g, '')) : null
+                formData.durationWorkDays = course_table[1].workload ? parseFloat(course_table[1].workload.replace(/\s/g, '')) : null
+                formData.dateStart = course_table[1].start_date ? new Date(course_table[1].start_date!).toISOString() : null
+                formData.dateFinish = course_table[1].end_date ? new Date(course_table[1].end_date!).toISOString() : null
                 formData.salesTerminationDate = new Date(course_table[1].removed_date!).toISOString()
                 console.log(formData, 'formData')
-                console.log(parseFloat(course_table[1].price.replace(/\s/g, '')), 'price');
-                
                 axios
                     .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
                     .then(response => {
@@ -1296,13 +1296,6 @@ export default defineComponent({
                             font-weight: 400
                             line-height: 16px
                             margin: 0
-                            a
-                                color: $light_primary
-                                cursor: pointer
-                                transition: color 0.2s
-                                &:hover
-                                    color: #03AEE2
-
 
                     &__direction
                         display: flex
