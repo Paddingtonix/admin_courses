@@ -11,6 +11,7 @@
 			v-if="tagsStore?.filters['Язык']"
 			:filters="tagsStore.filters"
 			@send-fiters="sendFilters($event)"
+			@cancel-filters="sendFilters($event)"
 		/>
 		<BtnCmp
 			class="tags-page__add-tag-btn"

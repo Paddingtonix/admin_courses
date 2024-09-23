@@ -58,6 +58,7 @@
 				</div>
 				<div class="oil-filter__body__btns">
 					<BtnCmp
+						@click="cancelFilters"
 						:background_type="'_secondary'"
 						:text="'Сбросить'"
 					/>
@@ -80,7 +81,7 @@ const { filters } = defineProps({
 	},
 });
 
-const emit = defineEmits(["send-fiters"]);
+const emit = defineEmits(["send-fiters", "cancel-filters"]);
 
 const filter_frame = reactive({
 	value: false as boolean,
@@ -139,6 +140,11 @@ const sendFilters = () => {
 	};
 	const formedData = formData();
 	emit("send-fiters", formedData);
+};
+
+const cancelFilters = () => {
+	emit("cancel-filters", []);
+	openFilter(false);
 };
 
 const openFilter = (state: boolean) => {

@@ -50,12 +50,14 @@ export const useTagsStore = defineStore({
 					? `isTranslated=${this.isTranslated}&`
 					: "";
 
-			const filterHeadings = filter?.headingIds.length
-				? `&headingIds=[${filter.headingIds.join(",")}]`
+			const filterHeadings = filter?.headingIds?.length
+				? `${filter.headingIds
+						.map((item) => `&headingIds=${item}`)
+						.join("")}`
 				: "";
 
-			const filterLang = filter?.languageId.length
-				? `&languageId=[${filter.languageId[0]}]`
+			const filterLang = filter?.languageId?.length
+				? `&languageId=${filter.languageId[0]}`
 				: "";
 			return axios
 				.get(
@@ -116,7 +118,13 @@ export const useTagsStore = defineStore({
 		},
 
 		filterTags(formedData: { languageId: string[]; headingIds: number[] }) {
-			this.getTags({ text: "", filter: formedData });
+			this.getTags({ text: "", filter: formedData })
+				.then((resp) => {
+					console.log(resp);
+				})
+				.catch((e) => {
+					console.log(e);
+				});
 		},
 
 		changeTagsPerPage(value: number) {
