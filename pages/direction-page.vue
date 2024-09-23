@@ -301,10 +301,12 @@ export default defineComponent({
 
                 &:nth-child(1)
                     flex: 1
+                    span
+                        color: $basic_text
 
                 &:nth-child(2)
                     flex: 3
-                    a
+                    span
                         color: $basic_primary
 
                 &:nth-child(3)

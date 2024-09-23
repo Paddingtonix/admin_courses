@@ -1,24 +1,25 @@
 <template>
     <div class="oil-direction">
         <span class="oil-direction__desc">Направление должно быть переведено на обязательные языки (помечены звёздочкой)</span>
-        <LangSwitcherCmp 
+        <LangSwitcherCmp
             class="oil-direction__tabs"
             :active="lang"
             @change-lang="setLang"
         />
-        <InputCmp 
+        <InputCmp
             class="oil-direction__input"
-           :label="`Название направления (${lang.toLocaleUpperCase()})*`" 
+           :label="`Название направления (${lang.toLocaleUpperCase()})*`"
+           :modelValue="data.localizedName"
            @set_value="setDirectionName"
         />
-        <CheckboxCmp 
+        <CheckboxCmp
             class="oil-direction__checkbox"
             :text="'Отображать на сайте'"
             :active="visible_direction"
             @set_value="setCheckbox"
         />
         <div class="oil-direction__btns">
-            <BtnCmp 
+            <BtnCmp
                 :text="'Отмена'"
                 :background_type="'_secondary'"
                 @click="closeModal"
@@ -57,11 +58,23 @@ export default defineComponent({
 
         const modal_data = store_modal.$state;
 
+        const initialDirection: IDirection = {
+            directionId: 0,
+            lastChangeDateTime: "",
+            localizedName: "",
+            isVisible: false,
+            count: 0
+        }
+
+        const data: IDirection = reactive(
+            modal_data.modalProps?.data || initialDirection
+        );
+
         const closeModal = () => {
             store_modal.closeModal();
         };
 
-        const setLang = (active_lang) => {            
+        const setLang = (active_lang) => {
             lang.value = active_lang
         }
 
@@ -97,7 +110,7 @@ export default defineComponent({
                 }
             }
 
-            store_direction.changeDirection(data.directionId, sendData);
+            store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
             store_modal.closeModal();
         }
 
@@ -105,6 +118,7 @@ export default defineComponent({
             lang,
             visible_direction,
             modal_data,
+            data,
             setLang,
             setCheckbox,
             setDirectionName,
@@ -116,21 +130,21 @@ export default defineComponent({
 })
 </script>
 <style lang="sass">
-.oil-direction 
-    &__desc 
+.oil-direction
+    &__desc
         display: inline-flex
         margin-bottom: rem(24)
 
-    &__tabs 
+    &__tabs
         margin-bottom: rem(16)
 
-    &__input 
+    &__input
         margin-bottom: rem(24)
 
     &__checkbox
         margin-bottom: rem(32)
-    
-    &__btns 
+
+    &__btns
         @include flex_start()
         gap: rem(16)
 
