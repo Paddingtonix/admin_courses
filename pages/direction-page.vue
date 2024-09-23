@@ -58,6 +58,8 @@
                             :localizedName="row.localizedName"
                             :isVisible="row.isVisible ? 'Отображается' : 'Не отображается'"
                             :count="row.count.toString()"
+                            :redirect="false"
+                            @click="sendDirection(row, true)"
                         >
                             <template v-slot:svg>
                                 <i class="oil-direction-page__course-list__table-row__svg"  @click="deleteDirection(row)">
@@ -180,11 +182,15 @@ export default defineComponent({
             { localizedName: "Cybersecurity", lastChangeDateTime: new Date(), isVisible: false, count: 7, directionId: 5},
         ];
 
-        const sendDirection = () => {
+        const sendDirection = (data?: IDirection, edit?: boolean) => {
             modalStore.$patch({
-                label: "Добавление направления ",
+                label: !edit ? "Добавление направления" : "Редактирование направления",
                 activeModal: "direction-modal",
-                modalProps: {},
+                modalProps: {
+                    data,
+                    // isFormChanged: false,
+                    edit
+                },
             });
             modalStore.openModal();
         }

@@ -23,19 +23,28 @@
                 :background_type="'_secondary'"
                 @click="closeModal"
             />
-            <BtnCmp 
+            <BtnCmp
+                v-if="!modal_data.modalProps.edit"
                 :text="'Добавить'"
-                @click="setDirectionServer"
+                @click="sendDirection"
+            />
+            <BtnCmp
+                v-if="modal_data.modalProps.edit"
+                :text="'Сохранить'"
+                @click="patchDirection"
             />
         </div>
     </div>
 </template>
-<script type="ts">
+<script lang="ts">
 import { defineComponent } from 'vue'
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
+import type { IDirection } from "~/src/ts-interface/direction";
 
 export default defineComponent({
+    components: {},
+
     setup() {
         const lang = ref('ru')
 
@@ -45,6 +54,8 @@ export default defineComponent({
 
         const store_modal = useStoreModal();
         const store_direction = useDirectionStore();
+
+        const modal_data = store_modal.$state;
 
         const closeModal = () => {
             store_modal.closeModal();
@@ -62,7 +73,7 @@ export default defineComponent({
             input_value.value = val.value
         }
 
-        const setDirectionServer = () => {
+        const sendDirection = () => {
             const sendData = {
                 isVisible: visible_direction.value,
                 localizations: {
@@ -76,14 +87,29 @@ export default defineComponent({
             store_modal.closeModal();
         }
 
+        const patchDirection = (data: IDirection) => {
+            const sendData = {
+                isVisible: visible_direction.value,
+                localizations: {
+                    en: input_value.value,
+                    ru: input_value.value,
+                    // fr: input_value.value
+                }
+            }
+
+            store_direction.changeDirection(data.directionId, sendData);
+            store_modal.closeModal();
+        }
 
         return {
             lang,
             visible_direction,
+            modal_data,
             setLang,
             setCheckbox,
             setDirectionName,
-            setDirectionServer,
+            sendDirection,
+            patchDirection,
             closeModal
         }
     }

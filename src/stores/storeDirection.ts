@@ -36,6 +36,17 @@ export const useDirectionStore = defineStore('directionStore', {
                     console.error('Ууупс, ошибка при добавлении :(', error);
                 });
         },
+        changeDirection(id: string, data: DirectionData) {
+            axios
+                .patch(`admin/v1/Direction/${id}`, data)
+                .then(response => {
+                    this.getDirections();
+                    console.log('Успешно изменил, хехе :)', response.data);
+                })
+                .catch(error => {
+                    console.error('Ууупс, ошибка при изменении :(', error);
+                });
+        },
         removeDirection(id: string) {
             axios
                 .delete(`admin/v1/Direction/${id}`)
