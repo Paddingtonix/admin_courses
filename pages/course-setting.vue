@@ -355,7 +355,10 @@
                             @mousemove="createBlock($event, 'introductory')"
                         >
                             <template v-if="content_inner.value.initialPage">
-                                <span>{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
+                                <span 
+                                    :style="{color: '#176DC1'}"
+                                     @click="$router.push(`course-content/${content_inner.value.initialPage.id}?=${course_setting.value.Title}&=text`)"
+                                >{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
                                 <CourseArchitectureIcons 
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialPage.id"
@@ -383,7 +386,7 @@
                             @mousemove="createBlock($event, 'start_test')"
                         >
                             <template v-if="content_inner.value.initialTesting">
-                                <span>{{ content_inner.value.initialTesting.title === null ? 'Вводная страница' : content_inner.value.initialTesting.title }}</span>
+                                <span  @click="$router.push(`course-content/${content_inner.value.initialTesting.id}?=${course_setting.value.Title}&=test`)" :style="{color: '#176DC1'}">{{ content_inner.value.initialTesting.title === null ? 'Вводная страница' : content_inner.value.initialTesting.title }}</span>
                                 <CourseArchitectureIcons 
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialTesting.id"
@@ -541,7 +544,10 @@
                             @mousemove="createBlock($event, 'final_test')"
                         >
                             <template v-if="content_inner.value.finalTesting">
-                                <span>{{ content_inner.value.finalTesting.title === null ? 'Вводная страница' : content_inner.value.finalTesting.title }}</span>
+                                <span 
+                                    @click="$router.push(`course-content/${content_inner.value.finalTesting.id}?=${course_setting.value.Title}&=test`)"
+                                    :style="{color: '#176DC1'}"
+                                >{{ !content_inner.value.finalTesting.title ? 'Итоговый тест' : content_inner.value.finalTesting.title }}</span>
                                 <CourseArchitectureIcons 
                                     :delete_id="content_inner.value.finalTesting.id"
                                     :delete_type="'Testing'"
