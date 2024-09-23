@@ -14,8 +14,7 @@
 			/>
 			<ContentModule v-if="course_settings.type_course === 'text'" />
 			<TestSection
-				@change-setting="changeGeneralSetting"
-				@change-question="changeQuestion"
+				@change-setting="changeGeneralSetting($event)"
 				:questions="courseContentStore.questions"
 				:id="id"
 				v-else-if="content === 'test' && !isLoading"
@@ -115,25 +114,27 @@ export default defineComponent({
 			value: string;
 		}) => {
 			const updateData = {
-				[type === "title" ? "title" : "cutScorePercentages"]: value,
+				[type === "title" ? "Title" : "CutScorePercentages"]: value,
 			};
 
-			courseContentStore.patchCourseContent(id, updateData).then(() => {
-				courseContentStore.getCourseContent(id);
-			});
-		};
+			console.log("updtdData: ", updateData);
 
-		const changeQuestion = (formdata: ICourseContentQuestions) => {
-			courseContentStore.patchQuestion(formdata).then((data) => {
-				courseContentStore.getCourseContent(id);
-			});
+			courseContentStore
+				.patchCourseContent(id, updateData)
+				.then((response) => {
+					courseContentStore.getCourseContent(id).then((response) => {
+						console.log("vot chto ya poluchil", response);
+					});
+				})
+				.catch((err) => {
+					console.log("patchCourseError", err);
+				});
 		};
 
 		return {
 			courseStore,
 			courseContentStore,
 			changeGeneralSetting,
-			changeQuestion,
 			course_settings,
 			summarySections,
 			id,

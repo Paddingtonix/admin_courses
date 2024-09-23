@@ -8,6 +8,7 @@
 			v-model="input_value"
 			:type="type"
 			@input="setValue"
+			:maxlength="max_length"
 			v-mask="mask"
 			:placeholder="placeholder"
 		/>
@@ -17,7 +18,7 @@
 			:type="type"
 			@input="setValue"
 			:placeholder="placeholder"
-			:maxlength="maxlength"
+			:maxlength="max_length"
 		/>
 		<div class="oil-input__message" v-if="error.length">
 			<i>
@@ -70,7 +71,7 @@ export default defineComponent({
 			type: [String, Number],
 			default: "",
 		},
-		maxlength: {
+		max_length: {
 			type: Number,
 			default: null,
 		},

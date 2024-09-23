@@ -4,13 +4,15 @@
 			:model-value="formModel.name"
 			class="add-section__input"
 			label="Название раздела"
-			:max_length="20"
+			:error="errors.name ?? ''"
+			:max_length="70"
 			@set_value="changeForm({ name: $event })"
 		></InputCmp>
 		<TextareaCmp
 			:model-value="formModel.description"
 			class="add-section__text-area"
-			:max_length="40"
+			:error="errors.description ?? ''"
+			:max_length="490"
 			@set_textarea="changeForm({ description: $event })"
 			label="Описание раздела"
 		></TextareaCmp>
@@ -24,7 +26,7 @@
 			<BtnCmp
 				v-if="modalData.modalProps.edit"
 				type="submit"
-				:disabled="!modalData.modalProps.isFieldChanged"
+				:disabled="!isFormValid"
 				text="Сохранить"
 				@click.prevent="patchForm"
 			/>
@@ -32,7 +34,7 @@
 				v-else
 				type="submit"
 				text="Добавить"
-				:disabled="!modalData.modalProps.isFieldChanged"
+				:disabled="!isFormValid"
 				@click.prevent="sendForm"
 			/>
 		</div>
@@ -40,10 +42,13 @@
 </template>
 
 <script lang="ts" setup>
+import { AxiosError } from "axios";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersStore } from "~/src/stores/storeSections";
 import type { IFormSection } from "~/src/ts-interface/storeModal.type";
-import { validateForm } from "~/src/utils/validateForm";
+import { useFormValidate } from "~/src/utils/useFormValidate";
+import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
+const { form_sections_schema } = validation_schemas;
 
 const storeModal = useStoreModal();
 
@@ -61,6 +66,9 @@ type TInputEvent = {
 	type: string;
 };
 
+const { isFormValid, errors, validateOnSubmit, setCustomError } =
+	useFormValidate(formModel, form_sections_schema);
+
 const changeForm = ({
 	name,
 	description,
@@ -76,50 +84,54 @@ const changeForm = ({
 	}
 };
 
-const startForm = JSON.parse(JSON.stringify(formModel));
-
-watch(formModel, () => {
-	const isValid = validateForm({
-		currentForm: formModel,
-		initialForm: startForm,
-		requiredFields: ["name", "description"],
-		options: { checkChanges: true, checkRequiredFields: true },
-	});
-
-	storeModal.$patch({
-		modalProps: {
-			isFieldChanged: isValid,
-		},
-	});
-});
-
 const sendForm = () => {
-	headersStore
-		.postHeading(formModel)
-		.then(() => {
-			storeModal.closeModal();
-		})
-		.catch((err) => {
-			console.error("EBANAYA OSHIBKA ", err);
-		});
+	validateOnSubmit();
+
+	if (isFormValid.value) {
+		headersStore
+			.postHeading(formModel)
+			.then(() => {
+				storeModal.closeModal();
+			})
+			.catch((err) => {
+				if (err instanceof AxiosError && err.response?.status === 409) {
+					setCustomError("name", err.response.data);
+				} else {
+					console.log(
+						err instanceof AxiosError,
+						err.response?.status
+					);
+					console.log(err);
+
+					alert(err.message);
+				}
+			});
+	}
 };
 
 const patchForm = () => {
 	const { name, description } = formModel;
+	validateOnSubmit();
 
-	headersStore
-		.patchHeading({
-			name,
-			description,
-			id: modalData.modalProps.id,
-		})
-		.then((resp) => {
-			console.log("allgoodies", resp);
-			storeModal.closeModal();
-		})
-		.catch((err) => {
-			console.log("ДА ЕБАТЬ ЕГО В РОТ НАХУЙ", err);
-		});
+	if (isFormValid.value) {
+		headersStore
+			.patchHeading({
+				name,
+				description,
+				id: modalData.modalProps.id,
+			})
+			.then((resp) => {
+				console.log("allgoodies", resp);
+				storeModal.closeModal();
+			})
+			.catch((err) => {
+				if (err instanceof AxiosError && err.response?.status === 409) {
+					setCustomError("name", err.response.data);
+				} else {
+					alert(err.message);
+				}
+			});
+	}
 };
 </script>
 
@@ -132,7 +144,7 @@ const patchForm = () => {
         column-gap: rem(8)
 
     &__input
-        margin-bottom: rem(16)
+        margin-bottom: rem(24)
 
     &__text-area
         margin-bottom: rem(32)
