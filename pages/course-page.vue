@@ -254,14 +254,14 @@ export default defineComponent({
 
         const formatDirectionToString = (arr: string[] | null | undefined): string => {
             if (!arr || arr.length === 0) {
-                return '--'
+                return '—'
             }
             return arr.join(', ')
         }
 
         const formatDate = (date_value: string | null) => {
             if (date_value === null) {
-                return "--"
+                return "—"
             }
             const date = new Date(date_value)
             const day = String(date.getDate()).padStart(2, '0')

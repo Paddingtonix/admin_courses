@@ -40,6 +40,20 @@
                             :card_type="'texts'"
                         />
                     </div>
+                    <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__notification">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_5268_74130)">
+                                <circle cx="32" cy="32" r="32" fill="#F9AD4E" fill-opacity="0.1"/>
+                                <path d="M32.0002 26.9999V33.6666M32.0002 40.3332H32.0169M29.6924 18.4861L15.9843 42.1638C15.224 43.4771 14.8438 44.1338 14.9 44.6727C14.949 45.1428 15.1953 45.57 15.5775 45.8479C16.0158 46.1666 16.7746 46.1666 18.2921 46.1666H45.7084C47.2259 46.1666 47.9847 46.1666 48.423 45.8479C48.8052 45.57 49.0515 45.1428 49.1005 44.6727C49.1567 44.1338 48.7765 43.4771 48.0162 42.1638L34.308 18.4861C33.5504 17.1775 33.1716 16.5232 32.6774 16.3034C32.2463 16.1117 31.7542 16.1117 31.3231 16.3034C30.8289 16.5232 30.4501 17.1775 29.6924 18.4861Z" stroke="#F9AD4E" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_5268_74130">
+                                    <rect width="64" height="64" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        <p class="oil-course-setting__settings__notification__text">Обратите внимание, при частичной покупке ученик не сможет получить сертификат (участник сможет получить сертификат только при покупке всех глав курса)</p>
+                    </div>
                     <div class="oil-course-setting__settings__table">
                         <template v-for="(column, column_idx) in course_table" :key="column_idx">
                             <div v-if="!column_idx" class="oil-course-setting__settings__table__column">
@@ -145,7 +159,7 @@
                                         </div>
                                     </span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
@@ -154,7 +168,7 @@
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <template v-if="!course_table[1].duration">
                                             {{ course_table[1].duration }}
-                                            <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                            <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                             <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
                                         </template>
                                         <span v-else> {{ course_table[1].duration }}</span>
@@ -163,7 +177,7 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].workload">{{ column.workload }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 50</span>
                                     </div>
                                 </div>
@@ -172,14 +186,14 @@
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">—</span>
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.end_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.01.24 — 01.02.24</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].removed_date">{{ column.removed_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.02.24</span>
                                     </div>
                                 </div>
@@ -194,7 +208,7 @@
                                         >{{ direction.localizedName }}</DirectionCmp>
                                     </div>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: Геология, Разработка</span>
                                     </div>
                                 </div>
@@ -203,7 +217,13 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.authors }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in filtered_inputs" :key="input_idx + 1">
+                                <!-- tyt тут -->
+                                <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell">
+                                    <div class="oil-course-setting__settings__table__column__cell__edit-partial-available">
+                                        <span class="oil-course-setting__settings__table__column__cell__edit-partial-available__title">Стоимость курса формируется как сумма стоимости всех глав, созданных во вкладке <a>Содержание</a></span>
+                                    </div>
+                                </div>
+                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in filtered_inputs" :key="input_idx">
                                     <InputCmp 
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
@@ -751,8 +771,11 @@ export default defineComponent({
         ])
 
         const filtered_inputs = computed(() => {
-            if (course_setting.value.CourseType === 'Asynchronous' && course_setting.value.IsFree) {
-                return inputs.filter((_, input_idx) => input_idx === 1)
+            if (course_setting.value.IsPartialAvailable) {
+                return inputs.slice(1, 2)
+
+            } else if (course_setting.value.CourseType === 'Asynchronous' && course_setting.value.IsFree) {
+                return inputs.filter((input, input_idx) => input_idx === 1)
 
             } else if (course_setting.value.CourseType === 'Asynchronous') {
                 return inputs.slice(0, 2)
@@ -1007,7 +1030,7 @@ export default defineComponent({
                                     directionId: direction.id,
                                     localizedName: direction.name
                                 }))
-                                console.log(info_course.data, 'info_course.data');
+                                console.log(info_course.data, 'info_course.data')
                             })
                             .catch(error => {
                                 console.error('Ошибка при загрузке данных курса:', error)
@@ -1066,7 +1089,6 @@ export default defineComponent({
                     .get('admin/v1/direction')
                     .then((response) => {
                         directions.splice(0, directions.length, ...response.data.directions)
-                        console.log(response.data.directions, 'server-direction')
                     })
                     .catch((error) => {
                         console.error('Ошибка при получении данных направлений:', error)
@@ -1092,20 +1114,19 @@ export default defineComponent({
                     .then((info_course) => {
                         course_setting.value = info_course.data
                         // Обновление данных в таблице
-                        course_table[1].price = String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-                        course_table[1].duration = String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-                        course_table[1].workload = String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-                        course_table[1].start_date = formatDate(info_course.data.DateStart)
-                        course_table[1].end_date = formatDate(info_course.data.DateFinish)
-                        course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
+                        course_table[1].price = info_course.data.PriceInRubles ? String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.PriceInRubles
+                        course_table[1].duration = info_course.data.DurationAcademicHours ? String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.DurationAcademicHours
+                        course_table[1].workload = info_course.data.DurationWorkDays ? String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\д))/g, ' ') : info_course.data.DurationWorkDays
+                        course_table[1].start_date = info_course.data.DateStart ? formatDate(info_course.data.DateStart) : info_course.data.DateStart
+                        course_table[1].end_date = info_course.data.DateFinish ? formatDate(info_course.data.DateFinish) : info_course.data.DateFinish
+                        course_table[1].removed_date = info_course.data.SalesTerminationDate ? formatDate(info_course.data.SalesTerminationDate) : info_course.data.SalesTerminationDate
                         chooses_direction.value = info_course.data.Directions.map((direction: {id: number, name: string}) => ({
                             directionId: direction.id,
                             localizedName: direction.name
                         }))
                         preloader.value = false
-                        console.log(chooses_direction.value, 'chooses_direction.value');
-                        console.log(info_course.data.Directions, 'info_course.data.Directions');
-                        console.log(info_course.data, 'info_course.data');
+                        console.log(info_course.data, 'info_course.data')
+                        console.log(course_table[1], 'course_table[1]');
                     })
                     .catch(error => {
                         console.error('Ошибка при загрузке данных курса:', error)
@@ -1259,7 +1280,7 @@ export default defineComponent({
                             cursor: pointer
                             transition: color 0.2s
                             &:hover
-                                color: $basic_primary
+                                color: #03AEE2
 
                 &:first-child
                     width: rem(360)
@@ -1311,12 +1332,44 @@ export default defineComponent({
                             display: flex
                             gap: 24px
 
+                        &__edit-partial-available
+                            font-size: rem(12)
+                            top: rem(42)
+                            margin: rem(8) rem(0)
+                            &__title
+                                color: #9AA7BB
+                            
+                            a
+                                color: $light_primary
+                                cursor: pointer
+                                transition: color 0.2s
+                                &:hover
+                                    color: #03AEE2
+
+
+
         &__btn
             width: fit-content
 
         &__setting-btns
             display: flex
             gap: rem(12)
+
+        &__notification
+            display: flex
+            flex-direction: row
+            gap: rem(10)
+            place-items: center
+            padding: rem(16) rem(24)
+            width: 100%
+            background-color: #FFC0711A
+            border: rem(1) solid #FFCE91
+            border-radius: rem(12)
+            svg
+                flex-shrink: 0
+
+            &__text
+                line-height: rem(24)
 
     &__info
         width: rem(960)
