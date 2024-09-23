@@ -7,11 +7,6 @@
                 class="oil-course-setting__bread"
             />
             <div class="oil-course-setting__menubar">
-                <!-- <TabSwitcherCmp
-                    :switcherArray="switcherArray"
-                    @switch-tab="selectTab"
-                /> -->
-                <!-- <hr> -->
                 <tabsCmp 
                     v-for="tab in switcherArray"
                     :key="tab.id"
@@ -36,14 +31,28 @@
                         />
                         <CardInfo
                             :text="'Приобретение'"
-                            :count="!course_setting.value.PriceInRubles ? 'Бесплатно' : 'Платно'"
+                            :count="course_setting.value.IsFree ? 'Бесплатно' : 'Платно'"
                             :card_type="'texts'"
                         />
                         <CardInfo
                             :text="'Доступ'"
-                            :count="!course_setting.value.IsPartialAvailable ? 'Полный' : 'Частичный'"
+                            :count="course_setting.value.IsPartialAvailable ? 'Частичный' : 'Полный'"
                             :card_type="'texts'"
                         />
+                    </div>
+                    <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__notification">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_5268_74130)">
+                                <circle cx="32" cy="32" r="32" fill="#F9AD4E" fill-opacity="0.1"/>
+                                <path d="M32.0002 26.9999V33.6666M32.0002 40.3332H32.0169M29.6924 18.4861L15.9843 42.1638C15.224 43.4771 14.8438 44.1338 14.9 44.6727C14.949 45.1428 15.1953 45.57 15.5775 45.8479C16.0158 46.1666 16.7746 46.1666 18.2921 46.1666H45.7084C47.2259 46.1666 47.9847 46.1666 48.423 45.8479C48.8052 45.57 49.0515 45.1428 49.1005 44.6727C49.1567 44.1338 48.7765 43.4771 48.0162 42.1638L34.308 18.4861C33.5504 17.1775 33.1716 16.5232 32.6774 16.3034C32.2463 16.1117 31.7542 16.1117 31.3231 16.3034C30.8289 16.5232 30.4501 17.1775 29.6924 18.4861Z" stroke="#F9AD4E" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_5268_74130">
+                                    <rect width="64" height="64" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        <p class="oil-course-setting__settings__notification__text">Обратите внимание, при частичной покупке ученик не сможет получить сертификат (участник сможет получить сертификат только при покупке всех глав курса)</p>
                     </div>
                     <div class="oil-course-setting__settings__table">
                         <template v-for="(column, column_idx) in course_table" :key="column_idx">
@@ -68,16 +77,16 @@
                                         </transition>
                                     </div>
                                 </div>
-                                <div v-if="storeStateCourse.price === 'paid'" class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="!course_setting.value.IsFree" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.price }}</span>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.duration }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.workload }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.start_end_dates }}</span>
                                     <div class="oil-course-setting__settings__table__column__cell__tooltip-container">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" @mouseenter="showTooltip('dates_start_end')" @mouseleave="hideTooltip()">
@@ -142,56 +151,64 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.authors }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
-                                    <span v-if="course_table[1].price">{{ column.price }}</span>
+                                <div v-if="!course_setting.value.IsFree" class="oil-course-setting__settings__table__column__cell">
+                                    <span v-if="course_table[1].price">
+                                        {{ column.price }}
+                                        <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell__partial-available">
+                                            <span class="oil-course-setting__settings__table__column__cell__partial-available__title">Суммарная стоимость всех глав, созданных во вкладке <a>Содержание</a></span>
+                                        </div>
+                                    </span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].duration">{{ column.duration }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
+                                        <template v-if="!course_table[1].duration">
+                                            {{ course_table[1].duration }}
+                                            <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
+                                            <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 100</span>
+                                        </template>
+                                        <span v-else> {{ course_table[1].duration }}</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].workload">{{ column.workload }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 50</span>
                                     </div>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.start_date }}</span>
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">—</span>
                                     <span v-if="course_table[1].start_date && course_table[1].end_date">{{ column.end_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.01.24 — 01.02.24</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].removed_date">{{ column.removed_date }}</span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 01.02.24</span>
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell" :style="{ pointerEvents: 'none' }">
-                                    <div v-if="picked_directions_filtered.length" class="oil-course-setting__settings__table__column__cell__direction">
+                                    <div v-if="chooses_direction.value.length" class="oil-course-setting__settings__table__column__cell__direction">
                                         <DirectionCmp
-                                            v-for="(direction, direction_idx) in picked_directions_filtered"
+                                            v-for="(direction, direction_idx) in chooses_direction.value"
                                             :key="direction_idx"
                                             :text="direction.localizedName"
                                             :id="direction.directionId"
-                                            :is_visible="direction.isVisible"
-                                            :picked="picked_directions.includes(direction.directionId)"
+                                            :picked=true
                                         >{{ direction.localizedName }}</DirectionCmp>
                                     </div>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет даных</span>
+                                        <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: Геология, Разработка</span>
                                     </div>
                                 </div>
@@ -200,21 +217,34 @@
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <span>{{ column.authors }}</span>
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in inputs" :key="input_idx">
+                                <!-- tyt тут -->
+                                <div v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell">
+                                    <div class="oil-course-setting__settings__table__column__cell__edit-partial-available">
+                                        <span class="oil-course-setting__settings__table__column__cell__edit-partial-available__title">Стоимость курса формируется как сумма стоимости всех глав, созданных во вкладке <a>Содержание</a></span>
+                                    </div>
+                                </div>
+                                <div class="oil-course-setting__settings__table__column__cell" v-for="(input, input_idx) in filtered_inputs" :key="input_idx">
                                     <InputCmp 
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
+                                        @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
-                                <div class="oil-course-setting__settings__table__column__cell">
+                                <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
                                     <div class="oil-course-setting__settings__table__column__cell__dates">
-                                        <CalendarCmp />
+                                        <CalendarCmp
+                                            @update-date="handleDateUpdate($event, 'start')"
+                                        />
                                         <span>—</span>
-                                        <CalendarCmp />
+                                        <CalendarCmp 
+                                            @update-date="handleDateUpdate($event, 'end')"
+                                        />
                                     </div>
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <CalendarCmp />
+                                    <CalendarCmp 
+                                        @update-date="handleDateUpdate($event, 'remove')"
+                                    />
                                 </div>
                                 <div class="oil-course-setting__settings__table__column__cell">
                                     <div class="oil-course-setting__settings__table__column__cell__direction">
@@ -240,7 +270,6 @@
                         @click="openEditCourseSetting"
                     />
                     <div class="oil-course-setting__settings__setting-btns" v-if="storeEditCourseSetting.isEdit">
-                        <!-- тут tyt -->
                         <BtnCmp
                             class="oil-course-setting__settings__btn"
                             :text="'Отмена'"
@@ -372,7 +401,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="!content_inner.value.initialPage && !content_inner.value.initialTesting ? 'вводную страницу и входной тест' : 'вводную страницу'"
                                     :request_type="{type:'Page', query: 'courseId'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />     
                             </transition>
@@ -400,7 +429,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'входной тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Entrance'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />       
                             </transition>
@@ -437,7 +466,7 @@
                                     <CourseArchitectureAddBlock 
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
-                                        :block_id="$route.query.search"
+                                        :block_id="Number($route.query.course) || undefined"
                                         @request-trigger="reloadContent"
                                         v-if="idx === content_inner.value.parts.length - 1"
                                     />     
@@ -561,7 +590,7 @@
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'итоговый тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Final'}"
-                                    :block_id="$route.query.course"
+                                    :block_id="Number($route.query.course) || undefined"
                                     @request-trigger="reloadContent"
                                 />     
                             </transition>
@@ -584,7 +613,7 @@
 <script lang="ts">
 import axios from 'axios'
 import { defineComponent } from 'vue'
-import { useStoreCourses } from '~/src/stores/storeCourse';
+import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
 import type { Direction } from '~/src/ts-interface/direction'
 import type ISwitcher from '~/src/ts-interface/switcher.type'
@@ -602,10 +631,13 @@ export default defineComponent({
         const editInput = ref(null) as any
         const directions = reactive<Direction[]>([])
         const original_directions = ref<number[]>([])
-        const picked_directions = reactive<number[]>([]) // Отправлять этот массив
+        const picked_directions = reactive<any>([])
+        const chooses_direction = reactive({
+            value: [] as Direction[]
+        })
 
         const reload_state = reactive({
-            value: false
+            value: false as boolean
         })
 
         const switcherArray: ISwitcher[] = [
@@ -628,8 +660,6 @@ export default defineComponent({
                 link: ''
             }
         ]
-
-
 
 		const active_example = reactive({
 			value: null as number | null,
@@ -670,27 +700,22 @@ export default defineComponent({
 
 		const edit_mode = reactive({
 			value: false,
-		});
+		})
 
         const course_setting = reactive({
-            value: [
-                {
-                    count: 'Синхронный',
-                    text: 'Тип'
-                },
-                {
-                    count: 'Онлайн',
-                    text: 'Формат'
-                },
-                {
-                    count: 'Платно',
-                    text: 'Приобретение'
-                },
-                {
-                    count: 'Полный',
-                    text: 'Доступ'
-                }
-            ]
+            value: {
+                Title: '' as string,
+                CourseType: '' as string,
+                CourseFormat: '' as string,
+                PriceInRubles: 0 as number,
+                IsPartialAvailable: false as boolean,
+                IsFree: false as boolean,
+                DurationAcademicHours: 0 as number,
+                DurationWorkDays: 0 as number,
+                DateStart: '' as string,
+                DateFinish: '' as string,
+                SalesTerminationDate: '' as string,
+            }
         })
 
         const course_table = reactive([
@@ -715,7 +740,7 @@ export default defineComponent({
         ])
 
         const preloader = reactive({
-            value: true
+            value: true as boolean
         })
 
         const content_inner = reactive({
@@ -755,6 +780,24 @@ export default defineComponent({
                 mask_type: 'price'
             }
         ])
+
+        const filtered_inputs = computed(() => {
+            if (course_setting.value.IsPartialAvailable) {
+                return inputs.slice(1, 2)
+
+            } else if (course_setting.value.CourseType === 'Asynchronous' && course_setting.value.IsFree) {
+                return inputs.filter((input, input_idx) => input_idx === 1)
+
+            } else if (course_setting.value.CourseType === 'Asynchronous') {
+                return inputs.slice(0, 2)
+
+            } else if (course_setting.value.IsFree) {
+                return inputs.slice(1)
+
+            } else {
+                return inputs
+            }
+        })
 
         const visible_block = reactive({
             value: ''
@@ -831,12 +874,13 @@ export default defineComponent({
 				example:
 					"По окончании курса участники смогут: создавать и анализировать геологические модели, используя специализированное программное обеспечение; применять полученные знания для оптимизации процессов разведки и добычи углеводородов; понимать основные методы и подходы к моделированию пластов, а также интегрировать полученные данные в общие проекты разработки месторождений.",
 			},
-		]);
+		])
 
         const edit_field = reactive({
             idx_field: null as null | number,
             type_field: null as null | string
         })
+
 
         const changes_value = reactive({
             value: ''
@@ -897,23 +941,39 @@ export default defineComponent({
                 })
         }
 
-        const editTitle = (state: boolean, idx: number, type: string, id: number, title: string, parent_id: number) => {
-            console.log(parent_id, idx);
             
+        const handleDateUpdate = (date: string, type: string) => {
+            switch (type) {
+                case 'start':                    
+                    course_table[1].start_date = date
+                    break
+            
+                case 'end':
+                    course_table[1].end_date = date
+                    break
+            
+                case 'remove':
+                    course_table[1].removed_date = date
+                    break
+            
+                default:
+                    break
+            }
+        }
+
+        const editTitle = (state: boolean, idx: number, type: string, id: number) => {
             if(state) {
                 edit_field.idx_field = id
                 edit_field.type_field = type
                 
                 changes_value.value = title.split(':')[1]
             } else {
-                console.log(title);
-
                 axios
                     .patch(`/admin/v1/${edit_field.type_field}/${id}`, {
                         title: changes_value.value
                     })
                     .then((resp) => {
-                        console.log(resp);
+                        console.log(resp)
                     })
                     .finally(() => {
                         edit_field.idx_field = null
@@ -928,13 +988,92 @@ export default defineComponent({
             }
         }
 
+        const formatDate = (date_value: string): string => {
+            const date = new Date(date_value)
+            const day = String(date.getDate()).padStart(2, '0')
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const year = String(date.getFullYear()).slice(-2)
+
+            return `${day}.${month}.${year}`
+        }
+
+        // объект собирающий данные для POST запроса
+        const formData = reactive({
+            directionIds: [] as number[],
+            authorEmails: [] as string[],
+            priceInRubles: 0 as number,
+            durationAcademicHours: 0 as number,
+            durationWorkDays: 0 as number,
+            dateStart: '',
+            dateFinish: '',
+            salesTerminationDate: '',
+        })
+
+        const updateFormData = (event: { value: string, type: string }, index: number) => {
+            switch(index) {
+                case 0:
+                    course_table[1].price = event.value
+                    break
+                case 1:
+                    course_table[1].duration = event.value
+                    break
+                case 2:
+                    course_table[1].workload = event.value
+                    break
+            }
+        }
+
         const saveSettings = () => {
             if (picked_directions_filtered.value.length === 0) {
                 show_error.value = true
             } else {
+                console.log('qwerty34');
+                
                 show_error.value = false
                 storeEditCourseSetting.canselEdit()
-                original_directions.value = [...picked_directions]
+                formData.directionIds = picked_directions
+                formData.authorEmails = [course_table[1].authors]
+                formData.priceInRubles = parseFloat(course_table[1].price.replace(/\s/g, ''))
+                formData.durationAcademicHours = parseFloat(course_table[1].duration.replace(/\s/g, ''))
+                formData.durationWorkDays = parseFloat(course_table[1].workload.replace(/\s/g, ''))
+                formData.dateStart = new Date(course_table[1].start_date!).toISOString()
+                formData.dateFinish = new Date(course_table[1].end_date!).toISOString()
+                formData.salesTerminationDate = new Date(course_table[1].removed_date!).toISOString()
+                console.log(formData, 'formData')
+                console.log(parseFloat(course_table[1].price.replace(/\s/g, '')), 'price');
+                
+                axios
+                    .patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
+                    .then(response => {
+                        storeEditCourseSetting.canselEdit()
+                        original_directions.value = [...picked_directions]
+                        console.log(response.data, 'info_course.data')
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при сохранении настроек курса:', error)
+                    })
+                    .finally(() => {
+                        axios
+                            .get(`/admin/v1/Course/${route.query.search}`)
+                            .then((info_course) => {
+                                course_setting.value = info_course.data
+                                course_table[1].price = String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                                course_table[1].duration = String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                                course_table[1].workload = String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+                                course_table[1].start_date = formatDate(info_course.data.DateStart)
+                                course_table[1].end_date = formatDate(info_course.data.DateFinish)
+                                course_table[1].removed_date = formatDate(info_course.data.SalesTerminationDate)
+                                preloader.value = false
+                                chooses_direction.value = info_course.data.Directions.map((direction: any) => ({
+                                    directionId: direction.id,
+                                    localizedName: direction.name
+                                }))
+                                console.log(info_course.data, 'info_course.data')
+                            })
+                            .catch(error => {
+                                console.error('Ошибка при загрузке данных курса:', error)
+                            })
+                    })
             }
         }
 
@@ -968,7 +1107,6 @@ export default defineComponent({
         watch(edit_field, () => {
             nextTick(() => {
                 if(editInput.value) {
-                    
                     editInput.value.focus()
                 }
             })
@@ -980,22 +1118,18 @@ export default defineComponent({
             } else {
                 picked_directions.splice(picked_directions.indexOf(dir.id), 1)
             }
+            console.log('Выбранные направления:', picked_directions)
         }
-
-        const courseId = computed(() => storeStateCourse.getCourses)
 
         onMounted(() => {
             nextTick(() => {
                 axios
                     .get('admin/v1/direction')
                     .then((response) => {
-                        response.data.directions.forEach((element: Direction) => {
-                            directions.push(element)
-                        })
-                        console.log(response.data, 'response.data')
+                        directions.splice(0, directions.length, ...response.data.directions)
                     })
                     .catch((error) => {
-                        console.error('Ошибка при получении данных:', error)
+                        console.error('Ошибка при получении данных направлений:', error)
                     })
 
                 // ЗАПРОС АВТОРА КУРСА
@@ -1017,7 +1151,23 @@ export default defineComponent({
                     .get(`/admin/v1/Course/${route.query.search}`)
                     .then((info_course) => {
                         course_setting.value = info_course.data
+                        // Обновление данных в таблице
+                        course_table[1].price = info_course.data.PriceInRubles ? String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.PriceInRubles
+                        course_table[1].duration = info_course.data.DurationAcademicHours ? String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.DurationAcademicHours
+                        course_table[1].workload = info_course.data.DurationWorkDays ? String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\д))/g, ' ') : info_course.data.DurationWorkDays
+                        course_table[1].start_date = info_course.data.DateStart ? formatDate(info_course.data.DateStart) : info_course.data.DateStart
+                        course_table[1].end_date = info_course.data.DateFinish ? formatDate(info_course.data.DateFinish) : info_course.data.DateFinish
+                        course_table[1].removed_date = info_course.data.SalesTerminationDate ? formatDate(info_course.data.SalesTerminationDate) : info_course.data.SalesTerminationDate
+                        chooses_direction.value = info_course.data.Directions.map((direction: {id: number, name: string}) => ({
+                            directionId: direction.id,
+                            localizedName: direction.name
+                        }))
                         preloader.value = false
+                        console.log(info_course.data, 'info_course.data')
+                        console.log(course_table[1], 'course_table[1]');
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при загрузке данных курса:', error)
                     })
             })})
         
@@ -1045,6 +1195,8 @@ export default defineComponent({
             preloader,
             edit_field,
             changes_value,
+            chooses_direction,
+            filtered_inputs,
             selectTab,
             openEditFrame,
             openExample,
@@ -1057,7 +1209,9 @@ export default defineComponent({
             reloadContent,
             editTitle,
             canselEditCourseSetting,
-            moveToStructure
+            updateFormData,
+            handleDateUpdate,
+            formatDate
         }}})
 </script>
 
@@ -1141,8 +1295,9 @@ export default defineComponent({
 
                     &__direction
                         display: flex
+                        flex-wrap: wrap
                         gap: rem(8)
-                        height: rem(40)
+                        min-height: rem(40)
                         align-items: center
                         span
                             position: absolute
@@ -1151,8 +1306,25 @@ export default defineComponent({
                             line-height: 16px
                             color: $basic_error
 
+                    &__partial-available
+                        position: absolute
+                        font-size: rem(12)
+                        top: rem(42)
+                        &__title
+                            color: #9AA7BB
+                        
+                        a
+                            color: $light_primary
+                            cursor: pointer
+                            transition: color 0.2s
+                            &:hover
+                                color: #03AEE2
+
                 &:first-child
                     width: rem(360)
+                    flex-shrink: 0
+                    display: flex
+                    flex-direction: column
                     .oil-course-setting__settings__table__column__cell
                         span
                             color: $basic_gray
@@ -1164,6 +1336,10 @@ export default defineComponent({
                                 path
                                     transition: stroke .2s
                                     stroke: #398BDB
+                                    
+                        &:last-child
+                            flex-grow: 1
+                            align-items: center
 
                 &:not(:first-child)
                     flex-grow: 1
@@ -1194,12 +1370,44 @@ export default defineComponent({
                             display: flex
                             gap: 24px
 
+                        &__edit-partial-available
+                            font-size: rem(12)
+                            top: rem(42)
+                            margin: rem(8) rem(0)
+                            &__title
+                                color: #9AA7BB
+                            
+                            a
+                                color: $light_primary
+                                cursor: pointer
+                                transition: color 0.2s
+                                &:hover
+                                    color: #03AEE2
+
+
+
         &__btn
             width: fit-content
 
         &__setting-btns
             display: flex
             gap: rem(12)
+
+        &__notification
+            display: flex
+            flex-direction: row
+            gap: rem(10)
+            place-items: center
+            padding: rem(16) rem(24)
+            width: 100%
+            background-color: #FFC0711A
+            border: rem(1) solid #FFCE91
+            border-radius: rem(12)
+            svg
+                flex-shrink: 0
+
+            &__text
+                line-height: rem(24)
 
     &__info
         width: rem(960)

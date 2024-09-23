@@ -123,7 +123,7 @@ export default defineComponent({
 
         const emit = (eventName: string, eventData: any) => {
             console.log(`emit событие '${eventName}' с data:`, eventData);
-        };
+        }
 
         const visiblePassword = (type: string) => {
             if (type === "password") {
@@ -140,9 +140,7 @@ export default defineComponent({
         const setUserData = (user_data: { type: string; value: string }) => {
             for (let i = 0; i < form_authorization.length; i++) {
                 if (form_authorization[i].type === user_data.type) {
-                    console.log("qwertyy");
-
-                    form_authorization[i].value = user_data.value;
+                    form_authorization[i].value = user_data.value
                 }
             }
         };

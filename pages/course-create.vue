@@ -227,7 +227,6 @@ export default defineComponent({
         }
 
         const validCheck = (field: FormField) => {
-            console.log(field)
             if(!field.value.length) {
                 field.error = 'Это поле обязательно к заполнению для авторизации'
             } else {
@@ -246,10 +245,10 @@ export default defineComponent({
             }
 
 
-            if (course_data.courseType === 2 && course_data.courseFormat === 2) {
-                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
-                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть онлайн'
-                console.log('Валидация не пройдена: Асинхронный курс не может быть онлайн')
+            if (course_data.courseType === 2 && course_data.courseFormat === 1) {
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
+                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
+                console.log('Валидация не пройдена: Асинхронный курс не может быть офлайн')
                 return false
             }
 
@@ -290,12 +289,10 @@ export default defineComponent({
                 isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
                 isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
             }
-            console.log(course_data, 'course-create')
 
             axios
                 .post('admin/v1/course', course_data)
                 .then(response => {
-                    console.log(response, 'course-create')
                     if(response.data) {
                         storeModal.$patch({
                             label: "Курс создан!",

@@ -49,6 +49,14 @@ export const useStoreCourses = defineStore('courseState', {
                     this.course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
                     this.course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
                 })
-        }
+        },
+        deleteCourse(id: number) {
+            console.log('qwerty2');
+            
+            return axios.delete(`/admin/v1/Course/${id}`).then((resp) => {
+                this.updateCourseInfo()
+                return resp;
+            });
+        },
     }
 })

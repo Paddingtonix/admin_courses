@@ -41,7 +41,6 @@ export default defineComponent({
                 storeAuth.logIn()
                 storeModal.closeModal()
                 preloader.value = false
-                console.log(course_auth_token);
 
             } else {
                 openDeleteModal();

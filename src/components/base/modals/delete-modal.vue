@@ -21,6 +21,7 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import DeleteSection from "../../ui-components/forms/delete-section.vue";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import DeleteTag from "../../ui-components/forms/delete-tag.vue";
+import deleteCourse from "../../ui-components/forms/delete-course.vue";
 
 export default defineComponent({
 	setup() {
@@ -28,8 +29,10 @@ export default defineComponent({
 		const modalData = reactive(storeModal.$state as IDeleteModal);
 
 		const deleteItem = () => {
+			console.log('qwerty');
+			
 			modalData.modalProps
-				.deleteFunction(modalData.modalProps.data.id)
+				.deleteFunction(modalData.modalProps.data.courseId)
 				.then(() => {
 					storeModal.closeModal();
 				})
@@ -46,6 +49,7 @@ export default defineComponent({
 	components: {
 		"delete-section": DeleteSection,
 		"delete-tag": DeleteTag,
+		"delete-course": deleteCourse
 	},
 });
 </script>

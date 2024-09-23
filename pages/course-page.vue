@@ -105,6 +105,7 @@
                     />
                     <TableRowCmp 
                         v-for="(row, idx) in courseStore.course_list"
+                        class="oil-course__settings__course-list__row"
                         :id="row.courseId"
                         :key="idx"
                         :name="row.title"
@@ -114,7 +115,30 @@
                         :lang="row.language.toUpperCase()"
                         :date_edit="formatDate(row.lastChangeDateTime)"
                         :end_date="formatDate(row.salesTerminationDate)"
-                    />
+                    >
+                        <template v-slot:svg>
+                            <i
+                                @click.stop="openDeleteModal(row)"
+                                class="oil-course__settings__course-list__row__svg"
+                            >
+                                <svg
+                                    width="18"
+                                    height="20"
+                                    viewBox="0 0 18 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
+                                        stroke="#FF7C7C"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </i>
+                        </template>
+                    </TableRowCmp>
                 </div>
                 <div class="oil-course__settings__pagination">
                     <PaginationCmp
@@ -131,13 +155,16 @@
 import { useRouter } from 'vue-router'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useUserRoleStore } from '~/src/stores/storeRole'
-import axios from 'axios'
+import { useStoreModal } from "~/src/stores/storeModal"
+import type {
+    IDeleteModal,
+    IDeleteTag,
+} from "~/src/ts-interface/storeModal.type"
+import type { ITags } from "~/src/ts-interface/storeTags.type"
+import { useTagsStore } from "~/src/stores/storeTags"
+
 
 export default defineComponent({
-    // props: {
-    //     id: Number,
-    //     default: null as null || Number
-    // },
 	setup() {
 		const router = useRouter()
         const courseStore = useStoreCourses()
@@ -239,9 +266,16 @@ export default defineComponent({
 			],
 		})
 
+        const modalStore = useStoreModal();
+
         const filter_frame = reactive({
             value: false as boolean
         })
+
+        const tagsStore = useTagsStore();
+
+        const tagsData = tagsStore.$state;
+
 
         const paginations_pages = ref<number>(courseStore.$state.numberOfPages ?? 1)
         const current_page = ref<number>(1)
@@ -259,14 +293,14 @@ export default defineComponent({
 
         const formatDirectionToString = (arr: string[] | null | undefined): string => {
             if (!arr || arr.length === 0) {
-                return '--'
+                return '—'
             }
             return arr.join(', ')
         }
 
         const formatDate = (date_value: string | null) => {
             if (date_value === null) {
-                return "--"
+                return "—"
             }
             const date = new Date(date_value)
             const day = String(date.getDate()).padStart(2, '0')
@@ -282,6 +316,21 @@ export default defineComponent({
 		const navigate = (url: string) => {
 			router.push(url)
 		}
+
+        const openDeleteModal = (data: any) => {
+            modalStore.$patch({
+                label: "Удаление курса",
+                activeModal: "delete-modal",
+                modalProps: {
+                    data,
+                    modalComponent: "delete-course",
+                    deleteFunction: courseStore.deleteCourse,
+                } as unknown as IDeleteTag,
+            } as unknown as IDeleteModal);
+
+            modalStore.openModal();
+        };
+
         watch(() => courseStore.$state.numberOfPages, (newValue) => {
             paginations_pages.value = newValue ?? 1
         })
@@ -290,36 +339,23 @@ export default defineComponent({
             courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
         })
 
-        const status_translation = {
+        const status_translation: Record<'InDevelopment' | 'OnModeration' | 'Published' | 'Withdrawn' | 'Archived', string> = {
             'InDevelopment': 'В разработке',
             'OnModeration': 'На модерации',
             'Published': 'Опубликован',
             'Withdrawn': 'Снят с витрины',
             'Archived': 'В архиве'
         };
-
         const translateStatus = (status: string): string => {
-            return status_translation[status]
-        };
-
-        // watch(course_list, (new_state) => {
-        //     course_list.value = new_state.value
-        // })
+            if (status in status_translation) {
+                return status_translation[status as keyof typeof status_translation]
+            }
+            return 'Неизвестный статус'
+        }
 
         onMounted(() => {
             nextTick(() => {
                 courseStore.getCourses('/admin/v1/Course')
-
-                // axios
-                //     .get<{ inDevelopment: number, onModeration: number, published: number, withdrawn: number, archieved: number }>('/admin/v1/Course/statuses')
-                //     .then((response) => {
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'В разработке')!.count = response.data.inDevelopment
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'На модерации')!.count = response.data.onModeration
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'Опубликован')!.count = response.data.published
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'Снят с витрины')!.count = response.data.withdrawn
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'В архиве')!.count = response.data.archieved
-                //         course_info.find((element: { count: number, text: string }) => element.text === 'Всего')!.count = Object.values(response.data).reduce((sum: number, value: number) => sum + value, 0)
-                //     })
             })
         })
 
@@ -336,6 +372,7 @@ export default defineComponent({
             isCurrentPage,
             updateSearchValue,
             translateStatus,
+            openDeleteModal,
             search_value,
             courseStore,
             course_info: courseStore.course_info,
@@ -388,6 +425,19 @@ export default defineComponent({
         width: rem(742)
         &__course-list
             margin-bottom: rem(24)
+            &__row 
+                position: relative
+                &:hover
+                    background: $basic_light_blue
+                    .oil-course__settings__course-list__row__svg
+                        opacity: 1
+            
+                &__svg 
+                    transition: opacity .2s ease-in
+                    opacity: 0
+                    position: absolute
+                    right: rem(16)
+                    cursor: pointer
 
         &-container
             margin-bottom: rem(16)

@@ -19,7 +19,6 @@ export const useUserRoleStore = defineStore('useRole', {
             axios.get('admin/v1/Login/Role')
                 .then(response => {
                     this.role = response.data;
-                    console.log('Хоть что-то пркдставляю из себя в этой жизни!', response.data)
                 })
                 .catch(error => {
                     console.log('Ууупс, не получил роль... кто я? :(', error)

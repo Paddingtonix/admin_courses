@@ -1,7 +1,7 @@
 export interface Direction {
     directionId: number,
-    lastChangeDateTime: string,
+    lastChangeDateTime?: string,
     localizedName: string,
-    isVisible: boolean,
-    count: number
+    isVisible?: boolean,
+    count?: number
 }
