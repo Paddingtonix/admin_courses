@@ -48,10 +48,11 @@ export const useDirectionStore = defineStore('directionStore', {
                 });
         },
         removeDirection(id: string) {
-            axios
+            return axios
                 .delete(`admin/v1/Direction/${id}`)
-                .then(() => {
+                .then((response) => {
                     this.getDirections()
+                    return response
                 })
                 .catch(error => {
                     console.error('Ууупс, ошибка при удалении :(', error);

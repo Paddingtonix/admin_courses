@@ -35,7 +35,7 @@ export default defineComponent({
 					storeModal.closeModal();
 				})
 				.catch(() => {
-					console.log("DA YOBANIY TI BLOOD");
+					console.log("Не получилось удалить");
 				});
 		};
 		return {
