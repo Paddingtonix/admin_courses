@@ -160,7 +160,8 @@
                                     </span>
                                     <div v-else class="oil-course-setting__settings__table__column__cell__no-data">
                                         <span class="oil-course-setting__settings__table__column__cell__no-data__title">Нет данных</span>
-                                        <span class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
+                                        <span v-if="course_setting.value.IsPartialAvailable" class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Суммарная стоимость всех глав, созданных во вкладке <a>Содержание</a></span>
+                                        <span v-else class="oil-course-setting__settings__table__column__cell__no-data__subtitle">Пример: 99 999</span>
                                     </div>
                                 </div>
                                 <div v-if="course_setting.value.CourseType !== 'Asynchronous'" class="oil-course-setting__settings__table__column__cell">
@@ -768,16 +769,19 @@ export default defineComponent({
 
         const inputs = reactive([
             {
-                placeholder: '99 999',
-                mask_type: 'price'
+                placeholder: '99 999 цена',
+                mask_type: 'price',
+                input_id: 'price'
             },
             {
-                placeholder: '999',
-                mask_type: 'price'
+                placeholder: '999 часы',
+                mask_type: 'price',
+                input_id: 'duration'
             },
             {
-                placeholder: '999',
-                mask_type: 'price'
+                placeholder: '999 дни',
+                mask_type: 'price',
+                input_id: 'workload'
             }
         ])
 
@@ -1292,6 +1296,13 @@ export default defineComponent({
                             font-weight: 400
                             line-height: 16px
                             margin: 0
+                            a
+                                color: $light_primary
+                                cursor: pointer
+                                transition: color 0.2s
+                                &:hover
+                                    color: #03AEE2
+
 
                     &__direction
                         display: flex
