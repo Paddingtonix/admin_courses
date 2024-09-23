@@ -14,7 +14,8 @@
                     <SearchCmp
                         class="oil-direction-page__settings__search"
                         :label="'Поиск'"
-                        v-model="search_query"
+                        :model-value="search_query"
+                        @change-value="changeSearchValue"
                     />
                     <BtnCmp
                         class="oil-direction-page__settings__btn"
@@ -132,6 +133,11 @@ export default defineComponent({
             active_checkbox[id].isActive = active;
         };
 
+        const changeSearchValue = (text: string) => {
+            search_query.value = text;
+            direction_store.getDirections(text);
+        };
+
         const onSort = ({ field_key }) => {
             const direction = sort_direction.value === 'asc' ? 'desc' : 'asc';
             console.log(`Сортировка по ${field_key} в порядке ${direction}`);
@@ -173,14 +179,6 @@ export default defineComponent({
 
             return filtered;
         })
-
-        const directions_data = [
-            { localizedName: "Frontend Development", lastChangeDateTime: new Date(), isVisible: true, count: 9,  directionId: 1},
-            { localizedName: "Backend Development", lastChangeDateTime: new Date(), isVisible: true, count: 8, directionId: 2},
-            { localizedName: "Data Science", lastChangeDateTime: new Date(), isVisible: false, count: 12, directionId: 3},
-            { localizedName: "Mobile Development", lastChangeDateTime: new Date(), isVisible: true, count: 5, directionId: 4},
-            { localizedName: "Cybersecurity", lastChangeDateTime: new Date(), isVisible: false, count: 7, directionId: 5},
-        ];
 
         const sendDirection = (data?: IDirection, edit?: boolean) => {
             modalStore.$patch({
@@ -229,6 +227,7 @@ export default defineComponent({
             sendDirection,
             visible_state,
             toggleVisible,
+            changeSearchValue,
             onSort
         }
     }
