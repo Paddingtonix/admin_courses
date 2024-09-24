@@ -177,7 +177,7 @@ const openFilter = (state: boolean) => {
     &__body-wrapper
         position: fixed
         background-color: $basic_white
-        top: -50%
+        top: -40%
         transform: translateY(60%)
         left: 75%
         width: auto
