@@ -48,7 +48,9 @@
 						key
 					}}</span>
 					<CheckboxCmp
-						v-for="(checkbox, idx) in filter_values[index][key]"
+						v-for="(checkbox, idx) in filter_values.value[index][
+							key
+						]"
 						:key="idx"
 						:text="checkbox.name"
 						:id="checkbox.id"
@@ -97,33 +99,36 @@ const mapFilters = (key: string) =>
 			: { ...filter, active: false, isRadio: true }
 	);
 
-const mappedFilters = filterKeys.map((key) => ({
-	[key]: mapFilters(key),
-})) as unknown as {
-	[key: string]: {
-		active: boolean;
-		id: string | number;
-		name: string;
-		isRadio?: boolean;
+const getMappedFilters = () =>
+	filterKeys.map((key) => ({
+		[key]: mapFilters(key),
+	})) as unknown as {
+		[key: string]: {
+			active: boolean;
+			id: string | number;
+			name: string;
+			isRadio?: boolean;
+		}[];
 	}[];
-}[];
 
 onMounted(() => {
-	console.log(mappedFilters);
+	console.log(getMappedFilters());
 });
 
-const filter_values = reactive(mappedFilters);
+const initialFilter_values = getMappedFilters();
+
+const filter_values = reactive({ value: initialFilter_values });
 
 const setActiveFilter = (index: number, key: string, id: number) => {
-	if (mappedFilters !== undefined) {
-		if (filter_values[index][key][id].isRadio) {
-			filter_values[index][key].forEach((item) => {
+	if (filter_values !== undefined) {
+		if (filter_values.value[index][key][id].isRadio) {
+			filter_values.value[index][key].forEach((item) => {
 				item.active = false;
 			});
-			filter_values[index][key][id].active = true;
+			filter_values.value[index][key][id].active = true;
 		} else {
-			filter_values[index][key]![id].active =
-				!filter_values[index][key]![id].active;
+			filter_values.value[index][key]![id].active =
+				!filter_values.value[index][key]![id].active;
 		}
 	}
 };
@@ -133,7 +138,7 @@ const sendFilters = () => {
 		const result: { [key: string]: any } = {};
 
 		for (const key in filterKeys) {
-			result[filterKeys[key]] = Object.values(filter_values[key])
+			result[filterKeys[key]] = Object.values(filter_values.value[key])
 				.map((item) =>
 					item.filter((filterItem) => filterItem.active)
 				)[0]
@@ -148,7 +153,7 @@ const sendFilters = () => {
 
 const cancelFilters = () => {
 	emit("cancel-filters", []);
-	openFilter(false);
+	filter_values.value = getMappedFilters();
 };
 
 const openFilter = (state: boolean) => {

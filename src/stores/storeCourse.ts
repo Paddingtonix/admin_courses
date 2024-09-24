@@ -2,6 +2,20 @@ import { defineStore } from "pinia";
 import type { CourseList } from "~/src/ts-interface/course-list";
 import axios from "axios";
 
+enum langNames {
+	"ru" = "Русский",
+	"en" = "Аглийский",
+	"test" = "Тестовский",
+}
+
+enum statusesNames {
+	"InDevelopment" = "В разработке",
+	"OnModeration" = "На модерации",
+	"Published" = "Опубликован",
+	"Withdrawn" = "Снаят с витрины",
+	"Archived" = "Архивирован",
+}
+
 export const useStoreCourses = defineStore("courseState", {
 	state: () => ({
 		// CardInfo data
@@ -50,12 +64,14 @@ export const useStoreCourses = defineStore("courseState", {
 					this.filters = {
 						Направления: data.directions,
 						Статус: data.statuses.map((item, id) => ({
-							name: item,
-							id,
+							//@ts-ignore
+							name: statusesNames[item],
+							id: item,
 						})),
-						Язык: data.languages.map((item, id) => ({
-							name: item,
-							id,
+						Язык: data.languages.map((item) => ({
+							//@ts-ignore
+							name: `${langNames[item]}(${item.toUpperCase()})`,
+							id: item,
 						})),
 					};
 					console.log(this.filters);
