@@ -1,39 +1,51 @@
 <template>
     <div class="oil-direction">
         <span class="oil-direction__desc">Направление должно быть переведено на обязательные языки (помечены звёздочкой)</span>
-        <LangSwitcherCmp 
+        <LangSwitcherCmp
             class="oil-direction__tabs"
             :active="lang"
             @change-lang="setLang"
         />
-        <InputCmp 
+        <InputCmp
             class="oil-direction__input"
-           :label="`Название направления (${lang.toLocaleUpperCase()})*`" 
+           :label="`Название направления (${lang.toLocaleUpperCase()})*`"
+           :modelValue="data.localizedName"
            @set_value="setDirectionName"
         />
-        <CheckboxCmp 
+        <CheckboxCmp
             class="oil-direction__checkbox"
             :text="'Отображать на сайте'"
             :active="visible_direction"
             @set_value="setCheckbox"
         />
         <div class="oil-direction__btns">
-            <BtnCmp 
+            <BtnCmp
                 :text="'Отмена'"
                 :background_type="'_secondary'"
+                @click="closeModal"
             />
-            <BtnCmp 
+            <BtnCmp
+                v-if="!modal_data.modalProps.edit"
                 :text="'Добавить'"
-                @click="setDirectionServer(input_value)"
+                @click="sendDirection"
+            />
+            <BtnCmp
+                v-if="modal_data.modalProps.edit"
+                :text="'Сохранить'"
+                @click="patchDirection"
             />
         </div>
     </div>
 </template>
-<script type="ts">
+<script lang="ts">
 import { defineComponent } from 'vue'
+import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
+import type { IDirection } from "~/src/ts-interface/direction";
 
 export default defineComponent({
+    components: {},
+
     setup() {
         const lang = ref('ru')
 
@@ -41,7 +53,28 @@ export default defineComponent({
 
         const input_value = ref('')
 
-        const setLang = (active_lang) => {            
+        const store_modal = useStoreModal();
+        const store_direction = useDirectionStore();
+
+        const modal_data = store_modal.$state;
+
+        const initialDirection: IDirection = {
+            directionId: 0,
+            lastChangeDateTime: "",
+            localizedName: "",
+            isVisible: false,
+            count: 0
+        }
+
+        const data: IDirection = reactive(
+            modal_data.modalProps?.data || initialDirection
+        );
+
+        const closeModal = () => {
+            store_modal.closeModal();
+        };
+
+        const setLang = (active_lang) => {
             lang.value = active_lang
         }
 
@@ -53,44 +86,65 @@ export default defineComponent({
             input_value.value = val.value
         }
 
-        const setDirectionServer = () => {
-            useDirectionStore().createDirection({
+        const sendDirection = () => {
+            const sendData = {
                 isVisible: visible_direction.value,
                 localizations: {
-                    en: '',
+                    en: input_value.value,
                     ru: input_value.value,
+                    // fr: input_value.value
                 }
-            })
+            }
+
+            store_direction.createDirection(sendData);
+            store_modal.closeModal();
         }
 
+        const patchDirection = (data: IDirection) => {
+            const sendData = {
+                isVisible: visible_direction.value,
+                localizations: {
+                    en: input_value.value,
+                    ru: input_value.value,
+                    // fr: input_value.value
+                }
+            }
+
+            store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
+            store_modal.closeModal();
+        }
 
         return {
             lang,
             visible_direction,
+            modal_data,
+            data,
             setLang,
             setCheckbox,
             setDirectionName,
-            setDirectionServer
+            sendDirection,
+            patchDirection,
+            closeModal
         }
     }
 })
 </script>
 <style lang="sass">
-.oil-direction 
-    &__desc 
+.oil-direction
+    &__desc
         display: inline-flex
         margin-bottom: rem(24)
 
-    &__tabs 
+    &__tabs
         margin-bottom: rem(16)
 
-    &__input 
+    &__input
         margin-bottom: rem(24)
 
     &__checkbox
         margin-bottom: rem(32)
-    
-    &__btns 
+
+    &__btns
         @include flex_start()
         gap: rem(16)
 

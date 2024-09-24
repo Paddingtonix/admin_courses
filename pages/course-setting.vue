@@ -366,7 +366,24 @@
             </template>
             <template v-else-if="active_tab === 3">
                 <div class="oil-course-setting__content">
-                    <div class="oil-course-setting__content__edu">
+                    <div v-if="storeStateCourse.status === 'Archived'" class="oil-course-setting__content__info__attention">
+                        <i class="oil-course-setting__content__info__attention__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+                                <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </i>
+                        <p class="oil-course-setting__content__info__attention__text">Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF.</p>
+                        <BtnCmp
+                            :text="'Скачать PDF'"
+                            @click=""
+                            :background_type="'_primary'"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 13V14.2C19 15.8802 19 16.7202 18.673 17.362C18.3854 17.9265 17.9265 18.3854 17.362 18.673C16.7202 19 15.8802 19 14.2 19H5.8C4.11984 19 3.27976 19 2.63803 18.673C2.07354 18.3854 1.6146 17.9265 1.32698 17.362C1 16.7202 1 15.8802 1 14.2V13M15 8L10 13M10 13L5 8M10 13V1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </BtnCmp>
+                    </div>
+                    <div v-else class="oil-course-setting__content__edu">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -390,6 +407,7 @@
                                      @click="$router.push(`course-content/${content_inner.value.initialPage.id}?=${course_setting.value.Title}&=text`)"
                                 >{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
                                 <CourseArchitectureIcons 
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialPage.id"
                                     :delete_type="'Page'"
@@ -397,8 +415,8 @@
                                 />
                             </template>
                             <transition name="fade">
-                                <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.initialPage"
+                                <CourseArchitectureAddBlock
+                                    v-if="!content_inner.value.initialPage && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="!content_inner.value.initialPage && !content_inner.value.initialTesting ? 'вводную страницу и входной тест' : 'вводную страницу'"
                                     :request_type="{type:'Page', query: 'courseId'}"
@@ -418,6 +436,7 @@
                             <template v-if="content_inner.value.initialTesting">
                                 <span  @click="$router.push(`course-content/${content_inner.value.initialTesting.id}?=${course_setting.value.Title}&=test`)" :style="{color: '#176DC1'}">{{ content_inner.value.initialTesting.title === null ? 'Вводная страница' : content_inner.value.initialTesting.title }}</span>
                                 <CourseArchitectureIcons 
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :arrow="false"
                                     :delete_id="content_inner.value.initialTesting.id"
                                     :delete_type="'Testing'"
@@ -426,7 +445,7 @@
                             </template>
                             <transition name="fade">
                                 <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.initialTesting && content_inner.value.initialPage"
+                                    v-if="!content_inner.value.initialTesting && content_inner.value.initialPage && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'входной тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Entrance'}"
@@ -456,6 +475,7 @@
                                 />
                                 <span v-else>{{ part.title === null ? 'Вводная страница' : part.title }}</span>
                                 <CourseArchitectureIcons 
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :delete_id="part.id"
                                     :delete_type="'Part'"
                                     @delete-trigger="reloadContent"
@@ -464,12 +484,12 @@
                                     :arrow="{up: !idx ? false: true, down: idx === content_inner.value.parts.length - 1 ? false : true}"
                                 />
                                 <transition name="fade">
-                                    <CourseArchitectureAddBlock 
+                                    <CourseArchitectureAddBlock
                                         :btn_text="'часть'"
                                         :request_type="{type:'Part', query: 'courseId'}"
                                         :block_id="Number($route.query.course) || undefined"
                                         @request-trigger="reloadContent"
-                                        v-if="idx === content_inner.value.parts.length - 1"
+                                        v-if="idx === content_inner.value.parts.length - 1 && storeStateCourse.status !== 'Archived'"
                                     />     
                                 </transition>
                             </div>
@@ -489,6 +509,7 @@
                                     />
                                     <span v-else>{{ chapter.title === null ? 'Вводная страница' : chapter.title }}</span>
                                     <CourseArchitectureIcons 
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
                                         @move-trigger="moveToStructure($event, `/admin/v1/Chapter/${chapter.id}/move`)"
@@ -502,7 +523,7 @@
                                             :request_type="{type:'Chapter', query: 'partId'}"
                                             :block_id="part.id"
                                             @request-trigger="reloadContent"
-                                            v-if="idx === part.chapters.length - 1"
+                                            v-if="idx === part.chapters.length - 1 && storeStateCourse.status !== 'Archived'"
                                         />     
                                     </transition>
                                 </div>
@@ -524,6 +545,7 @@
                                     />
                                     <span :style="{color: '#176DC1'}" v-else @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=text`)">{{ section.title === null ? 'Вводная страница' : section.title }}</span>
                                     <CourseArchitectureIcons 
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="section.id"
                                         :delete_type="'Section'"
                                         @delete-trigger="reloadContent"
@@ -537,7 +559,7 @@
                                             :request_type="{type:'Section', query: 'chapterId'}"
                                             :block_id="chapter.id"
                                             @request-trigger="reloadContent"
-                                            v-if="idx === chapter.sections.length - 1"
+                                            v-if="idx === chapter.sections.length - 1 && storeStateCourse.status !== 'Archived'"
                                         />     
                                     </transition>
                                 </div>
@@ -556,6 +578,7 @@
                                     />
                                     <span :style="{color: '#176DC1'}"  @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=test`)" v-else>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
                                     <CourseArchitectureIcons 
+                                        v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="chapter.id"
                                         :delete_type="'Chapter'"
                                         @delete-trigger="reloadContent"
@@ -579,6 +602,7 @@
                                     :style="{color: '#176DC1'}"
                                 >{{ !content_inner.value.finalTesting.title ? 'Итоговый тест' : content_inner.value.finalTesting.title }}</span>
                                 <CourseArchitectureIcons 
+                                    v-if="storeStateCourse.status !== 'Archived'"
                                     :delete_id="content_inner.value.finalTesting.id"
                                     :delete_type="'Testing'"
                                     @delete-trigger="reloadContent"
@@ -587,7 +611,7 @@
                             </template>
                             <transition name="fade">
                                 <CourseArchitectureAddBlock 
-                                    v-if="!content_inner.value.finalTesting"
+                                    v-if="!content_inner.value.finalTesting && storeStateCourse.status !== 'Archived'"
                                     :style="{top: -15 + 'px'}"
                                     :btn_text="'итоговый тест'"
                                     :request_type="{type: 'Testing', query: 'courseId', testing_type: 'Final'}"
@@ -1462,6 +1486,30 @@ export default defineComponent({
             margin-bottom: rem(8) 
 
     &__content
+        &__info
+            &__attention
+                padding: rem(16) rem(24)
+                margin-bottom: rem(32)
+
+                border: 1px solid $basic-primary
+                background-color: $disabled_basic
+                max-width: rem(972)
+                @include flex_center()
+                gap: rem(10)
+                border-radius: rem(12)
+
+                &__icon
+                    padding: rem(12)
+
+                    border-radius: 50%
+                    background-color: #176DC10D
+                    @include flex_center()
+
+                &__text
+                    min-width: rem(640)
+                    font-size: rem(16)
+                    line-height: 150%
+
         &__edu 
             padding: rem(16) rem(24)
             @include flex_start()

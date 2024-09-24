@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { Direction } from '~/src/ts-interface/direction';
+import type { IDirection } from '~/src/ts-interface/direction';
 import { DirectionData } from "~/src/ts-interface/direction-data";
 
 export const useDirectionStore = defineStore('directionStore', {
     state: () => ({
-        directions: [] as Direction[],
+        directions: [] as IDirection[],
     }),
     actions: {
         getDirections() {
@@ -13,8 +13,8 @@ export const useDirectionStore = defineStore('directionStore', {
                 .get('admin/v1/Direction')
                 .then(response => {
                     this.directions = response.data;
-                    
-                    console.log('Направления добавились !)')
+
+                    console.log('Направления добавились !)', response.data)
                 })
                 .catch(error => {
                     console.error('Ууупс, ошибка при загрузке :(', error);
@@ -23,9 +23,9 @@ export const useDirectionStore = defineStore('directionStore', {
         addDirection(direction: Direction) {
             this.directions.push(direction);
         },
-        createDirection(data: DirectionData) {    
+        createDirection(data: DirectionData) {
             console.log(data);
-                    
+
             axios
                 .post('admin/v1/Direction', data)
                 .then(response => {
@@ -36,11 +36,23 @@ export const useDirectionStore = defineStore('directionStore', {
                     console.error('Ууупс, ошибка при добавлении :(', error);
                 });
         },
-        removeDirection(id: string) {
+        changeDirection(id: string, data: DirectionData) {
             axios
+                .patch(`admin/v1/Direction/${id}`, data)
+                .then(response => {
+                    this.getDirections();
+                    console.log('Успешно изменил, хехе :)', response.data);
+                })
+                .catch(error => {
+                    console.error('Ууупс, ошибка при изменении :(', error);
+                });
+        },
+        removeDirection(id: string) {
+            return axios
                 .delete(`admin/v1/Direction/${id}`)
-                .then(() => {
+                .then((response) => {
                     this.getDirections()
+                    return response
                 })
                 .catch(error => {
                     console.error('Ууупс, ошибка при удалении :(', error);
