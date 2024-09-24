@@ -130,6 +130,8 @@ export default defineComponent({
         });
 
         const toggleVisible = ({ id, active }: { id: "show_only_visible" | "show_only_invisible"; active: boolean }) => {
+            console.log("Смотрим что передаем:", id, active);
+
             active_checkbox[id].isActive = active;
         };
 
@@ -146,7 +148,7 @@ export default defineComponent({
         };
 
         const filtered_by_visibility = computed(() => {
-            console.log('direction_store.directions:', direction_store.directions);
+            console.log('Активные чекбоксы:', active_checkbox);
 
             if (active_checkbox.show_only_visible.isActive && active_checkbox.show_only_invisible.isActive) {
                 return direction_store.directions;
