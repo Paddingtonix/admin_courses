@@ -1,6 +1,6 @@
 <template>
 	<div class="oil" v-if="!preloader.value">
-		<Sidebar />
+		<Sidebar v-if="storeAuth.$state.isAuth"/>
 		<NuxtPage />
 		<ModalCmp v-if="storeModal.$state.isOpen" />
 	</div>
