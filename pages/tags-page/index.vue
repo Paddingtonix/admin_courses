@@ -230,7 +230,7 @@ const modalStore = useStoreModal();
 
 const openModalAddTag = (tagForm?: ITags, edit?: boolean) => {
 	modalStore.$patch({
-		label: !edit ? "Добавить метку" : "Редактирование метки",
+		label: !edit ? "Добавление метки" : "Редактирование метки",
 		activeModal: "form-tags",
 		modalProps: {
 			headers: tagsData.headings,
@@ -352,6 +352,8 @@ const list = [
       &:nth-child(2)
           flex: 1
           order: -1
+          span
+            color: $basic_text
 
       &:nth-child(3)
           flex: 3
