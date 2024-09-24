@@ -162,7 +162,7 @@ const openFilter = (state: boolean) => {
 </script>
 <style lang="sass">
 .oil-filter
-    z-index: 999
+    z-index: 1
     &__button
         padding: rem(8) rem(16)
         border: rem(1) solid $basic_primary
