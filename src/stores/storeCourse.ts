@@ -56,13 +56,12 @@ export const useStoreCourses = defineStore("courseState", {
 		getFiters() {
 			axios
 				.get<{
-					directions: { id: number; name: string }[];
 					statuses: string[];
 					languages: string[];
+					directions: { id: number; name: string }[];
 				}>("/admin/v1/Course/filters")
 				.then(({ data }) => {
 					this.filters = {
-						Направления: data.directions,
 						Статус: data.statuses.map((item, id) => ({
 							//@ts-ignore
 							name: statusesNames[item],
@@ -73,6 +72,7 @@ export const useStoreCourses = defineStore("courseState", {
 							name: `${langNames[item]}(${item.toUpperCase()})`,
 							id: item,
 						})),
+						Направления: data.directions,
 					};
 					console.log(this.filters);
 				});

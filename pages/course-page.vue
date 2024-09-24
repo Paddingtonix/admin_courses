@@ -66,6 +66,7 @@
 							@change-value="updateSearchValue($event)"
 						/>
 						<FilterCmp
+							@send-fiters="setFilters"
 							@click="openFilter(true)"
 							:filters="courseStore.filters"
 						/>
@@ -246,11 +247,61 @@ export default defineComponent({
 			}
 		);
 
+		const filters = reactive({
+			statuses: "",
+			languageIds: "",
+			directionIds: "",
+		});
+
 		watch(current_page, () => {
 			courseStore.getCourses(
 				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
 			);
 		});
+
+		watch(filters, () => {
+			const filter_string =
+				`${filters.statuses}${filters.languageIds}${filters.directionIds}`.trim();
+			if (filter_string.length) {
+				courseStore.getCourses(
+					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}${filter_string}`
+				);
+			} else {
+				courseStore.getCourses(
+					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
+				);
+			}
+		});
+
+		const setFilters = (value: {
+			Направления?: number[];
+			Статус?: string[];
+			Язык?: string[];
+		}) => {
+			filters.directionIds = !value?.Направления
+				? ""
+				: (() => {
+						return value.Направления
+							.map((item) => `&directionIds=${item}`)
+							.join("");
+				  })();
+
+			filters.languageIds = !value.Язык
+				? ""
+				: (() => {
+						return value.Язык
+							.map((item) => `&languageIds=${item}`)
+							.join("");
+				  })();
+
+			filters.statuses = !value.Статус
+				? ""
+				: (() => {
+						return value.Статус
+							.map((item) => `&statuses=${item}`)
+							.join("");
+				  })();
+		};
 
 		const status_translation: Record<
 			| "InDevelopment"
@@ -298,6 +349,7 @@ export default defineComponent({
 			openDeleteModal,
 			search_value,
 			courseStore,
+			setFilters,
 			course_info: courseStore.course_info,
 		};
 	},
