@@ -1,384 +1,307 @@
 <template>
-    <section class="oil-container oil-course">
-        <div class="oil-course__info oil-page">
-            <div v-if="user_role_store.role === 'Author'" class="oil-course__title">Мои курсы</div>
-            <div v-else class="oil-course__title">Курсы</div>
-            <div class="oil-course__info__card">
-                <CardInfo
-                    v-for="(card, idx) in course_info"
-                    :key="idx"
-                    :count="card.count"
-                    :text="card.text"
-                />
-            </div>
-            <template v-if="!courseStore.course_list.length && !search_value.length">
-                <div class="oil-course__info__attention">
-                    <i class="oil-course__info__attention__icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                            <path d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z" stroke="#176DC1" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </i>
-                    <p v-if="user_role_store.role === 'Author'" class="oil-course__info__attention__text">На данный момент у вас нет ни одного созданного курса. Нажмите на кнопку "Создать курс", чтобы начать и поделиться своими знаниями с другими!</p>
-                    <p v-else class="oil-course__info__attention__text">На данный момент в системе нет ни одного курса. Как только первые курсы будут созданы, здесь появится таблица, которая позволит управлять их параметрами и содержанием.</p>
-                </div>
-                <btnCmp
-                    :text="'Создать курс'"
-                    class="oil-course__info__btn"
-                    @click="navigate('/course-create')"
-                />
-            </template>
-            <template v-else>
-                <div class="oil-course__settings-container">
-                    <div class="oil-course__settings">
-                        <SearchCmp
-                            :label="'Поиск'"
-                            @change-value="updateSearchValue($event)"
-                        />
-                        <FilterCmp
-                            @click="openFilter(true)"
-                        />
-                    </div>
-                    <div class="oil-course__create">
-                        <BtnCmp
-                            :text="'Создать курс'"
-                            @click="navigate('/course-create')"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </BtnCmp>
-                    </div>
-                    <div class="oil-course__filter" v-if="filter_frame.value">
-                        <svg @click="openFilter(false)" class="oil-course__filter__close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M15 5L5 15M5 5L15 15" stroke="#808E9D" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <div class="oil-course__filter__frame">
-                            <span class="oil-course__filter__frame__title">Статус</span>
-                            <CheckboxCmp
-                                v-for="(checkbox, idx) in filter_course.value.slice(0, 6)"
-                                :key="idx"
-                                :text="checkbox.text"
-                                :id="checkbox.id"
-                                :active="checkbox.active"
-                            />
-                        </div>
-                        <div class="oil-course__filter__frame">
-                            <span class="oil-course__filter__frame__title">Язык</span>
-                            <CheckboxCmp
-                                v-for="(checkbox, idx) in filter_course.value.slice(7, 10)"
-                                :key="idx"
-                                :text="checkbox.text"
-                                :id="checkbox.id"
-                                :active="checkbox.active"
-                            />
-                        </div>
-                        <div class="oil-course__filter__frame">
-                            <span class="oil-course__filter__frame__title">Направления</span>
-                            <CheckboxCmp
-                                v-for="(checkbox, idx) in filter_course.value.slice(11)"
-                                :key="idx"
-                                :text="checkbox.text"
-                                :id="checkbox.id"
-                                :active="checkbox.active"
-                            />
-                        </div>
-                        <div class="oil-course__filter__btns">
-                            <BtnCmp
-                                :background_type="'_secondary'"
-                                :text="'Сбросить'"
-                            />
-                            <BtnCmp
-                                :text="'Применить'"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div class="oil-course__settings__course-list">
-                    <TableHeadCmp
-                        :name="'Название'"
-                        :status="'Статус'"
-                        :authors="'Авторы'"
-                        :direction="'Направление'"
-                        :lang="'Язык'"
-                        :date_edit="'Дата посл. ред.'"
-                        :end_date="'Снятие с витрины'"
-                    />
-                    <TableRowCmp 
-                        v-for="(row, idx) in courseStore.course_list"
-                        class="oil-course__settings__course-list__row"
-                        :id="row.courseId"
-                        :key="idx"
-                        :name="row.title"
-                        :status="translateStatus(row.status)"
-                        :authors="row.authorEmails[0]"
-                        :direction="formatDirectionToString(row.directions)"
-                        :lang="row.language.toUpperCase()"
-                        :date_edit="formatDate(row.lastChangeDateTime)"
-                        :end_date="formatDate(row.salesTerminationDate)"
-                    >
-                        <template v-slot:svg>
-                            <i
-                                @click.stop="openDeleteModal(row)"
-                                class="oil-course__settings__course-list__row__svg"
-                            >
-                                <svg
-                                    width="18"
-                                    height="20"
-                                    viewBox="0 0 18 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
-                                        stroke="#FF7C7C"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-                            </i>
-                        </template>
-                    </TableRowCmp>
-                </div>
-                <div class="oil-course__settings__pagination">
-                    <PaginationCmp
-                        :pages_count="paginations_pages!"
-                        :currentPage="current_page"
-                        @change-page="isCurrentPage"
-                    />
-                </div>
-            </template>
-        </div>
-    </section>
+	<section class="oil-container oil-course">
+		<div class="oil-course__info oil-page">
+			<div
+				v-if="user_role_store.role === 'Author'"
+				class="oil-course__title"
+			>
+				Мои курсы
+			</div>
+			<div v-else class="oil-course__title">Курсы</div>
+			<div class="oil-course__info__card">
+				<CardInfo
+					v-for="(card, idx) in course_info"
+					:key="idx"
+					:count="card.count"
+					:text="card.text"
+				/>
+			</div>
+			<template
+				v-if="!courseStore.course_list.length && !search_value.length"
+			>
+				<div class="oil-course__info__attention">
+					<i class="oil-course__info__attention__icon">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="40"
+							height="40"
+							viewBox="0 0 40 40"
+							fill="none"
+						>
+							<path
+								d="M20.0007 26.6673V20.0007M20.0007 13.334H20.0173M36.6673 20.0007C36.6673 29.2054 29.2054 36.6673 20.0007 36.6673C10.7959 36.6673 3.33398 29.2054 3.33398 20.0007C3.33398 10.7959 10.7959 3.33398 20.0007 3.33398C29.2054 3.33398 36.6673 10.7959 36.6673 20.0007Z"
+								stroke="#176DC1"
+								stroke-width="3.33"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</i>
+					<p
+						v-if="user_role_store.role === 'Author'"
+						class="oil-course__info__attention__text"
+					>
+						На данный момент у вас нет ни одного созданного курса.
+						Нажмите на кнопку "Создать курс", чтобы начать и
+						поделиться своими знаниями с другими!
+					</p>
+					<p v-else class="oil-course__info__attention__text">
+						На данный момент в системе нет ни одного курса. Как
+						только первые курсы будут созданы, здесь появится
+						таблица, которая позволит управлять их параметрами и
+						содержанием.
+					</p>
+				</div>
+				<btnCmp
+					:text="'Создать курс'"
+					class="oil-course__info__btn"
+					@click="navigate('/course-create')"
+				/>
+			</template>
+			<template v-else>
+				<div class="oil-course__settings-container">
+					<div class="oil-course__settings">
+						<SearchCmp
+							:label="'Поиск'"
+							@change-value="updateSearchValue($event)"
+						/>
+						<FilterCmp
+							@click="openFilter(true)"
+							:filters="courseStore.filters"
+						/>
+					</div>
+					<div class="oil-course__create">
+						<BtnCmp
+							:text="'Создать курс'"
+							@click="navigate('/course-create')"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+							>
+								<path
+									d="M12 5V19M5 12H19"
+									stroke="white"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+							</svg>
+						</BtnCmp>
+					</div>
+				</div>
+				<div class="oil-course__settings__course-list">
+					<TableHeadCmp
+						:name="'Название'"
+						:status="'Статус'"
+						:authors="'Авторы'"
+						:direction="'Направление'"
+						:lang="'Язык'"
+						:date_edit="'Дата посл. ред.'"
+						:end_date="'Снятие с витрины'"
+					/>
+					<TableRowCmp
+						v-for="(row, idx) in courseStore.course_list"
+						class="oil-course__settings__course-list__row"
+						:id="row.courseId"
+						:key="idx"
+						:name="row.title"
+						:status="translateStatus(row.status)"
+						:authors="row.authorEmails[0]"
+						:direction="formatDirectionToString(row.directions)"
+						:lang="row.language.toUpperCase()"
+						:date_edit="formatDate(row.lastChangeDateTime)"
+						:end_date="formatDate(row.salesTerminationDate)"
+					>
+						<template v-slot:svg>
+							<i
+								@click.stop="openDeleteModal(row)"
+								class="oil-course__settings__course-list__row__svg"
+							>
+								<svg
+									width="18"
+									height="20"
+									viewBox="0 0 18 20"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
+										stroke="#FF7C7C"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									/>
+								</svg>
+							</i>
+						</template>
+					</TableRowCmp>
+				</div>
+				<div class="oil-course__settings__pagination">
+					<PaginationCmp
+						:pages_count="paginations_pages!"
+						:currentPage="current_page"
+						@change-page="isCurrentPage"
+					/>
+				</div>
+			</template>
+		</div>
+	</section>
 </template>
 <script lang="ts">
-import { useRouter } from 'vue-router'
-import { useStoreCourses } from '~/src/stores/storeCourse'
-import { useUserRoleStore } from '~/src/stores/storeRole'
-import { useStoreModal } from "~/src/stores/storeModal"
+import { useRouter } from "vue-router";
+import { useStoreCourses } from "~/src/stores/storeCourse";
+import { useUserRoleStore } from "~/src/stores/storeRole";
+import { useStoreModal } from "~/src/stores/storeModal";
 import type {
-    IDeleteModal,
-    IDeleteTag,
-} from "~/src/ts-interface/storeModal.type"
-import type { ITags } from "~/src/ts-interface/storeTags.type"
-import { useTagsStore } from "~/src/stores/storeTags"
-
+	IDeleteModal,
+	IDeleteTag,
+} from "~/src/ts-interface/storeModal.type";
+import { useTagsStore } from "~/src/stores/storeTags";
 
 export default defineComponent({
 	setup() {
-		const router = useRouter()
-        const courseStore = useStoreCourses()
+		const router = useRouter();
+		const courseStore = useStoreCourses();
 
-        const user_role_store = useUserRoleStore()
+		const user_role_store = useUserRoleStore();
 
-		const filter_course = reactive({
-			value: [
-				{
-					text: "Все",
-					id: "all_status",
-					active: false,
-				},
-				{
-					text: "В разработке",
-					id: "in developing",
-					active: false,
-				},
-				{
-					text: "На модерации",
-					id: "on_moderation",
-					active: false,
-				},
-				{
-					text: "Опубликован",
-					id: "public",
-					active: false,
-				},
-				{
-					text: "Снят с витрины",
-					id: "removed",
-					active: false,
-				},
-				{
-					text: "В архиве",
-					id: "archive",
-					active: false,
-				},
-				{
-					text: "Все",
-					id: "all_lang",
-					active: false,
-				},
-				{
-					text: "Русский",
-					id: "russian",
-					active: false,
-				},
-				{
-					text: "Английский",
-					id: "english",
-					active: false,
-				},
-				{
-					text: "Французский",
-					id: "french",
-					active: false,
-				},
-				{
-					text: "Все",
-					id: "all_direction",
-					active: false,
-				},
-				{
-					text: "Геология",
-					id: "geology",
-					active: false,
-				},
-				{
-					text: "Разработка",
-					id: "develop",
-					active: false,
-				},
-				{
-					text: "Бурение",
-					id: "drilling",
-					active: false,
-				},
-				{
-					text: "Русский",
-					id: "russian",
-					active: false,
-				},
-				{
-					text: "Технология добычи",
-					id: "mining",
-					active: false,
-				},
-				{
-					text: "Шельф",
-					id: "shelf",
-					active: false,
-				},
-				{
-					text: "Другое",
-					id: "other",
-					active: false,
-				},
-			],
-		})
+		const modalStore = useStoreModal();
 
-        const modalStore = useStoreModal();
+		const filter_frame = reactive({
+			value: false as boolean,
+		});
 
-        const filter_frame = reactive({
-            value: false as boolean
-        })
+		const tagsStore = useTagsStore();
 
-        const tagsStore = useTagsStore();
+		const tagsData = tagsStore.$state;
 
-        const tagsData = tagsStore.$state;
+		const paginations_pages = ref<number>(
+			courseStore.$state.numberOfPages ?? 1
+		);
+		const current_page = ref<number>(1);
 
+		const search_value = ref("");
 
-        const paginations_pages = ref<number>(courseStore.$state.numberOfPages ?? 1)
-        const current_page = ref<number>(1)
+		const isCurrentPage = (page: number) => {
+			current_page.value = page;
+		};
 
-        const search_value = ref("")
+		const updateSearchValue = (value = "") => {
+			search_value.value = value;
+			courseStore.getCourses(
+				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
+			);
+		};
 
-        const isCurrentPage = (page: number) => {
-            current_page.value = page
-        }
-        
-        const updateSearchValue = (value = '') => {            
-            search_value.value = value
-            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
-        }
+		const formatDirectionToString = (
+			arr: string[] | null | undefined
+		): string => {
+			if (!arr || arr.length === 0) {
+				return "—";
+			}
+			return arr.join(", ");
+		};
 
-        const formatDirectionToString = (arr: string[] | null | undefined): string => {
-            if (!arr || arr.length === 0) {
-                return '—'
-            }
-            return arr.join(', ')
-        }
+		const formatDate = (date_value: string | null) => {
+			if (date_value === null) {
+				return "—";
+			}
+			const date = new Date(date_value);
+			const day = String(date.getDate()).padStart(2, "0");
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const year = date.getFullYear();
+			return `${day}.${month}.${year}`;
+		};
 
-        const formatDate = (date_value: string | null) => {
-            if (date_value === null) {
-                return "—"
-            }
-            const date = new Date(date_value)
-            const day = String(date.getDate()).padStart(2, '0')
-            const month = String(date.getMonth() + 1).padStart(2, '0')
-            const year = date.getFullYear()
-            return `${day}.${month}.${year}`
-        }
-
-        const openFilter = (state: boolean) => {
-            filter_frame.value = state
-        }
+		const openFilter = (state: boolean) => {
+			filter_frame.value = state;
+		};
 
 		const navigate = (url: string) => {
-			router.push(url)
-		}
+			router.push(url);
+		};
 
-        const openDeleteModal = (data: any) => {
-            modalStore.$patch({
-                label: "Удаление курса",
-                activeModal: "delete-modal",
-                modalProps: {
-                    data,
-                    modalComponent: "delete-course",
-                    deleteFunction: courseStore.deleteCourse,
-                } as unknown as IDeleteTag,
-            } as unknown as IDeleteModal);
+		const openDeleteModal = (data: any) => {
+			modalStore.$patch({
+				label: "Удаление курса",
+				activeModal: "delete-modal",
+				modalProps: {
+					data,
+					modalComponent: "delete-course",
+					deleteFunction: courseStore.deleteCourse,
+				} as unknown as IDeleteTag,
+			} as unknown as IDeleteModal);
 
-            modalStore.openModal();
-        };
+			modalStore.openModal();
+		};
 
-        watch(() => courseStore.$state.numberOfPages, (newValue) => {
-            paginations_pages.value = newValue ?? 1
-        })
+		watch(
+			() => courseStore.$state.numberOfPages,
+			(newValue) => {
+				paginations_pages.value = newValue ?? 1;
+			}
+		);
 
-        watch(current_page, () => {
-            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`)
-        })
+		watch(current_page, () => {
+			courseStore.getCourses(
+				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
+			);
+		});
 
-        const status_translation: Record<'InDevelopment' | 'OnModeration' | 'Published' | 'Withdrawn' | 'Archived', string> = {
-            'InDevelopment': 'В разработке',
-            'OnModeration': 'На модерации',
-            'Published': 'Опубликован',
-            'Withdrawn': 'Снят с витрины',
-            'Archived': 'В архиве'
-        };
-        const translateStatus = (status: string): string => {
-            if (status in status_translation) {
-                return status_translation[status as keyof typeof status_translation]
-            }
-            return 'Неизвестный статус'
-        }
+		const status_translation: Record<
+			| "InDevelopment"
+			| "OnModeration"
+			| "Published"
+			| "Withdrawn"
+			| "Archived",
+			string
+		> = {
+			InDevelopment: "В разработке",
+			OnModeration: "На модерации",
+			Published: "Опубликован",
+			Withdrawn: "Снят с витрины",
+			Archived: "В архиве",
+		};
+		const translateStatus = (status: string): string => {
+			if (status in status_translation) {
+				return status_translation[
+					status as keyof typeof status_translation
+				];
+			}
+			return "Неизвестный статус";
+		};
 
-        onMounted(() => {
-            nextTick(() => {
-                courseStore.getCourses('/admin/v1/Course')
-            })
-        })
+		onMounted(() => {
+			nextTick(() => {
+				courseStore.getFiters();
+				courseStore.getCourses("/admin/v1/Course");
+				console.log(courseStore.filters);
+			});
+		});
 
-        return {
-            user_role_store,
-            navigate,
-            filter_course,
-            filter_frame,
-            openFilter,
-            formatDirectionToString,
-            formatDate,
-            paginations_pages,
-            current_page,
-            isCurrentPage,
-            updateSearchValue,
-            translateStatus,
-            openDeleteModal,
-            search_value,
-            courseStore,
-            course_info: courseStore.course_info,
-        }
-    }
-})
+		return {
+			user_role_store,
+			navigate,
+			filter_frame,
+			openFilter,
+			formatDirectionToString,
+			formatDate,
+			paginations_pages,
+			current_page,
+			isCurrentPage,
+			updateSearchValue,
+			translateStatus,
+			openDeleteModal,
+			search_value,
+			courseStore,
+			course_info: courseStore.course_info,
+		};
+	},
+});
 </script>
 <style lang="sass" scoped>
 .oil-course
@@ -425,14 +348,14 @@ export default defineComponent({
         width: rem(742)
         &__course-list
             margin-bottom: rem(24)
-            &__row 
+            &__row
                 position: relative
                 &:hover
                     background: $basic_light_blue
                     .oil-course__settings__course-list__row__svg
                         opacity: 1
-            
-                &__svg 
+
+                &__svg
                     transition: opacity .2s ease-in
                     opacity: 0
                     position: absolute
@@ -441,6 +364,7 @@ export default defineComponent({
 
         &-container
             margin-bottom: rem(16)
+            z-index: 9
 
             @include flex_center_spacing()
             position: relative

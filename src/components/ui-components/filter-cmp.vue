@@ -108,6 +108,10 @@ const mappedFilters = filterKeys.map((key) => ({
 	}[];
 }[];
 
+onMounted(() => {
+	console.log(mappedFilters);
+});
+
 const filter_values = reactive(mappedFilters);
 
 const setActiveFilter = (index: number, key: string, id: number) => {
@@ -153,7 +157,7 @@ const openFilter = (state: boolean) => {
 </script>
 <style lang="sass">
 .oil-filter
-    z-index: 99
+    z-index: 999
     &__button
         padding: rem(8) rem(16)
         border: rem(1) solid $basic_primary

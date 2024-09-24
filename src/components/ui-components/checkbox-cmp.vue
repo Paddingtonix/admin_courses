@@ -73,9 +73,8 @@ export default defineComponent({
 		},
 	},
 	setup(props, { emit }) {
-        console.log("Props:", props);
 		const setCheckboxValue = (obj: { id: number; active: boolean }) => {
-            console.log("Checkbox Clicked:", obj);
+			console.log("Checkbox Clicked:", obj);
 			switch (obj.active) {
 				case false:
 					emit("set_value", { id: obj.id, active: true });
