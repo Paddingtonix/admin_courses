@@ -17,7 +17,11 @@
 				/>
 			</div>
 			<template
-				v-if="!courseStore.course_list.length && !search_value.length"
+				v-if="
+					!courseStore.course_list.length &&
+					!search_value.length &&
+					!isFiltrationActive
+				"
 			>
 				<div class="oil-course__info__attention">
 					<i class="oil-course__info__attention__icon">
@@ -149,15 +153,15 @@
 						@change-page="isCurrentPage"
 					/>
 				</div>
-                <div>
-                    <SelectorCmp
-                        @select-value="changeCoursePerPage($event)"
-                        class="tags-page__selector"
-                        :label="`${list[0].text} курсов на стр.`"
-                        listText="курсов на стр."
-                        :list="list"
-                    />
-                </div>
+				<div>
+					<SelectorCmp
+						@select-value="changeCoursePerPage($event)"
+						class="tags-page__selector"
+						:label="`${list[0].text} курсов на стр.`"
+						listText="курсов на стр."
+						:list="list"
+					/>
+				</div>
 			</template>
 		</div>
 	</section>
@@ -208,12 +212,12 @@ export default defineComponent({
 			);
 		};
 
-        const list = [
-            { text: 10, active: true },
-            { text: 15, active: false },
-            { text: 20, active: false },
-            { text: 25, active: false },
-        ];
+		const list = [
+			{ text: 10, active: true },
+			{ text: 15, active: false },
+			{ text: 20, active: false },
+			{ text: 25, active: false },
+		];
 
 		const formatDirectionToString = (
 			arr: string[] | null | undefined
@@ -264,16 +268,18 @@ export default defineComponent({
 			}
 		);
 
+		const isFiltrationActive = ref(false);
+
 		const filters = reactive({
 			statuses: "",
 			languageIds: "",
 			directionIds: "",
 		});
 
-        const changeCoursePerPage = (val: { value: number; type: string }) => {
-            tagsStore.changeTagsPerPage(val.value);
-            tagsStore.getTags({ text: searchValue.value });
-        };
+		const changeCoursePerPage = (val: { value: number; type: string }) => {
+			tagsStore.changeTagsPerPage(val.value);
+			tagsStore.getTags({ text: searchValue.value });
+		};
 
 		watch(current_page, () => {
 			courseStore.getCourses(
@@ -286,15 +292,15 @@ export default defineComponent({
 				`${filters.statuses}${filters.languageIds}${filters.directionIds}`.trim();
 
 			if (filter_string.length) {
+				isFiltrationActive.value = true;
 				courseStore.getCourses(
 					`/admin/v1/Course?page=${current_page.value}${filter_string}&searchSubstring=${search_value.value}`
 				);
 			} else {
-				console.log("else сработал");
-
 				courseStore.getCourses(
 					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
 				);
+				isFiltrationActive.value = false;
 			}
 		});
 
@@ -375,8 +381,9 @@ export default defineComponent({
 			search_value,
 			courseStore,
 			setFilters,
-            list,
-            changeCoursePerPage,
+			isFiltrationActive,
+			list,
+			changeCoursePerPage,
 			course_info: courseStore.course_info,
 		};
 	},
