@@ -117,7 +117,8 @@
 				tagsStore.$state.numberOfPages !== null &&
 				tagsStore.$state.numberOfPages >= 0
 			"
-			@change-page="tagsStore.changeTagsPerPage($event.value)"
+			:current-page="tagsData.currentPage"
+			@change-page="goToPage($event)"
 			:pages_count="tagsStore.$state.numberOfPages"
 		/>
 		<SelectorCmp
@@ -278,6 +279,26 @@ const list = [
 	{ text: 20, active: false },
 	{ text: 25, active: false },
 ];
+
+const goToPage = (page: number) => {
+	tagsStore.$patch((state) => {
+		state.currentPage = page;
+	});
+	tagsStore.getTags({});
+};
+
+watch(tagsStore.$state, () => {
+	if (
+		!tagsStore.tags.length &&
+		tagsStore.numberOfPages &&
+		tagsStore.currentPage > tagsStore.numberOfPages
+	) {
+		tagsStore.$patch({
+			currentPage: tagsData.currentPage - 1,
+		});
+		goToPage(tagsData.currentPage);
+	}
+});
 </script>
 
 <style lang="sass">
