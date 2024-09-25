@@ -66,6 +66,7 @@
 							@change-value="updateSearchValue($event)"
 						/>
 						<FilterCmp
+							@cancel-filters="setFilters"
 							@send-fiters="setFilters"
 							@click="openFilter(true)"
 							:filters="courseStore.filters"
@@ -268,6 +269,8 @@ export default defineComponent({
 					`/admin/v1/Course?page=${current_page.value}${filter_string}&searchSubstring=${search_value.value}`
 				);
 			} else {
+				console.log("else сработал");
+
 				courseStore.getCourses(
 					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
 				);
