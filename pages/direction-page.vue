@@ -149,17 +149,18 @@ export default defineComponent({
 
         const filtered_by_visibility = computed(() => {
             console.log('Активные чекбоксы:', active_checkbox);
+            console.log(direction_store.directions.directions, 'direction_store.directions')
 
-            if (active_checkbox.show_only_visible.isActive && active_checkbox.show_only_invisible.isActive) {
+            if (active_checkbox.show_only_visible && active_checkbox.show_only_invisible) {
                 return direction_store.directions;
             }
 
-            if (!active_checkbox.show_only_visible.isActive && !active_checkbox.show_only_invisible.isActive) {
+            if (!active_checkbox.show_only_visible && !active_checkbox.show_only_invisible) {
                 return [];
             }
 
-            return direction_store.directions.filter(direction => {
-                if (active_checkbox.show_only_visible.isActive && !active_checkbox.show_only_invisible.isActive) {
+            return direction_store.directions.directions.filter(direction => {
+                if (active_checkbox.show_only_visible && !active_checkbox.show_only_invisible) {
                     return direction.isVisible;
                 } else {
                     return !direction.isVisible;
@@ -168,11 +169,13 @@ export default defineComponent({
         })
 
         const filtered_directions = computed(() => {
-            console.log(filtered_by_visibility.value, 'filtered_by_visibility ');
+            console.log(filtered_by_visibility.value.directions, 'filtered_by_visibility ');
 
-            let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string }) => {
-                return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
-            });
+            // let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string }) => {
+            //     return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
+            // });
+
+            let filtered = filtered_by_visibility.value.directions
 
             if (sort_field.value && sort_direction.value) {
                 filtered = sortHeader(filtered, sort_field.value, sort_direction.value);

@@ -640,7 +640,7 @@ import axios from 'axios'
 import { defineComponent } from 'vue'
 import { useStoreCourses } from '~/src/stores/storeCourse'
 import { useStoreEditCourseSetting } from '~/src/stores/storeEditCourseSetting'
-import type { Direction } from '~/src/ts-interface/direction'
+import type { IDirection } from '~/src/ts-interface/direction'
 import type ISwitcher from '~/src/ts-interface/switcher.type'
 import { useRoute } from 'vue-router'
  
@@ -654,11 +654,11 @@ export default defineComponent({
         const show_error = ref<boolean>(false)
         const tooltip_id = ref<string>('')
         const editInput = ref(null) as any
-        const directions = reactive<Direction[]>([])
+        const directions = reactive<IDirection[]>([])
         const original_directions = ref<number[]>([])
         const picked_directions = reactive<any>([])
         const chooses_direction = reactive({
-            value: [] as Direction[]
+            value: [] as IDirection[]
         })
 
         const reload_state = reactive({

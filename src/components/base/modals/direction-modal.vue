@@ -10,7 +10,9 @@
             class="oil-direction__input"
            :label="`Название направления (${lang.toLocaleUpperCase()})*`"
            :modelValue="data.localizedName"
+           :error="errors.name"
            @set_value="setDirectionName"
+           @blur="isValid"
         />
         <CheckboxCmp
             class="oil-direction__checkbox"
@@ -49,14 +51,14 @@ export default defineComponent({
     setup() {
         const lang = ref('ru')
 
-        const visible_direction = ref(false)
-
-        const input_value = ref('')
-
         const store_modal = useStoreModal();
-        const store_direction = useDirectionStore();
 
         const modal_data = store_modal.$state;
+
+        const visible_direction = ref(modal_data.modalProps?.data?.isVisible || false)
+        const input_value = ref('')
+
+        const store_direction = useDirectionStore();
 
         const initialDirection: IDirection = {
             directionId: 0,
@@ -86,32 +88,62 @@ export default defineComponent({
             input_value.value = val.value
         }
 
-        const sendDirection = () => {
-            const sendData = {
-                isVisible: visible_direction.value,
-                localizations: {
-                    en: input_value.value,
-                    ru: input_value.value,
-                    // fr: input_value.value
-                }
+        const errors = reactive({
+            name: ''
+        });
+
+        const isDirectionExists = (name: string) => {
+            return store_direction.directions.directions
+                .some((direction: IDirection) => direction.localizedName === name);
+        };
+
+        const isValid = () => {
+            errors.name = '';
+
+            if (input_value.value === '') {
+                errors.name = 'Поле обязательно к заполнению';
+                return false;
+            } else if (input_value.value.length > 50) {
+                errors.name = 'Максимальное количество символов - 50';
+                return false;
+            } else if (isDirectionExists(input_value.value)) {
+                errors.name = 'Направление с таким названием уже существует';
+                return false;
             }
 
-            store_direction.createDirection(sendData);
-            store_modal.closeModal();
+            return true;
         }
 
-        const patchDirection = (data: IDirection) => {
-            const sendData = {
-                isVisible: visible_direction.value,
-                localizations: {
-                    en: input_value.value,
-                    ru: input_value.value,
-                    // fr: input_value.value
+        const sendDirection = () => {
+            if (isValid()) {
+                const sendData = {
+                    isVisible: visible_direction.value,
+                    localizations: {
+                        en: input_value.value,
+                        ru: input_value.value,
+                        // fr: input_value.value
+                    }
                 }
-            }
 
-            store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
-            store_modal.closeModal();
+                store_direction.createDirection(sendData);
+                store_modal.closeModal();
+            }
+        }
+
+        const patchDirection = () => {
+            if (isValid()) {
+                const sendData = {
+                    isVisible: visible_direction.value,
+                    localizations: {
+                        en: input_value.value,
+                        ru: input_value.value,
+                        // fr: input_value.value
+                    }
+                }
+
+                store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
+                store_modal.closeModal();
+            }
         }
 
         return {
@@ -119,9 +151,11 @@ export default defineComponent({
             visible_direction,
             modal_data,
             data,
+            errors,
             setLang,
             setCheckbox,
             setDirectionName,
+            isValid,
             sendDirection,
             patchDirection,
             closeModal
