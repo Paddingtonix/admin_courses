@@ -206,8 +206,6 @@ const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
 };
 
 const changeSelectorValue = (value: { value: number; type: string }) => {
-	console.log(value);
-
 	headersStore.$patch((state) => {
 		state.nHeadingsPerPage = value.value;
 	});

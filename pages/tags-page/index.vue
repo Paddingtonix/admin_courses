@@ -122,10 +122,10 @@
 			:pages_count="tagsStore.$state.numberOfPages"
 		/>
 		<SelectorCmp
-			@select-value="changeTagsPerPage($event)"
 			class="tags-page__selector"
-			:label="`${list[0].text} меток на стр.`"
+			@setValue="changeTagsPerPage($event)"
 			listText="меток на стр."
+			label="10 меток на стр."
 			:list="list"
 		/>
 		<span
@@ -260,6 +260,8 @@ const openDeleteModal = (data: ITags) => {
 };
 
 const changeTagsPerPage = (val: { value: number; type: string }) => {
+	console.log(val);
+
 	tagsStore.changeTagsPerPage(val.value);
 	tagsStore.getTags({ text: searchValue.value });
 };
