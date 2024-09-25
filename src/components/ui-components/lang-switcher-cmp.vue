@@ -29,7 +29,7 @@ const { russian, extraLang, extraLang2, active } = defineProps({
     },
     extraLang2: {
         type: Object as PropType<{ text: string; id: string }>,
-        default: { text: "Français (FR) *", id: "test" },
+        default: { text: "Français (FR) *", id: "fr" },
     },
     active: {
         type: String,
