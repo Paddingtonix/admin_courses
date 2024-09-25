@@ -157,8 +157,8 @@
 					<SelectorCmp
 						@select-value="changeCoursePerPage($event)"
 						class="oil-course__info__selector"
-						:label="`${list[0].text} курсов на стр.`"
-						listText="курсов на стр."
+						:label="`${list[0].text} курсов на странице`"
+						listText="курсов на странице"
 						:list="list"
 					/>
 				</div>
@@ -428,7 +428,7 @@ export default defineComponent({
 
         &__btn
             max-width: rem(192)
-        &__selector
+        &__selector.oil-selector
             position: absolute
             border: none
             bottom: 0

@@ -135,6 +135,7 @@ export default defineComponent({
         label
             color: #9AA7BB
             cursor: pointer
+            margin-right: rem(8)
 
     &__list
         position: absolute
