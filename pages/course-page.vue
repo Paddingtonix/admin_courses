@@ -156,7 +156,7 @@
 				<div>
 					<SelectorCmp
 						@select-value="changeCoursePerPage($event)"
-						class="tags-page__selector"
+						class="oil-course__info__selector"
 						:label="`${list[0].text} курсов на стр.`"
 						listText="курсов на стр."
 						:list="list"
@@ -398,6 +398,7 @@ export default defineComponent({
         margin-bottom: rem(32)
 
     &__info
+        position: relative
         &__card
             margin-bottom: rem(48)
 
@@ -427,6 +428,12 @@ export default defineComponent({
 
         &__btn
             max-width: rem(192)
+        &__selector
+            position: absolute
+            border: none
+            bottom: 0
+            right: rem(32)
+            transform: translateY(-50%)
 
     &__settings
         @include flex_start()

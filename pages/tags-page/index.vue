@@ -340,10 +340,10 @@ watch(tagsStore.$state, () => {
       justify-content: center
       margin-top: rem(16)
 
-  &__selector
-      position: absolute !important
+  &__selector.oil-selector
+      position: absolute
+      border: none
       right: 0
-      border: none !important
       *
           cursor: pointer
 
