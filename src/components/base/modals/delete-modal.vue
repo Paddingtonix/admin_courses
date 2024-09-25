@@ -30,15 +30,15 @@ export default defineComponent({
 		const modalData = reactive(storeModal.$state as IDeleteModal);
 
 		const deleteItem = () => {
-			console.log('qwerty');
-			
+			console.log("qwerty");
+
 			modalData.modalProps
-				.deleteFunction(modalData.modalProps.data.courseId)
+				.deleteFunction(modalData.modalProps.data.id)
 				.then(() => {
 					storeModal.closeModal();
 				})
-				.catch(() => {
-					console.log("Не получилось удалить");
+				.catch((err) => {
+					console.log("Не получилось удалить", err);
 				});
 		};
 		return {
@@ -51,7 +51,7 @@ export default defineComponent({
 		"delete-section": DeleteSection,
 		"delete-tag": DeleteTag,
 		"delete-course": deleteCourse,
-        "delete-direction": DeleteDirection
+		"delete-direction": DeleteDirection,
 	},
 });
 </script>

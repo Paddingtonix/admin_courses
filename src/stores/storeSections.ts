@@ -49,12 +49,14 @@ export const useHeadersStore = defineStore({
 
 		deleteItem(id: number) {
 			return axios
-				.delete(`admin/v1/heading/${id}`)
-				.then(() => {
+				.delete(`admin/v1/heading/${id}?force=True`)
+				.then((response) => {
 					this.getHeadings({});
+					return response;
 				})
 				.catch((error) => {
 					console.error("Ошибка при удалении раздела:", error);
+					throw error;
 				})
 				.finally(() => {
 					// TODO: ADD_LOADER

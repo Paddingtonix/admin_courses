@@ -262,9 +262,10 @@ export default defineComponent({
 		watch(filters, () => {
 			const filter_string =
 				`${filters.statuses}${filters.languageIds}${filters.directionIds}`.trim();
+
 			if (filter_string.length) {
 				courseStore.getCourses(
-					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}${filter_string}`
+					`/admin/v1/Course?page=${current_page.value}${filter_string}&searchSubstring=${search_value.value}`
 				);
 			} else {
 				courseStore.getCourses(

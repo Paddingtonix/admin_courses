@@ -1,5 +1,16 @@
 <template>
-	<form class="add-section" action="#">
+	<form
+		class="add-section"
+		:class="{ 'add-section_edit': modalData.modalProps.edit }"
+		action="#"
+	>
+		<span
+			class="add-section__attention-message"
+			v-if="modalData.modalProps.edit"
+		>
+			Внимание! Раздел меток изменится у всех входящих в него меток.
+			Имейте это в виду, внося изменения.
+		</span>
 		<InputCmp
 			:model-value="formModel.name"
 			class="add-section__input"
@@ -138,6 +149,12 @@ const patchForm = () => {
 <style lang="sass" scoped>
 .add-section
     width: rem(520)
+    &.add-section_edit
+        max-width: rem(440)
+    &__attention-message
+        margin-bottom: rem(24)
+        max-width: rem(440)
+        display: block
 
     &__button-wrapper
         display: flex
