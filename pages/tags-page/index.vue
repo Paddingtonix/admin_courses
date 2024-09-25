@@ -65,9 +65,9 @@
 			class="tags-table-row"
 			:id="tag.id"
 			:redirect="false"
-			:name="tag.name"
-			:status="tag.headingName"
-			:authors="tag.localizations.ru"
+			:name="checkForFlooding(tag.name, 30)"
+			:status="checkForFlooding(tag.headingName, 15)"
+			:authors="checkForFlooding(tag.localizations.ru, 30)"
 			@click="
 				openModalAddTag(
 					{
@@ -117,7 +117,7 @@
 				tagsStore.$state.numberOfPages !== null &&
 				tagsStore.$state.numberOfPages >= 0
 			"
-			@change-page="tagsStore.changePageTags($event)"
+			@change-page="tagsStore.changeTagsPerPage($event.value)"
 			:pages_count="tagsStore.$state.numberOfPages"
 		/>
 		<SelectorCmp
@@ -154,6 +154,7 @@ import type {
 } from "~/src/ts-interface/storeModal.type";
 
 import type { ITags } from "~/src/ts-interface/storeTags.type";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 const tagsStore = useTagsStore();
 
