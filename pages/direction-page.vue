@@ -113,7 +113,7 @@ export default defineComponent({
             show_only_invisible: true,
         })
 
-        const pill_info = reactive([
+        const pill_info = computed(() => [
             {
                 text: 'Всего',
                 value: direction_store.directions.totalDirectionsCount
@@ -122,7 +122,7 @@ export default defineComponent({
                 text: 'На сайте',
                 value: direction_store.directions.visibleDirectionsCount
             },
-        ])
+        ]);
 
         const active_checkbox = reactive({
             show_only_visible: { name: "show_only_visible", isActive: true },
@@ -151,35 +151,39 @@ export default defineComponent({
             console.log('Активные чекбоксы:', active_checkbox);
             console.log(direction_store.directions.directions, 'direction_store.directions')
 
+            const directions = direction_store.directions.directions;
+
             if (active_checkbox.show_only_visible && active_checkbox.show_only_invisible) {
-                return direction_store.directions;
+                return directions;
             }
 
             if (!active_checkbox.show_only_visible && !active_checkbox.show_only_invisible) {
                 return [];
             }
 
-            return direction_store.directions.directions.filter(direction => {
-                if (active_checkbox.show_only_visible && !active_checkbox.show_only_invisible) {
-                    return direction.isVisible;
-                } else {
-                    return !direction.isVisible;
-                }
-            });
+            if (active_checkbox.show_only_visible) {
+                return directions.filter(direction => direction.isVisible);
+            }
+            if (active_checkbox.show_only_invisible) {
+                return directions.filter(direction => !direction.isVisible);
+            }
+
+            return directions;
         })
 
         const filtered_directions = computed(() => {
-            console.log(filtered_by_visibility.value.directions, 'filtered_by_visibility ');
+            console.log(filtered_by_visibility.value.directions, 'filtered_by_visibility');
 
-            // let filtered = filtered_by_visibility.value.directions.filter((direction: { localizedName: string }) => {
-            //     return direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase());
-            // });
+            let filtered = filtered_by_visibility.value;
 
-            let filtered = filtered_by_visibility.value.directions
+            if (search_query.value) {
+                filtered = filtered.filter(direction =>
+                    direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase())
+                );
+            }
 
             if (sort_field.value && sort_direction.value) {
                 filtered = sortHeader(filtered, sort_field.value, sort_direction.value);
-                console.log('ну-ка, сука, работай', filtered)
             }
 
             return filtered;
