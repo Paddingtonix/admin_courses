@@ -21,11 +21,15 @@
                         }}
                     </span>
                     <div
+                        v-if="courseContentState.testType !== 'Entrance'"
                         class="oil-course-content__test__general-settings__value__wrapper"
                         @click="editSetting(idx)"
                     >
                         <span v-if="!setting.title">{{ setting.desc }}</span>
                         <i v-html="defaultIcon"></i>
+                    </div>
+                    <div v-else>
+                        <span v-if="!setting.title">{{ setting.desc }}</span>
                     </div>
                 </div>
                 <template v-else>
