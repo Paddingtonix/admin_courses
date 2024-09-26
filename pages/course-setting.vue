@@ -576,7 +576,8 @@
                                         class="oil-course-setting__content__container__inner__input"
                                         v-model="changes_value.value"
                                     />
-                                    <span :style="{color: '#176DC1'}"  @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=test`)" v-else>{{ chapter.testing.title === null ? 'Вводная страница' : chapter.testing.title }}</span>
+
+                                    <span :style="{color: '#176DC1'}"  @click="$router.push(`course-content/${$route.query.search}?=${course_setting.value.Title}&=test`)" v-else>{{ !chapter.testing  ? 'Тест' : chapter.testing.title }}</span>
                                     <CourseArchitectureIcons 
                                         v-if="storeStateCourse.status !== 'Archived'"
                                         :delete_id="chapter.id"
