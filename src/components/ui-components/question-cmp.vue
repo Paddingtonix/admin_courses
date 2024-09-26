@@ -204,7 +204,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
-import { validateForm } from "~/src/utils/validateForm";
+// import { validateForm } from "~/src/utils/validateForm";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
@@ -281,18 +281,18 @@ export default defineComponent({
         const setScore = (value: number) => {
             questionForm.correctAnswerScore = value;
             emit("set_score", questionForm.correctAnswerScore);
-            if (
-                !validateForm({
-                    currentForm: questionForm,
-                    initialForm: props.question,
-                    requiredFields: ["correctAnswerScore"],
-                    options: { validateScore: true },
-                })
-            ) {
-                scoreValue.error = "ошибка";
-            } else {
-                scoreValue.error = "";
-            }
+            // if (
+            //     !validateForm({
+            //         currentForm: questionForm,
+            //         initialForm: props.question,
+            //         requiredFields: ["correctAnswerScore"],
+            //         options: { validateScore: true },
+            //     })
+            // ) {
+            //     scoreValue.error = "ошибка";
+            // } else {
+            //     scoreValue.error = "";
+            // }
         };
 
         const setCorrectAnswer = (index: number) => {

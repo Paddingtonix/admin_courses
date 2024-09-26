@@ -67,7 +67,7 @@
                             <li>Оффлайн — обучение предполагает получение знаний в стенах учебного заведения</li>
                         </ul>
                         <ul>
-                            <span>Покупка</span>
+                            <span>Приобретение</span>
                             <li>Платно — платный курс</li>
                             <li>Бесплатно — бесплатный курс</li>
                         </ul>
@@ -246,9 +246,9 @@ export default defineComponent({
 
 
             if (course_data.courseType === 2 && course_data.courseFormat === 1) {
-                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
-                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть офлайн'
-                console.log('Валидация не пройдена: Асинхронный курс не может быть офлайн')
+                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
+                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
+                console.log('Валидация не пройдена: Асинхронный курс не может быть оффлайн')
                 return false
             }
 
