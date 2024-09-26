@@ -71,14 +71,14 @@
                             </template>
                         </TableRowCmp>
                     </template>
-                    <div v-else-if="!filtered_directions.length" class="no-results">
-                        <span>
-                           Не создано ни одного направления.
-                        </span>
-                    </div>
-                    <div v-else class="no-results">
+                    <div v-if="!filtered_directions.length" class="no-results">
                         <span>
                             К сожалению, по вашему запросу не найдено ни одного направления. Попробуйте другие параметры поиска.
+                        </span>
+                    </div>
+                    <div v-if="!direction_store.directions.directions.length" class="no-results">
+                        <<span>
+                           Не создано ни одного направления.
                         </span>
                     </div>
                 </div>
