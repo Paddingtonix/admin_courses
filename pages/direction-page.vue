@@ -94,6 +94,7 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import { formatDate } from '~/src/utils/format-date';
 import { sortHeader } from '~/src/utils/sort-header'
 import { useUserRoleStore } from '~/src/stores/storeRole';
+import { useStoreCourses } from '~/src/stores/storeCourse';
 import type { IDirection } from "~/src/ts-interface/direction";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 
@@ -106,7 +107,8 @@ export default defineComponent({
         const sort_field = ref('')
         const sort_direction = ref<'asc' | 'desc'>('asc')
         const user_role_store = useUserRoleStore()
-        const modalStore = useStoreModal();
+        const modal_store = useStoreModal();
+        const course_store = useStoreCourses();
 
         const visible_state = reactive({
             show_only_visible: true,
@@ -184,7 +186,7 @@ export default defineComponent({
         })
 
         const sendDirection = (data?: IDirection, edit?: boolean) => {
-            modalStore.$patch({
+            modal_store.$patch({
                 label: !edit ? "Добавление направления" : "Редактирование направления",
                 activeModal: "direction-modal",
                 modalProps: {
@@ -193,25 +195,47 @@ export default defineComponent({
                     edit
                 },
             });
-            modalStore.openModal();
+            modal_store.openModal();
         }
 
-        const deleteDirection = (data: IDirection) => {
-            modalStore.$patch({
-                label: "Удаление направления",
-                activeModal: "delete-modal",
-                modalProps: {
-                    data,
-                    modalComponent: "delete-direction",
-                    deleteFunction: () => direction_store.removeDirection(data.directionId),
-                },
-            } as unknown as IDeleteModal);
-            modalStore.openModal();
+        const getRelatedCourses = (localizedName: string) => {
+            const courses = course_store.course_list.filter((direction_in_course) => {
+                return direction_in_course.directions.includes(localizedName);
+            });
+            return courses.length === 1 ? courses : [];
+        };
+
+        const deleteDirection = (data?: IDirection) => {
+            const related_courses = getRelatedCourses(data.localizedName);
+            console.log(related_courses, 'related_courses')
+            if (related_courses.length > 0) {
+                modal_store.$patch({
+                    label: "Невозможно удалить направление",
+                    activeModal: "warning-delete-modal",
+                    modalProps: {
+                        data,
+                        related_courses,
+                    },
+                } as unknown as IDeleteModal);
+                modal_store.openModal();
+            } else {
+                modal_store.$patch({
+                    label: "Удаление направления",
+                    activeModal: "delete-modal",
+                    modalProps: {
+                        data,
+                        modalComponent: "delete-direction",
+                        deleteFunction: () => direction_store.removeDirection(data.directionId),
+                    },
+                } as unknown as IDeleteModal);
+                modal_store.openModal();
+            }
         };
 
         onMounted(() => {
             nextTick(() => {
                 direction_store.getDirections();
+                course_store.getCourses('/admin/v1/Course');
             })
         })
 
@@ -226,6 +250,7 @@ export default defineComponent({
             show_only_invisible,
             active_checkbox,
             user_role_store,
+            course_store,
             deleteDirection,
             sendDirection,
             visible_state,

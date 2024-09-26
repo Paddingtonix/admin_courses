@@ -30,10 +30,9 @@ export default defineComponent({
 		const modalData = reactive(storeModal.$state as IDeleteModal);
 
 		const deleteItem = () => {
-			console.log('qwerty');
 			
 			modalData.modalProps
-				.deleteFunction(modalData.modalProps.data.courseId)
+				.deleteFunction(modalData.modalProps?.data.id)
 				.then(() => {
 					storeModal.closeModal();
 				})
