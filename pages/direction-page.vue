@@ -130,9 +130,8 @@ export default defineComponent({
         });
 
         const toggleVisible = ({ id, active }: { id: "show_only_visible" | "show_only_invisible"; active: boolean }) => {
-            console.log("Смотрим что передаем:", id, active);
-
             active_checkbox[id].isActive = active;
+            visible_state[id] = active;
         };
 
         const changeSearchValue = (text: string) => {
@@ -148,23 +147,20 @@ export default defineComponent({
         };
 
         const filtered_by_visibility = computed(() => {
-            console.log('Активные чекбоксы:', active_checkbox);
-            console.log(direction_store.directions.directions, 'direction_store.directions')
-
             const directions = direction_store.directions.directions;
 
-            if (active_checkbox.show_only_visible && active_checkbox.show_only_invisible) {
+            if (visible_state.show_only_visible && visible_state.show_only_invisible) {
                 return directions;
             }
 
-            if (!active_checkbox.show_only_visible && !active_checkbox.show_only_invisible) {
+            if (!visible_state.show_only_visible && !visible_state.show_only_invisible) {
                 return [];
             }
 
-            if (active_checkbox.show_only_visible) {
+            if (visible_state.show_only_visible) {
                 return directions.filter(direction => direction.isVisible);
             }
-            if (active_checkbox.show_only_invisible) {
+            if (visible_state.show_only_invisible) {
                 return directions.filter(direction => !direction.isVisible);
             }
 
@@ -172,8 +168,6 @@ export default defineComponent({
         })
 
         const filtered_directions = computed(() => {
-            console.log(filtered_by_visibility.value.directions, 'filtered_by_visibility');
-
             let filtered = filtered_by_visibility.value;
 
             if (search_query.value) {
