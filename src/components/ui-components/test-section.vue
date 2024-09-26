@@ -169,14 +169,16 @@ const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 const general_settings = reactive([
     {
         name: "Название теста (опционально)",
-        title: courseContentStore.generalSettings.title,
+        title: computed(() => courseContentStore.generalSettings.title),
         type: "title",
         desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
         isEditing: false,
     },
     {
         name: "Проходной балл *",
-        title: courseContentStore.generalSettings.cutScorePercentages,
+        title: computed(
+            () => courseContentStore.generalSettings.cutScorePercentages
+        ),
         type: "score",
         desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
         isEditing: false,
@@ -206,18 +208,18 @@ const changeQuestion = (question: ICourseContentQuestions) => {
 };
 
 const editSetting = (id: number) => {
-    changing_field.value = "";
+    changing_field.value = general_settings[id].title;
     general_settings.forEach((setting) => (setting.isEditing = false));
     general_settings[id].isEditing = true;
 };
 
 onMounted(() => {
-    console.log("general-settings", general_settings);
-
-    courseContentStore
-        .getDirections(courseContentStore.courseId)
-        .finally(() => {});
-    console.log("StateCOurse: ", courseContentState);
+    nextTick(() => {
+        courseContentStore
+            .getDirections(courseContentStore.courseId)
+            .finally(() => {});
+        console.log("StateCOurse: ", courseContentState);
+    });
 });
 
 const changeValueSetting = (id: number, value: string) => {

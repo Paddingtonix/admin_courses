@@ -12,6 +12,7 @@ import type {
 export const useStoreCourseContent = defineStore("course-content", {
     state: () => ({
         courseId: 0,
+        testType: "",
         generalSettings: {} as IGeneralCourseSettings,
         directions: [] as IDirection[],
         questions: [] as ICourseContentQuestions[],
@@ -32,12 +33,15 @@ export const useStoreCourseContent = defineStore("course-content", {
                 });
         },
 
-        getCourseContent(id: string) {
-            return axios
+        async getCourseContent(id: string) {
+            return await axios
                 .get<ICourseContent>(`admin/v1/Testing/${id}`)
                 .then((response) => {
                     const { data } = response;
                     this.courseId = data.courseId;
+                    this.testType = data.category;
+                    console.log(data.category);
+
                     this.questions = data.questions;
                     this.generalSettings = {
                         title: data.title,
@@ -47,24 +51,25 @@ export const useStoreCourseContent = defineStore("course-content", {
                 })
                 .catch((error) => {
                     console.log(error);
+                    throw error;
                 });
         },
-        patchCourseContent(
+        async patchCourseContent(
             id: string,
             formData: { title?: string; cutScorePercentages?: number }
         ) {
-            return axios
+            return await axios
                 .patch(`admin/v1/Testing/${id}`, formData)
                 .then((response) => {
                     return response;
                 })
                 .catch((error) => {
-                    return error;
+                    throw error;
                 });
         },
 
-        patchQuestion(formData: ICourseContentQuestions) {
-            return axios
+        async patchQuestion(formData: ICourseContentQuestions) {
+            return await axios
                 .patch(`admin/v1/Question/${formData.id}`, formData)
                 .then((response) => {
                     console.log("questionUpdated!", formData);
@@ -76,8 +81,8 @@ export const useStoreCourseContent = defineStore("course-content", {
                 });
         },
 
-        addQuestion(testingId: number) {
-            return axios
+        async addQuestion(testingId: number) {
+            return await axios
                 .post("admin/v1/Question", { testingId })
                 .then((response) => {
                     console.log(response);
