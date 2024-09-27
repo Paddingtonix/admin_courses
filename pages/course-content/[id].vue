@@ -14,7 +14,6 @@
             />
             <ContentModule v-if="course_settings.type_course === 'text'" />
             <TestSection
-                @change-setting="changeGeneralSetting($event)"
                 :questions="courseContentStore.questions"
                 :id="id"
                 v-else-if="content === 'test' && !isLoading"
@@ -101,41 +100,20 @@ export default defineComponent({
                     })
                     .finally(() => {
                         isLoading.value = false;
-                        course_settings.title_course = route.query[""][0];
-                        course_settings.type_course = route.query[""][1];
+                        if (route.query.length) {
+                            course_settings.title_course = route.query[""][0];
+                            course_settings.type_course = route.query[""][1];
+                        } else {
+                            course_settings.title_course = "no-title";
+                            course_settings.type_course = "no-type";
+                        }
                     });
             });
         });
 
-        const changeGeneralSetting = ({
-            type,
-            value,
-        }: {
-            type: string;
-            value: string;
-        }) => {
-            const updateData = {
-                [type === "title" ? "Title" : "CutScorePercentages"]: value,
-            };
-
-            console.log("updtdData: ", updateData);
-
-            courseContentStore
-                .patchCourseContent(id, updateData)
-                .then((response) => {
-                    courseContentStore.getCourseContent(id).then((response) => {
-                        console.log("vot chto ya poluchil", response);
-                    });
-                })
-                .catch((err) => {
-                    console.log("patchCourseError", err);
-                });
-        };
-
         return {
             courseStore,
             courseContentStore,
-            changeGeneralSetting,
             course_settings,
             summarySections,
             id,

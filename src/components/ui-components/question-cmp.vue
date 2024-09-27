@@ -99,6 +99,7 @@
                     >
                     <MarkSelector
                         :label="'Направление'"
+                        :error="errors.directionId"
                         :choosed_variable="
                             selectorObject.find(
                                 (value) => value.id === questionForm.directionId
@@ -164,6 +165,7 @@
                         <InputCmp
                             :label="`Ответ ${index + 1}`"
                             :model-value="answer.text"
+                            :error="answerErrors[index]?.error"
                             @set_value="setAnswerText(index, $event.value)"
                         />
                     </div>
@@ -178,7 +180,7 @@
                         1 до 3, в зависимости от сложности вопроса.</span
                     >
                     <InputCmp
-                        :error="scoreValue.error"
+                        :error="errors.correctAnswerScore"
                         :maxlength="1"
                         :model-value="
                             !questionForm.correctAnswerScore
@@ -195,7 +197,11 @@
                         :background_type="'_secondary'"
                         :text="'Отмена'"
                     />
-                    <BtnCmp :text="'Сохранить'" @click="changeQuestion" />
+                    <BtnCmp
+                        :text="'Сохранить'"
+                        :disabled="isQuestionFormValid"
+                        @click="changeQuestion"
+                    />
                 </div>
             </div>
         </div>
@@ -206,6 +212,7 @@ import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 // import { validateForm } from "~/src/utils/validateForm";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
+import { useFormValidate } from "~/src/utils/useFormValidate";
 
 export default defineComponent({
     props: {
@@ -244,10 +251,73 @@ export default defineComponent({
             value: false,
         });
 
-        const questionForm: ICourseContentQuestions = reactive(props.question);
+        const questionForm = reactive({
+            content: props.question.content,
+            directionId: props.question.directionId,
+            showFullTitle: props.question.showFullTitle,
+            correctAnswerScore: props.question.correctAnswerScore,
+            answers: props.question.answers,
+        });
+        const { isFormValid, errors, validateOnSubmit } = useFormValidate(
+            questionForm,
+            {
+                content: {
+                    required: { errorMessage: "Обязательно к заполнению" },
+                    defaultError: "Какая-то ошибка",
+                },
+                correctAnswerScore: {
+                    required: { errorMessage: "Обязательно к заполнению" },
+                    validateNumber: {
+                        errorMessage: "Диапазон от 1 до 3",
+                        range: [1, 3],
+                    },
+                    defaultError: "Какая-то ошибка",
+                },
+                directionId: {
+                    required: { errorMessage: "Обязательно к заполнению" },
+                    defaultError: "Какая-то ошибка",
+                },
+                answers: {
+                    validateArray: {
+                        customSchema: {
+                            required: {
+                                errorMessage: "Обязательно к заполнению",
+                            },
+                            defaultError: "Какая-то ошибка",
+                        },
+                    },
+                    defaultError: "Обязательно к заполнению",
+                },
+            }
+        );
 
+        const answersValidate = (
+            answers: { text: string; isCorrectAnswer: boolean; id: number }[]
+        ) => {
+            answerErrors.value = answers
+                .map((answer) => {
+                    if (!answer?.text?.length) {
+                        return { error: "Поле обязательно" };
+                    }
+                })
+                .filter((item) => item);
+        };
+        const answerErrors = ref([]) as unknown as any;
+
+        const onBlur = () => {
+            answersValidate(questionForm.answers);
+        };
+        const isAnswersValid = !answerErrors.length;
+        const isQuestionFormValid = ref(isFormValid && isAnswersValid);
         const changeQuestion = () => {
-            emit("change_question", questionForm);
+            validateOnSubmit();
+            if (isQuestionFormValid.value) {
+                console.log("isFormValid: ", isFormValid, "errors: ", errors);
+                console.log("questionForm: ", questionForm);
+
+                emit("change_question", questionForm);
+            }
+            console.log(answerErrors);
         };
 
         const isOpened = ref<boolean>(
@@ -330,6 +400,10 @@ export default defineComponent({
             setShowFullTitle,
             changeActiveDirection,
             closeQuestion,
+            errors,
+            isFormValid,
+            isQuestionFormValid,
+            answerErrors,
         };
     },
     components: {

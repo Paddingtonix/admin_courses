@@ -147,6 +147,9 @@ import {
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
+const route = useRoute();
+const { id } = route.params as unknown as { id: string };
+
 const courseContentStore = useStoreCourseContent();
 const courseContentState = courseContentStore.$state;
 
@@ -239,8 +242,9 @@ const cancelEditing = (id: number, type: string | number) => {
 };
 
 const acceptEditing = (id: number, type: string, value: string | number) => {
-    emit("change-setting", { type, value });
-    general_settings[id].isEditing = false;
+    changeGeneralSetting({ type, value }).then(() => {
+        general_settings[id].isEditing = false;
+    });
 };
 
 const addQuestion = () => {
@@ -251,6 +255,33 @@ const addQuestion = () => {
         })
         .catch((err) => {
             console.log("ot'ebnulo dobavleniye voprosa", err);
+        });
+};
+
+const changeGeneralSetting = ({
+    type,
+    value,
+}: {
+    type: string;
+    value: string | number;
+}) => {
+    const updateData = {
+        [type === "title" ? "Title" : "CutScorePercentages"]: value,
+    };
+    console.log(updateData);
+
+    return courseContentStore
+        .patchCourseContent(id, updateData)
+        .then((response) => {
+            courseContentStore.getCourseContent(id).catch((e) => {
+                console.log(e);
+                throw e;
+            });
+            return response;
+        })
+        .catch((err) => {
+            console.log("patchCourseError", err);
+            throw err;
         });
 };
 </script>

@@ -6,7 +6,6 @@ import type {
     IDirection,
     IDirectionResponse,
     IGeneralCourseSettings,
-    mappedDirections,
 } from "../ts-interface/course-content";
 
 export const useStoreCourseContent = defineStore("course-content", {
@@ -42,7 +41,10 @@ export const useStoreCourseContent = defineStore("course-content", {
                     this.testType = data.category;
                     console.log(data.category);
 
-                    this.questions = data.questions;
+                    this.questions = data.questions.map((item) => ({
+                        ...item,
+                        content: item.content ?? "",
+                    }));
                     this.generalSettings = {
                         title: data.title,
                         cutScorePercentages: data.cutScorePercentages,
