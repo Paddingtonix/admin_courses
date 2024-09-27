@@ -138,7 +138,7 @@ export default defineComponent({
 
         const changeSearchValue = (text: string) => {
             search_query.value = text;
-            direction_store.getDirections(text);
+            // direction_store.getDirections(text);
         };
 
         const onSort = ({ field_key }) => {

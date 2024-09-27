@@ -32,7 +32,6 @@ export const useStoreCourses = defineStore('courseState', {
                         state.numberOfPages = response.data.numberOfPages
                     })
                     this.updateCourseInfo()
-                    console.log(response.data, 'response.data course-id')
                 })
                 .catch(error => {
                     console.error(error)
@@ -51,8 +50,6 @@ export const useStoreCourses = defineStore('courseState', {
                 })
         },
         deleteCourse(id: number) {
-            console.log('qwerty2');
-            
             return axios.delete(`/admin/v1/Course/${id}`).then((resp) => {
                 this.updateCourseInfo()
                 return resp;
