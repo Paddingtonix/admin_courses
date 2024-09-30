@@ -64,7 +64,7 @@
 						/>
 					</svg>
 				</i>
-				<i class="oil-delete">
+				<i @click.stop="deleteQuestion" class="oil-delete">
 					<svg
 						width="20"
 						height="22"
@@ -213,7 +213,6 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
-// import { validateForm } from "~/src/utils/validateForm";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 import { useFormValidate } from "~/src/utils/useFormValidate";
 
@@ -326,7 +325,10 @@ export default defineComponent({
 				}
 			}
 			if (isQuestionFormValid.value) {
-				emit("change_question", questionForm);
+				emit("change_question", {
+					question: questionForm.value,
+					id: props.question.id,
+				});
 			}
 		};
 
@@ -348,6 +350,10 @@ export default defineComponent({
 			};
 			emit("close_question", props.question.id);
 		};
+		// const data = {
+		// 		id: props.question.id,
+		// 		questionName: props.question.title,
+		// 	};
 
 		const scoreValue = reactive({
 			score: props.score,
@@ -389,6 +395,8 @@ export default defineComponent({
 				!questionForm.value.showFullTitle;
 		};
 
+		const deleteQuestion = () => {};
+
 		const changeActiveDirection = (direction: { id: number }) => {
 			questionForm.value.directionId = direction.id;
 		};
@@ -412,6 +420,7 @@ export default defineComponent({
 			isFormValid,
 			isQuestionFormValid,
 			answerErrors,
+			deleteQuestion,
 		};
 	},
 	components: {

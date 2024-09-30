@@ -145,7 +145,9 @@ import {
 	type PropType,
 } from "vue";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
+import { useStoreModal } from "~/src/stores/storeModal";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
+import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 
 const route = useRoute();
 const { id } = route.params as unknown as { id: string };
@@ -175,7 +177,7 @@ const props = defineProps({
 
 const isSummaryVisible = ref(false);
 const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
-
+const storeModal = useStoreModal();
 const general_settings = reactive([
 	{
 		name: "Название теста (опционально)",
@@ -211,10 +213,16 @@ const closeQuestion = (id: number) => {
 	);
 };
 
-const changeQuestion = (question: ICourseContentQuestions) => {
-	courseContentStore.patchQuestion(question).then(() => {
+const changeQuestion = ({
+	question,
+	id,
+}: {
+	question: ICourseContentQuestions;
+	id: number;
+}) => {
+	courseContentStore.patchQuestion(question, id).then(() => {
 		courseContentStore.getCourseContent(props.id).then(() => {
-			closeQuestion(question.id);
+			closeQuestion(id);
 		});
 	});
 };
@@ -251,13 +259,28 @@ const acceptEditing = (id: number, type: string, value: string | number) => {
 
 const addQuestion = () => {
 	courseContentStore
-		.addQuestion(props.id)
+		.addQuestion(props.id as unknown as number)
 		.then(() => {
 			courseContentStore.getCourseContent(props.id);
 		})
 		.catch((err) => {
 			console.log("vopros ne dobavilsya", err);
 		});
+};
+const deleteQuestion = (data: { id: number; questionName: string }) => {
+	storeModal.$patch({
+		label: "Удаление курса",
+		activeModal: "delete-modal",
+		modalProps: {
+			data,
+			modalComponent: "delete-question",
+			deleteFunction: courseContentStore.deleteQuestion,
+		} as unknown as {
+			data: { id: number; questionName: string };
+			modalComponent: string;
+			deleteFunction: () => typeof Promise;
+		},
+	} as unknown as IDeleteModal);
 };
 
 const changeGeneralSetting = ({

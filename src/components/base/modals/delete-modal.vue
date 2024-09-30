@@ -23,6 +23,7 @@ import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import DeleteTag from "../../ui-components/forms/delete-tag.vue";
 import deleteCourse from "../../ui-components/forms/delete-course.vue";
 import DeleteDirection from "~/src/components/ui-components/forms/delete-direction.vue";
+import DeleteQuestion from "../../ui-components/forms/delete-question.vue";
 
 export default defineComponent({
 	setup() {
@@ -52,6 +53,7 @@ export default defineComponent({
 		"delete-tag": DeleteTag,
 		"delete-course": deleteCourse,
 		"delete-direction": DeleteDirection,
+		"delete-question": DeleteQuestion,
 	},
 });
 </script>

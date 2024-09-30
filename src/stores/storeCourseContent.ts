@@ -69,9 +69,9 @@ export const useStoreCourseContent = defineStore("course-content", {
 				});
 		},
 
-		async patchQuestion(formData: ICourseContentQuestions) {
+		async patchQuestion(formData: ICourseContentQuestions, id: number) {
 			return await axios
-				.patch(`admin/v1/Question/${formData.id}`, formData)
+				.patch(`admin/v1/Question/${id}`, formData)
 				.then((response) => {
 					console.log("questionUpdated!", formData);
 					return response;
@@ -90,6 +90,12 @@ export const useStoreCourseContent = defineStore("course-content", {
 					return response;
 				})
 				.finally(() => {});
+		},
+		async deleteQuestion(questionId: number) {
+			return await axios
+				.delete(`admin/v1/Question/${questionId}`)
+				.then((response) => response)
+				.catch((err) => err);
 		},
 	},
 });
