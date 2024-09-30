@@ -32,7 +32,7 @@ export default defineComponent({
 		const deleteItem = () => {
 			
 			modalData.modalProps
-				.deleteFunction(modalData.modalProps?.data.id)
+				.deleteFunction(modalData.modalProps?.data.courseId)
 				.then(() => {
 					storeModal.closeModal();
 				})

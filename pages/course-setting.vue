@@ -1164,9 +1164,12 @@ export default defineComponent({
                 axios
                     .get('admin/v1/user/authors')
                     .then((response) => {
+                        console.log(response, 'looking for authors emails')
                         course_table[1].authors = response.data[0]
                     })
-                
+                    .catch((error) => {
+                        console.error(error, 'Ошибка, нас заскамили')
+                    })
                 
                 axios
                     .get(`/admin/v1/Course/${route.query.search}/content`)

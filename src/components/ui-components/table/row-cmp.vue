@@ -85,12 +85,12 @@ export default defineComponent({
     },
     setup(props) {
         const fields = props;
-        const modalStore = useStoreModal();
+        const store_modal = useStoreModal();
 
         const statusChange = (status: string) => {
             switch (status) {
                 case "В разработке":
-                    modalStore.$patch({
+                    store_modal.$patch({
                         label: "Внимание!",
                         activeModal: "development-status",
                         modalProps: {
@@ -98,10 +98,10 @@ export default defineComponent({
                             status: 'onModeration' // автор может только отправлять курс на модерацию
                         }
                     });
-                    modalStore.openModal()
+                    store_modal.openModal()
                     break;
                 case "На модерации":
-                    modalStore.$patch({
+                    store_modal.$patch({
                         label: "Изменение статуса",
                         activeModal: "moderation-status",
                         modalProps: {
@@ -109,28 +109,28 @@ export default defineComponent({
                             status: props.status
                         }
                     });
-                    modalStore.openModal()
+                    store_modal.openModal()
                     break;
                 case "Опубликован":
-                    modalStore.$patch({
+                    store_modal.$patch({
                         label: "Внимание!",
                         activeModal: "published-status",
                     });
-                    modalStore.openModal()
+                    store_modal.openModal()
                     break;
                 case "Снят с витрины":
-                    modalStore.$patch({
+                    store_modal.$patch({
                         label: "Внимание!",
                         activeModal: "out-of-stock-status",
                     });
-                    modalStore.openModal()
+                    store_modal.openModal()
                     break;
                 case "В архиве":
-                    modalStore.$patch({
+                    store_modal.$patch({
                         label: "Внимание!",
                         activeModal: "archived-status",
                     });
-                    modalStore.openModal()
+                    store_modal.openModal()
                     break;
                 default:
                     break;
