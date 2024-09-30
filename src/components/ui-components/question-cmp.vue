@@ -97,8 +97,7 @@
 						:error="errors.directionId"
 						:choosed_variable="
 							selectorObject.find(
-								(value) =>
-									value.id === questionForm.value.directionId
+								(value) => value.id === questionForm.directionId
 							)
 						"
 						:object-list="selectorObject"
@@ -114,7 +113,7 @@
 						вопроса или добавить медиа.</span
 					>
 					<CheckboxCmp
-						:active="questionForm.value.showFullTitle"
+						:active="questionForm.showFullTitle"
 						@click="setShowFullTitle"
 						:text="`Отображать тело вопроса в названии (вместо “Вопрос ${
 							question_id + 1
@@ -123,9 +122,10 @@
 					<editor
 						v-if="editorVisible"
 						id="tiny-editor"
-						v-model="questionForm.value.content"
+						v-model="questionForm.content"
 						api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
 						:init="{
+							language: 'ru',
 							height: 233,
 							menubar: false,
 							plugins: [
@@ -135,7 +135,7 @@
 							],
 							toolbar:
 								'undo redo | formatselect | bold italic backcolor | \
-                            alignleft aligncenter alignright alignjustify | \
+                            alignleft aligncenter alignright alignjustify | link image \
                             bullist numlist outdent indent | removeformat | help',
 						}"
 					/>
@@ -179,11 +179,11 @@
 					<InputCmp
 						:class="{ error_score: errors?.correctAnswerScore }"
 						:error="errors.correctAnswerScore"
-						:maxlength="1"
+						:max_length="1"
 						:model-value="
-							!questionForm.value.correctAnswerScore
+							!questionForm.correctAnswerScore
 								? null
-								: questionForm.value.correctAnswerScore
+								: questionForm.correctAnswerScore
 						"
 						:label="'Балл'"
 						@set_value="setScore($event.value)"
@@ -270,16 +270,14 @@ export default defineComponent({
 		);
 
 		const questionForm = reactive({
-			value: {
-				content: props.question.content,
-				directionId: props.question.directionId,
-				showFullTitle: props.question.showFullTitle,
-				correctAnswerScore: props.question.correctAnswerScore,
-				answers: props.question.answers,
-			},
+			content: props.question.content,
+			directionId: props.question.directionId,
+			showFullTitle: props.question.showFullTitle,
+			correctAnswerScore: props.question.correctAnswerScore,
+			answers: props.question.answers.map((item) => item),
 		});
 		const { isFormValid, errors, validateOnSubmit } = useFormValidate(
-			questionForm.value,
+			questionForm,
 			{
 				content: {
 					required: { errorMessage: "Обязательно к заполнению" },
@@ -297,8 +295,24 @@ export default defineComponent({
 					required: { errorMessage: "Обязательно к заполнению" },
 					defaultError: "Какая-то ошибка",
 				},
+				answers: {
+					validateArray: {
+						customSchema: {
+							text: {
+								required: {
+									errorMessage: "Обязательно к заполнению",
+								},
+								defaultError: "default error",
+							},
+						},
+					},
+					defaultError: "default error",
+				},
 			}
 		);
+		watch(errors, () => {
+			console.log(errors);
+		});
 
 		const answersValidate = (answer: {
 			text: string;
@@ -312,27 +326,27 @@ export default defineComponent({
 			}
 		};
 		const answerErrors = ref([] as unknown as any);
-		const isAnswersValid = computed(() => !answerErrors.value.length).value;
+		const isAnswersValid = computed(() => !answerErrors.value.length);
 		const isQuestionFormValid = computed(
-			() => isFormValid.value && isAnswersValid
+			() => isFormValid.value && isAnswersValid.value
 		);
 		const hasCorrectAnswer = ref(
-			!questionForm.value.answers.every((item) => !item.isCorrectAnswer)
+			!questionForm.answers.every((item) => !item.isCorrectAnswer)
 		);
 		const changeQuestion = () => {
 			validateOnSubmit();
-			for (const answer of questionForm.value.answers) {
+			for (const answer of questionForm.answers) {
 				answersValidate(answer);
 			}
 			if (!hasCorrectAnswer.value) {
-				for (const innerAnswer of questionForm.value.answers) {
+				for (const innerAnswer of questionForm.answers) {
 					answerErrors.value[innerAnswer.id] =
 						"Выберите правильный ответ";
 				}
 			}
 			if (isQuestionFormValid.value) {
 				emit("change_question", {
-					question: questionForm.value,
+					question: questionForm,
 					id: props.question.id,
 				});
 			}
@@ -347,13 +361,13 @@ export default defineComponent({
 		};
 
 		const closeQuestion = () => {
-			questionForm.value = {
+			Object.assign(questionForm, {
 				content: initialForm.content,
 				directionId: initialForm.directionId,
 				showFullTitle: initialForm.showFullTitle,
 				correctAnswerScore: initialForm.correctAnswerScore,
 				answers: initialForm.answers,
-			};
+			});
 			emit("close_question", props.question.id);
 		};
 
@@ -374,27 +388,26 @@ export default defineComponent({
 		};
 
 		const setScore = (value: number) => {
-			questionForm.value.correctAnswerScore = value;
-			emit("set_score", questionForm.value.correctAnswerScore);
+			questionForm.correctAnswerScore = value;
+			emit("set_score", questionForm.correctAnswerScore);
 		};
 
 		const setCorrectAnswer = (index: number) => {
 			hasCorrectAnswer.value = true;
-			for (const answer of questionForm.value.answers) {
+			for (const answer of questionForm.answers) {
 				answer.isCorrectAnswer = false;
 				delete answerErrors.value[answer.id];
 			}
-			questionForm.value.answers[index].isCorrectAnswer = true;
+			questionForm.answers[index].isCorrectAnswer = true;
 		};
 
 		const setAnswerText = (index: number, text: string) => {
-			questionForm.value.answers[index].text = text;
-			answersValidate(questionForm.value.answers[index]);
+			questionForm.answers[index].text = text;
+			answersValidate(questionForm.answers[index]);
 		};
 
 		const setShowFullTitle = () => {
-			questionForm.value.showFullTitle =
-				!questionForm.value.showFullTitle;
+			questionForm.showFullTitle = !questionForm.showFullTitle;
 		};
 
 		const deleteQuestion = () => {
@@ -406,7 +419,7 @@ export default defineComponent({
 		};
 
 		const changeActiveDirection = (direction: { id: number }) => {
-			questionForm.value.directionId = direction.id;
+			questionForm.directionId = direction.id;
 		};
 		return {
 			visible_summary,

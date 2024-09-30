@@ -184,7 +184,7 @@ const general_settings = reactive([
 		name: "Название теста (опционально)",
 		title: computed(() =>
 			courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
-		),
+		).value,
 		type: "title",
 		desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
 		isEditing: false,
@@ -193,7 +193,7 @@ const general_settings = reactive([
 		name: "Проходной балл *",
 		title: computed(
 			() => courseContentStore.generalSettings.cutScorePercentages
-		),
+		).value,
 		type: "score",
 		desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
 		isEditing: false,
@@ -244,7 +244,6 @@ onMounted(() => {
 		courseContentStore
 			.getDirections(courseContentStore.courseId)
 			.finally(() => {});
-		console.log("StateCOurse: ", courseContentState);
 	});
 });
 

@@ -70,6 +70,9 @@ const formModel = reactive({
 	description: modalData.modalProps.description ?? "",
 });
 
+onErrorCaptured((err) => {
+	console.log(err);
+});
 const headersStore = useHeadersStore();
 
 type TInputEvent = {
