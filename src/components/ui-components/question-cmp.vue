@@ -2,12 +2,7 @@
 	<div class="oil-course-content__test__question">
 		<div class="oil-course-content__test__question__frame">
 			<span class="oil-course-content__test__question__title">
-				{{
-					question?.title.replace(
-						/(?<=Вопрос )\d+/,
-						`${question_id + 1}`
-					)
-				}}
+				{{ questionName }}
 			</span>
 			<div
 				v-show="!active_id.includes(question.id)"
@@ -247,7 +242,13 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ["set_score", "change_question", "open_question", "close_question"],
+	emits: [
+		"set_score",
+		"change_question",
+		"open_question",
+		"close_question",
+		"delete_question",
+	],
 	setup(props, { emit }) {
 		const visible_summary = reactive({
 			value: false,
@@ -261,6 +262,11 @@ export default defineComponent({
 				correctAnswerScore: props.question.correctAnswerScore,
 				answers: props.question.answers,
 			})
+		);
+
+		const questionName = props.question?.title.replace(
+			/(?<=Вопрос )\d+/,
+			`${props.question_id + 1}`
 		);
 
 		const questionForm = reactive({
@@ -350,10 +356,6 @@ export default defineComponent({
 			};
 			emit("close_question", props.question.id);
 		};
-		// const data = {
-		// 		id: props.question.id,
-		// 		questionName: props.question.title,
-		// 	};
 
 		const scoreValue = reactive({
 			score: props.score,
@@ -395,7 +397,13 @@ export default defineComponent({
 				!questionForm.value.showFullTitle;
 		};
 
-		const deleteQuestion = () => {};
+		const deleteQuestion = () => {
+			const data = {
+				id: props.question.id,
+				questionName,
+			};
+			emit("delete_question", data);
+		};
 
 		const changeActiveDirection = (direction: { id: number }) => {
 			questionForm.value.directionId = direction.id;
@@ -421,6 +429,7 @@ export default defineComponent({
 			isQuestionFormValid,
 			answerErrors,
 			deleteQuestion,
+			questionName,
 		};
 	},
 	components: {

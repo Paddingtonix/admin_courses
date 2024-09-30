@@ -38,7 +38,7 @@
 				<template v-else>
 					<CourseSettingsInput
 						:id="idx"
-						:type="setting.type"
+						:type="setting.type as unknown as 'title' | 'score' | undefined"
 						:input_type="
 							setting.type === 'score' ? 'number' : 'text'
 						"
@@ -104,7 +104,8 @@
 					@open_question="setActiveQuestion($event)"
 					@close_question="closeQuestion($event)"
 					@change_question="changeQuestion($event)"
-					:selector-object="courseContentState.directions"
+					@delete_question="deleteQuestion($event)"
+					:selector-object="selector_data"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
 					<hr />
@@ -201,6 +202,11 @@ const general_settings = reactive([
 
 const active_questions = reactive({ value: [] as number[] });
 
+const selector_data = courseContentStore.directions.map((item) => ({
+	name: item.name,
+	id: item.directionId,
+}));
+
 const changing_field = ref("");
 
 const setActiveQuestion = (id: number) => {
@@ -228,7 +234,7 @@ const changeQuestion = ({
 };
 
 const editSetting = (id: number) => {
-	changing_field.value = general_settings[id].title;
+	changing_field.value = general_settings[id].title as unknown as string;
 	general_settings.forEach((setting) => (setting.isEditing = false));
 	general_settings[id].isEditing = true;
 };
@@ -268,9 +274,12 @@ const addQuestion = () => {
 		});
 };
 const deleteQuestion = (data: { id: number; questionName: string }) => {
+	console.log(data);
+
 	storeModal.$patch({
-		label: "Удаление курса",
+		label: "Удаление вопроса",
 		activeModal: "delete-modal",
+		isOpen: true,
 		modalProps: {
 			data,
 			modalComponent: "delete-question",
@@ -293,13 +302,13 @@ const changeGeneralSetting = ({
 	const updatedData = () => {
 		if (type === "title") {
 			return {
-				title: value,
-				cutScorePercentages: general_settings[1].title,
+				title: value as string,
+				cutScorePercentages: general_settings[1].title as number,
 			};
 		} else {
 			return {
-				title: general_settings[0].title,
-				cutScorePercentages: value,
+				title: general_settings[0].title as string,
+				cutScorePercentages: value as number,
 			};
 		}
 	};
