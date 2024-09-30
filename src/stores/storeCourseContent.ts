@@ -92,9 +92,15 @@ export const useStoreCourseContent = defineStore("course-content", {
 				.finally(() => {});
 		},
 		async deleteQuestion(questionId: number) {
+			const route = useRoute();
 			return await axios
 				.delete(`admin/v1/Question/${questionId}`)
-				.then((response) => response)
+				.then((response) => {
+					if (route.params.id) {
+						this.getCourseContent(route.params.id[0]);
+					}
+					return response;
+				})
 				.catch((err) => err);
 		},
 	},

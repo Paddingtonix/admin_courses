@@ -3,18 +3,18 @@
 		<div class="oil-course-content">
 			<breadCmp
 				:prev_page="['Курсы', `${course_settings.title_course}`]"
-				:current_page="courseContentStore.generalSettings.title"
+				:current_page="courseContentStore.generalSettings?.title ?? ''"
 				class="oil-course-content__bread"
 			/>
 			<AttentionMessage
-				v-if="courseStore.status === 'Archived'"
+				v-if="courseStore?.status === 'Archived'"
 				message="Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF."
 				:buttonText="'Скачать PDF'"
 				:buttonClick="() => {}"
 			/>
 			<ContentModule v-if="course_settings.type_course === 'text'" />
 			<TestSection
-				:questions="courseContentStore.questions"
+				:questions="courseContentStore?.questions"
 				:id="id"
 				v-else-if="content === 'test' && !isLoading"
 			>
@@ -43,7 +43,6 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import { useRoute } from "vue-router";
-import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 
 export default defineComponent({
 	props: {
@@ -87,7 +86,9 @@ export default defineComponent({
 				],
 			},
 		];
+
 		const isLoading = ref(true);
+
 		onMounted(() => {
 			nextTick(() => {
 				courseContentStore
@@ -100,11 +101,20 @@ export default defineComponent({
 					})
 					.finally(() => {
 						isLoading.value = false;
-						course_settings.title_course = route.query[""][0];
-						course_settings.type_course = route.query[""][1];
+						if (route.query[""] !== null) {
+							course_settings.title_course =
+								route.query[""][0] ?? "";
+							course_settings.type_course =
+								route.query[""][1] ?? "";
+						} else {
+							course_settings.title_course = "unknown_title";
+							course_settings.type_course = "unknown_type";
+						}
 					});
 			});
 		});
+
+		onErrorCaptured((err) => console.log(err));
 
 		return {
 			courseStore,

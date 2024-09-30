@@ -183,7 +183,7 @@ const general_settings = reactive([
 	{
 		name: "Название теста (опционально)",
 		title: computed(() =>
-			courseContentStore.generalSettings.title.replace(/^.*?:\s*/, "")
+			courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
 		),
 		type: "title",
 		desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
@@ -274,8 +274,6 @@ const addQuestion = () => {
 		});
 };
 const deleteQuestion = (data: { id: number; questionName: string }) => {
-	console.log(data);
-
 	storeModal.$patch({
 		label: "Удаление вопроса",
 		activeModal: "delete-modal",
