@@ -68,6 +68,7 @@
 						<FilterCmp
 							@send-fiters="setFilters"
 							@click="openFilter(true)"
+                            :pressed_button="filter_frame.value"
 							:filters="courseStore.filters"
 						/>
 					</div>
@@ -103,6 +104,7 @@
 						:lang="'Язык'"
 						:date_edit="'Дата посл. ред.'"
 						:end_date="'Снятие с витрины'"
+                        @sort="sortClick($event.field_key)"
 					/>
 					<TableRowCmp
 						v-for="(row, idx) in courseStore.course_list"
@@ -148,15 +150,13 @@
 						@change-page="isCurrentPage"
 					/>
 				</div>
-                <div>
-                    <SelectorCmp
-                        @select-value="changeCoursePerPage($event)"
-                        class="tags-page__selector"
-                        :label="`${list[0].text} курсов на стр.`"
-                        listText="курсов на стр."
-                        :list="list"
-                    />
-                </div>
+				<SelectorCmp
+					@setValue="changeCoursePerPage($event)"
+					class="tags-page__selector"
+					:label="`${list[0].text} курсов на стр.`"
+					listText="курсов на стр."
+					:list="list"
+				/>
 			</template>
 		</div>
 	</section>
@@ -166,6 +166,7 @@ import { useRouter } from "vue-router";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
+import { useHeadersSort } from "~/src/utils/sort-generator";
 import type {
 	IDeleteModal,
 	IDeleteTag,
@@ -184,6 +185,8 @@ export default defineComponent({
 		const filter_frame = reactive({
 			value: false as boolean,
 		});
+
+        const nCoursesPerPage = ref(10)
 
 		const tagsStore = useTagsStore();
 
@@ -270,8 +273,8 @@ export default defineComponent({
 		});
 
         const changeCoursePerPage = (val: { value: number; type: string }) => {
-            tagsStore.changeTagsPerPage(val.value);
-            tagsStore.getTags({ text: searchValue.value });
+            nCoursesPerPage.value = (val.value);
+            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}&nCoursesPerPage=${nCoursesPerPage.value}`);
         };
 
 		watch(current_page, () => {
@@ -323,6 +326,21 @@ export default defineComponent({
 							.join("");
 				  })();
 		};
+
+        const tableHeadFields = ["name", "status", "lang"];
+
+        enum sortNames {
+            name = "ascendingHeadingName",
+            status = "ascendingLabelName",
+            lang = "ascendingLocalization",
+        }
+
+        const { sortState, sortClick } = useHeadersSort(
+            tableHeadFields,
+            sortNames,
+            //@ts-ignore
+            tagsStore.setSort
+        );
 
 		const status_translation: Record<
 			| "InDevelopment"
@@ -387,6 +405,12 @@ export default defineComponent({
         margin-bottom: rem(32)
 
     &__info
+        position: relative
+        .oil-selector
+            position: absolute
+            bottom: rem(32)
+            right: rem(32)
+
         &__card
             margin-bottom: rem(48)
 
@@ -421,6 +445,7 @@ export default defineComponent({
         @include flex_start()
         gap: rem(8)
         width: rem(742)
+
         &__course-list
             margin-bottom: rem(24)
             &__row

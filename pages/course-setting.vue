@@ -149,7 +149,7 @@
                             </div>
                             <div v-else-if="!storeEditCourseSetting.isEdit" class="oil-course-setting__settings__table__column">
                                 <div class="oil-course-setting__settings__table__column__cell">
-                                    <span>{{ column.authors }}</span>
+                                    <span v-for="(author, idx) in column.authors" :key="author">{{ !idx ? author : `${author}, ` }}</span>
                                 </div>
                                 <div v-if="!course_setting.value.IsFree" class="oil-course-setting__settings__table__column__cell">
                                     <span v-if="course_table[1].price">
@@ -1181,6 +1181,8 @@ export default defineComponent({
                     .then((info_course) => {
                         course_setting.value = info_course.data
                         // Обновление данных в таблице
+                        
+                        course_table[1].authors = info_course.data.AuthorEmails,
                         course_table[1].price = info_course.data.PriceInRubles ? String(info_course.data.PriceInRubles).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.PriceInRubles
                         course_table[1].duration = info_course.data.DurationAcademicHours ? String(info_course.data.DurationAcademicHours).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : info_course.data.DurationAcademicHours
                         course_table[1].workload = info_course.data.DurationWorkDays ? String(info_course.data.DurationWorkDays).replace(/\B(?=(\d{3})+(?!\д))/g, ' ') : info_course.data.DurationWorkDays
