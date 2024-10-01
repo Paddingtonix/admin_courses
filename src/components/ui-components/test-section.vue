@@ -36,6 +36,7 @@
 					</div>
 				</div>
 				<template v-else>
+					<!-- @vue-expect-error -->
 					<CourseSettingsInput
 						:id="idx"
 						:error="generalSettingsErrors[setting.type as 'title' | 'score']"
@@ -186,21 +187,23 @@ const props = defineProps({
 const isSummaryVisible = ref(false);
 const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 const storeModal = useStoreModal();
+const generalSettingsTitle = computed(() =>
+	courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
+);
+const generalSettingsCutScore = computed(
+	() => courseContentStore.generalSettings.cutScorePercentages
+);
 const general_settings = reactive([
 	{
 		name: "Название теста (опционально)",
-		title: computed(() =>
-			courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
-		).value,
+		title: generalSettingsTitle,
 		type: "title",
 		desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
 		isEditing: false,
 	},
 	{
 		name: "Проходной балл *",
-		title: computed(
-			() => courseContentStore.generalSettings.cutScorePercentages
-		).value,
+		title: generalSettingsCutScore,
 		type: "score",
 		desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
 		isEditing: false,
@@ -274,6 +277,9 @@ const validateGeneralSetting = (
 	value: string | number,
 	type: "score" | "title"
 ) => {
+	if (value === undefined) {
+		generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
+	}
 	if (type === "title" && typeof value === "string") {
 		if (!value.trim()) {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
@@ -283,12 +289,10 @@ const validateGeneralSetting = (
 		} else {
 			delete generalSettingsErrors.value[type];
 		}
-	} else if (type === "score" && typeof value === "number") {
-		console.log("logger", value);
-
-		if (value === null) {
+	} else if (type === "score") {
+		if (typeof value !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
-		} else if (value > 100 && value < 0) {
+		} else if (value > 100 || value < 0 || !Number.isInteger(value)) {
 			generalSettingsErrors.value[type] =
 				"Значение поля - целое число от 0 до 100";
 		} else {
@@ -303,7 +307,7 @@ const acceptEditing = (
 	value: string | number
 ) => {
 	validateGeneralSetting(value, type);
-	if (!generalSettingsErrors.value[type]) {
+	if (!generalSettingsErrors.value[type]?.length) {
 		changeGeneralSetting({ type, value }).then(() => {
 			general_settings[id].isEditing = false;
 		});
@@ -337,7 +341,7 @@ const deleteQuestion = (data: { id: number; questionName: string }) => {
 	} as unknown as IDeleteModal);
 };
 
-const changeGeneralSetting = ({
+const changeGeneralSetting = async ({
 	type,
 	value,
 }: {
@@ -362,10 +366,6 @@ const changeGeneralSetting = ({
 	return courseContentStore
 		.patchCourseContent(id, formData)
 		.then((response) => {
-			courseContentStore.getCourseContent(id).catch((e) => {
-				console.log(e);
-				throw e;
-			});
 			return response;
 		})
 		.catch((err) => {

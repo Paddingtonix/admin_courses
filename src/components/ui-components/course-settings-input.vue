@@ -8,7 +8,10 @@
 			:error="error"
 			@set_value="changeInputValue($event)"
 		/>
-		<i class="accept" @click="emit('accept', props.id)"
+		<i
+			class="accept"
+			:class="{ disabled: error.length }"
+			@click="emit('accept', props.id)"
 			><svg
 				width="22"
 				height="22"
@@ -107,6 +110,12 @@ const changeInputValue = (value: { value: string; type: string }) => {
         max-height: rem(40)
     i
         cursor: pointer
+        &.disabled
+            pointer-events: none
+            user-select: none
+            svg
+                path
+                    stroke: $light_success
         svg
             path
                 transition: stroke .3s

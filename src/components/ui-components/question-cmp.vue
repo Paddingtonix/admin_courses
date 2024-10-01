@@ -309,10 +309,6 @@ export default defineComponent({
 			}
 		);
 
-		watch(errors, () => {
-			console.log(errors);
-		});
-
 		const answersValidate = (answer: {
 			text: string;
 			isCorrectAnswer: boolean;
