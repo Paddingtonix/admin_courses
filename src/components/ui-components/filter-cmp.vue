@@ -1,6 +1,10 @@
 <template>
 	<div class="oil-filter">
-		<div class="oil-filter__button" @click="openFilter(true)">
+		<div 
+			class="oil-filter__button" 
+			:class="{_active: filter_frame.value}"
+			@click="openFilter(true)"
+		>
 			<svg
 				class="oil-filter__icon"
 				xmlns="http://www.w3.org/2000/svg"
@@ -81,6 +85,10 @@ const { filters } = defineProps({
 			[key: string]: { id: string | number; name: string }[];
 		}>,
 	},
+	pressed_button: {
+		type: Boolean,
+		default: false
+	}
 });
 
 const emit = defineEmits(["send-fiters", "cancel-filters"]);
@@ -173,6 +181,14 @@ const openFilter = (state: boolean) => {
         &__text
             color: $basic_primary
             font-weight: bold
+
+        &._active 
+            background-color: $light_primary
+            span 
+                color: $basic_white
+            
+            svg path 
+                stroke: $basic_white
 
     &__body-wrapper
         position: fixed

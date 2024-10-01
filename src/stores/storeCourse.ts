@@ -124,5 +124,8 @@ export const useStoreCourses = defineStore("courseState", {
 				return resp;
 			});
 		},
+		changeCoursePerPage(value: number) {
+			this.nCoursesPerPage = value;
+		},
 	},
 });

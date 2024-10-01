@@ -105,16 +105,15 @@
                             </template>
                         </TableRowCmp>
                     </template>
-                    <div
-                        v-else-if="!filtered_directions?.length"
-                        class="no-results"
-                    >
-                        <span> Не создано ни одного направления. </span>
-                    </div>
-                    <div v-else class="no-results">
+                    <div v-if="!filtered_directions.length" class="no-results">
                         <span>
                             К сожалению, по вашему запросу не найдено ни одного
                             направления. Попробуйте другие параметры поиска.
+                        </span>
+                    </div>
+                    <div v-if="!direction_store.directions.directions.length" class="no-results">
+                        <<span>
+                           Не создано ни одного направления.
                         </span>
                     </div>
                 </div>
@@ -134,29 +133,31 @@ import {
 } from "vue";
 import { useDirectionStore } from "~/src/stores/storeDirection";
 import { useStoreModal } from "~/src/stores/storeModal";
-import { formatDate } from "~/src/utils/format-date";
-import { sortHeader } from "~/src/utils/sort-header";
-import { useUserRoleStore } from "~/src/stores/storeRole";
+import { formatDate } from '~/src/utils/format-date';
+import { sortHeader } from '~/src/utils/sort-header'
+import { useUserRoleStore } from '~/src/stores/storeRole';
+import { useStoreCourses } from '~/src/stores/storeCourse';
 import type { IDirection } from "~/src/ts-interface/direction";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 
 export default defineComponent({
     setup() {
         const direction_store = useDirectionStore();
-        const search_query = ref("");
-        const show_only_visible = ref(true);
-        const show_only_invisible = ref(true);
-        const sort_field = ref("");
-        const sort_direction = ref<"asc" | "desc">("asc");
-        const user_role_store = useUserRoleStore();
-        const modalStore = useStoreModal();
+        const search_query = ref('')
+        const show_only_visible = ref(true)
+        const show_only_invisible = ref(true)
+        const sort_field = ref('')
+        const sort_direction = ref<'asc' | 'desc'>('asc')
+        const user_role_store = useUserRoleStore()
+        const modal_store = useStoreModal();
+        const course_store = useStoreCourses();
 
         const visible_state = reactive({
             show_only_visible: true,
             show_only_invisible: true,
         });
 
-        const pill_info = reactive([
+        const pill_info = computed(() => [
             {
                 text: "Всего",
                 value: direction_store.directions.totalDirectionsCount,
@@ -183,11 +184,12 @@ export default defineComponent({
             active: boolean;
         }) => {
             active_checkbox[id].isActive = active;
+            visible_state[id] = active;
         };
 
         const changeSearchValue = (text: string) => {
             search_query.value = text;
-            direction_store.getDirections(text);
+            // direction_store.getDirections(text);
         };
 
         const onSort = ({ field_key }) => {
@@ -198,68 +200,45 @@ export default defineComponent({
         };
 
         const filtered_by_visibility = computed(() => {
-            console.log(
-                "direction_store.directions:",
-                direction_store.directions
-            );
+            const directions = direction_store.directions.directions;
 
-            if (
-                active_checkbox.show_only_visible.isActive &&
-                active_checkbox.show_only_invisible.isActive
-            ) {
-                return direction_store.directions;
+            if (visible_state.show_only_visible && visible_state.show_only_invisible) {
+                return directions;
             }
 
-            if (
-                !active_checkbox.show_only_visible.isActive &&
-                !active_checkbox.show_only_invisible.isActive
-            ) {
+            if (!visible_state.show_only_visible && !visible_state.show_only_invisible) {
                 return [];
             }
 
-            return direction_store.directions.filter((direction) => {
-                if (
-                    active_checkbox.show_only_visible.isActive &&
-                    !active_checkbox.show_only_invisible.isActive
-                ) {
-                    return direction.isVisible;
-                } else {
-                    return !direction.isVisible;
-                }
-            });
-        });
+            if (visible_state.show_only_visible) {
+                return directions.filter(direction => direction.isVisible);
+            }
+            if (visible_state.show_only_invisible) {
+                return directions.filter(direction => !direction.isVisible);
+            }
+
+            return directions;
+        })
 
         const filtered_directions = computed(() => {
-            console.log(
-                filtered_by_visibility.value,
-                "filtered_by_visibility "
-            );
-            //KAKOY LET?!?!?!?!?!?!
-            let filtered = filtered_by_visibility.value.directions?.filter(
-                (direction: { localizedName: string }) => {
-                    return direction.localizedName
-                        .toLowerCase()
-                        .includes(search_query.value.toLowerCase());
-                }
-            );
+            let filtered = filtered_by_visibility.value;
+
+            if (search_query.value) {
+                filtered = filtered.filter(direction =>
+                    direction.localizedName.toLowerCase().includes(search_query.value.toLowerCase())
+                );
+            }
 
             if (sort_field.value && sort_direction.value) {
-                filtered = sortHeader(
-                    filtered,
-                    sort_field.value,
-                    sort_direction.value
-                );
-                console.log("ну-ка, сука, работай", filtered);
+                filtered = sortHeader(filtered, sort_field.value, sort_direction.value);
             }
 
             return filtered;
         });
 
         const sendDirection = (data?: IDirection, edit?: boolean) => {
-            modalStore.$patch({
-                label: !edit
-                    ? "Добавление направления"
-                    : "Редактирование направления",
+            modal_store.$patch({
+                label: !edit ? "Добавление направления" : "Редактирование направления",
                 activeModal: "direction-modal",
                 modalProps: {
                     data,
@@ -267,28 +246,49 @@ export default defineComponent({
                     edit,
                 },
             });
-            modalStore.openModal();
+            modal_store.openModal();
+        }
+
+        const getRelatedCourses = (localizedName: string) => {
+            const courses = course_store.course_list.filter((direction_in_course) => {
+                return direction_in_course.directions.includes(localizedName);
+            });
+            return courses.length === 1 ? courses : [];
         };
 
-        const deleteDirection = (data: IDirection) => {
-            modalStore.$patch({
-                label: "Удаление направления",
-                activeModal: "delete-modal",
-                modalProps: {
-                    data,
-                    modalComponent: "delete-direction",
-                    deleteFunction: () =>
-                        direction_store.removeDirection(data.directionId),
-                },
-            } as unknown as IDeleteModal);
-            modalStore.openModal();
+        const deleteDirection = (data?: IDirection) => {
+            const related_courses = getRelatedCourses(data.localizedName);
+            console.log(related_courses, 'related_courses')
+            if (related_courses.length > 0) {
+                modal_store.$patch({
+                    label: "Невозможно удалить направление",
+                    activeModal: "warning-delete-modal",
+                    modalProps: {
+                        data,
+                        related_courses,
+                    },
+                } as unknown as IDeleteModal);
+                modal_store.openModal();
+            } else {
+                modal_store.$patch({
+                    label: "Удаление направления",
+                    activeModal: "delete-modal",
+                    modalProps: {
+                        data,
+                        modalComponent: "delete-direction",
+                        deleteFunction: () => direction_store.removeDirection(data.directionId),
+                    },
+                } as unknown as IDeleteModal);
+                modal_store.openModal();
+            }
         };
 
         onMounted(() => {
             nextTick(() => {
                 direction_store.getDirections();
-            });
-        });
+                course_store.getCourses('/admin/v1/Course');
+            })
+        })
 
         return {
             pill_info,
@@ -301,6 +301,7 @@ export default defineComponent({
             show_only_invisible,
             active_checkbox,
             user_role_store,
+            course_store,
             deleteDirection,
             sendDirection,
             visible_state,

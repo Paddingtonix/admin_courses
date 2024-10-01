@@ -5,6 +5,7 @@
                 :prev_page="'Курсы'"
                 :current_page="'Создание курса'"
                 class="oil-create-course__form__bread"
+                :prev_link="'/course-page'"
             />
             <div class="oil-create-course__form__fields">
                 <span class="oil-create-course__form__fields__title">Общая информация</span>
@@ -23,7 +24,7 @@
                             v-else
                             :placeholder="field.label"
                             :type="field.type"
-                            :error="field.error"
+                            :error="field.error = field.value.length > 103 ? 'Не больше 103 символов' : ''"
                             :maxlength="103"
                             @set_value="setValueSelector"
                             @blur="validCheck(field)"
@@ -136,6 +137,10 @@ export default defineComponent({
                     {
                         text: 'Английский',
                         active: false
+                    },
+                    {
+                        text: 'Французский',
+                        active: false
                     }
                 ]
             },
@@ -226,9 +231,11 @@ export default defineComponent({
             }
         }
 
-        const validCheck = (field: FormField) => {
+        const validCheck = (field: FormField) => {    
+            console.log(11111);
+                    
             if(!field.value.length) {
-                field.error = 'Это поле обязательно к заполнению для авторизации'
+                field.error = 'Это поле обязательно к заполнению'
             } else {
                 field.error = ''
             }
@@ -303,6 +310,7 @@ export default defineComponent({
                 })
                 .catch((error) => {
                     console.error('Ошибка при получении данных:', error)
+                    form.find(field => field.type === error.type)!.error = error.message
                 })
         }
 
@@ -333,6 +341,9 @@ export default defineComponent({
                 flex-direction: column
                 gap: rem(16)
                 margin-bottom: rem(32)
+                ._disable
+                    border: rem(1) solid red
+
 
             &__title
                 display: inline-block

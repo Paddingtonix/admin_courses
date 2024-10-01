@@ -21,7 +21,7 @@
             </template>
         </template>
         <template v-else>
-            <span class="oil-bread__page _primary">{{ prev_page }}</span>
+            <span class="oil-bread__page _primary" @click="$router.push(prev_linke)">{{ prev_page }}</span>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -54,6 +54,10 @@ export default defineComponent({
             type: String,
             default: "current_page",
         },
+        prev_linke: {
+            type: String,
+            default: '/'
+        }
     },
     setup() {},
 });
@@ -68,4 +72,5 @@ export default defineComponent({
         font-weight: bold
         &._primary
             color: $basic_primary
+            cursor: pointer
 </style>

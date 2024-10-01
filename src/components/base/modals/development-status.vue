@@ -67,7 +67,16 @@ export default defineComponent({
                     store_modal.closeModal()
                 })
                 .catch(error => {
-                    console.log('статус не изменился, повышение не получил', error)
+                    console.log('статус не изменился, повышение не получил', error.response.data)
+                    store_modal.$patch({
+                        label: "Внимание!",
+                        activeModal: "some-error",
+                        modalProps: {
+                            data: error.response.data,
+                            courseId: courseId,
+                            status: 'onModeration'
+                        }
+                    });
                 })
         })
 
