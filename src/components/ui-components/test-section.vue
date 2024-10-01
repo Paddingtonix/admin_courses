@@ -64,7 +64,10 @@
 			</div>
 		</div>
 		<div class="oil-course-content__attention" @click="toggleSummary">
-			<div class="oil-course-content__attention__head">
+			<div
+				class="oil-course-content__attention__head"
+				:class="{ active: isSummaryVisible }"
+			>
 				<slot name="attention-icon">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -376,73 +379,85 @@ const changeGeneralSetting = async ({
 </script>
 
 <style lang="sass">
-.oil-course-content__test
-    max-width: rem(972)
+.oil-course-content
+	&__attention
+		&__head
+			svg
+				transition: transform .3s
+				&:last-of-type
+					margin-left: auto
 
-    &__general-settings
-        @include flex_start()
-        border-bottom: rem(1) solid $disabled_basic
+			&.active
+				svg
+					&:last-of-type
+						transform: rotate(180deg)
+	&__test
+		max-width: rem(972)
 
-        &__value
-            @include flex_column()
-            gap: rem(2)
-            position: relative
-            width: 100%
-            &.fullfiled
-                flex-direction: row
-                justify-content: space-between
-                align-items: center
+		&__general-settings
+			@include flex_start()
+			border-bottom: rem(1) solid $disabled_basic
 
-            span
-                font-weight: bold
-            &__wrapper
-                display: flex
-                align-items: stretch
-                cursor: pointer
-                justify-content: space-between
-                i
-                    svg
-                        path
-                            transition: stroke .3s
-                span
-                    font-size: rem(12)
-                    font-weight: 400
-                &:hover
-                    i
-                        svg
-                            path
-                                stroke: $basic_primary
+			&__value
+				@include flex_column()
+				gap: rem(2)
+				position: relative
+				width: 100%
+				&.fullfiled
+					flex-direction: row
+					justify-content: space-between
+					align-items: center
 
-
-        &__name
-            padding: rem(28) rem(108) rem(28) rem(8)
-            min-width: rem(360)
-
-        &:last-child
-            margin-bottom: rem(32)
+				span
+					font-weight: bold
+				&__wrapper
+					display: flex
+					align-items: stretch
+					cursor: pointer
+					justify-content: space-between
+					i
+						svg
+							path
+								transition: stroke .3s
+					span
+						font-size: rem(12)
+						font-weight: 400
+					&:hover
+						i
+							svg
+								path
+									stroke: $basic_primary
 
 
-    &__add_questuon_wrapper
-        cursor: pointer
-        opacity: 0
-        &:hover
-            opacity: 1
-        hr
-            display: block
-            border: 0
-            height: 1px
-            border-top: 2px solid $basic-primary
-        .btn__add_question
-            position: absolute
-            padding: 0
-            z-index: 2
-            max-height: rem(32)
-            background-color: #fff
-            left: 35%
-            transform: translateY(-50%) translateX(-100%)
-            max-width: rem(156)
-            font-size: rem(12)
-            font-weight: 600
-            &:hover
-                background-color: #eee !important
+			&__name
+				padding: rem(28) rem(108) rem(28) rem(8)
+				min-width: rem(360)
+
+			&:last-child
+				margin-bottom: rem(32)
+
+
+		&__add_questuon_wrapper
+			cursor: pointer
+			opacity: 0
+			&:hover
+				opacity: 1
+			hr
+				display: block
+				border: 0
+				height: 1px
+				border-top: 2px solid $basic-primary
+			.btn__add_question
+				position: absolute
+				padding: 0
+				z-index: 2
+				max-height: rem(32)
+				background-color: #fff
+				left: 35%
+				transform: translateY(-50%) translateX(-100%)
+				max-width: rem(156)
+				font-size: rem(12)
+				font-weight: 600
+				&:hover
+					background-color: #eee !important
 </style>
