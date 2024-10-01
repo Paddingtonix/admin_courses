@@ -10,13 +10,17 @@
             class="oil-direction__input"
            :label="`Название направления (${lang.toLocaleUpperCase()})*`"
            :modelValue="data.localizedName"
+           :error="errors.name"
            @set_value="setDirectionName"
+           @blur="isValid"
         />
         <CheckboxCmp
             class="oil-direction__checkbox"
             :text="'Отображать на сайте'"
             :active="visible_direction"
+            :error="errors.checkbox"
             @set_value="setCheckbox"
+            @blur="isValid"
         />
         <div class="oil-direction__btns">
             <BtnCmp
@@ -42,6 +46,7 @@ import { defineComponent } from 'vue'
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
 import type { IDirection } from "~/src/ts-interface/direction";
+import {useStoreCourses} from "~/src/stores/storeCourse";
 
 export default defineComponent({
     components: {},
@@ -49,14 +54,15 @@ export default defineComponent({
     setup() {
         const lang = ref('ru')
 
-        const visible_direction = ref(false)
-
-        const input_value = ref('')
-
         const store_modal = useStoreModal();
-        const store_direction = useDirectionStore();
 
         const modal_data = store_modal.$state;
+
+        const visible_direction = ref(modal_data.modalProps?.data?.isVisible || false)
+        const input_value = ref(modal_data.modalProps?.data?.localizedName || '')
+
+        const store_direction = useDirectionStore();
+        const course_store = useStoreCourses();
 
         const initialDirection: IDirection = {
             directionId: 0,
@@ -84,34 +90,81 @@ export default defineComponent({
 
         const setDirectionName = (val) => {
             input_value.value = val.value
+            data.localizedName = val.value;
+        }
+
+        const errors = reactive({
+            name: ''
+        });
+
+        const isDirectionExists = (name: string) => {
+            return store_direction.directions.directions
+                .some((direction: IDirection) => direction.localizedName === name);
+        };
+
+        const getRelatedCourses = (localizedName: string) => {
+            const courses = course_store.course_list.filter((direction_in_course) => {
+                return direction_in_course.directions.includes(localizedName);
+            });
+            return courses.length === 1 ? courses : [];
+        };
+
+        const isValid = () => {
+            errors.name = '';
+            errors.checkbox = '';
+
+            if (input_value.value === '') {
+                errors.name = 'Поле обязательно к заполнению';
+                return false;
+            } else if (input_value.value.length > 50) {
+                errors.name = 'Максимальное количество символов - 50';
+                return false;
+            } else if (!modal_data.modalProps.edit && isDirectionExists(input_value.value)) {
+                errors.name = 'Направление с таким названием уже существует';
+                return false;
+            }
+
+            if (!visible_direction.value) {
+                const related_courses = getRelatedCourses(data.localizedName);
+                if (related_courses.length > 0) {
+                    errors.checkbox = 'Направление используется на сайте, его нельзя скрыть';
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         const sendDirection = () => {
-            const sendData = {
-                isVisible: visible_direction.value,
-                localizations: {
-                    en: input_value.value,
-                    ru: input_value.value,
-                    // fr: input_value.value
+            if (isValid()) {
+                const sendData = {
+                    isVisible: visible_direction.value,
+                    localizations: {
+                        en: input_value.value,
+                        ru: input_value.value,
+                        // fr: input_value.value
+                    }
                 }
-            }
 
-            store_direction.createDirection(sendData);
-            store_modal.closeModal();
+                store_direction.createDirection(sendData);
+                store_modal.closeModal();
+            }
         }
 
-        const patchDirection = (data: IDirection) => {
-            const sendData = {
-                isVisible: visible_direction.value,
-                localizations: {
-                    en: input_value.value,
-                    ru: input_value.value,
-                    // fr: input_value.value
+        const patchDirection = () => {
+            if (isValid()) {
+                const sendData = {
+                    isVisible: visible_direction.value,
+                    localizations: {
+                        en: input_value.value,
+                        ru: input_value.value,
+                        // fr: input_value.value
+                    }
                 }
-            }
 
-            store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
-            store_modal.closeModal();
+                store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
+                store_modal.closeModal();
+            }
         }
 
         return {
@@ -119,9 +172,11 @@ export default defineComponent({
             visible_direction,
             modal_data,
             data,
+            errors,
             setLang,
             setCheckbox,
             setDirectionName,
+            isValid,
             sendDirection,
             patchDirection,
             closeModal

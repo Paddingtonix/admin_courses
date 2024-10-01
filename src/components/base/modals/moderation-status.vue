@@ -99,6 +99,14 @@ export default defineComponent({
                 })
                 .catch(error => {
                     console.log('статус не изменился, повышение не получил', error)
+                    store_modal.$patch({
+                        label: "Внимание!",
+                        activeModal: "one-error",
+                        modalProps: {
+                            courseId: courseId,
+                            status: 'published'
+                        }
+                    });
                 })
         })
 

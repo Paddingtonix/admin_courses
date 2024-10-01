@@ -55,6 +55,7 @@ import someError from "./some-error.vue";
 import outOfStockStatus from "./out-of-stock-status.vue";
 import publishedStatus from "./published-status.vue";
 import deleteCourse from "./delete-course.vue";
+import warningDeleteModal from "./warning-delete-modal.vue"
 
 export default defineComponent({
     setup() {
@@ -86,7 +87,8 @@ export default defineComponent({
         "some-error": someError,
         "out-of-stock-status": outOfStockStatus,
         "published-status": publishedStatus,
-        "delete-course": deleteCourse
+        "delete-course": deleteCourse,
+        "warning-delete-modal": warningDeleteModal
     },
 });
 </script>
