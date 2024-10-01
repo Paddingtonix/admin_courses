@@ -32,8 +32,10 @@
 						</span>
 						<div
 							v-if="
-								courseContentState.testType !== 'Entrance' &&
-								courseContentState.testType !== 'Final'
+								(courseContentState.testType !== 'Entrance' &&
+									courseContentState.testType !== 'Final') ||
+								(courseContentState.testType === 'Final' &&
+									setting.type === 'score')
 							"
 							class="oil-course-content__test__general-settings__value__wrapper"
 							@click="editSetting(idx)"
