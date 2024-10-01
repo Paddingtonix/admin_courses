@@ -6,60 +6,81 @@
 				:key="idx"
 				class="oil-course-content__test__general-settings"
 			>
-				<span class="oil-course-content__test__general-settings__name">
-					{{ setting.name }}
-				</span>
-				<div
-					class="oil-course-content__test__general-settings__value"
-					:class="{ fullfiled: setting.title }"
-					v-if="!setting.isEditing"
+				<template
+					v-if="
+						courseContentState.testType !== 'Entrance' ||
+						setting.type !== 'score'
+					"
 				>
-					<span>
-						{{ setting.title ? setting.title : noDataText }}
-						{{
-							setting.title && setting.type === "score" ? "%" : ""
-						}}
+					<span
+						class="oil-course-content__test__general-settings__name"
+					>
+						{{ setting.name }}
 					</span>
 					<div
-						v-if="
-							courseContentState.testType !== 'Entrance' &&
-							courseContentState.testType !== 'Final'
-						"
-						class="oil-course-content__test__general-settings__value__wrapper"
-						@click="editSetting(idx)"
+						class="oil-course-content__test__general-settings__value"
+						:class="{ fullfiled: setting.title }"
+						v-if="!setting.isEditing"
 					>
-						<span v-if="!setting?.title">{{ setting.desc }}</span>
-						<i v-html="defaultIcon"></i>
+						<span>
+							{{ setting.title ? setting.title : noDataText }}
+							{{
+								setting.title && setting.type === "score"
+									? "%"
+									: ""
+							}}
+						</span>
+						<div
+							v-if="
+								courseContentState.testType !== 'Entrance' &&
+								courseContentState.testType !== 'Final'
+							"
+							class="oil-course-content__test__general-settings__value__wrapper"
+							@click="editSetting(idx)"
+						>
+							<span v-if="!setting?.title">{{
+								setting.desc
+							}}</span>
+							<i v-html="defaultIcon"></i>
+						</div>
+						<div v-else>
+							<span v-if="!setting?.title">{{
+								setting.desc
+							}}</span>
+						</div>
 					</div>
-					<div v-else>
-						<span v-if="!setting?.title">{{ setting.desc }}</span>
-					</div>
-				</div>
-				<template v-else>
-					<!-- @vue-expect-error -->
-					<CourseSettingsInput
-						:id="idx"
-						:error="generalSettingsErrors[setting.type as 'title' | 'score']"
-						:type="setting.type as unknown as 'title' | 'score' | undefined"
-						:input_type="
-							setting.type === 'score' ? 'number' : 'text'
-						"
-						:label="
-							setting.type === 'score' ? 'Балл' : 'Название теста'
-						"
-						@set_value="
-							changeValueSetting(
-								idx,
-								$event,
-								setting.type as 'score' | 'title'
-							)
-						"
-						@accept="
-							acceptEditing($event, setting.type, changing_field)
-						"
-						@decline="cancelEditing(idx, setting.type)"
-						:model_value="changing_field"
-					/>
+					<template v-else>
+						<!-- @vue-expect-error -->
+						<CourseSettingsInput
+							:id="idx"
+							:error="generalSettingsErrors[setting.type as 'title' | 'score']"
+							:type="setting.type as unknown as 'title' | 'score' | undefined"
+							:input_type="
+								setting.type === 'score' ? 'number' : 'text'
+							"
+							:label="
+								setting.type === 'score'
+									? 'Балл'
+									: 'Название теста'
+							"
+							@set_value="
+								changeValueSetting(
+									idx,
+									$event,
+									setting.type as 'score' | 'title'
+								)
+							"
+							@accept="
+								acceptEditing(
+									$event,
+									setting.type,
+									changing_field
+								)
+							"
+							@decline="cancelEditing(idx, setting.type)"
+							:model_value="changing_field"
+						/>
+					</template>
 				</template>
 			</div>
 		</div>
