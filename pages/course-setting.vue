@@ -229,6 +229,7 @@
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
                                         :type="input.type"
+                                        :max_length="input.mask_length"
                                         @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
@@ -823,7 +824,7 @@ export default defineComponent({
 
             } else if (course_setting.value.IsFree) {
                 return inputs.slice(1)
-
+            
             } else {
                 return inputs
             }
