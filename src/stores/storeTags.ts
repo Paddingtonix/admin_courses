@@ -86,7 +86,9 @@ export const useTagsStore = defineStore({
 							...item,
 							isRadio: true,
 						})),
-						Разделы: data.headings,
+						Разделы: data.headings.sort((a, b) => {
+							return a.name > b.name ? 1 : -1;
+						}),
 					};
 				});
 		},
