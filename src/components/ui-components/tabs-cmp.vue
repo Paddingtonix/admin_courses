@@ -76,8 +76,9 @@ export default defineComponent({
         color: $basic_gray
 
     &._active
-        // color: $btn-background
         padding-bottom: 8px
-        // border-bottom: 2px solid $btn-background
-        border-bottom: 2px solid
+        border-bottom: 2px solid $basic_primary
+        span 
+            color: $basic_primary
+
 </style>

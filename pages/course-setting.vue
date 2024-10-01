@@ -14,6 +14,7 @@
                     :text="tab.text"
                     :active="active_tab"
                     @select-tab="selectTab"
+                    :class="{_disable: edit_mode.value}"
                 />
             </div>
             <template v-if="active_tab === 1">
@@ -1255,6 +1256,9 @@ export default defineComponent({
         gap: rem(16)
 
         margin-bottom: rem(32)
+        ._disable
+            opacity: 0
+            pointer-events: none
 
     &__bread 
         margin-bottom: rem(32)
