@@ -23,6 +23,7 @@ import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import DeleteTag from "../../ui-components/forms/delete-tag.vue";
 import deleteCourse from "../../ui-components/forms/delete-course.vue";
 import DeleteDirection from "~/src/components/ui-components/forms/delete-direction.vue";
+import DeleteQuestion from "../../ui-components/forms/delete-question.vue";
 
 export default defineComponent({
 	setup() {
@@ -30,14 +31,13 @@ export default defineComponent({
 		const modalData = reactive(storeModal.$state as IDeleteModal);
 
 		const deleteItem = () => {
-			
 			modalData.modalProps
-				.deleteFunction(modalData.modalProps?.data.id)
+				.deleteFunction(modalData.modalProps.data.id)
 				.then(() => {
 					storeModal.closeModal();
 				})
-				.catch(() => {
-					console.log("Не получилось удалить");
+				.catch((err) => {
+					console.log("Не получилось удалить", err);
 				});
 		};
 		return {
@@ -50,7 +50,8 @@ export default defineComponent({
 		"delete-section": DeleteSection,
 		"delete-tag": DeleteTag,
 		"delete-course": deleteCourse,
-        "delete-direction": DeleteDirection
+		"delete-direction": DeleteDirection,
+		"delete-question": DeleteQuestion,
 	},
 });
 </script>

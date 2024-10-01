@@ -65,9 +65,9 @@
 			class="tags-table-row"
 			:id="tag.id"
 			:redirect="false"
-			:name="tag.name"
-			:status="tag.headingName"
-			:authors="tag.localizations.ru"
+			:name="checkForFlooding(tag.name, 30)"
+			:status="checkForFlooding(tag.headingName, 15)"
+			:authors="checkForFlooding(tag.localizations.ru, 30)"
 			@click="
 				openModalAddTag(
 					{
@@ -117,14 +117,15 @@
 				tagsStore.$state.numberOfPages !== null &&
 				tagsStore.$state.numberOfPages >= 0
 			"
-			@change-page="tagsStore.changePageTags($event)"
+			:current-page="tagsData.currentPage"
+			@change-page="goToPage($event)"
 			:pages_count="tagsStore.$state.numberOfPages"
 		/>
 		<SelectorCmp
-			@select-value="changeTagsPerPage($event)"
 			class="tags-page__selector"
-			:label="`${list[0].text} меток на стр.`"
+			@setValue="changeTagsPerPage($event)"
 			listText="меток на стр."
+			label="10 меток на стр."
 			:list="list"
 		/>
 		<span
@@ -154,6 +155,7 @@ import type {
 } from "~/src/ts-interface/storeModal.type";
 
 import type { ITags } from "~/src/ts-interface/storeTags.type";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 const tagsStore = useTagsStore();
 
@@ -230,7 +232,7 @@ const modalStore = useStoreModal();
 
 const openModalAddTag = (tagForm?: ITags, edit?: boolean) => {
 	modalStore.$patch({
-		label: !edit ? "Добавить метку" : "Редактирование метки",
+		label: !edit ? "Добавление метки" : "Редактирование метки",
 		activeModal: "form-tags",
 		modalProps: {
 			headers: tagsData.headings,
@@ -258,6 +260,8 @@ const openDeleteModal = (data: ITags) => {
 };
 
 const changeTagsPerPage = (val: { value: number; type: string }) => {
+	console.log(val);
+
 	tagsStore.changeTagsPerPage(val.value);
 	tagsStore.getTags({ text: searchValue.value });
 };
@@ -277,6 +281,26 @@ const list = [
 	{ text: 20, active: false },
 	{ text: 25, active: false },
 ];
+
+const goToPage = (page: number) => {
+	tagsStore.$patch((state) => {
+		state.currentPage = page;
+	});
+	tagsStore.getTags({});
+};
+
+watch(tagsStore.$state, () => {
+	if (
+		!tagsStore.tags.length &&
+		tagsStore.numberOfPages &&
+		tagsStore.currentPage > tagsStore.numberOfPages
+	) {
+		tagsStore.$patch({
+			currentPage: tagsData.currentPage - 1,
+		});
+		goToPage(tagsData.currentPage);
+	}
+});
 </script>
 
 <style lang="sass">
@@ -316,10 +340,10 @@ const list = [
       justify-content: center
       margin-top: rem(16)
 
-  &__selector
-      position: absolute !important
+  &__selector.oil-selector
+      position: absolute
+      border: none
       right: 0
-      border: none !important
       *
           cursor: pointer
 
@@ -352,6 +376,8 @@ const list = [
       &:nth-child(2)
           flex: 1
           order: -1
+          span
+            color: $basic_text
 
       &:nth-child(3)
           flex: 3

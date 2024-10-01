@@ -125,7 +125,6 @@ export const useFormValidate = (
 					? rules.validateNumber.errorMessage || rules.defaultError
 					: null;
 			},
-
 			shouldChange: () =>
 				typeof fieldValue === "string" &&
 				fieldValue.trim() !== "" &&
@@ -156,7 +155,6 @@ export const useFormValidate = (
 		const fieldValue = customSchema
 			? currentForm[isFormContainsObject.value[0]][field]
 			: currentForm[field];
-
 		const error = checkRules(rules, fieldValue, field);
 
 		error ? (errors[field] = error) : delete errors[field];

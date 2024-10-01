@@ -17,7 +17,11 @@
 				/>
 			</div>
 			<template
-				v-if="!courseStore.course_list.length && !search_value.length"
+				v-if="
+					!courseStore.course_list.length &&
+					!search_value.length &&
+					!isFiltrationActive
+				"
 			>
 				<div class="oil-course__info__attention">
 					<i class="oil-course__info__attention__icon">
@@ -66,6 +70,7 @@
 							@change-value="updateSearchValue($event)"
 						/>
 						<FilterCmp
+							@cancel-filters="setFilters"
 							@send-fiters="setFilters"
 							@click="openFilter(true)"
                             :pressed_button="filter_frame.value"
@@ -210,12 +215,12 @@ export default defineComponent({
 			);
 		};
 
-        const list = [
-            { text: 10, active: true },
-            { text: 15, active: false },
-            { text: 20, active: false },
-            { text: 25, active: false },
-        ];
+		const list = [
+			{ text: 10, active: true },
+			{ text: 15, active: false },
+			{ text: 20, active: false },
+			{ text: 25, active: false },
+		];
 
 		const formatDirectionToString = (
 			arr: string[] | null | undefined
@@ -266,6 +271,8 @@ export default defineComponent({
 			}
 		);
 
+		const isFiltrationActive = ref(false);
+
 		const filters = reactive({
 			statuses: "",
 			languageIds: "",
@@ -286,14 +293,17 @@ export default defineComponent({
 		watch(filters, () => {
 			const filter_string =
 				`${filters.statuses}${filters.languageIds}${filters.directionIds}`.trim();
+
 			if (filter_string.length) {
+				isFiltrationActive.value = true;
 				courseStore.getCourses(
-					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}${filter_string}`
+					`/admin/v1/Course?page=${current_page.value}${filter_string}&searchSubstring=${search_value.value}`
 				);
 			} else {
 				courseStore.getCourses(
 					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
 				);
+				isFiltrationActive.value = false;
 			}
 		});
 
@@ -389,8 +399,9 @@ export default defineComponent({
 			search_value,
 			courseStore,
 			setFilters,
-            list,
-            changeCoursePerPage,
+			isFiltrationActive,
+			list,
+			changeCoursePerPage,
 			course_info: courseStore.course_info,
 		};
 	},
@@ -440,6 +451,12 @@ export default defineComponent({
 
         &__btn
             max-width: rem(192)
+        &__selector.oil-selector
+            position: absolute
+            border: none
+            bottom: 0
+            right: rem(32)
+            transform: translateY(-50%)
 
     &__settings
         @include flex_start()

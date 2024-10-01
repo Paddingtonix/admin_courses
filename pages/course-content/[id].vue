@@ -3,19 +3,19 @@
 		<div class="oil-course-content">
 			<breadCmp
 				:prev_page="['Курсы', `${course_settings.title_course}`]"
-				:current_page="courseContentStore.generalSettings.title"
+				:current_page="courseContentStore.generalSettings?.title ?? ''"
 				class="oil-course-content__bread"
 			/>
+			<!-- @vue-expect-error -->
 			<AttentionMessage
-				v-if="courseStore.status === 'Archived'"
+				v-if="courseStore?.status === 'Archived'"
 				message="Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF."
 				:buttonText="'Скачать PDF'"
 				:buttonClick="() => {}"
 			/>
 			<ContentModule v-if="course_settings.type_course === 'text'" />
 			<TestSection
-				@change-setting="changeGeneralSetting($event)"
-				:questions="courseContentStore.questions"
+				:questions="courseContentStore?.questions"
 				:id="id"
 				v-else-if="content === 'test' && !isLoading"
 			>
@@ -43,8 +43,7 @@
 import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
-import { useRoute } from "vue-router"
-import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
 	props: {
@@ -59,10 +58,9 @@ export default defineComponent({
 		const route = useRoute();
 		const { id } = route.params as unknown as { id: string };
 		const course_settings = reactive({
-			title_course: '',
-			type_course: ''
-		})
-
+			title_course: "",
+			type_course: "",
+		});
 
 		const summarySections = [
 			{
@@ -89,52 +87,39 @@ export default defineComponent({
 				],
 			},
 		];
+
 		const isLoading = ref(true);
+
 		onMounted(() => {
-			courseContentStore
-				.getCourseContent(id)
-				.catch((error) => {
-					console.error(
-						"Ошибка при загрузке содержания курса:",
-						error
-					);
-				})
-				.finally(() => {
-					isLoading.value = false;
-					course_settings.title_course = route.query[""][0]
-					course_settings.type_course = route.query[""][1]
-				});
+			nextTick(() => {
+				courseContentStore
+					.getCourseContent(id)
+					.catch((error) => {
+						console.error(
+							"Ошибка при загрузке содержания курса:",
+							error
+						);
+					})
+					.finally(() => {
+						isLoading.value = false;
+						if (route.query[""] !== null) {
+							course_settings.title_course =
+								route.query[""][0] ?? "";
+							course_settings.type_course =
+								route.query[""][1] ?? "";
+						} else {
+							course_settings.title_course = "unknown_title";
+							course_settings.type_course = "unknown_type";
+						}
+					});
+			});
 		});
 
-		const changeGeneralSetting = ({
-			type,
-			value,
-		}: {
-			type: string;
-			value: string;
-		}) => {
-			const updateData = {
-				[type === "title" ? "Title" : "CutScorePercentages"]: value,
-			};
-
-			console.log("updtdData: ", updateData);
-
-			courseContentStore
-				.patchCourseContent(id, updateData)
-				.then((response) => {
-					courseContentStore.getCourseContent(id).then((response) => {
-						console.log("vot chto ya poluchil", response);
-					});
-				})
-				.catch((err) => {
-					console.log("patchCourseError", err);
-				});
-		};
+		onErrorCaptured((err) => console.log(err));
 
 		return {
 			courseStore,
 			courseContentStore,
-			changeGeneralSetting,
 			course_settings,
 			summarySections,
 			id,

@@ -1,10 +1,4 @@
 <template>
-	<!-- <button
-		style="display: absolute; top: 0; left: 0; border: solid black 2px"
-		@click="startAbomination"
-	>
-		START ABOMINATION!
-	</button> -->
 	<div class="section-page">
 		<div class="section-page__widget-wrapper">
 			<SearchCmp
@@ -199,7 +193,7 @@ const openModalDelete = (data: IHeading) => {
 const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
 	storeModal.$patch({
 		activeModal: "form-sections",
-		label: !name.length ? "Создание раздела" : "Редактирование раздела",
+		label: !name.length ? "Добавление раздела" : "Редактирование раздела",
 		modalProps: {
 			name,
 			description,
@@ -212,8 +206,6 @@ const openAddModalHeader = ({ name = "", description = "", id = 0 }) => {
 };
 
 const changeSelectorValue = (value: { value: number; type: string }) => {
-	console.log(value);
-
 	headersStore.$patch((state) => {
 		state.nHeadingsPerPage = value.value;
 	});
@@ -225,10 +217,6 @@ const goToPage = (page: number) => {
 		state.currentPage = page;
 	});
 	headersStore.getHeadings({});
-};
-
-const startAbomination = () => {
-	headersStore.startAbomination();
 };
 
 onMounted(() => {
@@ -268,6 +256,7 @@ onMounted(() => {
             &:nth-child(2)
                 flex: 1
                 order: 1
+
             &:nth-child(3)
                 flex: 1
                 order: 3
@@ -301,6 +290,8 @@ onMounted(() => {
             &:nth-child(2)
                 flex: 1
                 order: 2
+                span
+                    color: $basic_text
 
             &:nth-child(3)
                 flex: 2
