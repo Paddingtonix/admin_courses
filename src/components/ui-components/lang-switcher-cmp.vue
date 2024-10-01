@@ -1,55 +1,55 @@
 <template>
-    <div class="lang-switcher">
-        <button
-            v-for="lang in langs"
-            type="button"
-            :id="lang.id"
-            :class="{
-                active: active === lang.id,
-                error: errors.includes(lang.id),
-            }"
-            @click="() => changeActiveLang(lang.id)"
-        >
-            {{ lang.text }}
-        </button>
-    </div>
+	<div class="lang-switcher">
+		<button
+			v-for="lang in langs"
+			type="button"
+			:id="lang.id"
+			:class="{
+				active: active === lang.id,
+				error: errors.includes(lang.id),
+			}"
+			@click="() => changeActiveLang(lang.id)"
+		>
+			{{ lang.text }}
+		</button>
+	</div>
 </template>
 
 <script lang="ts" setup>
 import type { PropType } from "vue";
 
 const { russian, extraLang, extraLang2, active } = defineProps({
-    russian: {
-        type: Object as PropType<{ text: string; id: string }>,
-        default: { text: "Русский (RU) *", id: "ru" },
-    },
-    extraLang: {
-        type: Object as PropType<{ text: string; id: string }>,
-        default: { text: "English (EN) *", id: "en" },
-    },
-    extraLang2: {
-        type: Object as PropType<{ text: string; id: string }>,
-        default: { text: "Français (FR) *", id: "fr" },
-    },
-    active: {
-        type: String,
-        default: "ru",
-    },
-    errors: {
-        type: Array,
-        default: [],
-    },
+	russian: {
+		type: Object as PropType<{ text: string; id: string }>,
+		default: { text: "Русский (RU) *", id: "ru" },
+	},
+	extraLang: {
+		type: Object as PropType<{ text: string; id: string }>,
+		default: { text: "English (EN) *", id: "en" },
+	},
+	extraLang2: {
+		type: Object as PropType<{ text: string; id: string }>,
+		default: { text: "Français (FR) *", id: "test" },
+	},
+	active: {
+		type: String,
+		default: "ru",
+	},
+	errors: {
+		type: Array,
+		default: [],
+	},
 });
 
 const langs = {
-    russian,
-    extraLang,
-    extraLang2,
+	russian,
+	extraLang,
+	extraLang2,
 };
 
 const emit = defineEmits(["change-lang"]);
 const changeActiveLang = (id: string) => {
-    emit("change-lang", id);
+	emit("change-lang", id);
 };
 </script>
 

@@ -271,7 +271,7 @@ const sendFilters = (filters: { Язык?: string[]; Разделы?: number[] }
 		headingIds: filters["Разделы"],
 		languageId: filters["Язык"],
 	};
-
+	//@ts-ignore
 	tagsStore.filterTags(formedData);
 };
 

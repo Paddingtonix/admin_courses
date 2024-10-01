@@ -141,10 +141,16 @@ const setHeading = (data: IHeading) => {
 
 const sendFormTags = () => {
 	validateOnSubmit();
+
 	if (isFormValid.value) {
-		tagStore.postTag(tagForm).then(() => {
-			storeModal.closeModal();
-		});
+		tagStore
+			.postTag(tagForm)
+			.then(() => {
+				storeModal.closeModal();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 	//TODO: добавть валидацию на ошибки с сервера
 };

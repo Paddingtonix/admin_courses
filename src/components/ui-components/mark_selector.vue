@@ -3,7 +3,9 @@
 		<div class="oil-selector__chooses">
 			<label v-if="!chooses_variable.id">{{ label }}</label>
 
-			<span v-else> {{ chooses_variable.name }} </span>
+			<span v-else>
+				{{ checkForFlooding(chooses_variable.name, 45) }}
+			</span>
 			<svg
 				:class="{ '_active-list': list_openned.value }"
 				class="oil-selector__chooses__chevron"
@@ -54,6 +56,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive, type PropType } from "vue";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 export default defineComponent({
 	props: {
@@ -111,6 +114,7 @@ export default defineComponent({
 			list_openned,
 			chooses_variable,
 			openList,
+			checkForFlooding,
 			selectObjectValue,
 		};
 	},
