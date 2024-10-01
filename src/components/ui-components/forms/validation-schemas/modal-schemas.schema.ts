@@ -72,6 +72,10 @@ export const validation_schemas: { [key: string]: IValidationSchema } = {
 			shouldChange: {
 				errorMessage: "Вы должны что-то изменить",
 			},
+			max: {
+				errorMessage: "Максимальное количество символов - 500",
+				maxValue: 500,
+			},
 			validateString: {
 				regExp: regExps.isDescription,
 				errorMessage:

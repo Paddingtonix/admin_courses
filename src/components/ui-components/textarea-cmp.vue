@@ -58,7 +58,7 @@ export default defineComponent({
 		},
 		max_length: {
 			type: Number,
-			default: 150,
+			default: 550,
 		},
 	},
 	emits: ["set_textarea"],
