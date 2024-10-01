@@ -35,6 +35,7 @@
 			:class="{ error: errors[activeLang] }"
 			:modelValue="tagForm.localizations[activeLang]"
 			:error="errors[activeLang] ?? ''"
+			:max_length="550"
 			@set_textarea="
 				setFormValue(tagFormEnum._localizations, $event, activeLang)
 			"

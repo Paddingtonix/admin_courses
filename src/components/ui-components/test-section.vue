@@ -36,6 +36,7 @@
 					</div>
 				</div>
 				<template v-else>
+					<!-- @vue-expect-error -->
 					<CourseSettingsInput
 						:id="idx"
 						:error="generalSettingsErrors[setting.type as 'title' | 'score']"
@@ -63,7 +64,10 @@
 			</div>
 		</div>
 		<div class="oil-course-content__attention" @click="toggleSummary">
-			<div class="oil-course-content__attention__head">
+			<div
+				class="oil-course-content__attention__head"
+				:class="{ active: isSummaryVisible }"
+			>
 				<slot name="attention-icon">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -186,21 +190,23 @@ const props = defineProps({
 const isSummaryVisible = ref(false);
 const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 const storeModal = useStoreModal();
+const generalSettingsTitle = computed(() =>
+	courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
+);
+const generalSettingsCutScore = computed(
+	() => courseContentStore.generalSettings.cutScorePercentages
+);
 const general_settings = reactive([
 	{
 		name: "Название теста (опционально)",
-		title: computed(() =>
-			courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
-		).value,
+		title: generalSettingsTitle,
 		type: "title",
 		desc: "Укажите название теста здесь или в настройках структуры курса (это необязательно)",
 		isEditing: false,
 	},
 	{
 		name: "Проходной балл *",
-		title: computed(
-			() => courseContentStore.generalSettings.cutScorePercentages
-		).value,
+		title: generalSettingsCutScore,
 		type: "score",
 		desc: "Укажите минимальный процент правильных ответов, необходимый для прохождения теста (это обязательное поле)",
 		isEditing: false,
@@ -274,6 +280,9 @@ const validateGeneralSetting = (
 	value: string | number,
 	type: "score" | "title"
 ) => {
+	if (value === undefined) {
+		generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
+	}
 	if (type === "title" && typeof value === "string") {
 		if (!value.trim()) {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
@@ -283,12 +292,10 @@ const validateGeneralSetting = (
 		} else {
 			delete generalSettingsErrors.value[type];
 		}
-	} else if (type === "score" && typeof value === "number") {
-		console.log("logger", value);
-
-		if (value === null) {
+	} else if (type === "score") {
+		if (typeof value !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
-		} else if (value > 100 && value < 0) {
+		} else if (value > 100 || value < 0 || !Number.isInteger(value)) {
 			generalSettingsErrors.value[type] =
 				"Значение поля - целое число от 0 до 100";
 		} else {
@@ -303,7 +310,7 @@ const acceptEditing = (
 	value: string | number
 ) => {
 	validateGeneralSetting(value, type);
-	if (!generalSettingsErrors.value[type]) {
+	if (!generalSettingsErrors.value[type]?.length) {
 		changeGeneralSetting({ type, value }).then(() => {
 			general_settings[id].isEditing = false;
 		});
@@ -337,7 +344,7 @@ const deleteQuestion = (data: { id: number; questionName: string }) => {
 	} as unknown as IDeleteModal);
 };
 
-const changeGeneralSetting = ({
+const changeGeneralSetting = async ({
 	type,
 	value,
 }: {
@@ -362,10 +369,6 @@ const changeGeneralSetting = ({
 	return courseContentStore
 		.patchCourseContent(id, formData)
 		.then((response) => {
-			courseContentStore.getCourseContent(id).catch((e) => {
-				console.log(e);
-				throw e;
-			});
 			return response;
 		})
 		.catch((err) => {
@@ -376,73 +379,85 @@ const changeGeneralSetting = ({
 </script>
 
 <style lang="sass">
-.oil-course-content__test
-    max-width: rem(972)
+.oil-course-content
+	&__attention
+		&__head
+			svg
+				transition: transform .3s
+				&:last-of-type
+					margin-left: auto
 
-    &__general-settings
-        @include flex_start()
-        border-bottom: rem(1) solid $disabled_basic
+			&.active
+				svg
+					&:last-of-type
+						transform: rotate(180deg)
+	&__test
+		max-width: rem(972)
 
-        &__value
-            @include flex_column()
-            gap: rem(2)
-            position: relative
-            width: 100%
-            &.fullfiled
-                flex-direction: row
-                justify-content: space-between
-                align-items: center
+		&__general-settings
+			@include flex_start()
+			border-bottom: rem(1) solid $disabled_basic
 
-            span
-                font-weight: bold
-            &__wrapper
-                display: flex
-                align-items: stretch
-                cursor: pointer
-                justify-content: space-between
-                i
-                    svg
-                        path
-                            transition: stroke .3s
-                span
-                    font-size: rem(12)
-                    font-weight: 400
-                &:hover
-                    i
-                        svg
-                            path
-                                stroke: $basic_primary
+			&__value
+				@include flex_column()
+				gap: rem(2)
+				position: relative
+				width: 100%
+				&.fullfiled
+					flex-direction: row
+					justify-content: space-between
+					align-items: center
 
-
-        &__name
-            padding: rem(28) rem(108) rem(28) rem(8)
-            min-width: rem(360)
-
-        &:last-child
-            margin-bottom: rem(32)
+				span
+					font-weight: bold
+				&__wrapper
+					display: flex
+					align-items: stretch
+					cursor: pointer
+					justify-content: space-between
+					i
+						svg
+							path
+								transition: stroke .3s
+					span
+						font-size: rem(12)
+						font-weight: 400
+					&:hover
+						i
+							svg
+								path
+									stroke: $basic_primary
 
 
-    &__add_questuon_wrapper
-        cursor: pointer
-        opacity: 0
-        &:hover
-            opacity: 1
-        hr
-            display: block
-            border: 0
-            height: 1px
-            border-top: 2px solid $basic-primary
-        .btn__add_question
-            position: absolute
-            padding: 0
-            z-index: 2
-            max-height: rem(32)
-            background-color: #fff
-            left: 35%
-            transform: translateY(-50%) translateX(-100%)
-            max-width: rem(156)
-            font-size: rem(12)
-            font-weight: 600
-            &:hover
-                background-color: #eee !important
+			&__name
+				padding: rem(28) rem(108) rem(28) rem(8)
+				min-width: rem(360)
+
+			&:last-child
+				margin-bottom: rem(32)
+
+
+		&__add_questuon_wrapper
+			cursor: pointer
+			opacity: 0
+			&:hover
+				opacity: 1
+			hr
+				display: block
+				border: 0
+				height: 1px
+				border-top: 2px solid $basic-primary
+			.btn__add_question
+				position: absolute
+				padding: 0
+				z-index: 2
+				max-height: rem(32)
+				background-color: #fff
+				left: 35%
+				transform: translateY(-50%) translateX(-100%)
+				max-width: rem(156)
+				font-size: rem(12)
+				font-weight: 600
+				&:hover
+					background-color: #eee !important
 </style>

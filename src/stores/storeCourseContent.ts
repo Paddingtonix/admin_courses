@@ -59,10 +59,13 @@ export const useStoreCourseContent = defineStore("course-content", {
 			id: string,
 			formData: { title?: string; cutScorePercentages?: number }
 		) {
+			const route = useRoute();
 			return await axios
 				.patch(`admin/v1/Testing/${id}`, formData)
-				.then((response) => {
-					return response;
+				.then(async () => {
+					return await this.getCourseContent(
+						route.params.id as string
+					).then((resp) => resp);
 				})
 				.catch((error) => {
 					throw error;
@@ -95,11 +98,8 @@ export const useStoreCourseContent = defineStore("course-content", {
 			const route = useRoute();
 			return await axios
 				.delete(`admin/v1/Question/${questionId}`)
-				.then((response) => {
-					if (route.params.id) {
-						this.getCourseContent(route.params.id as string);
-					}
-					return response;
+				.then(() => {
+					return this.getCourseContent(route.params.id as string);
 				})
 				.catch((err) => err);
 		},
