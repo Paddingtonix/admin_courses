@@ -9,6 +9,7 @@
 		<FilterCmp
 			class="oil-tags__filter"
 			v-if="tagsStore?.filters['Язык']"
+			:isMarks="true"
 			:filters="tagsStore.filters"
 			@send-fiters="sendFilters($event)"
 			@cancel-filters="sendFilters($event)"

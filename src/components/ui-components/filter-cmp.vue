@@ -1,8 +1,8 @@
 <template>
 	<div class="oil-filter">
-		<div 
-			class="oil-filter__button" 
-			:class="{_active: filter_frame.value}"
+		<div
+			class="oil-filter__button"
+			:class="{ _active: filter_frame.value }"
 			@click="openFilter(true)"
 		>
 			<svg
@@ -51,16 +51,30 @@
 					<span class="oil-filter__body__frame__title">{{
 						key
 					}}</span>
-					<CheckboxCmp
-						v-for="(checkbox, idx) in filter_values.value[index][
-							key
-						]"
-						:key="idx"
-						:text="checkbox.name"
-						:id="checkbox.id"
-						:active="checkbox.active"
-						@click="setActiveFilter(index, key, idx)"
-					/>
+					<template v-if="!isMarks || key !== 'Язык'">
+						<CheckboxCmp
+							v-for="(checkbox, idx) in filter_values.value[
+								index
+							][key]"
+							:key="idx"
+							:text="checkbox.name"
+							:id="checkbox.id"
+							:active="checkbox.active"
+							@click="setActiveFilter(index, key, idx)"
+						/>
+					</template>
+					<template v-else-if="key === 'Язык'">
+						<RadioCmp
+							v-for="(radio, idx) in filter_values.value[index][
+								key
+							]"
+							:key="idx"
+							:text="radio.name"
+							:id="radio.id"
+							:active="radio.active ? radio.id : ''"
+							@click="setActiveFilter(index, key, idx)"
+						/>
+					</template>
 				</div>
 				<div class="oil-filter__body__btns">
 					<BtnCmp
@@ -82,13 +96,21 @@ const { filters } = defineProps({
 	},
 	filters: {
 		type: Object as PropType<{
-			[key: string]: { id: string | number; name: string }[];
+			[key: string]: {
+				id: string | number;
+				name: string;
+				isRadio?: boolean;
+			}[];
 		}>,
 	},
 	pressed_button: {
 		type: Boolean,
-		default: false
-	}
+		default: false,
+	},
+	isMarks: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const emit = defineEmits(["send-fiters", "cancel-filters"]);
@@ -100,12 +122,7 @@ const filter_frame = reactive({
 const filterKeys = Object.keys(filters || {});
 
 const mapFilters = (key: string) =>
-	filters &&
-	filters[key].map((filter) =>
-		key !== "Язык"
-			? { ...filter, active: false }
-			: { ...filter, active: false, isRadio: true }
-	);
+	filters && filters[key].map((filter) => ({ ...filter, active: false }));
 
 const getMappedFilters = () =>
 	filterKeys.map((key) => ({
@@ -182,12 +199,12 @@ const openFilter = (state: boolean) => {
             color: $basic_primary
             font-weight: bold
 
-        &._active 
+        &._active
             background-color: $light_primary
-            span 
+            span
                 color: $basic_white
-            
-            svg path 
+
+            svg path
                 stroke: $basic_white
 
     &__body-wrapper

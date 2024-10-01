@@ -82,7 +82,10 @@ export const useTagsStore = defineStore({
 				.get<IFiltersTagsResponse>("/admin/v1/Label/filters")
 				.then(({ data }) => {
 					this.filters = {
-						Язык: data.languages,
+						Язык: data.languages.map((item) => ({
+							...item,
+							isRadio: true,
+						})),
 						Разделы: data.headings,
 					};
 				});
