@@ -107,9 +107,9 @@ export default defineComponent({
 
         const mask_price = computed(() => {
             if (typeof input_value.value === "string") {
-                if (input_value.value.length === 5) return "# ###";
-                if (input_value.value.length === 6) return "## ###";
-                // if (input_value.value.length === 9) return '# ### ###'
+                if (props.max_length === 5) return "# ###";
+                if (props.max_length === 6) return "## ###";
+                if (props.max_length === 9) return '# ### ###'
                 // if (input_value.value.length === 10) return '## ### ###'
                 return "### ###";
             }
