@@ -44,9 +44,7 @@
 							<i v-html="defaultIcon"></i>
 						</div>
 						<div v-else>
-							<span v-if="!setting?.title">{{
-								setting.desc
-							}}</span>
+							<p v-if="!setting?.title">{{ setting.desc }}</p>
 						</div>
 					</div>
 					<template v-else>
@@ -137,6 +135,7 @@
 					@close_question="closeQuestion($event)"
 					@change_question="changeQuestion($event)"
 					@delete_question="deleteQuestion($event)"
+					:isLast="questions.length === 1"
 					:selector-object="selector_data"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
@@ -236,10 +235,12 @@ const general_settings = reactive([
 
 const active_questions = reactive({ value: [] as number[] });
 
-const selector_data = courseContentStore.directions.map((item) => ({
-	name: item.name,
-	id: item.directionId,
-}));
+const selector_data = reactive(
+	courseContentStore.directions.map((item) => ({
+		name: item.name,
+		id: item.directionId,
+	}))
+);
 
 const changing_field = ref("");
 

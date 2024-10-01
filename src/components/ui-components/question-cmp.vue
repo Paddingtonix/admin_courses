@@ -59,7 +59,11 @@
 						/>
 					</svg>
 				</i>
-				<i @click.stop="deleteQuestion" class="oil-delete">
+				<i
+					v-if="!isLast"
+					@click.stop="deleteQuestion"
+					class="oil-delete"
+				>
 					<svg
 						width="20"
 						height="22"
@@ -142,7 +146,7 @@
 				</div>
 				<div class="oil-question__body">
 					<span class="oil-question__title">Ответы</span>
-					<span class="oil-question__title"
+					<span class="oil-question__desc"
 						>Введите варианты ответов в соответствующие поля.
 						Убедитесь, что каждый ответ понятен и не вызывает
 						двусмысленности. Затем, используя радиокнопки, укажите
@@ -153,11 +157,20 @@
 						v-for="(answer, index) in question?.answers"
 						:key="index"
 					>
-						<div
+						<!-- <div
 							:class="{ active: answer.isCorrectAnswer }"
 							class="oil-question__radio"
 							@click="setCorrectAnswer(index)"
-						></div>
+						></div> -->
+						<RadioCmp
+							:id="answer.id"
+							:active="
+								question.answers.find(
+									(item) => item.isCorrectAnswer
+								)?.id
+							"
+							@click="setCorrectAnswer(index)"
+						/>
 						<InputCmp
 							:label="`Ответ ${index + 1}`"
 							:model-value="answer.text"
@@ -240,6 +253,10 @@ export default defineComponent({
 		selectorObject: {
 			type: Object as PropType<{ name: string; id: number }[]>,
 			required: true,
+		},
+		isLast: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	emits: [
@@ -516,39 +533,6 @@ export default defineComponent({
                         stroke: $basic-error
 
 .oil-question
-
-    &__radio
-        position: relative
-        cursor: pointer
-        width: rem(20)
-        height: rem(20)
-        border-radius: 50%
-        border: rem(1) solid $basic_primary
-        &:before
-            transition: opacity 0.3s
-            content: ''
-            position: absolute
-            opacity: 0
-            top: 50%
-            left: 49.05%
-            display: block
-            width: 50%
-            height: 50%
-            border-radius: 100%
-            background-color: $basic_primary
-            transform: translate(-50%, -50%) scale(0)
-            transition: transform .3s
-
-        &:hover
-            &::before
-                transform: translate(-50%, -50%) scale(.4)
-                opacity: .4
-
-        &:active, &.active
-            &:before
-                transform: translate(-50%, -50%) scale(1.5)
-                opacity: 1
-
     span
         font-size: rem(16)
 
@@ -581,7 +565,6 @@ export default defineComponent({
 
     &__answer
         @include flex_start()
-        gap: rem(10)
         &:not(:last-child)
             margin-bottom: rem(16)
 
