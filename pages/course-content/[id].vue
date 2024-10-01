@@ -19,9 +19,26 @@
 				:id="id"
 				v-else-if="content === 'test' && !isLoading"
 			>
-				<template #summary-text>
+				<template
+					v-if="courseContentStore.testType !== 'Entrance'"
+					#summary-text
+				>
 					<div
 						v-for="section in summarySections"
+						:key="section.title"
+						class="oil-course-content__attention__text__frame"
+					>
+						<span>{{ section.title }}</span>
+						<ul>
+							<li v-for="item in section.content" :key="item">
+								{{ item }}
+							</li>
+						</ul>
+					</div>
+				</template>
+				<template v-else #summary-text>
+					<div
+						v-for="section in summary_sections_enterance"
 						:key="section.title"
 						class="oil-course-content__attention__text__frame"
 					>
@@ -88,6 +105,31 @@ export default defineComponent({
 			},
 		];
 
+		const summary_sections_enterance = [
+			{
+				title: "Структура теста",
+				content: [
+					"Тест должен содержать хотя бы один вопрос. Наполнение вопроса включает в себя следующие блоки:",
+					"направление вопроса",
+					"тело вопроса",
+					"четыре варианта ответа",
+					"балл за правильный ответ.",
+				],
+			},
+			{
+				title: "Добавление нового вопроса",
+				content: [
+					"Чтобы добавить новый вопрос, наведите курсор на структуру теста и нажмите на кнопку 'Добавить вопрос', он появится в общем списке вопросов и станет доступным для наполнения.",
+				],
+			},
+			{
+				title: "Внимание!",
+				content: [
+					"Убедитесь в том, что вы выбрали направления курса во вкладке 'Общие настройки курса', так как тема каждого вопроса должна соответствовать одному из направлений курса.",
+				],
+			},
+		];
+
 		const isLoading = ref(true);
 
 		onMounted(() => {
@@ -124,6 +166,7 @@ export default defineComponent({
 			summarySections,
 			id,
 			isLoading,
+			summary_sections_enterance,
 		};
 	},
 });
