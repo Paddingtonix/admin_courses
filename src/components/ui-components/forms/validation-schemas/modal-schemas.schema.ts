@@ -3,8 +3,7 @@ import type { IValidationSchema } from "~/src/utils/useFormValidate";
 const regExps = {
 	isName: /^[A-Za-z0-9!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~\-]+$/, //проверка на спец.символы, англ. алфавит, цифры (без пробелов)
 	isDescription: /^[A-Za-z0-9\s!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~\-]+$/, //проверка на спец.символы, англ. алфавит, цифры (с пробелами)
-	isCDescription:
-		/^[а-яА-ЯёЁ0-9\s!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:'",<>\./\?\\\|~`]+$/, //проверка на спец.символы, рус. алфавит, цифры (с пробелами)
+	isCDescription: /./g, //нет валидации
 };
 
 export const validation_schemas: { [key: string]: IValidationSchema } = {
