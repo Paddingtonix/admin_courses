@@ -79,9 +79,7 @@ import { validation_schemas } from "./validation-schemas/modal-schemas.schema";
 const { tags_form_schema } = validation_schemas;
 
 const storeModal = useStoreModal();
-onErrorCaptured((err) => {
-	console.log(err);
-});
+
 const tagStore = useTagsStore();
 
 const modalData = storeModal.$state as IFormTags;

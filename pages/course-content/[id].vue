@@ -6,6 +6,7 @@
 				:current_page="courseContentStore.generalSettings?.title ?? ''"
 				class="oil-course-content__bread"
 			/>
+			<!-- @vue-expect-error -->
 			<AttentionMessage
 				v-if="courseStore?.status === 'Archived'"
 				message="Курс архивирован, вы не можете просмотреть его наполнение на сайте. Доступна опция выгрузки курса на ПК в формате PDF."

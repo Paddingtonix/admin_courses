@@ -19,9 +19,6 @@ interface IValidationRule {
 			regExp: RegExp;
 		};
 	};
-	validateArray?: {
-		customSchema: IValidationRule; //не работает, да мне в принципе, лень переписывать что-то
-	};
 	defaultError: string; //стандартная ошибка, если вы их не хотите передавать)
 }
 
@@ -128,33 +125,6 @@ export const useFormValidate = (
 					? rules.validateNumber.errorMessage || rules.defaultError
 					: null;
 			},
-			validateArray: () => {
-				if (rules?.validateArray && Array.isArray(fieldValue)) {
-					const arrayFieldValue = fieldValue as any[];
-					const customSchema = rules.validateArray.customSchema;
-
-					arrayFieldValue.forEach((element, index) => {
-						const fieldKey = `${fieldName}[${index}]`; // Правильный ключ для каждого элемента массива
-
-						// Теперь валидируем каждый элемент массива
-						Object.keys(customSchema).forEach((rule) => {
-							const error = checkRules(
-								customSchema,
-								element,
-								fieldKey
-							); // Проверяем правила для элемента массива
-							if (error) {
-								errors[fieldKey] = error; // Записываем ошибку с правильным ключом
-							} else {
-								delete errors[fieldKey]; // Удаляем ошибку, если всё ок
-							}
-						});
-					});
-
-					return null; // Возвращаем null, если нет ошибок
-				}
-				return null; // Возвращаем null, если не массив или нет правила
-			},
 			shouldChange: () =>
 				typeof fieldValue === "string" &&
 				fieldValue.trim() !== "" &&
@@ -185,7 +155,6 @@ export const useFormValidate = (
 		const fieldValue = customSchema
 			? currentForm[isFormContainsObject.value[0]][field]
 			: currentForm[field];
-
 		const error = checkRules(rules, fieldValue, field);
 
 		error ? (errors[field] = error) : delete errors[field];

@@ -97,7 +97,7 @@ export const useStoreCourseContent = defineStore("course-content", {
 				.delete(`admin/v1/Question/${questionId}`)
 				.then((response) => {
 					if (route.params.id) {
-						this.getCourseContent(route.params.id[0]);
+						this.getCourseContent(route.params.id as string);
 					}
 					return response;
 				})

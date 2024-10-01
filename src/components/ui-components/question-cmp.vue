@@ -197,7 +197,7 @@
 					/>
 					<BtnCmp
 						:text="'Сохранить'"
-						:disabled="!isQuestionFormValid"
+						:disabled="!isAnswersValid && !isFormValid"
 						@click="changeQuestion"
 					/>
 				</div>
@@ -256,11 +256,11 @@ export default defineComponent({
 
 		const initialForm = JSON.parse(
 			JSON.stringify({
-				content: props.question.content,
-				directionId: props.question.directionId,
-				showFullTitle: props.question.showFullTitle,
-				correctAnswerScore: props.question.correctAnswerScore,
-				answers: props.question.answers,
+				content: "",
+				directionId: null,
+				showFullTitle: false,
+				correctAnswerScore: null,
+				answers: props.question.answers.map((item) => item),
 			})
 		);
 
@@ -274,42 +274,41 @@ export default defineComponent({
 			directionId: props.question.directionId,
 			showFullTitle: props.question.showFullTitle,
 			correctAnswerScore: props.question.correctAnswerScore,
-			answers: props.question.answers.map((item) => item),
+			answers: props.question.answers,
 		});
 		const { isFormValid, errors, validateOnSubmit } = useFormValidate(
 			questionForm,
 			{
 				content: {
 					required: { errorMessage: "Обязательно к заполнению" },
+					min: {
+						errorMessage: "Минимальное кол-во символов",
+						minValue: 1,
+					},
+					max: {
+						errorMessage: "Максимальное кол-во символов",
+						maxValue: 600,
+					},
+					shouldChange: { errorMessage: "Вы должны что-то изменить" },
 					defaultError: "Какая-то ошибка",
 				},
 				correctAnswerScore: {
 					required: { errorMessage: "Обязательно к заполнению" },
+					shouldChange: { errorMessage: "Вы должны что-то изменить" },
 					validateNumber: {
-						errorMessage: "Диапазон от 1 до 3",
+						errorMessage: "Значение поля - целое число от 1 до 3",
 						range: [1, 3],
 					},
 					defaultError: "Какая-то ошибка",
 				},
 				directionId: {
 					required: { errorMessage: "Обязательно к заполнению" },
+					shouldChange: { errorMessage: "Вы должны что-то изменить" },
 					defaultError: "Какая-то ошибка",
-				},
-				answers: {
-					validateArray: {
-						customSchema: {
-							text: {
-								required: {
-									errorMessage: "Обязательно к заполнению",
-								},
-								defaultError: "default error",
-							},
-						},
-					},
-					defaultError: "default error",
 				},
 			}
 		);
+
 		watch(errors, () => {
 			console.log(errors);
 		});
@@ -321,15 +320,15 @@ export default defineComponent({
 		}) => {
 			if (!answer.text || !answer.text.trim().length) {
 				answerErrors.value[answer.id] = "Обязательно к заполнению";
+			} else if (answer.text.trim().length > 95) {
+				answerErrors.value[answer.id] =
+					"Максимальное количество символов - 95";
 			} else {
 				delete answerErrors.value[answer.id];
 			}
 		};
 		const answerErrors = ref([] as unknown as any);
 		const isAnswersValid = computed(() => !answerErrors.value.length);
-		const isQuestionFormValid = computed(
-			() => isFormValid.value && isAnswersValid.value
-		);
 		const hasCorrectAnswer = ref(
 			!questionForm.answers.every((item) => !item.isCorrectAnswer)
 		);
@@ -344,7 +343,7 @@ export default defineComponent({
 						"Выберите правильный ответ";
 				}
 			}
-			if (isQuestionFormValid.value) {
+			if (isAnswersValid.value && isFormValid.value) {
 				emit("change_question", {
 					question: questionForm,
 					id: props.question.id,
@@ -439,7 +438,7 @@ export default defineComponent({
 			closeQuestion,
 			errors,
 			isFormValid,
-			isQuestionFormValid,
+			isAnswersValid,
 			answerErrors,
 			deleteQuestion,
 			questionName,

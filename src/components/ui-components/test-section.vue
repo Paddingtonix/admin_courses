@@ -38,6 +38,7 @@
 				<template v-else>
 					<CourseSettingsInput
 						:id="idx"
+						:error="generalSettingsErrors[setting.type as 'title' | 'score']"
 						:type="setting.type as unknown as 'title' | 'score' | undefined"
 						:input_type="
 							setting.type === 'score' ? 'number' : 'text'
@@ -45,7 +46,13 @@
 						:label="
 							setting.type === 'score' ? 'Балл' : 'Название теста'
 						"
-						@set_value="changeValueSetting(idx, $event)"
+						@set_value="
+							changeValueSetting(
+								idx,
+								$event,
+								setting.type as 'score' | 'title'
+							)
+						"
 						@accept="
 							acceptEditing($event, setting.type, changing_field)
 						"
@@ -247,7 +254,12 @@ onMounted(() => {
 	});
 });
 
-const changeValueSetting = (id: number, value: string) => {
+const changeValueSetting = (
+	id: number,
+	value: string,
+	type: "score" | "title"
+) => {
+	validateGeneralSetting(value, type);
 	changing_field.value = value;
 };
 
@@ -256,10 +268,46 @@ const cancelEditing = (id: number, type: string | number) => {
 	general_settings[id].isEditing = false;
 };
 
-const acceptEditing = (id: number, type: string, value: string | number) => {
-	changeGeneralSetting({ type, value }).then(() => {
-		general_settings[id].isEditing = false;
-	});
+const generalSettingsErrors = ref({} as { score?: string; title?: string });
+
+const validateGeneralSetting = (
+	value: string | number,
+	type: "score" | "title"
+) => {
+	if (type === "title" && typeof value === "string") {
+		if (!value.trim()) {
+			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
+		} else if (value.trimStart().length > 80) {
+			generalSettingsErrors.value[type] =
+				"Максимальное количество символов - 80";
+		} else {
+			delete generalSettingsErrors.value[type];
+		}
+	} else if (type === "score" && typeof value === "number") {
+		console.log("logger", value);
+
+		if (value === null) {
+			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
+		} else if (value > 100 && value < 0) {
+			generalSettingsErrors.value[type] =
+				"Значение поля - целое число от 0 до 100";
+		} else {
+			delete generalSettingsErrors.value[type];
+		}
+	}
+};
+
+const acceptEditing = (
+	id: number,
+	type: "score" | "title",
+	value: string | number
+) => {
+	validateGeneralSetting(value, type);
+	if (!generalSettingsErrors.value[type]) {
+		changeGeneralSetting({ type, value }).then(() => {
+			general_settings[id].isEditing = false;
+		});
+	}
 };
 
 const addQuestion = () => {

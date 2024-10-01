@@ -5,6 +5,7 @@
 			class="oil-settings-input__cmp"
 			:modelValue="model_value"
 			:type="input_type"
+			:error="error"
 			@set_value="changeInputValue($event)"
 		/>
 		<i class="accept" @click="emit('accept', props.id)"
@@ -75,6 +76,10 @@ const props = defineProps({
 	},
 	input_type: {
 		type: String as PropType<"text" | "number">,
+	},
+	error: {
+		type: String,
+		default: "",
 	},
 });
 
