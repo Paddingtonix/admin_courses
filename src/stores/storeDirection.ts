@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { IDirection } from '~/src/ts-interface/direction';
-import { DirectionData } from "~/src/ts-interface/direction-data";
+// import { DirectionData } from "~/src/ts-interface/direction-data";
 
 export const useDirectionStore = defineStore('directionStore', {
     state: () => ({
-        directions: [] as IDirection[],
+        // directions: [] as IDirection[],
+        directions: [] as any,
     }),
     actions: {
         getDirections() {

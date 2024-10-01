@@ -14,7 +14,7 @@
                     :text="tab.text"
                     :active="active_tab"
                     @select-tab="selectTab"
-                    :class="{_disable: edit_mode.value}"
+                    :class="{_disable: storeEditCourseSetting.isEdit || edit_mode.value}"
                 />
             </div>
             <template v-if="active_tab === 1">
@@ -229,6 +229,7 @@
                                         :placeholder="input.placeholder"
                                         :mask_type="input.mask_type"
                                         :type="input.type"
+                                        :max_length="input.mask_length"
                                         @set_value="updateFormData($event, input_idx)"
                                     />
                                 </div>
@@ -805,7 +806,7 @@ export default defineComponent({
                 type: 'duration'
             },
             {
-                placeholder: '999',
+                placeholder: '99',
                 mask_type: 'price',
                 type: 'workload'
             }
@@ -823,7 +824,7 @@ export default defineComponent({
 
             } else if (course_setting.value.IsFree) {
                 return inputs.slice(1)
-
+            
             } else {
                 return inputs
             }
@@ -1260,7 +1261,7 @@ export default defineComponent({
 
         margin-bottom: rem(32)
         ._disable
-            opacity: 0
+            opacity: .4
             pointer-events: none
 
     &__bread 
