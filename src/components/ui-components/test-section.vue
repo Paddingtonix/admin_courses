@@ -401,6 +401,7 @@ const changeGeneralSetting = async ({
 <style lang="sass">
 .oil-course-content
 	&__attention
+		margin-bottom: rem(32)
 		&__head
 			svg
 				transition: transform .3s
