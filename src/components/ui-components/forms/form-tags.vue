@@ -98,9 +98,9 @@ const initialTagForm: ITags = {
 	isTranslated: null,
 	name: "",
 	localizations: {
+		fr: "",
 		ru: "",
 		en: "",
-		test: "",
 	},
 };
 
@@ -131,6 +131,8 @@ const setFormValue = (
 };
 
 const changeLang = (newLang: string) => {
+	console.log(errors);
+
 	activeLang.value = newLang;
 };
 

@@ -61,7 +61,7 @@ export const useTagsStore = defineStore({
 				: "";
 			return axios
 				.get(
-					`/admin/v1/label?${translated}page=${this.currentPage}&nLabelsPerPage=${this.nLabelsPerPage}&searchSubstring=${text}${this.sortString}${filterHeadings}${filterLang}`
+					`/admin/v1/label?${translated}page=${this.currentPage}&nLabelsPerPage=${this.nLabelsPerPage}${filterHeadings}${filterLang}&searchSubstring=${text}${this.sortString}`
 				)
 				.then((response) => {
 					const data = response.data;
@@ -84,6 +84,7 @@ export const useTagsStore = defineStore({
 					this.filters = {
 						Язык: data.languages.map((item) => ({
 							...item,
+							name: `${item.name}(${item.id.toUpperCase()})`,
 							isRadio: true,
 						})),
 						Разделы: data.headings.sort((a, b) => {

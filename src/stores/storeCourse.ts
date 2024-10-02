@@ -5,15 +5,15 @@ import axios from "axios";
 enum langNames {
 	"ru" = "Русский",
 	"en" = "Аглийский",
-	"test" = "Тестовский",
+	"fr" = "Французский",
 }
 
 enum statusesNames {
 	"InDevelopment" = "В разработке",
 	"OnModeration" = "На модерации",
 	"Published" = "Опубликован",
-	"Withdrawn" = "Снаят с витрины",
-	"Archived" = "Архивирован",
+	"Withdrawn" = "Снят с витрины",
+	"Archived" = "В архиве",
 }
 
 export const useStoreCourses = defineStore("courseState", {
