@@ -112,7 +112,7 @@
                         </span>
                     </div>
                     <div v-if="!direction_store.directions.directions?.length" class="no-results">
-                        <<span>
+                        <span>
                            Не создано ни одного направления.
                         </span>
                     </div>
