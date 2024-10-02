@@ -131,6 +131,7 @@
 				<QuestionCmp
 					:question_title="question.title || questionTitle"
 					:question_id="index"
+					:questions_length="questions.length"
 					:question="question"
 					:active_id="active_questions.value"
 					@open_question="setActiveQuestion($event)"
@@ -140,30 +141,6 @@
 					:isLast="questions.length === 1"
 					:selector-object="courseContentStore.directions"
 				/>
-				<div class="oil-course-content__test__add_questuon_wrapper">
-					<hr />
-					<BtnCmp
-						class="btn__add_question"
-						:background_type="'_secondary'"
-						:text="'Добавить вопрос'"
-						@click="addQuestion"
-					>
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 16 16"
-							fill="none"
-						>
-							<path
-								d="M7.9987 5.33301V10.6663M5.33203 7.99967H10.6654M14.6654 7.99967C14.6654 11.6816 11.6806 14.6663 7.9987 14.6663C4.3168 14.6663 1.33203 11.6816 1.33203 7.99967C1.33203 4.31778 4.3168 1.33301 7.9987 1.33301C11.6806 1.33301 14.6654 4.31778 14.6654 7.99967Z"
-								stroke="#176DC1"
-								stroke-width="1.33"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-						</svg>
-					</BtnCmp>
-				</div>
 			</template>
 		</div>
 	</div>

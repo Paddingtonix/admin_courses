@@ -81,6 +81,18 @@
 					</svg>
 				</i>
 			</div>
+			<transition name="fade">
+				<CourseArchitectureAddBlock
+					:btn_text="'вопрос'"
+					:request_type="{
+						type: 'Question',
+						query: `${question.id}`,
+					}"
+					:block_id="question.id"
+					@request-trigger=""
+					v-if="question_id === questions_length - 1"
+				/>
+			</transition>
 		</div>
 		<div class="oil-question">
 			<div
@@ -253,6 +265,10 @@ export default defineComponent({
 		isLast: {
 			type: Boolean,
 			default: false,
+		},
+		questions_length: {
+			type: Number,
+			default: 0,
 		},
 	},
 	emits: [
