@@ -138,7 +138,7 @@
 					@change_question="changeQuestion($event)"
 					@delete_question="deleteQuestion($event)"
 					:isLast="questions.length === 1"
-					:selector-object="selector_data"
+					:selector-object="courseContentStore.directions"
 				/>
 				<div class="oil-course-content__test__add_questuon_wrapper">
 					<hr />
@@ -236,13 +236,6 @@ const general_settings = reactive([
 ]);
 
 const active_questions = reactive({ value: [] as number[] });
-
-const selector_data = reactive(
-	courseContentStore.directions.map((item) => ({
-		name: item.name,
-		id: item.directionId,
-	}))
-);
 
 const changing_field = ref("");
 

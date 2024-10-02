@@ -100,11 +100,11 @@
 						:label="'Направление'"
 						:error="errors.directionId"
 						:choosed_variable="
-							selectorObject.find(
+							directions.find(
 								(value) => value.id === questionForm.directionId
 							)
 						"
-						:object-list="selectorObject"
+						:object-list="directions"
 						@select-object="changeActiveDirection($event)"
 					/>
 				</div>
@@ -157,11 +157,6 @@
 						v-for="(answer, index) in question?.answers"
 						:key="index"
 					>
-						<!-- <div
-							:class="{ active: answer.isCorrectAnswer }"
-							class="oil-question__radio"
-							@click="setCorrectAnswer(index)"
-						></div> -->
 						<RadioCmp
 							:id="answer.id"
 							:active="
@@ -251,7 +246,7 @@ export default defineComponent({
 			default: null,
 		},
 		selectorObject: {
-			type: Object as PropType<{ name: string; id: number }[]>,
+			type: Object as PropType<{ name: string; directionId: number }[]>,
 			required: true,
 		},
 		isLast: {
@@ -285,6 +280,13 @@ export default defineComponent({
 			/(?<=Вопрос )\d+/,
 			`${props.question_id + 1}`
 		);
+
+		const directions = computed(() => props.selectorObject);
+
+		const transformDirection = (value?: {
+			name: string;
+			directionId: number;
+		}) => (value ? { name: value.name, id: value.directionId } : value);
 
 		const questionForm = reactive({
 			content: props.question.content,
@@ -325,6 +327,10 @@ export default defineComponent({
 				},
 			}
 		);
+
+		onMounted(() => {
+			console.log(directions.value);
+		});
 
 		const answersValidate = (answer: {
 			text: string;
@@ -431,6 +437,8 @@ export default defineComponent({
 		};
 
 		const changeActiveDirection = (direction: { id: number }) => {
+			console.log(direction);
+
 			questionForm.directionId = direction.id;
 		};
 		return {
@@ -455,6 +463,8 @@ export default defineComponent({
 			answerErrors,
 			deleteQuestion,
 			questionName,
+			directions,
+			transformDirection,
 		};
 	},
 	components: {
