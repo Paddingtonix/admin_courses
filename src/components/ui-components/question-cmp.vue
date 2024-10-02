@@ -96,6 +96,7 @@
 						поможет правильно классифицировать вопрос и улучшить
 						организацию курса.</span
 					>
+					<!-- @vue-expect-error -->
 					<MarkSelector
 						:label="'Направление'"
 						:error="errors.directionId"
@@ -158,11 +159,11 @@
 						:key="index"
 					>
 						<RadioCmp
-							:id="answer.id"
+							:id="answer.id.toString()"
 							:active="
-								question.answers.find(
-									(item) => item.isCorrectAnswer
-								)?.id
+								question.answers
+									.find((item) => item.isCorrectAnswer)
+									?.id.toString()
 							"
 							@click="setCorrectAnswer(index)"
 						/>
@@ -276,9 +277,11 @@ export default defineComponent({
 			})
 		);
 
-		const questionName = props.question?.title.replace(
-			/(?<=Вопрос )\d+/,
-			`${props.question_id + 1}`
+		const questionName = computed(() =>
+			props.question?.title.replace(
+				/(?<=Вопрос )\d+/,
+				`${props.question_id + 1}`
+			)
 		);
 
 		const directions = computed(() => props.selectorObject);
@@ -380,11 +383,11 @@ export default defineComponent({
 
 		const closeQuestion = () => {
 			Object.assign(questionForm, {
-				content: initialForm.content,
-				directionId: initialForm.directionId,
-				showFullTitle: initialForm.showFullTitle,
-				correctAnswerScore: initialForm.correctAnswerScore,
-				answers: initialForm.answers,
+				content: props.question.content,
+				directionId: props.question.directionId,
+				showFullTitle: props.question.showFullTitle,
+				correctAnswerScore: props.question.correctAnswerScore,
+				answers: props.question.answers,
 			});
 			emit("close_question", props.question.id);
 		};

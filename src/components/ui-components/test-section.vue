@@ -256,9 +256,12 @@ const changeQuestion = ({
 	question: ICourseContentQuestions;
 	id: number;
 }) => {
-	courseContentStore.patchQuestion(question, id).then(() => {
-		courseContentStore.getCourseContent(props.id).then(() => {
+	console.log(question);
+
+	courseContentStore.patchQuestion(question, id).then(async () => {
+		await courseContentStore.getCourseContent(props.id).then((response) => {
 			closeQuestion(id);
+			return response;
 		});
 	});
 };
