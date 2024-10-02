@@ -412,6 +412,8 @@ const changeGeneralSetting = async ({
 				svg
 					&:last-of-type
 						transform: rotate(180deg)
+
+
 	&__test
 		max-width: rem(972)
 
