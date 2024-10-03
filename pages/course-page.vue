@@ -182,7 +182,6 @@ import type {
     IDeleteModal,
     IDeleteTag,
 } from "~/src/ts-interface/storeModal.type";
-import { useTagsStore } from "~/src/stores/storeTags";
 
 export default defineComponent({
     setup() {
@@ -206,8 +205,6 @@ export default defineComponent({
             directionIds: "",
             sortString: "",
         });
-
-        const tagsStore = useTagsStore();
 
         const paginations_pages = ref<number>(courseStore.numberOfPages ?? 1);
         const current_page = ref<number>(1);
