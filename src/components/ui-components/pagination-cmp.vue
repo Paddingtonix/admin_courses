@@ -16,10 +16,8 @@
 			<div
 				class="oil-pagination__cell"
 				v-for="(page, idx) in pagesArray.slice(
-					currentPage - 3 <= 0 ? 0 : currentPage - 2,
-					currentPage + 3 <= pagesArray.length
-						? currentPage + 1
-						: currentPage + pagesArray.length
+					visiblePagesBefore(),
+					visiblePagesAfter()
 				)"
 				:key="idx"
 				:class="{ _active: currentPage === page }"
@@ -92,6 +90,28 @@ export default defineComponent({
 			emit("change-page", page);
 		};
 
+		const visiblePagesBefore = () => {
+			if (props.currentPage - 3 <= 0) {
+				return 0;
+			} else {
+				if (props.currentPage + 3 >= pagesArray.value.length) {
+					return props.currentPage - 3;
+				}
+				return props.currentPage - 2;
+			}
+		};
+
+		const visiblePagesAfter = () => {
+			if (props.currentPage + 3 <= pagesArray.value.length) {
+				if (props.currentPage - 3 <= 0) {
+					return 4;
+				}
+				return props.currentPage + 1;
+			} else {
+				return pagesArray.value.length;
+			}
+		};
+
 		watch(
 			() => props.pages_count,
 			(newVal) => {
@@ -113,6 +133,8 @@ export default defineComponent({
 			numberOfPages,
 			changePage,
 			localCurrentPage,
+			visiblePagesBefore,
+			visiblePagesAfter,
 		};
 	},
 });
