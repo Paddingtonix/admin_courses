@@ -142,6 +142,7 @@ export default defineComponent({
 <style lang="sass">
 .oil-pagination
     max-width: rem(292)
+    user-select: none
 
     @include flex_center_spacing()
     gap: rem(2)
