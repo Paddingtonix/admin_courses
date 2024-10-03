@@ -78,18 +78,15 @@
         <div class="oil-sidebar__page">
             <ul class="oil-sidebar__page__list">
                 <li class="oil-sidebar__page__list__elem"
+                    :class="{ '_active-page': menu.link === $route.path }"
                     v-for="(menu, idx) in roleMenu"
                     :key="idx"
-                    :class="{ '_active-page': menu.link === $route.path }"
-                    v-if="menu?.action === 'logOut'"
-                    @click="logOut"
                 >
                     <LinkCmp
                         :opened_sidebar="opened_sidebar"
                         :link_name="menu.name"
                         :link_active="menu.link === $route.path"
                         :to="menu.link"
-                        @click="navigate(menu.link)"
                     >
                         <i v-html="menu.icon"></i>
                     </LinkCmp>
@@ -100,14 +97,12 @@
                     class="oil-sidebar__page__list__elem"
                     v-for="(menu, idx) in menu_bar.slice(3)"
                     :key="idx"
-                    v-if="menu?.action === 'logOut'"
-                    @click="logOut"
                 >
                     <LinkCmp
                         :opened_sidebar="opened_sidebar"
                         :link_name="menu.name"
                         :link_active="router.hasRoute(menu.link)"
-                        @click="navigate(menu.link)"
+                        @click="menu.action ? menu.action() : navigate(menu.link)"
                     >
                         <i v-html="menu.icon"></i>
                     </LinkCmp>
@@ -120,25 +115,27 @@
 import { useRouter } from 'vue-router'
 import { useUserRoleStore } from '~/src/stores/storeRole'
 import { useStoreAuth } from "~/src/stores/storeAuth";
-import { useStoreModal } from "~/src/stores/storeModal";
 import { useCookies } from "vue3-cookies";
 
 export default defineComponent({
-    setup() {
+    setup(props, { emit }) {
         const router = useRouter()
         const user_role_store = useUserRoleStore()
         const storeAuth = useStoreAuth();
-        const storeModal = useStoreModal();
         const { cookies } = useCookies();
 
         const opened_sidebar = ref(false)
 
         const logOut = () => {
-            if (cookies) {
+            const auth_token = cookies.get("course_auth_token");
+            const auth_cookie = cookies.get("course_auth");
+
+            if (auth_token || auth_cookie) {
                 cookies.remove("course_auth_token");
                 cookies.remove("course_auth");
+
                 storeAuth.logOut();
-                storeModal.openModal();
+                emit('logout');
             } else {
                 console.error("нет печенек");
             }
@@ -162,7 +159,7 @@ export default defineComponent({
             },
             {
                 link: '#',
-                action: 'logOut',
+                action: logOut,
                 name: 'Выход',
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14.9993 6.66667L18.3327 10M18.3327 10L14.9993 13.3333M18.3327 10H7.49935M12.4993 3.50337C11.4371 2.86523 10.2037 2.5 8.88824 2.5C4.89951 2.5 1.66602 5.85786 1.66602 10C1.66602 14.1421 4.89951 17.5 8.88824 17.5C10.2037 17.5 11.4371 17.1348 12.4993 16.4966" stroke="#808E9D" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             },

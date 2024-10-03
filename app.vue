@@ -1,7 +1,7 @@
 <template>
     <div class="oil" v-if="!preloader.value">
-        <Sidebar v-if="storeAuth.$state.isAuth" />
-        <NuxtPage />
+        <Sidebar v-if="storeAuth.$state.isAuth && !isAuthModalOpen" @logout="logOut" />
+        <NuxtPage v-if="!isAuthModalOpen" />
         <ModalCmp v-if="storeModal.$state.isOpen" />
     </div>
 </template>
@@ -32,6 +32,13 @@ export default defineComponent({
             value: false,
         });
 
+        const logOut = () => {
+            openDeleteModal();
+            preloader.value = false;
+        };
+
+        const isAuthModalOpen = computed(() => storeModal.$state.activeModal === 'auth-modal' && storeModal.$state.isOpen);
+
         onMounted(() => {
             preloader.value = true;
             const course_auth_token = cookies.get("course_auth_token");
@@ -44,6 +51,7 @@ export default defineComponent({
                 storeModal.closeModal();
                 preloader.value = false;
             } else {
+                storeAuth.$state.isAuth = false;
                 openDeleteModal();
                 storeModal.openModal();
                 preloader.value = false;
@@ -64,6 +72,8 @@ export default defineComponent({
             user_role_store,
             host,
             preloader,
+            isAuthModalOpen,
+            logOut
         };
     },
 });
