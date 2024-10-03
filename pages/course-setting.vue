@@ -407,7 +407,7 @@
                                 <span 
                                     :style="{color: '#176DC1'}"
                                      @click="$router.push(`course-content/${content_inner.value.initialPage.id}?=${course_setting.value.Title}&=text`)"
-                                >{{ content_inner.value.initialPage.title === null ? 'Входная страница' : content_inner.value.initialPage.title }}</span>
+                                >{{ content_inner.value.initialPage.title === null ? 'Вводная страница' : content_inner.value.initialPage.title }}</span>
                                 <CourseArchitectureIcons 
                                     v-if="storeStateCourse.status !== 'Archived'"
                                     :arrow="false"
