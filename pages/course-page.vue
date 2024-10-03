@@ -126,7 +126,12 @@
 					>
 						<template v-slot:svg>
 							<i
-								@click.stop="openDeleteModal(row)"
+								@click.stop="
+									openDeleteModal({
+										title: row.title,
+										id: row.courseId,
+									})
+								"
 								class="oil-course__settings__course-list__row__svg"
 							>
 								<svg
