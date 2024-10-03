@@ -392,6 +392,7 @@ const changeGeneralSetting = async ({
 	&__attention
 		margin-bottom: rem(32)
 		&__head
+			user-select: none
 			svg
 				transition: transform .3s
 				&:last-of-type
