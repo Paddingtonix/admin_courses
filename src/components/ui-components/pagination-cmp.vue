@@ -1,9 +1,26 @@
 <template>
 	<div class="oil-pagination">
 		<template v-if="pagesArray.length > 6">
+			<template v-if="currentPage > 3">
+				<div
+					class="oil-pagination__cell"
+					v-for="(page, idx) in pagesArray.slice(0, 2)"
+					:key="idx"
+					:class="{ _active: currentPage === page }"
+					@click="changePage(page)"
+				>
+					{{ page }}
+				</div>
+			</template>
+			<span v-if="currentPage > 4">...</span>
 			<div
 				class="oil-pagination__cell"
-				v-for="(page, idx) in pagesArray.slice(0, 3)"
+				v-for="(page, idx) in pagesArray.slice(
+					currentPage - 3 <= 0 ? 0 : currentPage - 2,
+					currentPage + 3 <= pagesArray.length
+						? currentPage + 1
+						: currentPage + pagesArray.length
+				)"
 				:key="idx"
 				:class="{ _active: currentPage === page }"
 				@click="changePage(page)"
@@ -11,16 +28,22 @@
 				<span>{{ page }}</span>
 			</div>
 
-			<span class="oil-pagination__cell">...</span>
-			<div
+			<span
+				v-if="currentPage + 2 < pagesArray.length - 1"
 				class="oil-pagination__cell"
-				v-for="(page, idx) in pagesArray.slice(-3)"
-				:key="idx"
-				:class="{ _active: currentPage === page }"
-				@click="changePage(page)"
+				>...</span
 			>
-				<span>{{ page }}</span>
-			</div>
+			<template v-if="currentPage + 3 <= pagesArray.length">
+				<div
+					class="oil-pagination__cell"
+					v-for="(page, idx) in pagesArray.slice(-2)"
+					:key="idx"
+					:class="{ _active: currentPage === page }"
+					@click="changePage(page)"
+				>
+					{{ page }}
+				</div>
+			</template>
 		</template>
 		<template v-else>
 			<div
