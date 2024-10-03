@@ -73,7 +73,7 @@
 							@cancel-filters="setFilters"
 							@send-fiters="setFilters"
 							@click="openFilter(true)"
-                            :pressed_button="filter_frame.value"
+							:pressed_button="filter_frame.value"
 							:filters="courseStore.filters"
 						/>
 					</div>
@@ -109,7 +109,7 @@
 						:lang="'Язык'"
 						:date_edit="'Дата посл. ред.'"
 						:end_date="'Снятие с витрины'"
-                        @sort="sortClick($event.field_key)"
+						@sort="sortClick($event.field_key)"
 					/>
 					<TableRowCmp
 						v-for="(row, idx) in courseStore.course_list"
@@ -191,7 +191,7 @@ export default defineComponent({
 			value: false as boolean,
 		});
 
-        const nCoursesPerPage = ref(10)
+		const nCoursesPerPage = ref(10);
 
 		const tagsStore = useTagsStore();
 
@@ -279,14 +279,16 @@ export default defineComponent({
 			directionIds: "",
 		});
 
-        const changeCoursePerPage = (val: { value: number; type: string }) => {
-            nCoursesPerPage.value = (val.value);
-            courseStore.getCourses(`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}&nCoursesPerPage=${nCoursesPerPage.value}`);
-        };
+		const changeCoursePerPage = (val: { value: number; type: string }) => {
+			nCoursesPerPage.value = val.value;
+			courseStore.getCourses(
+				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}&nCoursesPerPage=${nCoursesPerPage.value}`
+			);
+		};
 
 		watch(current_page, () => {
 			courseStore.getCourses(
-				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
+				`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}&nCoursesPerPage=${nCoursesPerPage.value}`
 			);
 		});
 
@@ -337,20 +339,20 @@ export default defineComponent({
 				  })();
 		};
 
-        const tableHeadFields = ["name", "status", "lang"];
+		const tableHeadFields = ["name", "status", "lang"];
 
-        enum sortNames {
-            name = "ascendingHeadingName",
-            status = "ascendingLabelName",
-            lang = "ascendingLocalization",
-        }
+		enum sortNames {
+			name = "ascendingHeadingName",
+			status = "ascendingLabelName",
+			lang = "ascendingLocalization",
+		}
 
-        const { sortState, sortClick } = useHeadersSort(
-            tableHeadFields,
-            sortNames,
-            //@ts-ignore
-            tagsStore.setSort
-        );
+		const { sortState, sortClick } = useHeadersSort(
+			tableHeadFields,
+			sortNames,
+			//@ts-ignore
+			tagsStore.setSort
+		);
 
 		const status_translation: Record<
 			| "InDevelopment"
