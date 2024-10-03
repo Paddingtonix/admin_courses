@@ -1,14 +1,23 @@
 <template>
-	<div class="oil-course-content__test__question">
+	<div
+		class="oil-course-content__test__question"
+		:class="{
+			disabled: active_id !== null && active_id !== question.id,
+		}"
+	>
 		<div class="oil-course-content__test__question__frame">
 			<span class="oil-course-content__test__question__title">
 				{{ questionName }}
 			</span>
 			<div
-				v-show="!active_id.includes(question.id)"
+				v-if="active_id === null"
 				class="oil-course-content__test__question__btn-wrapper"
 			>
-				<!-- <i class="oil-arrow-up">
+				<i
+					v-if="question.orderInTesting !== 1"
+					class="oil-arrow-up"
+					@click="changeOrder(question.orderInTesting - 1)"
+				>
 					<svg
 						width="14"
 						height="18"
@@ -25,7 +34,11 @@
 						/>
 					</svg>
 				</i>
-				<i class="oil-arrow-down">
+				<i
+					v-if="question.orderInTesting !== questions_length"
+					class="oil-arrow-down"
+					@click="changeOrder(question.orderInTesting + 1)"
+				>
 					<svg
 						width="14"
 						height="18"
@@ -41,7 +54,7 @@
 							stroke-linejoin="round"
 						/>
 					</svg>
-				</i> -->
+				</i>
 				<i class="oil-edit" @click.stop="openQuestion">
 					<svg
 						width="23"
@@ -81,23 +94,18 @@
 					</svg>
 				</i>
 			</div>
-			<transition name="fade">
-				<CourseArchitectureAddBlock
-					:btn_text="'вопрос'"
-					:request_type="{
-						type: 'Question',
-						query: `${question.id}`,
-					}"
-					:block_id="question.id"
-					@request-trigger=""
-					v-if="question_id === questions_length - 1"
-				/>
-			</transition>
+			<CourseArchitectureAddBlock
+				v-if="active_id === null"
+				class="add_question"
+				:btn_text="'вопрос'"
+				:block_id="question.id"
+				@click="triggerAddQuestion"
+			/>
 		</div>
 		<div class="oil-question">
 			<div
 				class="oil-question__frame"
-				v-if="active_id.includes(question.id)"
+				v-if="isOpened"
 				@click.stop="() => {}"
 			>
 				<div class="oil-question__body">
@@ -247,8 +255,8 @@ export default defineComponent({
 			default: 1,
 		},
 		active_id: {
-			type: Array<number>,
-			default: [],
+			type: Number as unknown as PropType<number | null>,
+			default: null,
 		},
 		question: {
 			type: Object as unknown as PropType<ICourseContentQuestions>,
@@ -277,6 +285,8 @@ export default defineComponent({
 		"open_question",
 		"close_question",
 		"delete_question",
+		"add_question",
+		"change_order",
 	],
 	setup(props, { emit }) {
 		const visible_summary = reactive({
@@ -293,12 +303,11 @@ export default defineComponent({
 			})
 		);
 
-		const questionName = computed(() =>
-			props.question?.title.replace(
-				/(?<=Вопрос )\d+/,
-				`${props.question_id + 1}`
-			)
-		);
+		const triggerAddQuestion = () => {
+			emit("add_question");
+		};
+
+		const questionName = computed(() => props.question?.title);
 
 		const directions = computed(() => props.selectorObject);
 
@@ -312,8 +321,10 @@ export default defineComponent({
 			directionId: props.question.directionId,
 			showFullTitle: props.question.showFullTitle,
 			correctAnswerScore: props.question.correctAnswerScore,
+			orderInTesting: props.question.orderInTesting,
 			answers: props.question.answers,
 		});
+
 		const { isFormValid, errors, validateOnSubmit } = useFormValidate(
 			questionForm,
 			{
@@ -389,9 +400,15 @@ export default defineComponent({
 			}
 		};
 
-		const isOpened = ref<boolean>(
-			props.active_id.includes(props.question.id)
-		);
+		const changeOrder = (questionOrder: number) => {
+			Object.assign(questionForm, { orderInTesting: questionOrder });
+			emit("change_question", {
+				question: questionForm,
+				id: props.question.id,
+			});
+		};
+
+		const isOpened = computed(() => props.active_id === props.question.id);
 
 		const openQuestion = () => {
 			emit("open_question", props.question.id);
@@ -484,6 +501,8 @@ export default defineComponent({
 			questionName,
 			directions,
 			transformDirection,
+			triggerAddQuestion,
+			changeOrder,
 		};
 	},
 	components: {
@@ -493,13 +512,11 @@ export default defineComponent({
 </script>
 <style lang="sass">
 .oil-course-content__test__question
-
     position: relative
-    z-index: 1
     padding: rem(16) rem(24)
     background-color: $basic_light_gray
     border: rem(1) solid $light_gray
-    cursor: pointer
+    cursor: unset
 
     &:first-child
         border-radius: rem(8) rem(8) 0 0
@@ -507,9 +524,22 @@ export default defineComponent({
     &:last-child
         border-radius: 0 0 rem(8) rem(8)
 
+    &.disabled
+        opacity: .3
+        user-select: none
+        pointer-events: none
+        cursor: unset
+
     &__title
         font-weight: bold
         user-select: none
+    &__frame
+        .add_question
+            opacity: 0
+            transition: opacity .1s ease-in-out
+            transition-delay: .2s
+            &:hover
+                opacity: 1
 
     &__btn-wrapper
         opacity: 0
@@ -522,6 +552,9 @@ export default defineComponent({
 
         right: rem(24)
         column-gap: rem(16)
+
+        i
+            cursor: pointer
 
         .oil-arrow-up
             svg

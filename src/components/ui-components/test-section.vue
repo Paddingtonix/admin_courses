@@ -133,11 +133,12 @@
 					:question_id="index"
 					:questions_length="questions.length"
 					:question="question"
-					:active_id="active_questions.value"
+					:active_id="active_question.value"
 					@open_question="setActiveQuestion($event)"
-					@close_question="closeQuestion($event)"
+					@close_question="closeQuestion()"
 					@change_question="changeQuestion($event)"
 					@delete_question="deleteQuestion($event)"
+					@add_question="addQuestion"
 					:isLast="questions.length === 1"
 					:selector-object="courseContentStore.directions"
 				/>
@@ -212,18 +213,16 @@ const general_settings = reactive([
 	},
 ]);
 
-const active_questions = reactive({ value: [] as number[] });
+const active_question = reactive<{ value: null | number }>({ value: null });
 
 const changing_field = ref("");
 
 const setActiveQuestion = (id: number) => {
-	active_questions.value.push(id);
+	active_question.value = id;
 };
 
-const closeQuestion = (id: number) => {
-	active_questions.value = active_questions.value.filter(
-		(activeId) => activeId !== id
-	);
+const closeQuestion = () => {
+	active_question.value = null;
 };
 
 const changeQuestion = ({
@@ -237,11 +236,24 @@ const changeQuestion = ({
 
 	courseContentStore.patchQuestion(question, id).then(async () => {
 		await courseContentStore.getCourseContent(props.id).then((response) => {
-			closeQuestion(id);
+			closeQuestion();
 			return response;
 		});
 	});
 };
+
+// const changeQuestionOrder = (patchData: {
+// 	questionId: number;
+// 	questionOrder: number;
+// }) => {
+// 	courseContentStore
+// 		.patchOrderQuestion(patchData.questionId, patchData.questionOrder)
+// 		.then(async () => {
+// 			await courseContentStore
+// 				.getCourseContent(props.id)
+// 				.then((response) => response);
+// 		});
+// };
 
 const editSetting = (id: number) => {
 	changing_field.value = general_settings[id].title as unknown as string;
@@ -435,29 +447,4 @@ const changeGeneralSetting = async ({
 
 			&:last-child
 				margin-bottom: rem(32)
-
-
-		&__add_questuon_wrapper
-			cursor: pointer
-			opacity: 0
-			&:hover
-				opacity: 1
-			hr
-				display: block
-				border: 0
-				height: 1px
-				border-top: 2px solid $basic-primary
-			.btn__add_question
-				position: absolute
-				padding: 0
-				z-index: 2
-				max-height: rem(32)
-				background-color: #fff
-				left: 35%
-				transform: translateY(-50%) translateX(-100%)
-				max-width: rem(156)
-				font-size: rem(12)
-				font-weight: 600
-				&:hover
-					background-color: #eee !important
 </style>

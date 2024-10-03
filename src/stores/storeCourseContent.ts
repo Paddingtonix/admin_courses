@@ -37,6 +37,7 @@ export const useStoreCourseContent = defineStore("course-content", {
 				.get<ICourseContent>(`admin/v1/Testing/${id}`)
 				.then((response) => {
 					const { data } = response;
+					console.log(data);
 					this.courseId = data.courseId;
 					this.testType = data.category;
 
