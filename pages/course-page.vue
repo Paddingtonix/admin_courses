@@ -299,11 +299,11 @@ export default defineComponent({
 			if (filter_string.length) {
 				isFiltrationActive.value = true;
 				courseStore.getCourses(
-					`/admin/v1/Course?page=${current_page.value}${filter_string}&searchSubstring=${search_value.value}`
+					`/admin/v1/Course?page=${current_page.value}${filter_string}&nCoursesPerPage=${nCoursesPerPage.value}&searchSubstring=${search_value.value}`
 				);
 			} else {
 				courseStore.getCourses(
-					`/admin/v1/Course?page=${current_page.value}&searchSubstring=${search_value.value}`
+					`/admin/v1/Course?page=${current_page.value}&nCoursesPerPage=${nCoursesPerPage.value}&searchSubstring=${search_value.value}`
 				);
 				isFiltrationActive.value = false;
 			}
