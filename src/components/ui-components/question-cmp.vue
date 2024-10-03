@@ -13,7 +13,7 @@
 				v-if="active_id === null"
 				class="oil-course-content__test__question__btn-wrapper"
 			>
-				<i
+				<!-- <i
 					v-if="question.orderInTesting !== 1"
 					class="oil-arrow-up"
 					@click="changeOrder(question.orderInTesting - 1)"
@@ -54,7 +54,7 @@
 							stroke-linejoin="round"
 						/>
 					</svg>
-				</i>
+				</i> -->
 				<i class="oil-edit" @click.stop="openQuestion">
 					<svg
 						width="23"
