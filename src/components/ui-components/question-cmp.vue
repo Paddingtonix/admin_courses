@@ -7,7 +7,7 @@
 	>
 		<div class="oil-course-content__test__question__frame">
 			<span class="oil-course-content__test__question__title">
-				{{ questionName }}
+				{{ checkForFlooding(questionName, 98) }}
 			</span>
 			<div
 				v-if="active_id === null"
@@ -239,6 +239,7 @@ import { defineComponent, ref, reactive, type PropType, onMounted } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 import { useFormValidate } from "~/src/utils/useFormValidate";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 export default defineComponent({
 	props: {
@@ -485,6 +486,7 @@ export default defineComponent({
 			isOpened,
 			setScore,
 			scoreValue,
+			checkForFlooding,
 			editorValue,
 			changeQuestion,
 			questionForm,
