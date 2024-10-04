@@ -1989,7 +1989,9 @@ export default defineComponent({
 						directions.splice(
 							0,
 							directions.length,
-							...response.data.directions
+							...response.data.directions.filter(
+								(direction) => direction.isVisible
+							)
 						);
 					})
 					.catch((error) => {
