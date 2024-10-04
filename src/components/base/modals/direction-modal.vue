@@ -77,7 +77,7 @@ export default defineComponent({
                 ? {
                     ...modal_data.modalProps.data,
                     localizations: {
-                        ru: modal_data.modalProps.data.localizedName,
+                        ru: modal_data.modalProps.data.localizedName || "",
                         en: modal_data.modalProps.data.localizations?.en || "",
                         fr: modal_data.modalProps.data.localizations?.fr || ""
                     }
@@ -108,7 +108,7 @@ export default defineComponent({
 
         const isDirectionExists = (name: string) => {
             return store_direction.directions.directions
-                .some((direction: IDirection) => direction.localizations[lang.value] === name);
+                .some((direction: IDirection) => direction.localizedName === name);
         };
 
         const getRelatedCourses = (localizedName: string) => {
@@ -122,13 +122,19 @@ export default defineComponent({
             errors.name = '';
             errors.checkbox = '';
 
-            if (data.localizations[lang.value] === '') {
+            const hasAtLeastOneLocalization = Object.values(data.localizations).some(value => value.trim() !== '');
+
+            if (!hasAtLeastOneLocalization) {
                 errors.name = 'Поле обязательно к заполнению';
                 return false;
-            } else if (data.localizations[lang.value].length > 50) {
+            }
+
+            if (data.localizations[lang.value].length > 50) {
                 errors.name = 'Максимальное количество символов - 50';
                 return false;
-            } else if (!modal_data.modalProps.edit && isDirectionExists(data.localizations[lang.value])) {
+            }
+
+            if (!modal_data.modalProps.edit && isDirectionExists(data.localizations[lang.value])) {
                 errors.name = 'Направление с таким названием уже существует';
                 return false;
             }
@@ -155,6 +161,7 @@ export default defineComponent({
                     //     fr: input_value.value
                     // }
                 }
+                console.log(sendData, 'отправляемые данные при создании направления')
 
                 store_direction.createDirection(sendData);
                 store_modal.closeModal();
@@ -172,6 +179,7 @@ export default defineComponent({
                     //     fr: input_value.value
                     // }
                 }
+                console.log(sendData, 'отправляемые данные при редактировании направления')
 
                 store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
                 store_modal.closeModal();
