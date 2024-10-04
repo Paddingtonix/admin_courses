@@ -114,7 +114,7 @@
 						@sort="sortClick($event.field_key)"
 					/>
 					<TableRowCmp
-						v-for="(row, idx) in courseStore.course_list"
+						v-for="(row, idx) in course_list"
 						class="oil-course__settings__course-list__row"
 						:id="row.courseId"
 						:key="idx"
@@ -179,6 +179,8 @@ import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersSort } from "~/src/utils/sort-generator";
+import { getRequest } from '~/src/composables/api';
+
 import type {
 	IDeleteModal,
 	IDeleteTag,
@@ -196,6 +198,9 @@ export default defineComponent({
 		const filter_frame = reactive({
 			value: false as boolean,
 		});
+
+		////////////////////////////////////////////////////////////////
+		const course_list = ref([])
 
 		const queryParams = reactive({
 			nCoursesPerPage: 10,
@@ -387,9 +392,10 @@ export default defineComponent({
 		};
 
 		onMounted(() => {
-			nextTick(() => {
+			nextTick(async () => {
 				courseStore.getCourses(courseEndpoint.value);
 				courseStore.getFiters();
+				course_list.value = await getRequest('/admin/v1/Course?page=1')
 			});
 		});
 
@@ -414,6 +420,7 @@ export default defineComponent({
 			changeCoursePerPage,
 			queryParams,
 			course_info: courseStore.course_info,
+			course_list
 		};
 	},
 });
