@@ -16,7 +16,7 @@
 					:text="card.text"
 				/>
 			</div>
-			<template
+			<!-- <template
 				v-if="
 					!courseStore.course_list.length &&
 					!queryParams.search_value.length &&
@@ -61,121 +61,120 @@
 					class="oil-course__info__btn"
 					@click="navigate('/course-create')"
 				/>
-			</template>
-			<template v-else>
-				<div class="oil-course__settings-container">
-					<div class="oil-course__settings">
-						<SearchCmp
-							:model-value="queryParams.search_value"
-							:label="'Поиск'"
-							@change-value="updateSearchValue($event)"
-						/>
-						<FilterCmp
-							v-if="Object.keys(courseStore.filters).length"
-							@cancel-filters="setFilters"
-							@send-fiters="setFilters"
-							@click="openFilter(true)"
-							:pressed_button="filter_frame.value"
-							:filters="courseStore.filters"
-						/>
-					</div>
-					<div class="oil-course__create">
-						<BtnCmp
-							:text="'Создать курс'"
-							@click="navigate('/course-create')"
+			</template> -->
+			<!-- <template v-else> -->
+			<div class="oil-course__settings-container">
+				<div class="oil-course__settings">
+					<SearchCmp
+						:model-value="queryParams.search_value"
+						:label="'Поиск'"
+						@change-value="updateSearchValue($event)"
+					/>
+					<!-- <FilterCmp
+						v-if="Object.keys(courseStore.filters).length"
+						@cancel-filters="setFilters"
+						@send-fiters="setFilters"
+						@click="openFilter(true)"
+						:pressed_button="filter_frame.value"
+						:filters="courseStore.filters"
+					/> -->
+				</div>
+				<div class="oil-course__create">
+					<BtnCmp
+						:text="'Создать курс'"
+						@click="navigate('/course-create')"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+						>
+							<path
+								d="M12 5V19M5 12H19"
+								stroke="white"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</BtnCmp>
+				</div>
+			</div>
+			<div class="oil-course__settings__course-list">
+				<TableHeadCmp
+					:name="'Название'"
+					:status="'Статус'"
+					:authors="'Авторы'"
+					:direction="'Направление'"
+					:lang="'Язык'"
+					:date_edit="'Дата посл. ред.'"
+					:end_date="'Снятие с витрины'"
+					@sort="sortClick($event.field_key)"
+				/>
+				<TableRowCmp
+					v-for="(row, idx) in course_list.courses"
+					class="oil-course__settings__course-list__row"
+					:id="row.courseId"
+					:key="idx"
+					:name="row.title"
+					:status="translateStatus(row.status)"
+					:authors="row.authorEmails[0]"
+					:direction="formatDirectionToString(row.directions)"
+					:lang="row.language.toUpperCase()"
+					:date_edit="formatDate(row.lastChangeDateTime)"
+					:end_date="formatDate(row.salesTerminationDate)"
+				>
+					<template v-slot:svg>
+						<i
+							@click.stop="
+								openDeleteModal({
+									title: row.title,
+									id: row.courseId,
+								})
+							"
+							class="oil-course__settings__course-list__row__svg"
 						>
 							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
+								width="18"
+								height="20"
+								viewBox="0 0 18 20"
 								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
 							>
 								<path
-									d="M12 5V19M5 12H19"
-									stroke="white"
+									d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
+									stroke="#FF7C7C"
 									stroke-width="2"
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
 							</svg>
-						</BtnCmp>
-					</div>
-				</div>
-				<div class="oil-course__settings__course-list">
-					<TableHeadCmp
-						:name="'Название'"
-						:status="'Статус'"
-						:authors="'Авторы'"
-						:direction="'Направление'"
-						:lang="'Язык'"
-						:date_edit="'Дата посл. ред.'"
-						:end_date="'Снятие с витрины'"
-						@sort="sortClick($event.field_key)"
-					/>
-					<TableRowCmp
-						v-for="(row, idx) in course_list.courses"
-						class="oil-course__settings__course-list__row"
-						:id="row.courseId"
-						:key="idx"
-						:name="row.title"
-						:status="translateStatus(row.status)"
-						:authors="row.authorEmails[0]"
-						:direction="formatDirectionToString(row.directions)"
-						:lang="row.language.toUpperCase()"
-						:date_edit="formatDate(row.lastChangeDateTime)"
-						:end_date="formatDate(row.salesTerminationDate)"
-					>
-						<template v-slot:svg>
-							<i
-								@click.stop="
-									openDeleteModal({
-										title: row.title,
-										id: row.courseId,
-									})
-								"
-								class="oil-course__settings__course-list__row__svg"
-							>
-								<svg
-									width="18"
-									height="20"
-									viewBox="0 0 18 20"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										d="M12.3333 4.99984V4.33317C12.3333 3.39975 12.3333 2.93304 12.1517 2.57652C11.9919 2.26292 11.7369 2.00795 11.4233 1.84816C11.0668 1.6665 10.6001 1.6665 9.66667 1.6665H8.33333C7.39991 1.6665 6.9332 1.6665 6.57668 1.84816C6.26308 2.00795 6.00811 2.26292 5.84832 2.57652C5.66667 2.93304 5.66667 3.39975 5.66667 4.33317V4.99984M1.5 4.99984H16.5M14.8333 4.99984V14.3332C14.8333 15.7333 14.8333 16.4334 14.5608 16.9681C14.3212 17.4386 13.9387 17.821 13.4683 18.0607C12.9335 18.3332 12.2335 18.3332 10.8333 18.3332H7.16667C5.76654 18.3332 5.06647 18.3332 4.53169 18.0607C4.06129 17.821 3.67883 17.4386 3.43915 16.9681C3.16667 16.4334 3.16667 15.7333 3.16667 14.3332V4.99984"
-										stroke="#FF7C7C"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
-							</i>
-						</template>
-					</TableRowCmp>
-				</div>
-				<div class="oil-course__settings__pagination">
-					<PaginationCmp
-						:pages_count="paginations_pages!"
-						:currentPage="current_page"
-						@change-page="isCurrentPage"
-					/>
-				</div>
-				<SelectorCmp
-					@setValue="changeCoursePerPage($event)"
-					class="tags-page__selector"
-					:label="`${list[0].text} курсов на стр.`"
-					listText="курсов на стр."
-					:list="list"
+						</i>
+					</template>
+				</TableRowCmp>
+			</div>
+			<div class="oil-course__settings__pagination">
+				<PaginationCmp
+					:pages_count="paginations_pages!"
+					:currentPage="current_page"
+					@change-page="isCurrentPage"
 				/>
-			</template>
+			</div>
+			<SelectorCmp
+				@setValue="changeCoursePerPage($event)"
+				class="tags-page__selector"
+				:label="`${list[0].text} курсов на стр.`"
+				listText="курсов на стр."
+				:list="list"
+			/>
 		</div>
 	</section>
 </template>
 <script lang="ts">
 import { useRouter } from "vue-router";
-import { useStoreCourses } from "~/src/stores/storeCourse";
+// import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersSort } from "~/src/utils/sort-generator";
@@ -189,7 +188,7 @@ import type {
 export default defineComponent({
 	setup() {
 		const router = useRouter();
-		const courseStore = useStoreCourses();
+		// const courseStore = useStoreCourses();
 
 		const user_role_store = useUserRoleStore();
 
@@ -204,7 +203,7 @@ export default defineComponent({
 
 		const queryParams = reactive({
 			nCoursesPerPage: 10,
-			current_page: computed(() => courseStore.currentPage).value,
+			// current_page: computed(() => courseStore.currentPage).value,
 			search_value: "",
 			statuses: "",
 			languageIds: "",
@@ -212,7 +211,7 @@ export default defineComponent({
 			sortString: "",
 		});
 
-		const paginations_pages = ref<number>(courseStore.numberOfPages ?? 1);
+		// const paginations_pages = ref<number>(courseStore.numberOfPages ?? 1);
 		const current_page = ref<number>(1);
 
 		const isCurrentPage = (page: number) => {
@@ -231,17 +230,17 @@ export default defineComponent({
 		);
 
 		const deleteCourse = (id: number) => {
-			return courseStore
-				.deleteCourse(id)
-				.then(async () => courseStore.getCourses(courseEndpoint.value))
-				.catch((err) => {
-					throw err;
-				});
+			// return courseStore
+			// 	.deleteCourse(id)
+			// 	.then(async () => courseStore.getCourses(courseEndpoint.value))
+			// 	.catch((err) => {
+			// 		throw err;
+			// 	});
 		};
 
-		watch(queryParams, () => {
-			courseStore.getCourses(courseEndpoint.value);
-		});
+		// watch(queryParams, () => {
+		// 	courseStore.getCourses(courseEndpoint.value);
+		// });
 
 		const updateSearchValue = (value = "") => {
 			queryParams.search_value = value;
@@ -393,8 +392,8 @@ export default defineComponent({
 
 		onMounted(() => {
 			nextTick(async () => {
-				courseStore.getCourses(courseEndpoint.value);
-				courseStore.getFiters();
+				// courseStore.getCourses(courseEndpoint.value);
+				// courseStore.getFiters();
 				course_list.value = await getRequest('/admin/v1/Course?page=1')
 			});
 		});
@@ -406,20 +405,20 @@ export default defineComponent({
 			openFilter,
 			formatDirectionToString,
 			formatDate,
-			paginations_pages,
+			// paginations_pages,
 			current_page,
 			isCurrentPage,
 			updateSearchValue,
 			translateStatus,
 			openDeleteModal,
-			courseStore,
+			// courseStore,
 			setFilters,
 			isFiltrationActive,
 			list,
 			sortClick,
 			changeCoursePerPage,
 			queryParams,
-			course_info: courseStore.course_info,
+			// course_info: courseStore.course_info,
 			course_list
 		};
 	},
