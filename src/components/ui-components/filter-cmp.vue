@@ -102,6 +102,7 @@ const { filters } = defineProps({
 				isRadio?: boolean;
 			}[];
 		}>,
+		required: true,
 	},
 	pressed_button: {
 		type: Boolean,
@@ -122,7 +123,8 @@ const filter_frame = reactive({
 const filterKeys = Object.keys(filters || {});
 
 const mapFilters = (key: string) =>
-	filters && filters[key].map((filter) => ({ ...filter, active: false }));
+	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
+		.value;
 
 const getMappedFilters = () =>
 	filterKeys.map((key) => ({
