@@ -9,9 +9,9 @@
         <InputCmp
             class="oil-direction__input"
            :label="`Название направления (${lang.toLocaleUpperCase()})*`"
-           :modelValue="data.localizedName"
+           :modelValue="data.localizations[lang]"
            :error="errors.name"
-           @set_value="setDirectionName"
+           @set_value="(value) => setDirectionName(value)"
            @blur="isValid"
         />
         <CheckboxCmp
@@ -46,7 +46,7 @@ import { defineComponent } from 'vue'
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
 import type { IDirection } from "~/src/ts-interface/direction";
-import {useStoreCourses} from "~/src/stores/storeCourse";
+import { useStoreCourses } from "~/src/stores/storeCourse";
 
 export default defineComponent({
     components: {},
@@ -59,7 +59,6 @@ export default defineComponent({
         const modal_data = store_modal.$state;
 
         const visible_direction = ref(modal_data.modalProps?.data?.isVisible || false)
-        const input_value = ref(modal_data.modalProps?.data?.localizedName || '')
 
         const store_direction = useDirectionStore();
         const course_store = useStoreCourses();
@@ -69,11 +68,21 @@ export default defineComponent({
             lastChangeDateTime: "",
             localizedName: "",
             isVisible: false,
-            count: 0
+            count: 0,
+            localizations: { ru: "", en: "", fr: "" }
         }
 
         const data: IDirection = reactive(
-            modal_data.modalProps?.data || initialDirection
+            modal_data.modalProps?.data
+                ? {
+                    ...modal_data.modalProps.data,
+                    localizations: {
+                        ru: modal_data.modalProps.data.localizedName,
+                        en: modal_data.modalProps.data.localizations?.en || "",
+                        fr: modal_data.modalProps.data.localizations?.fr || ""
+                    }
+                }
+                : initialDirection
         );
 
         const closeModal = () => {
@@ -82,6 +91,7 @@ export default defineComponent({
 
         const setLang = (active_lang) => {
             lang.value = active_lang
+            console.log(lang.value, 'lang.value')
         }
 
         const setCheckbox = (val) => {
@@ -89,8 +99,7 @@ export default defineComponent({
         }
 
         const setDirectionName = (val) => {
-            input_value.value = val.value
-            data.localizedName = val.value;
+            data.localizations[lang.value] = val.value;
         }
 
         const errors = reactive({
@@ -99,7 +108,7 @@ export default defineComponent({
 
         const isDirectionExists = (name: string) => {
             return store_direction.directions.directions
-                .some((direction: IDirection) => direction.localizedName === name);
+                .some((direction: IDirection) => direction.localizations[lang.value] === name);
         };
 
         const getRelatedCourses = (localizedName: string) => {
@@ -113,19 +122,19 @@ export default defineComponent({
             errors.name = '';
             errors.checkbox = '';
 
-            if (input_value.value === '') {
+            if (data.localizations[lang.value] === '') {
                 errors.name = 'Поле обязательно к заполнению';
                 return false;
-            } else if (input_value.value.length > 50) {
+            } else if (data.localizations[lang.value].length > 50) {
                 errors.name = 'Максимальное количество символов - 50';
                 return false;
-            } else if (!modal_data.modalProps.edit && isDirectionExists(input_value.value)) {
+            } else if (!modal_data.modalProps.edit && isDirectionExists(data.localizations[lang.value])) {
                 errors.name = 'Направление с таким названием уже существует';
                 return false;
             }
 
             if (!visible_direction.value) {
-                const related_courses = getRelatedCourses(data.localizedName);
+                const related_courses = getRelatedCourses(data.localizations[lang.value]);
                 if (related_courses.length > 0) {
                     errors.checkbox = 'Направление используется на сайте, его нельзя скрыть';
                     return false;
@@ -139,11 +148,12 @@ export default defineComponent({
             if (isValid()) {
                 const sendData = {
                     isVisible: visible_direction.value,
-                    localizations: {
-                        en: input_value.value,
-                        ru: input_value.value,
-                        // fr: input_value.value
-                    }
+                    localizations: data.localizations
+                    // localizations: {
+                    //     en: input_value.value,
+                    //     ru: input_value.value,
+                    //     fr: input_value.value
+                    // }
                 }
 
                 store_direction.createDirection(sendData);
@@ -155,11 +165,12 @@ export default defineComponent({
             if (isValid()) {
                 const sendData = {
                     isVisible: visible_direction.value,
-                    localizations: {
-                        en: input_value.value,
-                        ru: input_value.value,
-                        // fr: input_value.value
-                    }
+                    localizations: data.localizations
+                    // localizations: {
+                    //     en: input_value.value,
+                    //     ru: input_value.value,
+                    //     fr: input_value.value
+                    // }
                 }
 
                 store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
