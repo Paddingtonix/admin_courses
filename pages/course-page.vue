@@ -114,7 +114,7 @@
 						@sort="sortClick($event.field_key)"
 					/>
 					<TableRowCmp
-						v-for="(row, idx) in course_list"
+						v-for="(row, idx) in course_list.courses"
 						class="oil-course__settings__course-list__row"
 						:id="row.courseId"
 						:key="idx"
@@ -227,11 +227,7 @@ export default defineComponent({
 						: ""
 				}${queryParams.directionIds}${queryParams.statuses}${
 					queryParams.languageIds
-				}${queryParams.sortString}${
-					queryParams.nCoursesPerPage === 10
-						? ""
-						: `&nCoursesPerPage=${queryParams.nCoursesPerPage}`
-				}`
+				}${queryParams.sortString}`
 		);
 
 		const deleteCourse = (id: number) => {
