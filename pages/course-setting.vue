@@ -1855,7 +1855,7 @@ export default defineComponent({
 				show_error.value = false;
 				storeEditCourseSetting.canselEdit();
 				formData.directionIds = picked_directions;
-				formData.authorEmails = [course_table[1].authors];
+				formData.authorEmails = course_table[1].authors;
 				formData.priceInRubles = course_table[1].price
 					? parseFloat(course_table[1].price.replace(/\s/g, ""))
 					: null;
@@ -1989,7 +1989,9 @@ export default defineComponent({
 						directions.splice(
 							0,
 							directions.length,
-							...response.data.directions
+							...response.data.directions.filter(
+								(direction) => direction.isVisible
+							)
 						);
 					})
 					.catch((error) => {

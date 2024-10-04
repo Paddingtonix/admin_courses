@@ -227,7 +227,11 @@ export default defineComponent({
 						: ""
 				}${queryParams.directionIds}${queryParams.statuses}${
 					queryParams.languageIds
-				}${queryParams.sortString}`
+				}${queryParams.sortString}${
+					queryParams.nCoursesPerPage === 10
+						? ""
+						: `&nCoursesPerPage=${queryParams.nCoursesPerPage}`
+				}`
 		);
 
 		const deleteCourse = (id: number) => {
