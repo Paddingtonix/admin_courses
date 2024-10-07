@@ -12,3 +12,13 @@ export interface IDirection {
         fr: string
     }
 }
+
+export interface ILocalizations {
+    id?: number,
+    isVisible?: boolean,
+    localizations: {
+        ru?: string,
+        en?: string,
+        fr?: string
+    }
+}

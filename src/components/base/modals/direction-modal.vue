@@ -47,6 +47,7 @@ import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
 import type { IDirection } from "~/src/ts-interface/direction";
 import { useStoreCourses } from "~/src/stores/storeCourse";
+import type { ILocalizations } from "~/src/ts-interface/direction";
 
 export default defineComponent({
     components: {},
@@ -72,6 +73,15 @@ export default defineComponent({
             localizations: { ru: "", en: "", fr: "" }
         }
 
+        const initialLocalizations: ILocalizations = {
+            isVisible: false,
+            localizations: { ru: "", en: "", fr: "" }
+        }
+
+        // const data: ILocalizations = reactive(
+        //     modal_data.modalProps?.data || initialLocalizations
+        // );
+
         const data: IDirection = reactive(
             modal_data.modalProps?.data
                 ? {
@@ -84,6 +94,7 @@ export default defineComponent({
                 }
                 : initialDirection
         );
+        console.log(data, 'dat data data')
 
         const closeModal = () => {
             store_modal.closeModal();

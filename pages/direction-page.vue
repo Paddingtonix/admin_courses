@@ -139,6 +139,7 @@ import { useUserRoleStore } from '~/src/stores/storeRole';
 import { useStoreCourses } from '~/src/stores/storeCourse';
 import type { IDirection } from "~/src/ts-interface/direction";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
+import type { ILocalizations } from "~/src/ts-interface/direction";
 
 export default defineComponent({
     setup() {
@@ -151,6 +152,8 @@ export default defineComponent({
         const user_role_store = useUserRoleStore()
         const modal_store = useStoreModal();
         const course_store = useStoreCourses();
+        const localizations_data = direction_store.localizations;
+
 
         const visible_state = reactive({
             show_only_visible: true,
@@ -242,11 +245,14 @@ export default defineComponent({
                 activeModal: "direction-modal",
                 modalProps: {
                     data,
+                    // data: direction_store.localizations,
                     // isFormChanged: false,
                     edit,
                 },
             });
             modal_store.openModal();
+            direction_store.getLocalizations(data.directionId);
+            console.log(data.directionId, 'data.directionId')
         }
 
         const getRelatedCourses = (localizedName: string) => {
@@ -302,6 +308,7 @@ export default defineComponent({
             active_checkbox,
             user_role_store,
             course_store,
+            localizations_data,
             deleteDirection,
             sendDirection,
             visible_state,
