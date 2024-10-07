@@ -9,7 +9,7 @@
                 <span>{{ info.field }}</span>
             </div>
             <div class="oil-course-setting__info__fields__cell">
-                <span>{{ info.value ? info.value : "Нет данных" }}</span>
+                <span>{{ info.value || "Нет данных" }}</span>
             </div>
         </div>
         <BtnCmp
@@ -26,8 +26,9 @@
             :value="field.value"
             :label="field.label"
             :error="field.error"
+            v-model="field.value"
         />
-        <div v-for="(field, field_idx) in edit_info.slice(3)" :key="field_idx">
+        <div v-for="(field, field_idx) in edit_info.slice(2)" :key="field_idx">
             <TextareaCmp
                 :type="field.type"
                 :value="field.value"
@@ -85,6 +86,15 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted } from "vue";
+import { useCourseInfo } from "~/src/stores/storeCourseInfo";
+import { useRoute } from "vue-router";
+
+const course_info_store = useCourseInfo();
+const route = useRoute();
+
+const id = route.query.search;
+
 const edit_mode = reactive({
     value: false,
 });
@@ -96,44 +106,44 @@ const active_example = reactive({
 const openEditFrame = () => {
     edit_mode.value = !edit_mode.value;
 };
-const course_info = reactive([
+const course_info = computed(() => [
     {
         field: "Название курса",
-        value: "Геологическое моделирование пласта",
+        value: course_info_store.course_info.title,
         id: "course_name",
     },
     {
         field: "Авторы",
-        value: "",
+        value: course_info_store.course_info.authors,
         id: "author",
     },
     {
         field: "Описание",
-        value: "",
+        value: course_info_store.course_info.description,
         id: "description",
     },
     {
         field: "Целевая аудитория",
-        value: "",
+        value: course_info_store.course_info.targetAudience,
         id: "target_audience",
     },
     {
         field: "Методика обучения",
-        value: "",
+        value: course_info_store.course_info.educationMethods,
         id: "methodology",
     },
     {
         field: "Результаты обучения",
-        value: "",
+        value: course_info_store.course_info.educationResults,
         id: "results",
     },
 ]);
 
-const edit_info = reactive([
+const edit_info = computed(() => [
     {
-        id: "userName",
-        type: "email",
-        value: "",
+        id: "courseTitle",
+        type: "text",
+        value: course_info_store.course_info.title,
         required: true,
         valid: false,
         pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
@@ -205,4 +215,10 @@ const edit_info = reactive([
 const openExample = (id: number) => {
     active_example.value = active_example.value === id ? null : id;
 };
+
+onMounted(() => {
+    nextTick(() => {
+        course_info_store.getCourseInfo(id as Number);
+    })
+})
 </script>
