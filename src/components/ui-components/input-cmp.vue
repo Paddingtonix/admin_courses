@@ -95,6 +95,13 @@ export default defineComponent({
         );
 
         watch(
+            modelValue,
+            (newValue) => {
+                input_value.value = newValue;
+            }
+        );
+
+        watch(
             () => props.date_calendar,
             (new_date) => {
                 input_value.value = new_date;
