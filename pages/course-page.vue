@@ -8,12 +8,13 @@
 				Мои курсы
 			</div>
 			<div v-else class="oil-course__title">Курсы</div>
-			<div class="oil-course__info__card">
+			<div class="oil-course__info__card" v-if="statuses_course">
 				<CardInfo
-					v-for="(card, idx) in course_info"
+					v-for="([key, status], idx) in Object.entries(statuses_course)"
 					:key="idx"
-					:count="card.count"
-					:text="card.text"
+					:count="status.count"
+					:text="status.translate"
+					:status="key"
 				/>
 			</div>
 			<!-- <template
@@ -70,14 +71,13 @@
 						:label="'Поиск'"
 						@change-value="updateSearchValue($event)"
 					/>
-					<!-- <FilterCmp
-						v-if="Object.keys(courseStore.filters).length"
+					<FilterCmp
 						@cancel-filters="setFilters"
 						@send-fiters="setFilters"
 						@click="openFilter(true)"
 						:pressed_button="filter_frame.value"
-						:filters="courseStore.filters"
-					/> -->
+						:filters="course_filter"
+					/>
 				</div>
 				<div class="oil-course__create">
 					<BtnCmp
@@ -387,14 +387,78 @@ export default defineComponent({
 					status as keyof typeof status_translation
 				];
 			}
+
 			return "Неизвестный статус";
 		};
+
+		const statuses_course = computed(() => {
+			if (course_list.value && Array.isArray(course_list.value.courses)) {
+				return course_list.value.courses.reduce((acc: any, course_status: { status: string }) => {
+					if(!acc[course_status.status]) {
+
+					acc[course_status.status] = {
+							count: 0,
+							translate: ''
+						}
+					}
+
+					acc[course_status.status].count += 1
+
+					switch (course_status.status) {
+
+						case 'InDevelopment':							
+							acc[course_status.status].translate = 'В разработке'
+							break
+							
+						case 'OnModeration':
+							acc[course_status.status].translate = 'На модерации'
+							break
+
+						case 'Published':
+							acc[course_status.status].translate = 'Опубликован'
+							break
+
+						case 'Withdrawn':
+							acc[course_status.status].translate = 'Снят с витрины'
+							break
+
+
+						default:
+							acc[course_status.status].translate = 'В архиве'
+
+							break
+					}
+
+					if (!acc.OnModeration) {
+						acc.OnModeration = { count: 0, translate: 'На модерации' }
+
+					} 
+					if(!acc.Published) {
+						acc.Published = { count: 0, translate: 'Опубликовано' }
+
+					} 
+					if(!acc.Withdrawn) {
+						acc.Withdrawn = { count: 0, translate: 'Снят с витрины' }
+
+					} if(!acc.Archieved) {
+						acc.Archieved = { count: 0, translate: 'В архиве' }
+					}
+
+					return acc
+
+				}, {} as { [key: string]: { count: number; translate: string } })
+			}
+		})
+
+		const course_filter = ref([])
 
 		onMounted(() => {
 			nextTick(async () => {
 				// courseStore.getCourses(courseEndpoint.value);
 				// courseStore.getFiters();
 				course_list.value = await getRequest('/admin/v1/Course?page=1')
+				course_filter.value = await getRequest('/admin/v1/Course/filters')
+				
 			});
 		});
 
@@ -419,7 +483,9 @@ export default defineComponent({
 			changeCoursePerPage,
 			queryParams,
 			// course_info: courseStore.course_info,
-			course_list
+			course_list,
+			statuses_course,
+			course_filter
 		};
 	},
 });
