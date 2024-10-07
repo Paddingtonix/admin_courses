@@ -202,7 +202,7 @@ export default defineComponent({
                         align-items: center
                         span
                             bottom: rem(-6)
-                            font-size: 12px
+                            font-size: rem(14)
                             line-height: 16px
                             color: $basic_error
 
@@ -260,8 +260,8 @@ export default defineComponent({
                             position: relative
                             svg
                                 position: absolute
-                                top: rem(10)
-                                left: rem(16)
+                                // top: rem(10)
+                                // left: rem(16)
 
                             .oil-input
                                 padding: rem(0) rem(16) rem(0) rem(44)
