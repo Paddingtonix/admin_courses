@@ -5,7 +5,7 @@
 		}}</label>
 		<input
 			v-if="$props.mask_type"
-			v-model="input_value"
+			:value="formatted_value"
 			:type="type"
 			@input="setValue"
 			@blur="() => onBlur"
@@ -14,7 +14,7 @@
 		/>
 		<input
 			v-else
-			v-model="input_value"
+			v-model.lazy="input_value"
 			:type="type"
 			@blur="() => onBlur"
 			@input="setValue"
@@ -93,9 +93,7 @@ export default defineComponent({
 			!modelValue ? "" : modelValue.value
 		);
 
-		watch(modelValue, (newValue) => {
-			input_value.value = newValue;
-		});
+		const formatted_value = ref(input_value.value);
 
 		watch(
 			() => props.date_calendar,
@@ -103,42 +101,35 @@ export default defineComponent({
 				input_value.value = new_date;
 			}
 		);
+		const formatter = new Intl.NumberFormat("ru-RU", {
+			useGrouping: true,
+		});
 
-		const setValue = () => {
+		const priceFormat = (value: string | number) => {
+			if (props.mask_type === "price" && typeof value === "string") {
+				const cleanValue = value.replace(/\D/g, "");
+
+				return cleanValue ? formatter.format(parseInt(cleanValue)) : "";
+			} else {
+				return value;
+			}
+		};
+
+		const setValue = (event: Event) => {
+			input_value.value = (event.target as HTMLInputElement).value;
+			formatted_value.value = priceFormat(input_value.value);
 			emit("set_value", { value: input_value.value, type: props.type });
 		};
 
-		const mask_price = computed(() => {
-			if (typeof input_value.value === "string") {
-				if (props.max_length === 5) return "# ###";
-				if (props.max_length === 6) return "## ###";
-				if (props.max_length === 9) return "# ### ###";
-				// if (input_value.value.length === 10) return '## ### ###'
-				return "### ###";
-			}
-		});
-
 		const mask_date = "##.##.##";
-
-		const numberFormatting = () => {
-			new Intl.NumberFormat("ru-RU", {
-				maximumSignificantDigits: 3,
-			}).format(Number(input_value.value));
-			// .replace(",", " ");
-		};
-
-		const mask = computed(() => {
-			if (props.mask_type === "price") return mask_price.value;
-		});
 
 		return {
 			input_value,
 			setValue,
-			mask_price,
+			formatted_value,
+			// mask_price,
 			mask_date,
-			mask,
 			modelValue,
-			numberFormatting,
 		};
 	},
 });

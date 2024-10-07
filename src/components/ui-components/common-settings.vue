@@ -300,11 +300,16 @@
 					<div
 						class="oil-course-setting__settings__table__column__cell"
 					>
-						<span
-							v-for="(author, idx) in column.authors"
-							:key="author"
-							>{{ !idx ? author : `${author}, ` }}</span
-						>
+						<template v-if="typeof column.authors === 'string'">
+							<span>{{ column.authors }}</span>
+						</template>
+						<template v-else>
+							<span
+								v-for="(author, idx) in column.authors"
+								:key="author"
+								>{{ !idx ? author : `${author}, ` }}</span
+							>
+						</template>
 					</div>
 					<div
 						v-if="!course_setting.value.IsFree"
@@ -684,7 +689,7 @@ const course_table = reactive([
 		direction: "Направление",
 	},
 	{
-		authors: [] as string[],
+		authors: [] as string[] | string,
 		price: "",
 		duration: "",
 		workload: "",
@@ -784,7 +789,10 @@ const saveSettings = () => {
 		show_error.value = false;
 		storeEditCourseSetting.canselEdit();
 		formData.directionIds = picked_directions;
-		formData.authorEmails = course_table[1].authors;
+		formData.authorEmails =
+			typeof course_table[1].authors === "string"
+				? [course_table[1].authors]
+				: course_table[1].authors;
 		formData.priceInRubles = course_table[1].price
 			? parseFloat(course_table[1].price.replace(/\s/g, ""))
 			: null;
