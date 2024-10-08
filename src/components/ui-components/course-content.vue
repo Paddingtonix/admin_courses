@@ -1,7 +1,7 @@
 <template>
     <div class="oil-course-setting__content">
         <div
-            v-if="storeStateCourse.status === 'Archived'"
+            v-if="storeCourseSettings.CourseType === 'Archived'"
             class="oil-course-setting__content__info__attention"
         >
             <i class="oil-course-setting__content__info__attention__icon">
@@ -47,39 +47,52 @@
                 </svg>
             </BtnCmp>
         </div>
-        <div v-else class="oil-course-setting__content__edu">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
+        <div
+            v-else
+            style="max-width: 972px"
+            class="oil-course-content__attention"
+            @click="toggleSummary"
+        >
+            <div
+                class="oil-course-content__attention__head"
+                :class="{ active: isSummaryVisible }"
             >
-                <path
-                    d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-                    stroke="#323C46"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-            <span>Как работать с содержанием модуля?</span>
-            <svg
-                class="oil-course-setting__content__edu__chevron"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+                <slot name="attention-icon">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                    >
+                        <path
+                            d="M12 16V12M12 8H12.01M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
+                            stroke="#323C46"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </slot>
+                <span>Как работать с содержанием модуля?</span>
+                <slot name="attention-chevron">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M6 9L12 15L18 9"
+                            stroke="#374351"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </slot>
+            </div>
+            <div
+                v-if="isSummaryVisible"
+                class="oil-course-content__attention__text"
+                @click.stop
             >
-                <path
-                    d="M6 9L12 15L18 9"
-                    stroke="#374351"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
+                <slot name="summary-text"></slot>
+            </div>
         </div>
         <div
             class="oil-course-setting__content__container"
@@ -110,7 +123,7 @@
                         }}</span
                     >
                     <CourseArchitectureIcons
-                        v-if="storeStateCourse.status !== 'Archived'"
+                        v-if="storeCourseSettings.CourseType !== 'Archived'"
                         :arrow="false"
                         :delete_id="content_inner.value.initialPage.id"
                         :delete_type="'Page'"
@@ -121,7 +134,7 @@
                     <CourseArchitectureAddBlock
                         v-if="
                             !content_inner.value.initialPage &&
-                            storeStateCourse.status !== 'Archived'
+                            storeCourseSettings.CourseType !== 'Archived'
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="
@@ -134,7 +147,7 @@
                             type: 'Page',
                             query: 'courseId',
                         }"
-                        :block_id="Number($route.query.course) || undefined"
+                        :block_id="Number($route.query.search) || undefined"
                         @request-trigger="reloadContent"
                     />
                 </transition>
@@ -176,7 +189,7 @@
                         v-if="
                             !content_inner.value.initialTesting &&
                             content_inner.value.initialPage &&
-                            storeStateCourse.status !== 'Archived'
+                            storeCourseSettings.CourseType !== 'Archived'
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="'входной тест'"
@@ -185,7 +198,7 @@
                             query: 'courseId',
                             testing_type: 'Entrance',
                         }"
-                        :block_id="Number($route.query.course) || undefined"
+                        :block_id="Number($route.query.search) || undefined"
                         @request-trigger="reloadContent"
                     />
                 </transition>
@@ -254,7 +267,7 @@
                             @request-trigger="reloadContent"
                             v-if="
                                 idx === content_inner.value.parts.length - 1 &&
-                                storeStateCourse.status !== 'Archived'
+                                storeCourseSettings.CourseType !== 'Archived'
                             "
                         />
                     </transition>
@@ -293,7 +306,7 @@
                                 : chapter.title
                         }}</span>
                         <CourseArchitectureIcons
-                            v-if="storeStateCourse.status !== 'Archived'"
+                            v-if="storeCourseSettings.CourseType !== 'Archived'"
                             :delete_id="chapter.id"
                             :delete_type="'Chapter'"
                             @move-trigger="
@@ -331,7 +344,8 @@
                                 @request-trigger="reloadContent"
                                 v-if="
                                     idx === part.chapters.length - 1 &&
-                                    storeStateCourse.status !== 'Archived'
+                                    storeCourseSettings.CourseType !==
+                                        'Archived'
                                 "
                             />
                         </transition>
@@ -367,7 +381,7 @@
                             v-else
                             @click="
                                 $router.push(
-                                    `course-content/${$route.query.search}?=${course_setting.value.Title}&=text`
+                                    `course-content/${$route.query.search}?=${storeCourseSettings.Title}&=text`
                                 )
                             "
                             >{{
@@ -377,7 +391,7 @@
                             }}</span
                         >
                         <CourseArchitectureIcons
-                            v-if="storeStateCourse.status !== 'Archived'"
+                            v-if="storeCourseSettings.CourseType !== 'Archived'"
                             :delete_id="section.id"
                             :delete_type="'Section'"
                             @delete-trigger="reloadContent"
@@ -415,7 +429,8 @@
                                 @request-trigger="reloadContent"
                                 v-if="
                                     idx === chapter.sections.length - 1 &&
-                                    storeStateCourse.status !== 'Archived'
+                                    storeCourseSettings.CourseType !==
+                                        'Archived'
                                 "
                             />
                         </transition>
@@ -458,7 +473,7 @@
                             }}</span
                         >
                         <CourseArchitectureIcons
-                            v-if="storeStateCourse.status !== 'Archived'"
+                            v-if="storeCourseSettings.CourseType !== 'Archived'"
                             :delete_id="chapter.id"
                             :delete_type="'Chapter'"
                             @delete-trigger="reloadContent"
@@ -503,7 +518,7 @@
                         }}</span
                     >
                     <CourseArchitectureIcons
-                        v-if="storeStateCourse.status !== 'Archived'"
+                        v-if="storeCourseSettings.CourseType !== 'Archived'"
                         :delete_id="content_inner.value.finalTesting.id"
                         :delete_type="'Testing'"
                         @delete-trigger="reloadContent"
@@ -514,7 +529,7 @@
                     <CourseArchitectureAddBlock
                         v-if="
                             !content_inner.value.finalTesting &&
-                            storeStateCourse.status !== 'Archived'
+                            storeCourseSettings.CourseType !== 'Archived'
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="'итоговый тест'"
@@ -523,7 +538,7 @@
                             query: 'courseId',
                             testing_type: 'Final',
                         }"
-                        :block_id="Number($route.query.course) || undefined"
+                        :block_id="Number($route.query.search) || undefined"
                         @request-trigger="reloadContent"
                     />
                 </transition>
@@ -550,8 +565,10 @@
 <script lang="ts" setup>
 import axios from "axios";
 import { useStoreCourses } from "~/src/stores/storeCourse";
+import { useStoreCourseSettings } from "~/src/stores/storeCourseSettings";
 
 const storeStateCourse = useStoreCourses();
+const storeCourseSettings = useStoreCourseSettings();
 const route = useRoute();
 
 defineProps({
@@ -632,6 +649,12 @@ const editTitle = (state: boolean, idx: number, type: string, id: number) => {
     }
 };
 
+const isSummaryVisible = ref(false);
+
+const toggleSummary = () => {
+    isSummaryVisible.value = !isSummaryVisible.value;
+};
+
 watch(reload_state, () => {
     if (reload_state.value) {
         axios
@@ -648,9 +671,12 @@ onMounted(() => {
         axios
             .get(`/admin/v1/Course/${route.query.search}/content`)
             .then((struct_response) => {
+                console.log("response", struct_response);
+
                 content_inner.value = struct_response.data;
                 preloader.value = false;
             });
+        console.log("inner!:", content_inner.value);
     });
 });
 </script>
