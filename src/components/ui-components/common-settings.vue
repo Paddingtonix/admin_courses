@@ -699,18 +699,20 @@ const course_table = reactive([
 	},
 ]);
 
+const operatingForm = reactive(Object.create(course_table[1]));
+
 const handleDateUpdate = (date: string, type: string) => {
 	switch (type) {
 		case "start":
-			course_table[1].start_date = date;
+			operatingForm.start_date = date;
 			break;
 
 		case "end":
-			course_table[1].end_date = date;
+			operatingForm.end_date = date;
 			break;
 
 		case "remove":
-			course_table[1].removed_date = date;
+			operatingForm.removed_date = date;
 			break;
 
 		default:
@@ -721,27 +723,24 @@ const handleDateUpdate = (date: string, type: string) => {
 const guessingFormDataInput = (type: string) => {
 	switch (type) {
 		case "price":
-			const copyPrice = course_table[1].price;
-			return copyPrice;
+			return operatingForm.price;
 		case "duration":
-			const copyDuration = course_table[1].duration;
-			return copyDuration;
+			return operatingForm.duration;
 		case "workload":
-			const copyWorkload = course_table[1].workload;
-			return copyWorkload;
+			return operatingForm.workload;
 	}
 };
 
 const updateFormData = (event: { value: string; type: string }) => {
 	switch (event.type) {
 		case "price":
-			course_table[1].price = event.value;
+			operatingForm.price = event.value;
 			break;
 		case "duration":
-			course_table[1].duration = event.value;
+			operatingForm.duration = event.value;
 			break;
 		case "workload":
-			course_table[1].workload = event.value;
+			operatingForm.workload = event.value;
 			break;
 	}
 };
@@ -780,36 +779,37 @@ const picked_directions_filtered = computed(() =>
 	)
 );
 
+const editReplace = (editingValue: number | string, regExp: RegExp) =>
+	String(editingValue).replace(regExp, " ");
+
 const saveSettings = () => {
 	if (picked_directions_filtered.value.length === 0) {
 		show_error.value = true;
 	} else {
-		console.log("qwerty34");
-
 		show_error.value = false;
 		storeEditCourseSetting.canselEdit();
 		formData.directionIds = picked_directions;
 		formData.authorEmails =
-			typeof course_table[1].authors === "string"
-				? [course_table[1].authors]
-				: course_table[1].authors;
-		formData.priceInRubles = course_table[1].price
-			? parseFloat(course_table[1].price.replace(/\s/g, ""))
+			typeof operatingForm.authors === "string"
+				? [operatingForm.authors]
+				: operatingForm.authors;
+		formData.priceInRubles = operatingForm.price
+			? parseFloat(operatingForm.price.replace(/\s/g, ""))
 			: null;
-		formData.durationAcademicHours = course_table[1].duration
-			? parseFloat(course_table[1].duration.replace(/\s/g, ""))
+		formData.durationAcademicHours = operatingForm.duration
+			? parseFloat(operatingForm.duration.replace(/\s/g, ""))
 			: null;
-		formData.durationWorkDays = course_table[1].workload
-			? parseFloat(course_table[1].workload.replace(/\s/g, ""))
+		formData.durationWorkDays = operatingForm.workload
+			? parseFloat(operatingForm.workload.replace(/\s/g, ""))
 			: null;
-		formData.dateStart = course_table[1].start_date
-			? new Date(course_table[1].start_date!).toISOString()
+		formData.dateStart = operatingForm.start_date
+			? new Date(operatingForm.start_date!).toISOString()
 			: null;
-		formData.dateFinish = course_table[1].end_date
-			? new Date(course_table[1].end_date!).toISOString()
+		formData.dateFinish = operatingForm.end_date
+			? new Date(operatingForm.end_date!).toISOString()
 			: null;
 		formData.salesTerminationDate = new Date(
-			course_table[1].removed_date!
+			operatingForm.removed_date!
 		).toISOString();
 		console.log(formData, "formData");
 		axios
@@ -827,15 +827,22 @@ const saveSettings = () => {
 					.get(`/admin/v1/Course/${route.query.search}`)
 					.then((info_course) => {
 						course_setting.value = info_course.data;
-						course_table[1].price = String(
-							info_course.data.PriceInRubles
-						).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-						course_table[1].duration = String(
-							info_course.data.DurationAcademicHours
-						).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-						course_table[1].workload = String(
-							info_course.data.DurationWorkDays
-						).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+						course_table[1].price = editReplace(
+							info_course.data.PriceInRubles,
+							/\B(?=(\d{3})+(?!\d))/g
+						);
+
+						course_table[1].duration = editReplace(
+							info_course.data.DurationAcademicHours,
+							/\B(?=(\d{3})+(?!\d))/g
+						);
+
+						course_table[1].workload = editReplace(
+							info_course.data.DurationWorkDays,
+							/\B(?=(\d{3})+(?!\d))/g
+						);
+
 						course_table[1].start_date = formatDate(
 							info_course.data.DateStart
 						);
@@ -908,6 +915,15 @@ const openEditCourseSetting = () => {
 	original_directions.value = [...picked_directions];
 };
 const canselEditCourseSetting = () => {
+	Object.assign(operatingForm, {
+		...operatingForm,
+		price: course_table[1].price,
+		duration: course_table[1].duration,
+		workload: course_table[1].workload,
+		start_date: course_table[1].start_date,
+		end_date: course_table[1].end_date,
+		removed_date: course_table[1].removed_date,
+	});
 	storeEditCourseSetting.canselEdit();
 	picked_directions.splice(
 		0,
@@ -931,8 +947,6 @@ onMounted(() => {
 			.get(`/admin/v1/Course/${route.query.search}`)
 			.then((info_course) => {
 				course_setting.value = info_course.data;
-				// Обновление данных в таблице
-
 				(course_table[1].authors = info_course.data.AuthorEmails),
 					(course_table[1].price = info_course.data.PriceInRubles
 						? String(info_course.data.PriceInRubles).replace(
@@ -963,12 +977,20 @@ onMounted(() => {
 					.SalesTerminationDate
 					? formatDate(info_course.data.SalesTerminationDate)
 					: info_course.data.SalesTerminationDate;
+
 				chooses_direction.value = info_course.data.Directions.map(
 					(direction: { id: number; name: string }) => ({
 						directionId: direction.id,
 						localizedName: direction.name,
 					})
 				);
+
+				chooses_direction.value.map((item) => {
+					picked_directions.push(item.directionId);
+				});
+
+				console.log(picked_directions);
+
 				preloader.value = false;
 				console.log(info_course.data, "info_course.data");
 				console.log(course_table[1], "course_table[1]");
