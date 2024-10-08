@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
 import { defineComponent } from "vue";
 import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 import type ISwitcher from "~/src/ts-interface/switcher.type";
@@ -43,6 +44,7 @@ export default defineComponent({
 		const storeEditCourseSetting = useStoreEditCourseSetting();
 		const active_tab = ref<number>(1);
 		const editInput = ref(null) as any;
+		const query = useRoute().query;
 
 		const switcherArray: ISwitcher[] = [
 			{
@@ -98,6 +100,12 @@ export default defineComponent({
 				if (editInput.value) {
 					editInput.value.focus();
 				}
+			});
+		});
+
+		onMounted(() => {
+			axios.get(`/admin/v1/Course/${query.search}`).then((res) => {
+				course_setting.value = res.data;
 			});
 		});
 
