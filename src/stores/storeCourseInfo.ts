@@ -19,11 +19,11 @@ export const useCourseInfo = defineStore("course-content", {
                     console.error('Ошибка при получении информации о курсе', error)
                 })
         },
-        patchCourseInfo(id: number) {
+        patchCourseInfo(id: number, courseInfoData: ICourseInfo) {
             axios
-                .patch(`admin/v1/Course/${id}/info`)
+                .patch(`admin/v1/Course/${id}/info`, courseInfoData)
                 .then(response => {
-                    this.getCourseInfo();
+                    this.getCourseInfo(response.data as Number);
 
                     console.log('Редактирование прошло успешно', response.data);
                 })

@@ -4,5 +4,5 @@ export interface ICourseInfo {
     targetAudience: string,
     educationMethods: string,
     educationResults: string,
-    author: string
+    authors: string
 }
