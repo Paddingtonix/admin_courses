@@ -398,9 +398,10 @@
 						<span
 							v-if="
 								course_table[1].start_date &&
-								course_table[1].end_date
+								course_table[1].end_date &&
+								column.start_date !== undefined
 							"
-							>{{ column.start_date }}</span
+							>{{ formatDate(column.start_date) }}</span
 						>
 						<span
 							v-if="
@@ -412,9 +413,10 @@
 						<span
 							v-if="
 								course_table[1].start_date &&
-								course_table[1].end_date
+								course_table[1].end_date &&
+								column.end_date
 							"
-							>{{ column.end_date }}</span
+							>{{ formatDate(column.end_date) }}</span
 						>
 						<div
 							v-else
@@ -434,7 +436,7 @@
 						class="oil-course-setting__settings__table__column__cell"
 					>
 						<span v-if="course_table[1].removed_date">{{
-							column.removed_date
+							formatDate(column.removed_date)
 						}}</span>
 						<div
 							v-else
@@ -696,9 +698,9 @@ const course_table = reactive([
 		price: "",
 		duration: "",
 		workload: "",
-		start_date: "",
-		end_date: "",
-		removed_date: "",
+		start_date: "" as string,
+		end_date: "" as string,
+		removed_date: "" as string,
 	},
 ]);
 
@@ -798,6 +800,8 @@ const saveSettings = () => {
 	if (picked_directions_filtered.value.length === 0) {
 		show_error.value = true;
 	} else {
+		console.log(operatingForm);
+
 		show_error.value = false;
 		formData.directionIds = picked_directions;
 		formData.authorEmails =
@@ -813,17 +817,18 @@ const saveSettings = () => {
 		formData.durationWorkDays = operatingForm.workload
 			? parseFloat(operatingForm.workload.replace(/\s/g, ""))
 			: null;
-		formData.dateStart = operatingForm.start_date
+		formData.dateStart = operatingForm?.start_date
 			? new Date(operatingForm.start_date!).toISOString()
 			: null;
 		formData.dateFinish = operatingForm.end_date
 			? new Date(operatingForm.end_date!).toISOString()
 			: null;
-		formData.salesTerminationDate = new Date(
-			operatingForm.removed_date!
-		).toISOString();
+		console.log("date:", operatingForm?.removed_date);
 
-		console.log(formData, "formData");
+		formData.salesTerminationDate = operatingForm?.removed_date
+			? new Date(operatingForm.removed_date!).toISOString()
+			: null;
+
 		axios
 			.patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
 			.then((response) => {
@@ -855,15 +860,11 @@ const saveSettings = () => {
 							/\B(?=(\d{3})+(?!\d))/g
 						);
 
-						course_table[1].start_date = formatDate(
-							info_course.data.DateStart
-						);
-						course_table[1].end_date = formatDate(
-							info_course.data.DateFinish
-						);
-						course_table[1].removed_date = formatDate(
-							info_course.data.SalesTerminationDate
-						);
+						course_table[1].start_date = info_course.data.DateStart;
+						course_table[1].end_date = info_course.data.DateFinish;
+						//TODO: формат даты изменяется
+						course_table[1].removed_date =
+							info_course.data.SalesTerminationDate;
 						preloader.value = false;
 						chooses_direction.value =
 							info_course.data.Directions.map(
@@ -988,14 +989,14 @@ onMounted(() => {
 					  )
 					: info_course.data.DurationWorkDays;
 				course_table[1].start_date = info_course.data.DateStart
-					? formatDate(info_course.data.DateStart)
+					? info_course.data.DateStart
 					: info_course.data.DateStart;
 				course_table[1].end_date = info_course.data.DateFinish
-					? formatDate(info_course.data.DateFinish)
+					? info_course.data.DateFinish
 					: info_course.data.DateFinish;
 				course_table[1].removed_date = info_course.data
 					.SalesTerminationDate
-					? formatDate(info_course.data.SalesTerminationDate)
+					? info_course.data.SalesTerminationDate
 					: info_course.data.SalesTerminationDate;
 
 				chooses_direction.value = info_course.data.Directions.map(
@@ -1040,6 +1041,7 @@ onMounted(() => {
 					error
 				);
 			});
+		console.log("datesInit", course_table[1]);
 	});
 });
 </script>
