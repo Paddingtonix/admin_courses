@@ -533,10 +533,12 @@
 							class="oil-course-setting__settings__table__column__cell__dates"
 						>
 							<CalendarCmp
+								:input_value="UTCDates?.dateStart"
 								@update-date="handleDateUpdate($event, 'start')"
 							/>
 							<span>—</span>
 							<CalendarCmp
+								:input_value="UTCDates?.dateEnd"
 								@update-date="handleDateUpdate($event, 'end')"
 							/>
 						</div>
@@ -545,6 +547,7 @@
 						class="oil-course-setting__settings__table__column__cell"
 					>
 						<CalendarCmp
+							:input_value="UTCDates?.dateFinish"
 							@update-date="handleDateUpdate($event, 'remove')"
 						/>
 					</div>
@@ -764,6 +767,25 @@ const formData = reactive({
 	dateFinish: "" as string | null,
 	salesTerminationDate: "" as string | null,
 });
+
+const UTCDates = reactive({
+	dateStart: computed(() =>
+		operatingForm.start_date
+			? new Date(operatingForm.start_date!).toISOString()
+			: null
+	).value,
+	dateEnd: computed(() =>
+		operatingForm.end_date
+			? new Date(operatingForm.end_date!).toISOString()
+			: null
+	).value,
+	dateFinish: computed(() =>
+		operatingForm.end_date
+			? new Date(operatingForm.removed_date!).toISOString()
+			: null
+	).value,
+});
+
 const formatDate = (date_value: string): string => {
 	const date = new Date(date_value);
 	const day = String(date.getDate()).padStart(2, "0");
@@ -912,6 +934,8 @@ const setTooltipText = computed(() => {
 
 const openEditCourseSetting = () => {
 	storeEditCourseSetting.edit();
+	console.log(UTCDates);
+
 	original_directions.value = [...picked_directions];
 };
 const canselEditCourseSetting = () => {
