@@ -705,6 +705,8 @@ const course_table = reactive([
 const operatingForm = reactive(Object.create(course_table[1]));
 
 const handleDateUpdate = (date: string, type: string) => {
+	console.log(date);
+
 	switch (type) {
 		case "start":
 			operatingForm.start_date = date;
@@ -769,21 +771,9 @@ const formData = reactive({
 });
 
 const UTCDates = reactive({
-	dateStart: computed(() =>
-		operatingForm.start_date
-			? new Date(operatingForm.start_date!).toISOString()
-			: null
-	).value,
-	dateEnd: computed(() =>
-		operatingForm.end_date
-			? new Date(operatingForm.end_date!).toISOString()
-			: null
-	).value,
-	dateFinish: computed(() =>
-		operatingForm.end_date
-			? new Date(operatingForm.removed_date!).toISOString()
-			: null
-	).value,
+	dateStart: null,
+	dateEnd: null,
+	dateFinish: null,
 });
 
 const formatDate = (date_value: string): string => {
@@ -809,7 +799,6 @@ const saveSettings = () => {
 		show_error.value = true;
 	} else {
 		show_error.value = false;
-		storeEditCourseSetting.canselEdit();
 		formData.directionIds = picked_directions;
 		formData.authorEmails =
 			typeof operatingForm.authors === "string"
@@ -833,6 +822,7 @@ const saveSettings = () => {
 		formData.salesTerminationDate = new Date(
 			operatingForm.removed_date!
 		).toISOString();
+
 		console.log(formData, "formData");
 		axios
 			.patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
@@ -882,6 +872,7 @@ const saveSettings = () => {
 									localizedName: direction.name,
 								})
 							);
+						storeEditCourseSetting.canselEdit();
 						console.log(info_course.data, "info_course.data");
 					})
 					.catch((error) => {
@@ -1013,7 +1004,11 @@ onMounted(() => {
 					picked_directions.push(item.directionId);
 				});
 
-				console.log(picked_directions);
+				Object.assign(UTCDates, {
+					dateStart: info_course.data.DateStart,
+					dateEnd: info_course.data.DateFinish,
+					dateFinish: info_course.data.SalesTerminationDate,
+				});
 
 				preloader.value = false;
 				console.log(info_course.data, "info_course.data");

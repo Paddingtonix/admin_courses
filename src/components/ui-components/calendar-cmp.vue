@@ -1,10 +1,6 @@
 <template>
 	<div class="oil-calendar">
-		<VDatePicker
-			v-model.string="initial_date"
-			:popover="popover"
-			:masks="masks"
-		>
+		<VDatePicker v-model="initial_date" :popover="popover" :masks="masks">
 			<template #default="{ inputValue, inputEvents }">
 				<InputCmp
 					:date_calendar="inputValue"
@@ -46,7 +42,6 @@ export default defineComponent({
 		const date = ref<number | null>(null);
 
 		const initial_date = ref(_.input_value);
-		console.log(_.input_value, "initial_date");
 
 		const popover = ref({
 			visibility: "click",
@@ -60,7 +55,11 @@ export default defineComponent({
 			value: string | number;
 			type: string;
 		}) => {
-			emit("update-date", value);
+			console.log("clicked!");
+
+			console.log("calendar-change", initial_date.value);
+
+			emit("update-date", initial_date.value);
 		};
 
 		watch(date, (newDate) => {
