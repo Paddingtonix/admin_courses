@@ -872,6 +872,11 @@ const saveSettings = () => {
 									localizedName: direction.name,
 								})
 							);
+						Object.assign(UTCDates, {
+							dateStart: info_course.data.DateStart,
+							dateEnd: info_course.data.DateFinish,
+							dateFinish: info_course.data.SalesTerminationDate,
+						});
 						storeEditCourseSetting.canselEdit();
 						console.log(info_course.data, "info_course.data");
 					})

@@ -1,6 +1,6 @@
 <template>
 	<div class="oil-calendar">
-		<VDatePicker v-model="initial_date" :popover="popover" :masks="masks">
+		<VDatePicker v-model="date" :popover="popover" :masks="masks">
 			<template #default="{ inputValue, inputEvents }">
 				<InputCmp
 					:date_calendar="inputValue"
@@ -28,20 +28,20 @@
 	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, type PropType } from "vue";
 
 export default defineComponent({
 	props: {
 		input_value: {
-			type: String,
+			type: String as unknown as PropType<Date | null>,
 			default: null,
 		},
 	},
 	emits: ["update-date"],
 	setup(_, { emit }) {
-		const date = ref<number | null>(null);
+		const init_date = ref(_.input_value);
 
-		const initial_date = ref(_.input_value);
+		const date = ref<number | null | Date>(init_date.value);
 
 		const popover = ref({
 			visibility: "click",
@@ -57,9 +57,9 @@ export default defineComponent({
 		}) => {
 			console.log("clicked!");
 
-			console.log("calendar-change", initial_date.value);
+			console.log("calendar-change", value.value);
 
-			emit("update-date", initial_date.value);
+			emit("update-date", value.value);
 		};
 
 		watch(date, (newDate) => {
@@ -72,7 +72,6 @@ export default defineComponent({
 			date,
 			popover,
 			masks,
-			initial_date,
 			handleSetValue,
 		};
 	},
