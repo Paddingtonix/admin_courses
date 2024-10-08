@@ -76,7 +76,7 @@
 						@send-fiters="setFilters"
 						@click="openFilter(true)"
 						:pressed_button="filter_frame.value"
-						:filters="course_filter"
+						:filters="course_filters"
 					/>
 				</div>
 				<div class="oil-course__create">
@@ -450,15 +450,24 @@ export default defineComponent({
 			}
 		})
 
+		const course_filters = computed(() => {
+			return {
+				statuses: course_filter.value.statuses
+					? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1 }))
+					: [], 
+				languages: course_filter.value.languages
+					? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1 }))
+					: [],
+				directions: course_filter.value.directions
+			}
+		})
+
 		const course_filter = ref([])
 
 		onMounted(() => {
 			nextTick(async () => {
-				// courseStore.getCourses(courseEndpoint.value);
-				// courseStore.getFiters();
 				course_list.value = await getRequest('/admin/v1/Course?page=1')
 				course_filter.value = await getRequest('/admin/v1/Course/filters')
-				
 			});
 		});
 
@@ -485,7 +494,8 @@ export default defineComponent({
 			// course_info: courseStore.course_info,
 			course_list,
 			statuses_course,
-			course_filter
+			course_filter,
+			course_filters
 		};
 	},
 });

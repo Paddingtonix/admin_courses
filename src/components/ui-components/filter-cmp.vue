@@ -44,14 +44,36 @@
 						stroke-linejoin="round"
 					/>
 				</svg>
-				<div
+				<!-- <div
 					v-for="(key, index) in filterKeys"
 					class="oil-filter__body__frame"
-				>
-					<span class="oil-filter__body__frame__title">{{
-						key
-					}}</span>
-					<template v-if="!isMarks || key !== 'Язык'">
+				> -->
+					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->
+					<div>
+						<CheckboxCmp 
+							v-for="filter_state in filters.directions"
+							:key="filter_state"
+							:text="filter_state.name"
+							:id="filter_state.id"
+						/>
+					</div>
+					<div>
+						<CheckboxCmp 
+							v-for="filter_state in filters.languages"
+							:key="filter_state"
+							:text="filter_state.name"
+							:id="filter_state.id"
+						/>
+					</div>
+					<div>
+						<CheckboxCmp 
+							v-for="filter_state in filters.statuses"
+							:key="filter_state"
+							:text="filter_state.name"
+							:id="filter_state.id"
+						/>
+					</div>
+					<!-- <template v-if="!isMarks || key !== 'Язык'">
 						<CheckboxCmp
 							v-for="(checkbox, idx) in filter_values.value[
 								index
@@ -74,8 +96,8 @@
 							:active="radio.active ? radio.id : ''"
 							@click="setActiveFilter(index, key, idx)"
 						/>
-					</template>
-				</div>
+					</template> -->
+				<!-- </div> -->
 				<div class="oil-filter__body__btns">
 					<BtnCmp
 						@click="cancelFilters"
@@ -122,29 +144,29 @@ const filter_frame = reactive({
 
 const filterKeys = Object.keys(filters || {});
 
-const mapFilters = (key: string) =>
-	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
-		.value;
+// const mapFilters = (key: string) =>
+// 	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
+// 		.value;
 
-const getMappedFilters = () =>
-	filterKeys.map((key) => ({
-		[key]: mapFilters(key),
-	})) as unknown as {
-		[key: string]: {
-			active: boolean;
-			id: string | number;
-			name: string;
-			isRadio?: boolean;
-		}[];
-	}[];
+// const getMappedFilters = () =>
+// 	filterKeys.map((key) => ({
+// 		[key]: mapFilters(key),
+// 	})) as unknown as {
+// 		[key: string]: {
+// 			active: boolean;
+// 			id: string | number;
+// 			name: string;
+// 			isRadio?: boolean;
+// 		}[];
+// 	}[];
 
-onMounted(() => {
-	console.log(getMappedFilters());
-});
+// onMounted(() => {
+// 	console.log(getMappedFilters());
+// });
 
-const initialFilter_values = getMappedFilters();
+// const initialFilter_values = getMappedFilters();
 
-const filter_values = reactive({ value: initialFilter_values });
+// const filter_values = reactive({ value: initialFilter_values });
 
 const setActiveFilter = (index: number, key: string, id: number) => {
 	if (filter_values !== undefined) {
@@ -180,7 +202,7 @@ const sendFilters = () => {
 
 const cancelFilters = () => {
 	emit("cancel-filters", []);
-	filter_values.value = getMappedFilters();
+	// filter_values.value = getMappedFilters();
 };
 
 const openFilter = (state: boolean) => {
@@ -212,7 +234,7 @@ const openFilter = (state: boolean) => {
     &__body-wrapper
         position: fixed
         background-color: $basic_white
-        top: -40%
+        // top: -40%
         transform: translateY(60%)
         left: 75%
         width: auto
