@@ -11,29 +11,29 @@ export const useDirectionStore = defineStore('directionStore', {
         localizations: [] as ILocalizations[]
     }),
     actions: {
-        async getDirections() {
-            return axios
-                    .get('admin/v1/Direction')
-                    .then(response => {
-                        this.directions = response.data;
+        getDirections() {
+            axios
+                .get('admin/v1/Direction')
+                .then(response => {
+                    this.directions = response.data;
 
-                        console.log('Направления добавились !)', response.data)
-                    })
-                    .catch(error => {
-                        console.error('Ууупс, ошибка при загрузке :(', error);
-                    });
+                    console.log('Направления добавились !)', response.data)
+                })
+                .catch(error => {
+                    console.error('Ууупс, ошибка при загрузке :(', error);
+                });
         },
-        async getLocalizations(id: number) {
-            return axios
-                    .get(`admin/v1/Direction/${id}`)
-                    .then(response => {
-                        this.localizations = response.data;
+        getLocalizations(id: number) {
+            axios
+                .get(`admin/v1/Direction/${id}`)
+                .then(response => {
+                    this.localizations = response.data;
 
-                        console.log('Локализации получены', response.data)
-                    })
-                    .catch(error => {
-                        console.error('Ууупс, ошибка при получении локализаций', error);
-                    });
+                    console.log('Локализации получены', response.data)
+                })
+                .catch(error => {
+                    console.error('Ууупс, ошибка при получении локализаций', error);
+                });
         },
         createDirection(data: DirectionData) {
 
@@ -47,7 +47,7 @@ export const useDirectionStore = defineStore('directionStore', {
                     console.error('Ууупс, ошибка при добавлении :(', error);
                 });
         },
-        changeDirection(id: string, data: DirectionData) {
+        changeDirection(id: string, data: ILocalizations) {
             axios
                 .patch(`admin/v1/Direction/${id}`, data)
                 .then(response => {

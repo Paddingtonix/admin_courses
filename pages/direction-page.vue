@@ -140,6 +140,7 @@ import { useStoreCourses } from '~/src/stores/storeCourse';
 import type { IDirection } from "~/src/ts-interface/direction";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
 import type { ILocalizations } from "~/src/ts-interface/direction";
+import axios from "axios";
 
 export default defineComponent({
     setup() {
@@ -153,8 +154,8 @@ export default defineComponent({
         const modal_store = useStoreModal();
         const course_store = useStoreCourses();
         const localizations_data = direction_store.localizations;
-        console.log(localizations_data, 'localizations_data')
 
+        const localizations = ref<ILocalizations[]>([])
 
         const visible_state = reactive({
             show_only_visible: true,
@@ -193,7 +194,6 @@ export default defineComponent({
 
         const changeSearchValue = (text: string) => {
             search_query.value = text;
-            // direction_store.getDirections(text);
         };
 
         const onSort = ({ field_key }) => {
@@ -240,25 +240,44 @@ export default defineComponent({
             return filtered;
         });
 
-        const sendDirection = (data?: IDirection, edit?: boolean) => {
-            direction_store.getLocalizations(data.directionId);
-            const relatedLocalizations = direction_store.localizations.filter(loc => loc.id === data.directionId);
-            console.log(relatedLocalizations, 'relatedLocalizations in site')
-            console.log(data.directionId, 'data.directionId')
-            console.log(direction_store.localizations, 'direction_store.localizations')
+        const sendDirection = async (data?: IDirection, edit?: boolean) => {
 
-            modal_store.$patch({
-                label: !edit ? "Добавление направления" : "Редактирование направления",
-                activeModal: "direction-modal",
-                modalProps: {
-                    // data,
-                    // dataLocalizations: direction_store.localizations,
-                    relatedLocalizations,
-                    // isFormChanged: false,
-                    edit,
-                },
-            });
-            modal_store.openModal();
+            const initialLocalizations = {
+                id: 0,
+                localizations: { ru: "", en: "", fr: "" },
+                description: { ru: "", en: "", fr: "" }
+            };
+
+            if (data?.directionId) {
+                axios.get(`admin/v1/Direction/${data.directionId}`)
+                    .then(response => {
+                        localizations.value = response.data;
+                        console.log('Локализации получены', response.data);
+
+                        modal_store.$patch({
+                            label: !edit ? "Добавление направления" : "Редактирование направления",
+                            activeModal: "direction-modal",
+                            modalProps: {
+                                localizations,
+                                edit
+                            },
+                        });
+                        modal_store.openModal();
+                    })
+                    .catch(error => {
+                        console.error('Ууупс, ошибка при получении локализаций', error);
+                    });
+            } else {
+                modal_store.$patch({
+                    label: "Добавление направления",
+                    activeModal: "direction-modal",
+                    modalProps: {
+                        localizations: initialLocalizations,
+                        edit,
+                    },
+                });
+                modal_store.openModal();
+            }
         }
 
         const getRelatedCourses = (localizedName: string) => {
@@ -315,6 +334,7 @@ export default defineComponent({
             user_role_store,
             course_store,
             localizations_data,
+            localizations,
             deleteDirection,
             sendDirection,
             visible_state,

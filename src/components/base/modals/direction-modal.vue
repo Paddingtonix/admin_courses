@@ -9,7 +9,7 @@
         <InputCmp
             class="oil-direction__input"
            :label="`Название направления (${lang.toLocaleUpperCase()})*`"
-           :modelValue="data.localizations[lang]"
+           :modelValue="dataLocalizations.localizations[lang]"
            :error="errors.name"
            @set_value="(value) => setDirectionName(value)"
            @blur="isValid"
@@ -17,10 +17,10 @@
         <TextareaCmp
             class="oil-direction__text-area"
             :label="`Описание направления (${lang.toLocaleUpperCase()})*`"
-            :modelValue="data.localizations[lang]"
+            :modelValue="dataLocalizations.description[lang]"
             :error="errors.name"
             :max_length="550"
-            @set_textarea="(value) => setDirectionName(value)"
+            @set_textarea="(value) => setDirectionDescription(value)"
         ></TextareaCmp>
         <CheckboxCmp
             class="oil-direction__checkbox"
@@ -72,39 +72,40 @@ export default defineComponent({
         const store_direction = useDirectionStore();
         const course_store = useStoreCourses();
 
-        const initialDirection: IDirection = {
-            directionId: 0,
-            lastChangeDateTime: "",
-            localizedName: "",
-            isVisible: false,
-            count: 0,
-            localizations: { ru: "", en: "", fr: "" }
-        }
+        // const initialDirection: IDirection = {
+        //     directionId: 0,
+        //     lastChangeDateTime: "",
+        //     localizedName: "",
+        //     isVisible: false,
+        //     count: 0,
+        //     localizations: { ru: "", en: "", fr: "" }
+        // }
 
         const initialLocalizations: ILocalizations = {
+            id: 0,
             isVisible: false,
             localizations: { ru: "", en: "", fr: "" },
             description: { ru: "", en: "", fr: "" }
         }
 
         const dataLocalizations: ILocalizations = reactive(
-            modal_data.modalProps?.relatedLocalizations || initialLocalizations
+            modal_data.modalProps?.localizations || initialLocalizations
         );
         console.log(dataLocalizations, 'relatedLocalizations')
 
-        const data: IDirection = reactive(
-            modal_data.modalProps?.data
-                ? {
-                    ...modal_data.modalProps.data,
-                    localizations: {
-                        ru: modal_data.modalProps.data.localizedName || "",
-                        en: modal_data.modalProps.data.localizations?.en || "",
-                        fr: modal_data.modalProps.data.localizations?.fr || ""
-                    }
-                }
-                : initialDirection
-        );
-        console.log(data, 'dat data data')
+        // const data: IDirection = reactive(
+        //     modal_data.modalProps?.data
+        //         ? {
+        //             ...modal_data.modalProps.data,
+        //             localizations: {
+        //                 ru: modal_data.modalProps.data.localizedName || "",
+        //                 en: modal_data.modalProps.data.localizations?.en || "",
+        //                 fr: modal_data.modalProps.data.localizations?.fr || ""
+        //             }
+        //         }
+        //         : initialDirection
+        // );
+        // console.log(data, 'dat data data')
 
         const closeModal = () => {
             store_modal.closeModal();
@@ -120,7 +121,11 @@ export default defineComponent({
         }
 
         const setDirectionName = (val) => {
-            data.localizations[lang.value] = val.value;
+            dataLocalizations.localizations[lang.value] = val.value;
+        }
+
+        const setDirectionDescription = (val) => {
+            dataLocalizations.description[lang.value] = val.value;
         }
 
         const errors = reactive({
@@ -143,25 +148,25 @@ export default defineComponent({
             errors.name = '';
             errors.checkbox = '';
 
-            const hasAtLeastOneLocalization = Object.values(data.localizations).some(value => value.trim() !== '');
+            const hasAtLeastOneLocalization = Object.values(dataLocalizations.localizations).some(value => value.trim() !== '');
 
             if (!hasAtLeastOneLocalization) {
                 errors.name = 'Поле обязательно к заполнению';
                 return false;
             }
 
-            if (data.localizations[lang.value].length > 50) {
+            if (dataLocalizations.localizations[lang.value]?.length > 50) {
                 errors.name = 'Максимальное количество символов - 50';
                 return false;
             }
 
-            if (!modal_data.modalProps.edit && isDirectionExists(data.localizations[lang.value])) {
+            if (!modal_data.modalProps.edit && isDirectionExists(dataLocalizations.localizations[lang.value])) {
                 errors.name = 'Направление с таким названием уже существует';
                 return false;
             }
 
             if (!visible_direction.value) {
-                const related_courses = getRelatedCourses(data.localizations[lang.value]);
+                const related_courses = getRelatedCourses(dataLocalizations.localizations[lang.value]);
                 if (related_courses.length > 0) {
                     errors.checkbox = 'Направление используется на сайте, его нельзя скрыть';
                     return false;
@@ -175,7 +180,8 @@ export default defineComponent({
             if (isValid()) {
                 const sendData = {
                     isVisible: visible_direction.value,
-                    localizations: data.localizations
+                    localizations: dataLocalizations.localizations,
+                    description: dataLocalizations.description
                     // localizations: {
                     //     en: input_value.value,
                     //     ru: input_value.value,
@@ -192,8 +198,8 @@ export default defineComponent({
         const patchDirection = () => {
             if (isValid()) {
                 const sendData = {
-                    isVisible: visible_direction.value,
-                    localizations: data.localizations
+                    localizations: dataLocalizations.localizations,
+                    description: dataLocalizations.description
                     // localizations: {
                     //     en: input_value.value,
                     //     ru: input_value.value,
@@ -202,7 +208,7 @@ export default defineComponent({
                 }
                 console.log(sendData, 'отправляемые данные при редактировании направления')
 
-                store_direction.changeDirection(modal_data.modalProps?.data.directionId, sendData);
+                store_direction.changeDirection(modal_data.modalProps?.localizations.id, sendData);
                 store_modal.closeModal();
             }
         }
@@ -211,11 +217,12 @@ export default defineComponent({
             lang,
             visible_direction,
             modal_data,
-            data,
+            dataLocalizations,
             errors,
             setLang,
             setCheckbox,
             setDirectionName,
+            setDirectionDescription,
             isValid,
             sendDirection,
             patchDirection,
