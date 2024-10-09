@@ -1,72 +1,86 @@
 <template>
-	<div class="oil-course-content__attention" @click="toggleSummary">
-		<div class="oil-course-content__attention__head">
-			<slot name="header-icon">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
+	<section class="oil-container">
+		<div class="oil-course-content">
+			<breadCmp
+				:prev_page="['Курсы', `${$route.query.courseTitle}`]"
+				:current_page="$route.query.contentName ?? ''"
+				class="oil-course-content__bread"
+			/>
+			<div class="oil-course-content__attention" @click="toggleSummary">
+				<div class="oil-course-content__attention__head">
+					<slot name="header-icon">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+						>
+							<path
+								d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+								stroke="#323C46"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</slot>
+					<span>{{ title }}</span>
+					<slot name="toggle-icon">
+						<svg
+							class="oil-course-content__attention__chevron"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M6 9L12 15L18 9"
+								stroke="#374351"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</slot>
+				</div>
+				<div
+					v-if="isSummaryVisible"
+					class="oil-course-content__attention__text"
 				>
-					<path
-						d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-						stroke="#323C46"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</slot>
-			<span>{{ title }}</span>
-			<slot name="toggle-icon">
-				<svg
-					class="oil-course-content__attention__chevron"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M6 9L12 15L18 9"
-						stroke="#374351"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</slot>
-		</div>
-		<div
-			v-if="isSummaryVisible"
-			class="oil-course-content__attention__text"
-		>
-			<div class="oil-course-content__attention__text__frame">
-				<span>{{ instructionsTitle }}</span>
-				<p>{{ instructionsDescription }}</p>
-				<ul>
-					<li v-for="(rule, index) in rules" :key="index">
-						{{ rule }}
-					</li>
-				</ul>
+					<div class="oil-course-content__attention__text__frame">
+						<span>{{ instructionsTitle }}</span>
+						<p>{{ instructionsDescription }}</p>
+						<ul>
+							<li v-for="(rule, index) in rules" :key="index">
+								{{ rule }}
+							</li>
+						</ul>
+					</div>
+				</div>
 			</div>
+			<editor
+				v-if="editorVisible"
+				api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
+				:init="editorInitConfig"
+				v-model="editor_text.value"
+			/>
+			<BtnCmp
+				@click="sendContent"
+				:text="buttonText"
+				class="oil-course-content__btn"
+			/>
 		</div>
-	</div>
-	<editor
-		v-if="editorVisible"
-		api-key="dz8c47wxakp97jftcugrneq2nl66wpkjv16yn8wgojhfzdw0"
-		:init="editorInitConfig"
-		v-model="editor_text.value"
-	/>
-	<BtnCmp @click="sendContent" :text="buttonText" class="oil-course-content__btn" />
+	</section>
 </template>
 
 <script setup lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 import Editor from "@tinymce/tinymce-vue";
-import { useRoute } from 'vue-router'
-import axios from 'axios'
+import { useRoute } from "vue-router";
+import axios from "axios";
+import { useStoreCourseSettings } from "~/src/stores/storeCourseSettings";
 
 const props = defineProps({
 	title: {
@@ -115,11 +129,11 @@ const props = defineProps({
 	},
 });
 
-const route = useRoute()
+const route = useRoute();
 
 const editor_text = reactive({
-	value: ''
-})
+	value: "",
+});
 
 const isSummaryVisible = ref(false);
 
@@ -128,21 +142,20 @@ function toggleSummary() {
 }
 
 const sendContent = () => {
-	axios
-		.patch(`/admin/v1/Content/${route.params.id}`, {
-			text: editor_text.value
-		})
-}
+	axios.patch(`/admin/v1/Content/${route.params.id}`, {
+		text: editor_text.value,
+	});
+};
 
 onMounted(() => {
 	nextTick(() => {
 		axios
 			.get(`/admin/v1/Content/${route.params.id}`)
-			.then(response_content => {
-				editor_text.value = response_content.data.text
-			})
-	})
-})
+			.then((response_content) => {
+				editor_text.value = response_content.data.text;
+			});
+	});
+});
 </script>
 
 <style lang="sass">

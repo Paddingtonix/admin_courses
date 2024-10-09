@@ -179,7 +179,7 @@
 						:style="{ color: '#176DC1' }"
 						@click="
 							$router.push(
-								`course-content/${content_inner.value.initialPage.id}?=${course_setting.value.Title}&=text`
+								`content-module/${content_inner.value.initialPage.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=Вводная%20страница&=text`
 							)
 						"
 						>{{
@@ -232,15 +232,11 @@
 					<span
 						@click="
 							$router.push(
-								`course-content/${content_inner.value.initialTesting.id}?=${course_setting.value.Title}&=test`
+								`course-content/${content_inner.value.initialTesting.id}?courseTitle=${storeCourseSettings.Title}&=test`
 							)
 						"
 						:style="{ color: '#176DC1' }"
-						>{{
-							content_inner.value.initialTesting.title === null
-								? "Вводная страница"
-								: content_inner.value.initialTesting.title
-						}}</span
+						>{{ content_inner.value.initialTesting.title }}</span
 					>
 					<CourseArchitectureIcons
 						v-if="storeStateCourse.status !== 'Archived'"
@@ -301,7 +297,7 @@
 						part.title === null ? "Вводная страница" : part.title
 					}}</span>
 					<CourseArchitectureIcons
-						v-if="storeStateCourse.status !== 'Archived'"
+						v-if="storeCourseSettings.CourseType !== 'Archived'"
 						:delete_id="part.id"
 						:delete_type="'Part'"
 						@delete-trigger="reloadContent"
@@ -447,7 +443,7 @@
 							v-else
 							@click="
 								$router.push(
-									`course-content/${$route.query.search}?=${storeCourseSettings.Title}&=text`
+									`content-module/${section.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=${section.title}&=text`
 								)
 							"
 							>{{
@@ -528,7 +524,7 @@
 							:style="{ color: '#176DC1' }"
 							@click="
 								$router.push(
-									`course-content/${chapter.testing.id}?=${course_setting.value.Title}&=test`
+									`course-content/${chapter.testing.id}?courseTitle=${storeCourseSettings.Title}&=test`
 								)
 							"
 							v-else
@@ -573,7 +569,7 @@
 					<span
 						@click="
 							$router.push(
-								`course-content/${content_inner.value.finalTesting.id}?=${course_setting.value.Title}&=test`
+								`course-content/${content_inner.value.finalTesting.id}?courseTitle=${storeCourseSettings.Title}&=test`
 							)
 						"
 						:style="{ color: '#176DC1' }"
@@ -737,8 +733,7 @@ onMounted(() => {
 		axios
 			.get(`/admin/v1/Course/${route.query.search}/content`)
 			.then((struct_response) => {
-				console.log("response", struct_response);
-
+				console.log("dataStruct!:", struct_response.data);
 				content_inner.value = struct_response.data;
 				preloader.value = false;
 			});

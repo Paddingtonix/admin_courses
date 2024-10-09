@@ -507,7 +507,9 @@
 								class="oil-course-setting__settings__table__column__cell__edit-partial-available__title"
 								>Стоимость курса формируется как сумма стоимости
 								всех глав, созданных во вкладке
-								<a>Содержание</a></span
+								<a :href="redirectToContent()"
+									>Содержание</a
+								></span
 							>
 						</div>
 					</div>
@@ -625,6 +627,7 @@ const picked_directions = reactive<any>([]);
 const show_error = ref<boolean>(false);
 const original_directions = ref<number[]>([]);
 const route = useRoute();
+const router = useRouter();
 const preloader = reactive({
 	value: true as boolean,
 });
@@ -935,6 +938,14 @@ const openEditCourseSetting = () => {
 
 	original_directions.value = [...picked_directions];
 };
+
+const redirectToContent = () => {
+	return router.resolve({
+		path: route.path,
+		query: { ...route.query, tab: 3 },
+	}).href;
+};
+
 const canselEditCourseSetting = () => {
 	Object.assign(operatingForm, {
 		...operatingForm,

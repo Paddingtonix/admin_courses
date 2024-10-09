@@ -2,7 +2,7 @@
 	<section class="oil-container">
 		<div class="oil-course-content">
 			<breadCmp
-				:prev_page="['Курсы', `${course_settings.title_course}`]"
+				:prev_page="['Курсы', `${$route.query.courseTitle}`]"
 				:current_page="courseContentStore.generalSettings?.title ?? ''"
 				class="oil-course-content__bread"
 			/>
@@ -13,7 +13,6 @@
 				:buttonText="'Скачать PDF'"
 				:buttonClick="() => {}"
 			/>
-			<ContentModule v-if="course_settings.type_course === 'text'" />
 			<TestSection
 				:questions="courseContentStore?.questions"
 				:id="id"
