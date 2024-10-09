@@ -1,36 +1,36 @@
 <template>
-	<section class="oil-container">
-		<div class="oil-page oil-course-setting">
-			<breadCmp
-				:prev_page="'Список курсов'"
-				:current_page="storeCourseSetting.Title"
-				class="oil-course-setting__bread"
-			/>
-			<div class="oil-course-setting__menubar">
-				<tabsCmp
-					v-for="tab in switcherArray"
-					:key="tab.id"
-					:id="tab.id"
-					:text="tab.text"
-					:active="active_tab"
-					@select-tab="selectTab"
-					:class="{
-						_disable:
-							storeEditCourseSetting.isEdit || edit_mode.value,
-					}"
-				/>
-			</div>
-			<CommonSettings
-				v-if="active_tab === 1"
-				:course_setting="course_setting"
-			/>
-			<CourseInfo v-else-if="active_tab === 2" />
-			<CourseContent
-				:course_setting="course_setting"
-				v-else-if="active_tab === 3"
-			/>
-		</div>
-	</section>
+    <section class="oil-container">
+        <div class="oil-page oil-course-setting">
+            <breadCmp
+                :prev_page="'Список курсов'"
+                :current_page="storeCourseSetting.Title"
+                class="oil-course-setting__bread"
+            />
+            <div class="oil-course-setting__menubar">
+                <tabsCmp
+                    v-for="tab in switcherArray"
+                    :key="tab.id"
+                    :id="tab.id"
+                    :text="tab.text"
+                    :active="active_tab"
+                    @select-tab="selectTab"
+                    :class="{
+                        _disable:
+                            storeEditCourseSetting.isEdit || edit_mode.value,
+                    }"
+                />
+            </div>
+            <CommonSettings
+                v-if="active_tab === 1"
+                :course_setting="course_setting"
+            />
+            <CourseInfo v-else-if="active_tab === 2" />
+            <CourseContent
+                :course_setting="course_setting"
+                v-else-if="active_tab === 3"
+            />
+        </div>
+    </section>
 </template>
 
 <script lang="ts">
@@ -40,91 +40,91 @@ import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 import type ISwitcher from "~/src/ts-interface/switcher.type";
 
 export default defineComponent({
-	setup() {
-		const storeEditCourseSetting = useStoreEditCourseSetting();
-		const storeCourseSetting = useStoreCourseSettings();
-		const editInput = ref(null) as any;
-		const route = useRoute();
-		const { query } = route;
-		const router = useRouter();
-		const active_tab = ref<number>(parseInt(query.tab) || 1);
+    setup() {
+        const storeEditCourseSetting = useStoreEditCourseSetting();
+        const storeCourseSetting = useStoreCourseSettings();
+        const editInput = ref(null) as any;
+        const route = useRoute();
+        const { query } = route;
+        const router = useRouter();
+        const active_tab = ref<number>(parseInt(query.tab) || 1);
 
-		const switcherArray: ISwitcher[] = [
-			{
-				text: "Общие настройки",
-				id: 1,
-				isActive: true,
-				link: "",
-			},
-			{
-				text: "Информация о курсе",
-				id: 2,
-				isActive: false,
-				link: "",
-			},
-			{
-				text: "Содержание",
-				id: 3,
-				isActive: false,
-				link: "",
-			},
-		];
+        const switcherArray: ISwitcher[] = [
+            {
+                text: "Общие настройки",
+                id: 1,
+                isActive: true,
+                link: "",
+            },
+            {
+                text: "Информация о курсе",
+                id: 2,
+                isActive: false,
+                link: "",
+            },
+            {
+                text: "Содержание",
+                id: 3,
+                isActive: false,
+                link: "",
+            },
+        ];
 
-		const edit_mode = reactive({
-			value: false,
-		});
+        const edit_mode = reactive({
+            value: false,
+        });
 
-		const course_setting = reactive({
-			value: {
-				Title: "" as string,
-				CourseType: "" as string,
-				CourseFormat: "" as string,
-				PriceInRubles: 0 as number,
-				IsPartialAvailable: false as boolean,
-				IsFree: false as boolean,
-				DurationAcademicHours: 0 as number,
-				DurationWorkDays: 0 as number,
-				DateStart: "" as string,
-				DateFinish: "" as string,
-				SalesTerminationDate: "" as string,
-			},
-		});
-		const edit_field = reactive({
-			idx_field: null as null | number,
-			type_field: null as null | string,
-		});
+        const course_setting = reactive({
+            value: {
+                Title: "" as string,
+                CourseType: "" as string,
+                CourseFormat: "" as string,
+                PriceInRubles: 0 as number,
+                IsPartialAvailable: false as boolean,
+                IsFree: false as boolean,
+                DurationAcademicHours: 0 as number,
+                DurationWorkDays: 0 as number,
+                DateStart: "" as string,
+                DateFinish: "" as string,
+                SalesTerminationDate: "" as string,
+            },
+        });
+        const edit_field = reactive({
+            idx_field: null as null | number,
+            type_field: null as null | string,
+        });
 
-		const selectTab = (id: number) => {
-			router.push({ path: route.path, query: { ...query, tab: id } });
+        const selectTab = (id: number) => {
+            router.push({ path: route.path, query: { ...query, tab: id } });
 
-			active_tab.value = id;
-		};
+            active_tab.value = id;
+        };
 
-		watch(edit_field, () => {
-			nextTick(() => {
-				if (editInput.value) {
-					editInput.value.focus();
-				}
-			});
-		});
+        watch(edit_field, () => {
+            nextTick(() => {
+                if (editInput.value) {
+                    editInput.value.focus();
+                }
+            });
+        });
 
-		onMounted(() => {
-			nextTick(() => {
-				storeCourseSetting.getCourseSetting(query.search);
-			});
-		});
+        onMounted(() => {
+            nextTick(() => {
+                storeCourseSetting.getCourseSetting(query.search);
+            });
+        });
 
-		return {
-			active_tab,
-			edit_mode,
-			course_setting,
-			storeEditCourseSetting,
-			switcherArray,
-			selectTab,
-			storeCourseSetting,
-			query,
-		};
-	},
+        return {
+            active_tab,
+            edit_mode,
+            course_setting,
+            storeEditCourseSetting,
+            switcherArray,
+            selectTab,
+            storeCourseSetting,
+            query,
+        };
+    },
 });
 </script>
 
@@ -208,6 +208,12 @@ export default defineComponent({
                             font-weight: 400
                             line-height: 16px
                             margin: 0
+
+                        &_partial-available
+                            color: #9AA7BB
+                            font-size: rem(12)
+                            a
+                                color: $light_primary
 
                     &__direction
                         display: flex
