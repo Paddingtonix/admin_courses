@@ -325,7 +325,7 @@
 								type: 'Part',
 								query: 'courseId',
 							}"
-							:block_id="Number($route.query.course) || undefined"
+							:block_id="Number($route.query.search) || undefined"
 							@request-trigger="reloadContent"
 							v-if="
 								idx === content_inner.value.parts.length - 1 &&
@@ -608,17 +608,24 @@
 			<div
 				class="oil-course-setting__content__container__inner"
 				:class="{
-					_filled: content_inner.value.finalPage,
+					_filled: content_inner.value.finalPage.contentId,
 					_disable:
 						edit_field.type_field !== '' &&
 						edit_field.idx_field !== null,
 				}"
 			>
-				<span>{{
-					content_inner.value.finalPage.title === null
-						? "Итоги"
-						: content_inner.value.finalPage.title
-				}}</span>
+				<span
+					@click="
+						$router.push(
+							`content-module/${content_inner.value.finalPage.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=Итоги&=text`
+						)
+					"
+					>{{
+						content_inner.value.finalPage.title === null
+							? "Итоги"
+							: content_inner.value.finalPage.title
+					}}</span
+				>
 			</div>
 		</div>
 	</div>

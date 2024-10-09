@@ -3,7 +3,7 @@
 		<div class="oil-course-content">
 			<breadCmp
 				:prev_page="['Курсы', `${$route.query.courseTitle}`]"
-				:current_page="$route.query.contentName ?? ''"
+				:current_page="$route.query?.contentName ?? ''"
 				class="oil-course-content__bread"
 			/>
 			<div class="oil-course-content__attention" @click="toggleSummary">
@@ -29,6 +29,7 @@
 					<slot name="toggle-icon">
 						<svg
 							class="oil-course-content__attention__chevron"
+							:class="{ active: isSummaryVisible }"
 							width="24"
 							height="24"
 							viewBox="0 0 24 24"
@@ -51,7 +52,16 @@
 				>
 					<div class="oil-course-content__attention__text__frame">
 						<span>{{ instructionsTitle }}</span>
-						<p>{{ instructionsDescription }}</p>
+						<p
+							v-for="(
+								instruction, idx
+							) in instructionsDescription.split(
+								/(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s/g
+							)"
+							:key="idx"
+						>
+							{{ instruction }}
+						</p>
 						<ul>
 							<li v-for="(rule, index) in rules" :key="index">
 								{{ rule }}
@@ -76,11 +86,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent } from "vue";
 import Editor from "@tinymce/tinymce-vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
-import { useStoreCourseSettings } from "~/src/stores/storeCourseSettings";
 
 const props = defineProps({
 	title: {
@@ -93,16 +101,18 @@ const props = defineProps({
 	},
 	instructionsDescription: {
 		type: String,
-		default:
-			"Вы можете добавить текст, изображения (*.png, *.jpeg), прикрепить файл формата *.pdf или видео. Ограничения по количеству символов нет. Также рекомендуется соблюдать следующие правила для единообразия всего курса:",
+		default: `Вы можете добавить текст, изображения (*.png, *.jpeg), прикрепить файл формата *.pdf или видео.
+            Ограничения по количеству символов нет. 
+            Также рекомендуется соблюдать следующие правила для единообразия всего курса:`,
 	},
 	rules: {
 		type: Array,
 		default: () => [
-			"Используйте одинаковый шрифт, размер и цвет текста для заголовков, подзаголовков и основного текста во всех модулях",
-			"Структурируйте текст на логические блоки с заголовками и подзаголовками",
-			"Убедитесь, что файлы формата *.pdf легко открываются и читаются на всех устройствах",
-			"Убедитесь в отсутствии орфографических, грамматических и пунктуационных ошибок.",
+			"используйте одинаковый шрифт, размер и цвет текста для заголовков, подзаголовков и основного текста во всех модулях",
+			"структурируйте текст на логические блоки с заголовками и подзаголовками",
+			"используйте изображения и видео высокого качества",
+			"убедитесь, что файлы формата *.pdf легко открываются и читаются на всех устройствах",
+			"убедитесь в отсутствии орфографических, грамматических и пунктуационных ошибок.",
 		],
 	},
 	editorVisible: {
@@ -113,6 +123,7 @@ const props = defineProps({
 		type: Object,
 		default: () => ({
 			height: 500,
+			width: 830,
 			menubar: false,
 			plugins: [
 				"advlist autolink lists link image charmap print preview anchor",
@@ -159,51 +170,61 @@ onMounted(() => {
 </script>
 
 <style lang="sass">
-.oil-course-content__attention
-    padding: rem(16) rem(24)
-    // margin-bottom: rem(32)
+.oil-course-content
+    &__btn
+        max-width: rem(152)
 
-    @include flex_column()
-    gap: rem(12)
-    background-color: $basic_light_gray
-    border-radius: rem(8)
-    border: rem(1) solid $light_gray
-    cursor: pointer
-    &__head
-        gap: rem(12)
-
-        display: flex
-        align-items: center
-        position: relative
-        span
-            font-weight: bold
-
-    &__chevron
-        position: absolute
-        top: 50%
-        right: rem(16)
-        transform: translateY(-50%)
-
-    &__text
+    &__attention
+        padding: rem(16) rem(24)
+        // margin-bottom: rem(32)
+        max-width: rem(972)
         @include flex_column()
-        cursor: default
-        ul
-            list-style: inside
-            & > ul
-                padding-left: rem(32)
+        gap: rem(12)
+        background-color: $basic_light_gray
+        border-radius: rem(8)
+        border: rem(1) solid $light_gray
+        cursor: pointer
+        &__head
+            gap: rem(12)
 
-        span
-            display: inline-flex
-            font-weight: bold
-            margin-bottom: rem(16)
-            line-height: rem(24)
+            display: flex
+            align-items: center
+            position: relative
+            span
+                font-weight: bold
+
+        &__chevron
+            position: absolute
+            top: 50%
+            right: rem(16)
+            transform: translateY(-50%)
+            &.active
+                transform: rotate(180deg) translateY(50%)
 
 
-        &__frame
-            &:not(:last-child)
-                margin-bottom: rem(20)
+        &__text
+            @include flex_column()
+            cursor: default
             ul
-                li
+                list-style: inside
+                & > ul
+                    padding-left: rem(32)
+
+            span
+                display: inline-flex
+                font-weight: bold
+                margin-bottom: rem(12)
+                line-height: rem(24)
+
+
+            &__frame
+                li, p
                     color: $basic_table_header
-                    margin-left: rem(8)
+                    line-height: rem(24)
+                &:not(:last-child)
+                    margin-bottom: rem(20)
+                ul
+                    line-height: rem(24)
+                    li
+                        margin-left: rem(8)
 </style>
