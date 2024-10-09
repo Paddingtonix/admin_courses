@@ -5,5 +5,25 @@ export interface IDirection {
     lastChangeDateTime?: string,
     localizedName: string,
     isVisible?: boolean,
-    count?: number
+    count?: number,
+    localizations?: {
+        en: string,
+        ru: string,
+        fr: string
+    }
+}
+
+export interface ILocalizations {
+    id?: number,
+    isVisible?: boolean,
+    localizations: {
+        ru?: string,
+        en?: string,
+        fr?: string
+    },
+    description: {
+        ru?: string,
+        en?: string,
+        fr?: string
+    }
 }

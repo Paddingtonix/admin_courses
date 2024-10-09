@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { IDirection } from '~/src/ts-interface/direction';
+import { ILocalizations } from "~/src/ts-interface/direction";
 // import { DirectionData } from "~/src/ts-interface/direction-data";
 
 export const useDirectionStore = defineStore('directionStore', {
     state: () => ({
         // directions: [] as IDirection[],
         directions: [] as any,
+        localizations: [] as ILocalizations[]
     }),
     actions: {
         getDirections() {
@@ -21,6 +23,18 @@ export const useDirectionStore = defineStore('directionStore', {
                     console.error('Ууупс, ошибка при загрузке :(', error);
                 });
         },
+        getLocalizations(id: number) {
+            axios
+                .get(`admin/v1/Direction/${id}`)
+                .then(response => {
+                    this.localizations = response.data;
+
+                    console.log('Локализации получены', response.data)
+                })
+                .catch(error => {
+                    console.error('Ууупс, ошибка при получении локализаций', error);
+                });
+        },
         createDirection(data: DirectionData) {
 
             axios
@@ -33,7 +47,7 @@ export const useDirectionStore = defineStore('directionStore', {
                     console.error('Ууупс, ошибка при добавлении :(', error);
                 });
         },
-        changeDirection(id: string, data: DirectionData) {
+        changeDirection(id: string, data: ILocalizations) {
             axios
                 .patch(`admin/v1/Direction/${id}`, data)
                 .then(response => {
