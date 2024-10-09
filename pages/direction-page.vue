@@ -244,6 +244,7 @@ export default defineComponent({
 
             const initialLocalizations = {
                 id: 0,
+                isVisible: false,
                 localizations: { ru: "", en: "", fr: "" },
                 description: { ru: "", en: "", fr: "" }
             };

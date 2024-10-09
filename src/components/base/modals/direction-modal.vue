@@ -67,19 +67,10 @@ export default defineComponent({
 
         const modal_data = store_modal.$state;
 
-        const visible_direction = ref(modal_data.modalProps?.data?.isVisible || false)
+        const visible_direction = ref(modal_data.modalProps?.localizations?.isVisible || false)
 
         const store_direction = useDirectionStore();
         const course_store = useStoreCourses();
-
-        // const initialDirection: IDirection = {
-        //     directionId: 0,
-        //     lastChangeDateTime: "",
-        //     localizedName: "",
-        //     isVisible: false,
-        //     count: 0,
-        //     localizations: { ru: "", en: "", fr: "" }
-        // }
 
         const initialLocalizations: ILocalizations = {
             id: 0,
@@ -91,21 +82,6 @@ export default defineComponent({
         const dataLocalizations: ILocalizations = reactive(
             modal_data.modalProps?.localizations || initialLocalizations
         );
-        console.log(dataLocalizations, 'relatedLocalizations')
-
-        // const data: IDirection = reactive(
-        //     modal_data.modalProps?.data
-        //         ? {
-        //             ...modal_data.modalProps.data,
-        //             localizations: {
-        //                 ru: modal_data.modalProps.data.localizedName || "",
-        //                 en: modal_data.modalProps.data.localizations?.en || "",
-        //                 fr: modal_data.modalProps.data.localizations?.fr || ""
-        //             }
-        //         }
-        //         : initialDirection
-        // );
-        // console.log(data, 'dat data data')
 
         const closeModal = () => {
             store_modal.closeModal();
@@ -118,6 +94,7 @@ export default defineComponent({
 
         const setCheckbox = (val) => {
             visible_direction.value = val.active
+            console.log(visible_direction.value, 'visible_direction.value')
         }
 
         const setDirectionName = (val) => {
