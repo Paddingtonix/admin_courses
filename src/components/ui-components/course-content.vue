@@ -121,7 +121,8 @@
                     <CourseArchitectureAddBlock
                         v-if="
                             !content_inner.value.initialPage &&
-                            storeStateCourse.status !== 'Archived'
+                            storeStateCourse.status !== 'Archived' &&
+                            !canAddPart()
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="
@@ -176,7 +177,8 @@
                         v-if="
                             !content_inner.value.initialTesting &&
                             content_inner.value.initialPage &&
-                            storeStateCourse.status !== 'Archived'
+                            storeStateCourse.status !== 'Archived' &&
+                            !canAddPart()
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="'входной тест'"
@@ -254,7 +256,8 @@
                             @request-trigger="reloadContent"
                             v-if="
                                 idx === content_inner.value.parts.length - 1 &&
-                                storeStateCourse.status !== 'Archived'
+                                storeStateCourse.status !== 'Archived' &&
+                                canAddPart()
                             "
                         />
                     </transition>
@@ -514,7 +517,8 @@
                     <CourseArchitectureAddBlock
                         v-if="
                             !content_inner.value.finalTesting &&
-                            storeStateCourse.status !== 'Archived'
+                            storeStateCourse.status !== 'Archived' &&
+                            !canAddPart()
                         "
                         :style="{ top: -15 + 'px' }"
                         :btn_text="'итоговый тест'"
@@ -630,6 +634,11 @@ const editTitle = (state: boolean, idx: number, type: string, id: number) => {
                     });
             });
     }
+};
+
+const canAddPart = () => {
+    const { initialPage, initialTesting, finalTesting, finalPage } = content_inner.value;
+    return !initialPage && !initialTesting && !finalTesting && finalPage;
 };
 
 watch(reload_state, () => {
