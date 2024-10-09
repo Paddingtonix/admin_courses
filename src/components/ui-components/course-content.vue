@@ -191,6 +191,7 @@
                     <CourseArchitectureIcons
                         v-if="storeCourseSettings.CourseType !== 'Archived'"
                         :arrow="false"
+                        :is-editable="false"
                         :delete_id="content_inner.value.initialPage.id"
                         :delete_type="'Page'"
                         @delete-trigger="reloadContent"
@@ -239,8 +240,9 @@
                         >{{ content_inner.value.initialTesting.title }}</span
                     >
                     <CourseArchitectureIcons
-                        v-if="storeStateCourse.status !== 'Archived'"
+                        v-if="storeCourseSettings.CourseType !== 'Archived'"
                         :arrow="false"
+                        :is-editable="false"
                         :delete_id="content_inner.value.initialTesting.id"
                         :delete_type="'Testing'"
                         @delete-trigger="reloadContent"
@@ -651,6 +653,7 @@
                         v-if="storeCourseSettings.CourseType !== 'Archived'"
                         :delete_id="content_inner.value.finalTesting.id"
                         :delete_type="'Testing'"
+                        :is-editable="false"
                         @delete-trigger="reloadContent"
                         :arrow="false"
                     />
@@ -783,6 +786,7 @@ const editTitle = (
             .finally(() => {
                 edit_field.idx_field = null;
                 edit_field.type_field = null;
+                changes_value.value = "";
                 axios
                     .get(`/admin/v1/Course/${route.query.search}/content`)
                     .then((struct_response) => {
@@ -818,6 +822,8 @@ const editPriceAndTitle = (
             .finally(() => {
                 edit_field.idx_field = null;
                 edit_field.type_field = null;
+                changes_value.value = "";
+                chapter_price_value.value = "";
                 axios
                     .get(`/admin/v1/Course/${route.query.search}/content`)
                     .then((struct_response) => {
