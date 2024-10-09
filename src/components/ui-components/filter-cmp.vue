@@ -48,17 +48,21 @@
 					v-for="(key, index) in filterKeys"
 					class="oil-filter__body__frame"
 				> -->
-					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->
-					<div>
-						<CheckboxCmp 
-							v-for="filter_state in filters.directions"
+					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->	
+					<template v-for="(filter, idx) in filters" :key="idx">
+						<span>{{ filter.title }}</span>
+						<CheckboxCmp
+							v-for="filter_state in filter.filters_values"
 							:key="filter_state"
 							:text="filter_state.name"
 							:id="filter_state.id"
 						/>
-					</div>
+					</template>
+						
+					<!-- </div>
 					<div>
-						<CheckboxCmp 
+						<span>{{ filters.languages ? 'Направления' : '' }}</span>
+						<CheckboxCmp
 							v-for="filter_state in filters.languages"
 							:key="filter_state"
 							:text="filter_state.name"
@@ -72,7 +76,7 @@
 							:text="filter_state.name"
 							:id="filter_state.id"
 						/>
-					</div>
+					</div> -->
 					<!-- <template v-if="!isMarks || key !== 'Язык'">
 						<CheckboxCmp
 							v-for="(checkbox, idx) in filter_values.value[
@@ -117,14 +121,7 @@ const { filters } = defineProps({
 		default: false,
 	},
 	filters: {
-		type: Object as PropType<{
-			[key: string]: {
-				id: string | number;
-				name: string;
-				isRadio?: boolean;
-			}[];
-		}>,
-		required: true,
+		type: Array,
 	},
 	pressed_button: {
 		type: Boolean,

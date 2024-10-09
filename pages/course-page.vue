@@ -451,16 +451,30 @@ export default defineComponent({
 		})
 
 		const course_filters = computed(() => {
-			return {
-				statuses: course_filter.value.statuses
-					? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1 }))
-					: [], 
-				languages: course_filter.value.languages
-					? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1 }))
-					: [],
-				directions: course_filter.value.directions
+			if(course_filter.value) {
+				return [
+					{
+						title: 'Статусы',
+						filters_values: course_filter.value.statuses
+							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1 }))
+							: [],
+					},
+					{
+						title: 'Языки',
+						filters_values: course_filter.value.languages
+							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1 }))
+							: [],
+					},
+					{
+						title: 'Направления',
+						filters_values: course_filter.value.directions
+							? course_filter.value.directions.map((item, idx) => ({ name: item, id: idx + 1 }))
+							: [],
+					}
+				];
 			}
-		})
+		});
+
 
 		const course_filter = ref([])
 
