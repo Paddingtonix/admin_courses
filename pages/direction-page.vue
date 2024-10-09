@@ -153,6 +153,7 @@ export default defineComponent({
         const modal_store = useStoreModal();
         const course_store = useStoreCourses();
         const localizations_data = direction_store.localizations;
+        console.log(localizations_data, 'localizations_data')
 
 
         const visible_state = reactive({
@@ -240,19 +241,24 @@ export default defineComponent({
         });
 
         const sendDirection = (data?: IDirection, edit?: boolean) => {
+            direction_store.getLocalizations(data.directionId);
+            const relatedLocalizations = direction_store.localizations.filter(loc => loc.id === data.directionId);
+            console.log(relatedLocalizations, 'relatedLocalizations in site')
+            console.log(data.directionId, 'data.directionId')
+            console.log(direction_store.localizations, 'direction_store.localizations')
+
             modal_store.$patch({
                 label: !edit ? "Добавление направления" : "Редактирование направления",
                 activeModal: "direction-modal",
                 modalProps: {
-                    data,
-                    // data: direction_store.localizations,
+                    // data,
+                    // dataLocalizations: direction_store.localizations,
+                    relatedLocalizations,
                     // isFormChanged: false,
                     edit,
                 },
             });
             modal_store.openModal();
-            direction_store.getLocalizations(data.directionId);
-            console.log(data.directionId, 'data.directionId')
         }
 
         const getRelatedCourses = (localizedName: string) => {

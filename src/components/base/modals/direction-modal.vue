@@ -83,12 +83,14 @@ export default defineComponent({
 
         const initialLocalizations: ILocalizations = {
             isVisible: false,
-            localizations: { ru: "", en: "", fr: "" }
+            localizations: { ru: "", en: "", fr: "" },
+            description: { ru: "", en: "", fr: "" }
         }
 
-        // const data: ILocalizations = reactive(
-        //     modal_data.modalProps?.data || initialLocalizations
-        // );
+        const dataLocalizations: ILocalizations = reactive(
+            modal_data.modalProps?.relatedLocalizations || initialLocalizations
+        );
+        console.log(dataLocalizations, 'relatedLocalizations')
 
         const data: IDirection = reactive(
             modal_data.modalProps?.data
