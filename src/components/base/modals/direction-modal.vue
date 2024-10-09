@@ -14,6 +14,14 @@
            @set_value="(value) => setDirectionName(value)"
            @blur="isValid"
         />
+        <TextareaCmp
+            class="oil-direction__text-area"
+            :label="`Описание направления (${lang.toLocaleUpperCase()})*`"
+            :modelValue="data.localizations[lang]"
+            :error="errors.name"
+            :max_length="550"
+            @set_textarea="(value) => setDirectionName(value)"
+        ></TextareaCmp>
         <CheckboxCmp
             class="oil-direction__checkbox"
             :text="'Отображать на сайте'"
@@ -224,6 +232,9 @@ export default defineComponent({
         margin-bottom: rem(16)
 
     &__input
+        margin-bottom: rem(24)
+
+    &__text-area
         margin-bottom: rem(24)
 
     &__checkbox
