@@ -492,13 +492,36 @@ export default defineComponent({
                 &__text
                     color: $basic_primary
                     font-weight: bold
-
+                &__chapter-price
+                    flex-shrink: 3
+                    span
+                        color: $light_gray
                 &__input
                     border: rem(1) solid $light_gray
                     border-radius: rem(4)
                     width: 100%
                     padding: rem(1) rem(16)
                     min-height: rem(20)
+                &__input-wrapper
+                    position: relative
+                    &::after
+                        position: absolute
+                        right: 11%
+                        content: 'RUB'
+                        font-weight: bold
+                        color: $light_gray
+                &__input__price
+                    border: rem(1) solid $light_gray
+                    border-radius: rem(4)
+                    width: 100%
+                    padding: rem(1) rem(16)
+                    min-height: rem(20)
+                    flex-shrink: 4
+
+
+
+
+
 
 .oil-course-setting__settings__table__column__cell
     .oil-input
