@@ -75,19 +75,7 @@ export default defineComponent({
         });
 
         const course_setting = reactive({
-            value: {
-                Title: "" as string,
-                CourseType: "" as string,
-                CourseFormat: "" as string,
-                PriceInRubles: 0 as number,
-                IsPartialAvailable: false as boolean,
-                IsFree: false as boolean,
-                DurationAcademicHours: 0 as number,
-                DurationWorkDays: 0 as number,
-                DateStart: "" as string,
-                DateFinish: "" as string,
-                SalesTerminationDate: "" as string,
-            },
+            value: storeCourseSetting.$state,
         });
         const edit_field = reactive({
             idx_field: null as null | number,

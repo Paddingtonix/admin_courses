@@ -533,6 +533,7 @@
                             :placeholder="input.placeholder"
                             :mask_type="input.mask_type"
                             :type="input.type"
+                            :error="input.error"
                             :model-value="guessingFormDataInput(input.type)"
                             @set_value="updateFormData($event)"
                         />
@@ -613,6 +614,7 @@
             <BtnCmp
                 class="oil-course-setting__settings__btn"
                 :text="'Сохранить'"
+                :disabled="!isFormValid"
                 @click="saveSettings"
             />
         </div>
@@ -623,6 +625,7 @@
 import axios from "axios";
 import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 import type { IDirection } from "~/src/ts-interface/direction";
+import { useFormValidate } from "~/src/utils/useFormValidate";
 
 defineProps({
     course_setting: {
@@ -630,7 +633,6 @@ defineProps({
         default: {},
     },
 });
-onErrorCaptured((err) => console.log(err, `inputs:`, filtered_inputs));
 
 const directions = reactive<IDirection[]>([]);
 const picked_directions = reactive<any>([]);
@@ -665,18 +667,21 @@ const inputs = reactive([
         mask_type: "price",
         max_length: 9,
         type: "price",
+        error: "",
     },
     {
         placeholder: "999",
         mask_type: "price",
         max_length: 6,
         type: "duration",
+        error: "",
     },
     {
         placeholder: "99",
         mask_type: "price",
         max_length: 5,
         type: "workload",
+        error: "",
     },
 ]);
 const filtered_inputs = computed(() => {
@@ -708,9 +713,9 @@ const course_table = reactive([
     },
     {
         authors: [] as string[] | string,
-        price: "",
-        duration: "",
-        workload: "",
+        price: 0,
+        duration: 0,
+        workload: 0,
         start_date: "" as string,
         end_date: "" as string,
         removed_date: "" as string,
@@ -719,9 +724,50 @@ const course_table = reactive([
 
 const operatingForm = reactive(Object.create(course_table[1]));
 
-const handleDateUpdate = (date: string, type: string) => {
-    console.log(date);
+const isFormValid = ref(true);
 
+const formValidation = (field: number, fieldName: string) => {
+    const errorFields = { price: 0, duration: 1, workload: 2 } as {
+        [key: string]: number;
+    };
+    function setError(errorMessage: string) {
+        inputs[errorFields[fieldName]].error = errorMessage;
+    }
+    if (!field) {
+        setError("Обязательно к заполнению");
+        isFormValid.value = false;
+        return;
+    }
+    switch (fieldName) {
+        case "price":
+            if (field > 1000000 || field < 1) {
+                setError("Значение должно быть от 1 - 1 000 000");
+                isFormValid.value = false;
+            } else {
+                setError("");
+                isFormValid.value = true;
+            }
+            break;
+        case "duration":
+            if (field > 1000) {
+                setError("Значение должно быть от 1 - 1 000");
+                isFormValid.value = false;
+            } else {
+                setError("");
+            }
+            break;
+        case "workload":
+            if (field > 10000) {
+                setError("Значение должно быть от 1 - 10 000");
+                isFormValid.value = false;
+            } else {
+                setError("");
+            }
+            break;
+    }
+};
+
+const handleDateUpdate = (date: string, type: string) => {
     switch (type) {
         case "start":
             operatingForm.start_date = date;
@@ -754,13 +800,19 @@ const guessingFormDataInput = (type: string) => {
 const updateFormData = (event: { value: string; type: string }) => {
     switch (event.type) {
         case "price":
-            operatingForm.price = event.value;
+            const valueParsed = parseInt(event.value.replace(/\s/g, ""));
+            formValidation(valueParsed, event.type);
+            operatingForm.price = isNaN(valueParsed) ? 0 : valueParsed;
             break;
         case "duration":
-            operatingForm.duration = event.value;
+            const valueParsedD = parseInt(event.value.replace(/\s/g, ""));
+            formValidation(valueParsedD, event.type);
+            operatingForm.duration = isNaN(valueParsedD) ? 0 : valueParsedD;
             break;
         case "workload":
-            operatingForm.workload = event.value;
+            const valueParsedW = parseInt(event.value.replace(/\s/g, ""));
+            formValidation(valueParsedW, event.type);
+            operatingForm.workload = isNaN(valueParsedW) ? 0 : valueParsedW;
             break;
     }
 };
@@ -813,8 +865,6 @@ const saveSettings = () => {
     if (picked_directions_filtered.value.length === 0) {
         show_error.value = true;
     } else {
-        console.log(operatingForm);
-
         show_error.value = false;
         formData.directionIds = picked_directions;
         formData.authorEmails =
