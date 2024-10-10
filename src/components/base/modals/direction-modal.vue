@@ -18,7 +18,6 @@
             class="oil-direction__text-area"
             :label="`Описание направления (${lang.toLocaleUpperCase()})*`"
             :modelValue="dataLocalizations.description[lang]"
-            :error="errors.name"
             :max_length="550"
             @set_textarea="(value) => setDirectionDescription(value)"
         ></TextareaCmp>
@@ -118,7 +117,8 @@ export default defineComponent({
             const courses = course_store.course_list.filter((direction_in_course) => {
                 return direction_in_course.directions.includes(localizedName);
             });
-            return courses.length === 1 ? courses : [];
+
+            return courses.length ? courses : [];
         };
 
         const isValid = () => {
