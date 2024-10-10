@@ -158,12 +158,7 @@ export default defineComponent({
                 const sendData = {
                     isVisible: visible_direction.value,
                     localizations: dataLocalizations.localizations,
-                    description: dataLocalizations.description
-                    // localizations: {
-                    //     en: input_value.value,
-                    //     ru: input_value.value,
-                    //     fr: input_value.value
-                    // }
+                    descriptions: dataLocalizations.description
                 }
                 console.log(sendData, 'отправляемые данные при создании направления')
 
@@ -177,12 +172,7 @@ export default defineComponent({
                 const sendData = {
                     isVisible: visible_direction.value,
                     localizations: dataLocalizations.localizations,
-                    description: dataLocalizations.description
-                    // localizations: {
-                    //     en: input_value.value,
-                    //     ru: input_value.value,
-                    //     fr: input_value.value
-                    // }
+                    descriptions: dataLocalizations.description
                 }
                 console.log(sendData, 'отправляемые данные при редактировании направления')
 
