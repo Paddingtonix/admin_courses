@@ -7,14 +7,14 @@
 			v-if="$props.mask_type"
 			:value="formatted_value"
 			:type="type"
-			@input="setValue"
+			@input="setValueFormatted"
 			@blur="() => onBlur"
 			:maxlength="max_length"
 			:placeholder="placeholder"
 		/>
 		<input
 			v-else
-			v-model.lazy="input_value"
+			v-model="input_value"
 			:type="type"
 			@blur="() => onBlur"
 			@input="setValue"
@@ -89,8 +89,10 @@ export default defineComponent({
 	setup(props, { emit }) {
 		const { modelValue } = toRefs(props);
 
+		const initial_value = props.type === "number" ? 0 : "";
+
 		const input_value = ref<string | number>(
-			!modelValue ? "" : modelValue.value
+			modelValue.value || initial_value
 		);
 
 		const formatted_value = ref(input_value.value);
@@ -116,6 +118,10 @@ export default defineComponent({
 		};
 
 		const setValue = (event: Event) => {
+			emit("set_value", { value: input_value.value, type: props.type });
+		};
+
+		const setValueFormatted = (event: Event) => {
 			input_value.value = (event.target as HTMLInputElement).value;
 			formatted_value.value = priceFormat(input_value.value);
 			emit("set_value", { value: input_value.value, type: props.type });
@@ -130,6 +136,7 @@ export default defineComponent({
 			// mask_price,
 			mask_date,
 			modelValue,
+			setValueFormatted,
 		};
 	},
 });

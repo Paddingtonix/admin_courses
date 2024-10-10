@@ -54,14 +54,14 @@
 						<CourseSettingsInput
 							:id="idx"
 							:error="generalSettingsErrors[setting.type as 'title' | 'score']"
-							:type="setting.type as unknown as 'title' | 'score' | undefined"
-							:input_type="
-								setting.type === 'score' ? 'number' : 'text'
-							"
+							:type="setting.type as unknown as 'title' | 'score' | undefined "
 							:label="
 								setting.type === 'score'
 									? 'Балл'
 									: 'Название теста'
+							"
+							:input_type="
+								setting.type === 'score' ? 'number' : 'text'
 							"
 							@set_value="
 								changeValueSetting(
@@ -302,13 +302,14 @@ const validateGeneralSetting = (
 			delete generalSettingsErrors.value[type];
 		}
 	} else if (type === "score") {
-		const parsedValue = parseInt(value as string);
-		if (typeof parsedValue !== "number") {
+		const scoreValue = value as number;
+
+		if (typeof scoreValue !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
 		} else if (
-			parsedValue > 100 ||
-			parsedValue < 0 ||
-			Number.isInteger(value)
+			scoreValue > 100 ||
+			scoreValue < 0 ||
+			!Number.isInteger(scoreValue)
 		) {
 			generalSettingsErrors.value[type] =
 				"Значение поля - целое число от 0 до 100";
