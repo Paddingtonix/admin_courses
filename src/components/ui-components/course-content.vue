@@ -611,6 +611,7 @@
 							v-if="storeCourseSettings.CourseType !== 'Archived'"
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
+							:is-deletable="false"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editTitle(
