@@ -253,7 +253,7 @@ const changeQuestion = ({
 // 				.getCourseContent(props.id)
 // 				.then((response) => response);
 // 		});
-// };
+// }; пока не делаем
 
 const editSetting = (id: number) => {
 	changing_field.value = general_settings[id].title as unknown as string;
@@ -302,9 +302,14 @@ const validateGeneralSetting = (
 			delete generalSettingsErrors.value[type];
 		}
 	} else if (type === "score") {
-		if (typeof value !== "number") {
+		const parsedValue = parseInt(value as string);
+		if (typeof parsedValue !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
-		} else if (value > 100 || value < 0 || !Number.isInteger(value)) {
+		} else if (
+			parsedValue > 100 ||
+			parsedValue < 0 ||
+			Number.isInteger(value)
+		) {
 			generalSettingsErrors.value[type] =
 				"Значение поля - целое число от 0 до 100";
 		} else {
