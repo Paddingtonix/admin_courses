@@ -175,6 +175,7 @@ export default defineComponent({
         const patchDirection = () => {
             if (isValid()) {
                 const sendData = {
+                    isVisible: visible_direction.value,
                     localizations: dataLocalizations.localizations,
                     description: dataLocalizations.description
                     // localizations: {
