@@ -49,13 +49,15 @@
 					class="oil-filter__body__frame"
 				> -->
 					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->	
-					<template v-for="(filter, idx) in filters" :key="idx">
-						<span>{{ filter.title }}</span>
+					<template v-for="(filter_block, idx) in props.filters" :key="idx">
+						<span>{{ filter_block.title }}</span>
 						<CheckboxCmp
-							v-for="filter_state in filter.filters_values"
+							v-for="filter_state in filter_block.filters_values"
 							:key="filter_state"
 							:text="filter_state.name"
 							:id="filter_state.id"
+                            :active="filter_state.active"   
+                            @set_value="setCheckbox($event, idx)"
 						/>
 					</template>
 						
@@ -115,13 +117,19 @@
 	</div>
 </template>
 <script lang="ts" setup>
-const { filters } = defineProps({
+const props = defineProps({
 	is_body_visible: {
 		type: Boolean,
 		default: false,
 	},
 	filters: {
 		type: Array,
+		default: () => [
+			{
+				filters_values: [] as any,
+				title: '' as string
+			}
+		]
 	},
 	pressed_button: {
 		type: Boolean,
@@ -139,7 +147,11 @@ const filter_frame = reactive({
 	value: false as boolean,
 });
 
-const filterKeys = Object.keys(filters || {});
+const setCheckbox = (val: any, idx: number) => {    
+    props.filters[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active;
+}
+
+// const filterKeys = Object.keys(filters || {});
 
 // const mapFilters = (key: string) =>
 // 	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
@@ -165,37 +177,37 @@ const filterKeys = Object.keys(filters || {});
 
 // const filter_values = reactive({ value: initialFilter_values });
 
-const setActiveFilter = (index: number, key: string, id: number) => {
-	if (filter_values !== undefined) {
-		if (filter_values.value[index][key][id].isRadio) {
-			filter_values.value[index][key].forEach((item) => {
-				item.active = false;
-			});
-			filter_values.value[index][key][id].active = true;
-		} else {
-			filter_values.value[index][key]![id].active =
-				!filter_values.value[index][key]![id].active;
-		}
-	}
-};
+// const setActiveFilter = (index: number, key: string, id: number) => {
+// 	if (filter_values !== undefined) {
+// 		if (filter_values.value[index][key][id].isRadio) {
+// 			filter_values.value[index][key].forEach((item) => {
+// 				item.active = false;
+// 			});
+// 			filter_values.value[index][key][id].active = true;
+// 		} else {
+// 			filter_values.value[index][key]![id].active =
+// 				!filter_values.value[index][key]![id].active;
+// 		}
+// 	}
+// };
 
-const sendFilters = () => {
-	const formData = () => {
-		const result: { [key: string]: any } = {};
+// const sendFilters = () => {
+// 	const formData = () => {
+// 		const result: { [key: string]: any } = {};
 
-		for (const key in filterKeys) {
-			result[filterKeys[key]] = Object.values(filter_values.value[key])
-				.map((item) =>
-					item.filter((filterItem) => filterItem.active)
-				)[0]
-				.map((item) => item.id);
-		}
+// 		for (const key in filterKeys) {
+// 			result[filterKeys[key]] = Object.values(filter_values.value[key])
+// 				.map((item) =>
+// 					item.filter((filterItem) => filterItem.active)
+// 				)[0]
+// 				.map((item) => item.id);
+// 		}
 
-		return result;
-	};
-	const formedData = formData();
-	emit("send-fiters", formedData);
-};
+// 		return result;
+// 	};
+// 	const formedData = formData();
+// 	emit("send-fiters", formedData);
+// };
 
 const cancelFilters = () => {
 	emit("cancel-filters", []);
@@ -229,14 +241,12 @@ const openFilter = (state: boolean) => {
                 stroke: $basic_white
 
     &__body-wrapper
-        position: fixed
+        position: absolute
         background-color: $basic_white
-        // top: -40%
-        transform: translateY(60%)
-        left: 75%
+        top: rem(-70)
+        right: 0
         width: auto
         box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
-
 
     &__body
         padding: rem(32)

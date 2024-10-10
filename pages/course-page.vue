@@ -456,19 +456,19 @@ export default defineComponent({
 					{
 						title: 'Статусы',
 						filters_values: course_filter.value.statuses
-							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1 }))
+							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1, active: false }))
 							: [],
 					},
 					{
 						title: 'Языки',
 						filters_values: course_filter.value.languages
-							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1 }))
+							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1, active: false }))
 							: [],
 					},
 					{
 						title: 'Направления',
 						filters_values: course_filter.value.directions
-							? course_filter.value.directions.map((item, idx) => ({ name: item, id: idx + 1 }))
+							? course_filter.value.directions.map((item, idx) => ({ name: item.name, id: item.id, active: false }))
 							: [],
 					}
 				];
