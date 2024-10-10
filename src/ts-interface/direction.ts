@@ -20,5 +20,10 @@ export interface ILocalizations {
         ru?: string,
         en?: string,
         fr?: string
+    },
+    description: {
+        ru?: string,
+        en?: string,
+        fr?: string
     }
 }
