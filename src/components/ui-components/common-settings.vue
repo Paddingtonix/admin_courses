@@ -738,7 +738,17 @@ const course_table = reactive([
 
 const operatingForm = reactive(Object.create(course_table[1]));
 
-const isFormValid = ref(true);
+const isFormValid = ref(
+	filtered_inputs.value.every((item) => !item.error.length)
+);
+
+filtered_inputs.value.forEach((item) => {
+	watch(item, () => {
+		isFormValid.value = filtered_inputs.value.every(
+			(item) => !item.error.length
+		);
+	});
+});
 
 const formValidation = (field: number, fieldName: string) => {
 	const errorFields = { price: 0, duration: 1, workload: 2 } as {
@@ -749,23 +759,19 @@ const formValidation = (field: number, fieldName: string) => {
 	}
 	if (!field) {
 		setError("Обязательно к заполнению");
-		isFormValid.value = false;
 		return;
 	}
 	switch (fieldName) {
 		case "price":
 			if (field > 1000000 || field < 1) {
 				setError("Значение должно быть от 1 - 1 000 000");
-				isFormValid.value = false;
 			} else {
 				setError("");
-				isFormValid.value = true;
 			}
 			break;
 		case "duration":
 			if (field > 1000) {
 				setError("Значение должно быть от 1 - 1 000");
-				isFormValid.value = false;
 			} else {
 				setError("");
 			}
@@ -773,7 +779,6 @@ const formValidation = (field: number, fieldName: string) => {
 		case "workload":
 			if (field > 10000) {
 				setError("Значение должно быть от 1 - 10 000");
-				isFormValid.value = false;
 			} else {
 				setError("");
 			}
@@ -876,6 +881,16 @@ const editReplace = (editingValue: number | string, regExp: RegExp) =>
 	String(editingValue).replace(regExp, " ");
 
 const saveSettings = () => {
+	for (const index in filtered_inputs.value) {
+		formValidation(
+			operatingForm[filtered_inputs.value[index].type],
+			filtered_inputs.value[index].type
+		);
+		console.log("errors:", filtered_inputs.value);
+	}
+	if (!isFormValid) {
+		return;
+	}
 	if (picked_directions_filtered.value.length === 0) {
 		show_error.value = true;
 	} else {
