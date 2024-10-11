@@ -54,14 +54,14 @@
 						<CourseSettingsInput
 							:id="idx"
 							:error="generalSettingsErrors[setting.type as 'title' | 'score']"
-							:type="setting.type as unknown as 'title' | 'score' | undefined"
-							:input_type="
-								setting.type === 'score' ? 'number' : 'text'
-							"
+							:type="setting.type as unknown as 'title' | 'score' | undefined "
 							:label="
 								setting.type === 'score'
 									? 'Балл'
 									: 'Название теста'
+							"
+							:input_type="
+								setting.type === 'score' ? 'number' : 'text'
 							"
 							@set_value="
 								changeValueSetting(
@@ -253,7 +253,7 @@ const changeQuestion = ({
 // 				.getCourseContent(props.id)
 // 				.then((response) => response);
 // 		});
-// };
+// }; пока не делаем
 
 const editSetting = (id: number) => {
 	changing_field.value = general_settings[id].title as unknown as string;
@@ -302,9 +302,15 @@ const validateGeneralSetting = (
 			delete generalSettingsErrors.value[type];
 		}
 	} else if (type === "score") {
-		if (typeof value !== "number") {
+		const scoreValue = value as number;
+
+		if (typeof scoreValue !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
-		} else if (value > 100 || value < 0 || !Number.isInteger(value)) {
+		} else if (
+			scoreValue > 100 ||
+			scoreValue < 0 ||
+			!Number.isInteger(scoreValue)
+		) {
 			generalSettingsErrors.value[type] =
 				"Значение поля - целое число от 0 до 100";
 		} else {
