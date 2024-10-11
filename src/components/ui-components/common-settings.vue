@@ -555,11 +555,15 @@
 							class="oil-course-setting__settings__table__column__cell__dates"
 						>
 							<CalendarCmp
+								:class="'small-field_error'"
+								:error="dateErrors[1].error"
 								:input_value="UTCDates?.dateStart"
 								@update-date="handleDateUpdate($event, 'start')"
 							/>
 							<span>—</span>
 							<CalendarCmp
+								:class="'small-field_error'"
+								:error="dateErrors[1].error"
 								:input_value="UTCDates?.dateEnd"
 								@update-date="handleDateUpdate($event, 'end')"
 							/>
@@ -569,6 +573,8 @@
 						class="oil-course-setting__settings__table__column__cell"
 					>
 						<CalendarCmp
+							:class="'small-field_error'"
+							:error="dateErrors[2].error"
 							:input_value="UTCDates?.dateFinish"
 							@update-date="handleDateUpdate($event, 'remove')"
 						/>
@@ -621,7 +627,7 @@
 			<BtnCmp
 				class="oil-course-setting__settings__btn"
 				:text="'Сохранить'"
-				:disabled="!isFormValid"
+				:disabled="!isFormValid || show_error"
 				@click="saveSettings"
 			/>
 		</div>
@@ -739,31 +745,68 @@ const course_table = reactive([
 
 const operatingForm = reactive(Object.create(course_table[1]));
 
+const dateErrors = reactive([{ error: "" }, { error: "" }, { error: "" }] as {
+	error: string;
+}[]);
+
 const isFormValid = ref(
-	filtered_inputs.value.every((item) => !item.error.length)
+	filtered_inputs.value.every((item) => !item.error.length) &&
+		dateErrors.every((item) => !item.error.length)
 );
 
-filtered_inputs.value.forEach((item) => {
-	watch(item, () => {
-		isFormValid.value = filtered_inputs.value.every(
-			(item) => !item.error.length
-		);
-	});
+watch(
+	filtered_inputs,
+	() => {
+		isFormValid.value =
+			filtered_inputs.value.every((item) => !item.error.length) &&
+			dateErrors.every((item) => !item.error.length);
+	},
+	{ deep: true }
+);
+
+watch(
+	dateErrors,
+	() => {
+		isFormValid.value =
+			filtered_inputs.value.every((item) => !item.error.length) &&
+			dateErrors.every((item) => !item.error.length);
+	},
+	{ deep: true }
+);
+const UTCDates = reactive({
+	dateStart: null,
+	dateEnd: null,
+	dateFinish: null,
 });
 
-const formValidation = (field: number, fieldName: string) => {
+const formValidation = (field: number | string, fieldName: string) => {
 	const errorFields = { price: 0, duration: 1, workload: 2 } as {
 		[key: string]: number;
 	};
+
+	const dateErrorFields = { dateStart: 0, dateEnd: 1, dateFinish: 2 } as {
+		[key: string]: number;
+	};
+
+	const isFieldDate = fieldName.includes("date");
+
 	function setError(errorMessage: string) {
-		inputs[errorFields[fieldName]].error = errorMessage;
+		if (!isFieldDate) {
+			inputs[errorFields[fieldName]].error = errorMessage;
+		} else {
+			dateErrors[dateErrorFields[fieldName]].error = errorMessage;
+		}
 	}
-	if (!field) {
-		setError("Обязательно к заполнению");
-		return;
-	}
+
 	switch (fieldName) {
 		case "price":
+			if (!field) {
+				setError("Обязательно к заполнению");
+				return;
+			}
+			if (typeof field !== "number") {
+				return;
+			}
 			if (field > 1000000 || field < 1) {
 				setError("Значение должно быть от 1 - 1 000 000");
 			} else {
@@ -771,6 +814,13 @@ const formValidation = (field: number, fieldName: string) => {
 			}
 			break;
 		case "duration":
+			if (!field) {
+				setError("Обязательно к заполнению");
+				return;
+			}
+			if (typeof field !== "number") {
+				return;
+			}
 			if (field > 1000) {
 				setError("Значение должно быть от 1 - 1 000");
 			} else {
@@ -778,12 +828,109 @@ const formValidation = (field: number, fieldName: string) => {
 			}
 			break;
 		case "workload":
+			if (!field) {
+				setError("Обязательно к заполнению");
+				return;
+			}
+			if (typeof field !== "number") {
+				return;
+			}
 			if (field > 10000) {
 				setError("Значение должно быть от 1 - 10 000");
 			} else {
 				setError("");
 			}
 			break;
+
+		case "dateStart": {
+			if (course_setting.value.CourseType === "Asynchronous") return;
+			if (!field) {
+				setError("Обязательно к заполнению");
+				return;
+			}
+			const currentDate = new Date().getTime();
+			const startDate = new Date(field).getTime();
+			const dateEnd = operatingForm.end_date
+				? new Date(operatingForm.end_date).getTime()
+				: 0;
+			const dateFinish = operatingForm.removed_date;
+			if (!!dateEnd) formValidation(operatingForm.end_date, "dateEnd");
+			if (!!dateFinish)
+				formValidation(operatingForm.removed_date, "dateFinish");
+
+			if (currentDate >= startDate) {
+				setError("Дата начала не может быть раньше текущей даты");
+				return;
+			} else if (!!dateEnd && dateEnd <= startDate) {
+				setError("Дата начала не может быть позже даты конца");
+				return;
+			} else {
+				setError("");
+			}
+			break;
+		}
+
+		case "dateEnd": {
+			if (course_setting.value.CourseType === "Asynchronous") return;
+			if (!field) {
+				setError("Обязательно к заполнению");
+				break;
+			}
+			const currentDate = new Date().getTime();
+			const dateEnd = new Date(field).getTime();
+			const startDate = operatingForm.start_date
+				? new Date(operatingForm.start_date).getTime()
+				: 0;
+			if (!!startDate)
+				formValidation(operatingForm.start_date, "startDate");
+
+			if (currentDate >= dateEnd && !!dateEnd) {
+				setError("Дата начала не может быть раньше текущей даты");
+				return;
+			} else if (
+				!!dateEnd &&
+				dateEnd !== currentDate &&
+				dateEnd < startDate
+			) {
+				setError("Дата начала не может быть позже даты конца");
+				return;
+			} else {
+				setError("");
+			}
+			break;
+		}
+
+		case "dateFinish": {
+			if (!field) {
+				setError("Обязательно к заполнению");
+				return;
+			}
+			const startDate = operatingForm.start_date
+				? new Date(operatingForm.start_date).getTime()
+				: 0;
+
+			const finishDate = new Date(field).getTime();
+			const currentDate = new Date().getTime();
+
+			if (currentDate >= finishDate) {
+				setError(
+					"Дата снятия с витрины не может быть раньше текущей даты"
+				);
+				return;
+			} else if (
+				startDate &&
+				finishDate >= startDate &&
+				course_setting.value.CourseType !== "Asynchronous"
+			) {
+				setError(
+					"Дата снятия с витрины не может быть позже даты начала"
+				);
+				return;
+			} else {
+				setError("");
+			}
+			break;
+		}
 	}
 };
 
@@ -791,14 +938,19 @@ const handleDateUpdate = (date: string, type: string) => {
 	switch (type) {
 		case "start":
 			operatingForm.start_date = date;
+			formValidation(date, "dateStart");
 			break;
 
 		case "end":
 			operatingForm.end_date = date;
+			formValidation(date, "dateEnd");
 			break;
 
 		case "remove":
 			operatingForm.removed_date = date;
+			formValidation(date, "dateFinish");
+			console.log("date:", date, "errors:", dateErrors);
+
 			break;
 
 		default:
@@ -838,6 +990,7 @@ const updateFormData = (event: { value: string; type: string }) => {
 };
 
 const pick_direction = (dir: { id: number; picked: boolean }) => {
+	show_error.value = false;
 	if (dir.picked) {
 		picked_directions.push(dir.id);
 	} else {
@@ -855,12 +1008,6 @@ const formData = reactive({
 	dateStart: "" as string | null,
 	dateFinish: "" as string | null,
 	salesTerminationDate: "" as string | null,
-});
-
-const UTCDates = reactive({
-	dateStart: null,
-	dateEnd: null,
-	dateFinish: null,
 });
 
 const formatDate = (date_value: string): string => {
@@ -888,6 +1035,14 @@ const saveSettings = () => {
 			filtered_inputs.value[index].type
 		);
 		console.log("errors:", filtered_inputs.value);
+	}
+	for (const fieldName in UTCDates) {
+		const translation = {
+			startDate: "start_date",
+			endDate: "end_date",
+			finishDate: "removed_date",
+		};
+		formValidation(operatingForm[translation[fieldName]], fieldName);
 	}
 	if (!isFormValid) {
 		return;
@@ -1024,7 +1179,6 @@ const setTooltipText = computed(() => {
 
 const openEditCourseSetting = () => {
 	storeEditCourseSetting.edit();
-	console.log(UTCDates);
 
 	original_directions.value = [...picked_directions];
 };
