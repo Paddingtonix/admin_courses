@@ -49,7 +49,7 @@
 					class="oil-filter__body__frame"
 				> -->
 					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->	
-					<template v-for="(filter_block, idx) in props.filters" :key="idx">
+					<template v-for="(filter_block, idx) in filters_block.value" :key="idx">
 						<span>{{ filter_block.title }}</span>
 						<CheckboxCmp
 							v-for="filter_state in filter_block.filters_values"
@@ -143,12 +143,18 @@ const props = defineProps({
 
 const emit = defineEmits(["send-fiters", "cancel-filters"]);
 
+const filters_block = reactive({
+	value: props.filters
+})
+
 const filter_frame = reactive({
 	value: false as boolean,
 });
 
 const setCheckbox = (val: any, idx: number) => {    
-    props.filters[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active;
+    filters_block.value[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active
+	console.log(val);
+	
 }
 
 // const filterKeys = Object.keys(filters || {});
@@ -243,7 +249,7 @@ const openFilter = (state: boolean) => {
     &__body-wrapper
         position: absolute
         background-color: $basic_white
-        top: rem(-70)
+        top: rem(-180)
         right: 0
         width: auto
         box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)

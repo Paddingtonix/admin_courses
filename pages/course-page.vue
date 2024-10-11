@@ -1,5 +1,5 @@
 <template>
-	<section class="oil-container oil-course">
+	<section class="oil-container oil-course" v-if="!loader.value">
 		<div class="oil-course__info oil-page">
 			<div
 				v-if="user_role_store.role === 'Author'"
@@ -72,6 +72,7 @@
 						@change-value="updateSearchValue($event)"
 					/>
 					<FilterCmp
+						v-if="course_filters.length"
 						@cancel-filters="setFilters"
 						@send-fiters="setFilters"
 						@click="openFilter(true)"
@@ -471,12 +472,23 @@ export default defineComponent({
 							? course_filter.value.directions.map((item, idx) => ({ name: item.name, id: item.id, active: false }))
 							: [],
 					}
-				];
+				]
 			}
-		});
+		})
 
+		const loader = reactive({
+			value: true
+		})
 
-		const course_filter = ref([])
+		
+		const course_filter = ref({})
+		
+		watch([course_filter, course_list], () => {
+			if(course_filter.value && course_list.value) {
+				loader.value = false
+				console.log(course_filter.value, course_list.value);
+			}
+		})
 
 		onMounted(() => {
 			nextTick(async () => {
@@ -509,7 +521,8 @@ export default defineComponent({
 			course_list,
 			statuses_course,
 			course_filter,
-			course_filters
+			course_filters,
+			loader
 		};
 	},
 });
