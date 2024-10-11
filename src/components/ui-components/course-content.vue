@@ -162,6 +162,9 @@
 		</div>
 		<div
 			class="oil-course-setting__content__container"
+            :class="{
+                _special: canAddPart()
+            }"
 			v-if="!preloader.value"
 		>
 			<div
@@ -331,11 +334,8 @@
 							}"
 							:block_id="Number($route.query.search) || undefined"
 							@request-trigger="reloadContent"
-							v-if="
-								idx === content_inner.value.parts.length - 1 &&
-								storeCourseSettings.CourseType !== 'Archived' &&
-								canAddPart()
-							"
+                            v-if="idx === content_inner.value.parts.length - 1 &&
+                            storeCourseSettings.CourseType !== 'Archived'"
 						/>
 					</transition>
 				</div>
@@ -406,7 +406,6 @@
 								v-model="chapter_price_value"
 							/>
 						</div>
-
 						<CourseArchitectureIcons
 							v-if="
 								storeCourseSettings.CourseType !== 'Archived' &&
@@ -681,6 +680,26 @@
 					/>
 				</transition>
 			</div>
+
+            <transition name="fade">
+                <CourseArchitectureAddBlock
+                    :btn_text="'часть'"
+                    :request_type="{
+                        type: 'Part',
+                        query: 'courseId',
+                    }"
+                    :block_id="Number($route.query.search) || undefined"
+                    @request-trigger="reloadContent"
+                    :isSpecial="true"
+                    v-if="
+                        content_inner.value.parts.length === 0 &&
+                        content_inner.value.finalPage.contentId &&
+                        storeCourseSettings.CourseType !== 'Archived' &&
+                        canAddPart()
+                    "
+                />
+            </transition>
+
 			<div
 				class="oil-course-setting__content__container__inner"
 				:class="{
@@ -862,17 +881,22 @@ watch(reload_state, () => {
 });
 
 onMounted(() => {
-	nextTick(() => {
-		axios
-			.get(`/admin/v1/Course/${route.query.search}/content`)
-			.then((struct_response) => {
-				console.log("dataStruct!:", struct_response.data);
-				content_inner.value = struct_response.data;
-				preloader.value = false;
-			});
-		console.log("inner!:", content_inner.value);
-	});
+    nextTick(() => {
+        axios
+            .get(`/admin/v1/Course/${route.query.search}/content`)
+            .then((struct_response) => {
+                content_inner.value = struct_response.data;
+                console.log(content_inner.value, 'content_inner.value')
+                preloader.value = false;
+            });
+    });
 });
 </script>
 
-<style></style>
+<style scoped lang="sass">
+.oil-course-setting
+    &__content
+        &__container
+            &._special
+                margin-top: rem(96)
+</style>
