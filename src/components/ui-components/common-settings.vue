@@ -556,7 +556,7 @@
 						>
 							<CalendarCmp
 								:class="'small-field_error'"
-								:error="dateErrors[1].error"
+								:error="dateErrors[0].error"
 								:input_value="UTCDates?.dateStart"
 								@update-date="handleDateUpdate($event, 'start')"
 							/>
@@ -853,12 +853,17 @@ const formValidation = (field: number | string, fieldName: string) => {
 			const dateEnd = operatingForm.end_date
 				? new Date(operatingForm.end_date).getTime()
 				: 0;
-			const dateFinish = operatingForm.removed_date;
-			if (!!dateEnd) formValidation(operatingForm.end_date, "dateEnd");
-			if (!!dateFinish)
-				formValidation(operatingForm.removed_date, "dateFinish");
 
-			if (currentDate >= startDate) {
+			const dateFinish = operatingForm.removed_date;
+
+			if (!!dateEnd) {
+				formValidation(operatingForm.end_date, "dateEnd");
+			}
+			if (!!dateFinish) {
+				formValidation(operatingForm.removed_date, "dateFinish");
+			}
+
+			if (!!startDate && currentDate >= startDate) {
 				setError("Дата начала не может быть раньше текущей даты");
 				return;
 			} else if (!!dateEnd && dateEnd <= startDate) {
@@ -881,14 +886,18 @@ const formValidation = (field: number | string, fieldName: string) => {
 			const startDate = operatingForm.start_date
 				? new Date(operatingForm.start_date).getTime()
 				: 0;
-			if (!!startDate)
+			if (!!startDate && startDate > currentDate) {
 				formValidation(operatingForm.start_date, "startDate");
-
-			if (currentDate >= dateEnd && !!dateEnd) {
+			}
+			if (
+				!!dateEnd &&
+				currentDate >= dateEnd &&
+				dateEnd === currentDate
+			) {
 				setError("Дата начала не может быть раньше текущей даты");
 				return;
 			} else if (
-				!!dateEnd &&
+				!!startDate &&
 				dateEnd !== currentDate &&
 				dateEnd < startDate
 			) {
@@ -1036,6 +1045,7 @@ const saveSettings = () => {
 		);
 		console.log("errors:", filtered_inputs.value);
 	}
+
 	for (const fieldName in UTCDates) {
 		const translation = {
 			dateStart: "start_date",
@@ -1045,6 +1055,7 @@ const saveSettings = () => {
 		formValidation(operatingForm[translation[fieldName]], fieldName);
 		console.log(fieldName);
 	}
+
 	if (!isFormValid) {
 		return;
 	}
