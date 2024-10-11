@@ -902,13 +902,13 @@ const saveSettings = () => {
 				? [operatingForm.authors]
 				: operatingForm.authors;
 		formData.priceInRubles = operatingForm.price
-			? parseFloat(operatingForm.price.replace(/\s/g, ""))
+			? parseFloat(operatingForm.price)
 			: null;
 		formData.durationAcademicHours = operatingForm.duration
-			? parseFloat(operatingForm.duration.replace(/\s/g, ""))
+			? parseFloat(operatingForm.duration)
 			: null;
 		formData.durationWorkDays = operatingForm.workload
-			? parseFloat(operatingForm.workload.replace(/\s/g, ""))
+			? parseFloat(operatingForm.workload)
 			: null;
 		formData.dateStart = operatingForm?.start_date
 			? new Date(operatingForm.start_date!).toISOString()

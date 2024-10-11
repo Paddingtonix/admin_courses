@@ -94,20 +94,14 @@ export default defineComponent({
 		const input_value = ref<string | number>(
 			modelValue.value || initial_value
 		);
-
-		const formatted_value = ref(input_value.value);
-
-		watch(
-			() => props.date_calendar,
-			(new_date) => {
-				input_value.value = new_date;
-			}
-		);
 		const formatter = new Intl.NumberFormat("ru-RU", {
 			useGrouping: true,
 		});
 
 		const priceFormat = (value: string | number) => {
+			if (props.mask_type === "price" && typeof value === "number") {
+				return value ? formatter.format(value) : 0;
+			}
 			if (props.mask_type === "price" && typeof value === "string") {
 				const cleanValue = value.replace(/\D/g, "");
 
@@ -116,6 +110,15 @@ export default defineComponent({
 				return value;
 			}
 		};
+
+		const formatted_value = ref(priceFormat(input_value.value));
+
+		watch(
+			() => props.date_calendar,
+			(new_date) => {
+				input_value.value = new_date;
+			}
+		);
 
 		const setValue = (event: Event) => {
 			emit("set_value", { value: input_value.value, type: props.type });
