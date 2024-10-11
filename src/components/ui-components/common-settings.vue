@@ -535,6 +535,7 @@
 						:key="input_idx"
 					>
 						<InputCmp
+							:class="'small-field_error'"
 							v-if="input.mask_type !== undefined"
 							:placeholder="input.placeholder"
 							:mask_type="input.mask_type"
@@ -1146,4 +1147,9 @@ onMounted(() => {
 });
 </script>
 
-<style></style>
+<style lang="sass">
+.small-field_error
+	.oil-input__message
+		width: max-content
+		transform: translateY(29%)
+</style>
