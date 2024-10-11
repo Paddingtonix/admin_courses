@@ -1038,11 +1038,12 @@ const saveSettings = () => {
 	}
 	for (const fieldName in UTCDates) {
 		const translation = {
-			startDate: "start_date",
-			endDate: "end_date",
-			finishDate: "removed_date",
+			dateStart: "start_date",
+			dateEnd: "end_date",
+			dateFinish: "removed_date",
 		};
 		formValidation(operatingForm[translation[fieldName]], fieldName);
+		console.log(fieldName);
 	}
 	if (!isFormValid) {
 		return;
