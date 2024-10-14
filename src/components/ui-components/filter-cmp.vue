@@ -54,7 +54,7 @@
 						<CheckboxCmp
 							v-for="filter_state in filter_block.filters_values"
 							:key="filter_state"
-							:text="filter_state.name"
+							:text="filter_state.translate ? filter_state.translate : filter_state.name"
 							:id="filter_state.id"
                             :active="filter_state.active"   
                             @set_value="setCheckbox($event, idx)"
@@ -110,13 +110,15 @@
 						:background_type="'_secondary'"
 						:text="'Сбросить'"
 					/>
-					<BtnCmp @click="sendFilters" :text="'Применить'" />
+					<BtnCmp @click="setFilter" :text="'Применить'" />
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script lang="ts" setup>
+import { useRouter, useRoute } from 'vue-router' 
+
 const props = defineProps({
 	is_body_visible: {
 		type: Boolean,
@@ -141,6 +143,9 @@ const props = defineProps({
 	},
 });
 
+const router = useRouter() as useRouter
+const route = useRoute() as useRoute
+
 const emit = defineEmits(["send-fiters", "cancel-filters"]);
 
 const filters_block = reactive({
@@ -152,10 +157,52 @@ const filter_frame = reactive({
 });
 
 const setCheckbox = (val: any, idx: number) => {    
-    filters_block.value[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active
-	console.log(val);
-	
+    filters_block.value[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active	
 }
+
+const setFilter = () => {
+	router.push({
+		query: {
+			statuses: filters_block.value[0]!.filters_values.some(item => item.active) ? filters_block.value[0]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+			languageIds: filters_block.value[1]!.filters_values.some(item => item.active) ? filters_block.value[1]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+			directionIds: filters_block.value[2]!.filters_values.some(item => item.active) ? filters_block.value[2]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+		} 
+	})
+}
+
+onMounted(() => {
+	console.log(route);
+	
+	// nextTick(() => {
+	// 	for(let i = 0; i < filters_block.value.length; i++) {
+	// 		setCheckbox(i, )
+	// 	}
+	// })
+})
 
 // const filterKeys = Object.keys(filters || {});
 

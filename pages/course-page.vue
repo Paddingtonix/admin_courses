@@ -158,15 +158,15 @@
 			</div>
 			<div class="oil-course__settings__pagination">
 				<PaginationCmp
-					:pages_count="paginations_pages!"
-					:currentPage="current_page"
+					:pages_count="course_list.numberOfPages"
+					:currentPage="$route.query.page ? Number($route.query.page) : 1"
 					@change-page="isCurrentPage"
 				/>
 			</div>
 			<SelectorCmp
 				@setValue="changeCoursePerPage($event)"
 				class="tags-page__selector"
-				:label="`${list[0].text} курсов на стр.`"
+				:label="`${$route.query.nCoursesPerPage ? $route.query.nCoursesPerPage : 10} курсов на стр.`"
 				listText="курсов на стр."
 				:list="list"
 			/>
@@ -174,12 +174,13 @@
 	</section>
 </template>
 <script lang="ts">
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 // import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useHeadersSort } from "~/src/utils/sort-generator";
 import { getRequest } from '~/src/composables/api';
+
 
 import type {
 	IDeleteModal,
@@ -188,6 +189,7 @@ import type {
 
 export default defineComponent({
 	setup() {
+		const route = useRoute();
 		const router = useRouter();
 		// const courseStore = useStoreCourses();
 
@@ -215,9 +217,7 @@ export default defineComponent({
 		// const paginations_pages = ref<number>(courseStore.numberOfPages ?? 1);
 		const current_page = ref<number>(1);
 
-		const isCurrentPage = (page: number) => {
-			current_page.value = page;
-		};
+		
 
 		const courseEndpoint = computed(
 			() =>
@@ -303,9 +303,21 @@ export default defineComponent({
 				!!queryParams.statuses.length
 		);
 
+		const isCurrentPage = (page: number) => {
+			router.push({
+				query: {
+					page: page,
+				}
+			})
+		}
+
 		const changeCoursePerPage = (val: { value: number; type: string }) => {
-			queryParams.nCoursesPerPage = val.value;
-		};
+			router.push({
+				query: {
+					nCoursesPerPage: val.value,
+				}
+			})
+		}
 
 		const setFilters = (value: {
 			Направления?: number[];
@@ -368,20 +380,17 @@ export default defineComponent({
 			setSorting
 		);
 
-		const status_translation: Record<
-			| "InDevelopment"
-			| "OnModeration"
-			| "Published"
-			| "Withdrawn"
-			| "Archived",
-			string
-		> = {
+		const status_translation: Record<"InDevelopment"|"OnModeration"|"Published"|"Withdrawn"|"Archived"|"en"|"fr"|"ru", string> = {
 			InDevelopment: "В разработке",
 			OnModeration: "На модерации",
 			Published: "Опубликован",
 			Withdrawn: "Снят с витрины",
 			Archived: "В архиве",
+			en: 'Английский (EN)',
+			fr: 'Французкий (FR)',
+			ru: 'Русский (RU)'
 		};
+		
 		const translateStatus = (status: string): string => {
 			if (status in status_translation) {
 				return status_translation[
@@ -389,8 +398,8 @@ export default defineComponent({
 				];
 			}
 
-			return "Неизвестный статус";
-		};
+			return "Неизвестный статус"
+		}
 
 		const statuses_course = computed(() => {
 			if (course_list.value && Array.isArray(course_list.value.courses)) {
@@ -457,13 +466,13 @@ export default defineComponent({
 					{
 						title: 'Статусы',
 						filters_values: course_filter.value.statuses
-							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1, active: false }))
+							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
 							: [],
 					},
 					{
 						title: 'Языки',
 						filters_values: course_filter.value.languages
-							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1, active: false }))
+							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
 							: [],
 					},
 					{
@@ -482,20 +491,37 @@ export default defineComponent({
 
 		
 		const course_filter = ref({})
-		
-		watch([course_filter, course_list], () => {
-			if(course_filter.value && course_list.value) {
+
+		watch(() => route.query, async (query) => {		
+
+			const buildQueryParams = (param, key) => 
+				param ? param.split(',').map(id => `&${key}=${id}`).join('') : ''
+
+				let statuses = buildQueryParams(route.query.statuses, 'statuses')
+				let language_ids = buildQueryParams(route.query.languageIds, 'languageIds')
+				let direction_ids = buildQueryParams(route.query.directionIds, 'directionIds')
+				let page = buildQueryParams(route.query.page, 'page') 
+				let n_courses_per_page = buildQueryParams(route.query.nCoursesPerPage, 'nCoursesPerPage')		
+
+				await nextTick()				
+
+				course_list.value = await getRequest(`/admin/v1/Course?${page ? page : '1'}${statuses}${language_ids}${direction_ids}${n_courses_per_page}`)
+
+				await nextTick()
+				course_filter.value = await getRequest('/admin/v1/Course/filters')
 				loader.value = false
-				console.log(course_filter.value, course_list.value);
-			}
-		})
+			},
+			{ immediate: true }
+		)
 
 		onMounted(() => {
-			nextTick(async () => {
-				course_list.value = await getRequest('/admin/v1/Course?page=1')
-				course_filter.value = await getRequest('/admin/v1/Course/filters')
-			});
-		});
+			router.push({
+				query: {
+                    ...route.query,
+                    page: 1,
+                }
+			})
+		})
 
 		return {
 			user_role_store,
