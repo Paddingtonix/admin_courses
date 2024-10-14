@@ -205,7 +205,7 @@
 						v-if="
 							!content_inner.value.initialPage &&
 							storeCourseSettings.CourseType !== 'Archived' &&
-							!canAddPart()
+							content_inner.value.parts.length
 						"
 						:style="{ top: -15 + 'px' }"
 						:btn_text="
