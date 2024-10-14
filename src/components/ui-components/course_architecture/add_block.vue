@@ -49,9 +49,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const addBlock = () => {
-            console.log(props.request_type.type, 'props.request_type.type')
-            console.log(props.block_id, 'props.block_id')
-            console.log(props.request_type.testing_type, 'props.request_type.testing_type')
             axios
                 .post(`/admin/v1/${props.request_type.type}`, {
                     [props.request_type.query]: props.block_id,
