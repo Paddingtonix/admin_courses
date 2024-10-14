@@ -1074,11 +1074,12 @@ const saveSettings = () => {
             typeof operatingForm.authors === "string"
                 ? [operatingForm.authors]
                 : operatingForm.authors;
-        formData.priceInRubles = operatingForm.price
-            ? typeof operatingForm.price === "string"
-                ? formNubmer(operatingForm.price)
-                : operatingForm.price
-            : null;
+        formData.priceInRubles =
+            operatingForm.price && !course_setting.value.IsPartialAvailable
+                ? typeof operatingForm.price === "string"
+                    ? formNubmer(operatingForm.price)
+                    : operatingForm.price
+                : null;
         formData.durationAcademicHours = operatingForm.duration
             ? typeof operatingForm.duration === "string"
                 ? formNubmer(operatingForm.duration)

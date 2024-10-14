@@ -434,6 +434,7 @@
                                 storeCourseSettings.CourseType !== 'Archived' &&
                                 !storeCourseSettings.IsPartialAvailable
                             "
+                            :is-deletable="part.chapters.length !== 1"
                             :delete_id="chapter.id"
                             :delete_type="'Chapter'"
                             :fields_valid="!validationErrors.length"
@@ -462,7 +463,8 @@
                             }"
                         />
                         <CourseArchitectureIcons
-                            v-else
+                            v-else-if="storeCourseSettings.IsPartialAvailable"
+                            :is-deletable="part.chapters.length !== 1"
                             :delete_id="chapter.id"
                             :delete_type="'Chapter'"
                             @move-trigger="
@@ -561,6 +563,7 @@
                             :delete_type="'Section'"
                             :fields_valid="isSettingValid"
                             @delete-trigger="reloadContent"
+                            :is-deletable="chapter.sections?.length !== 1"
                             @edit-trigger="
                                 editTitle(
                                     $event,
@@ -763,6 +766,12 @@
                 >
             </div>
         </div>
+        <span
+            class="oil-course-setting__content__final-price"
+            v-if="course_setting.value.IsPartialAvailable"
+            >Итоговая стоимость курса: {{ course_setting.value.PriceInRubles }}
+            <span>RUB</span></span
+        >
     </div>
 </template>
 

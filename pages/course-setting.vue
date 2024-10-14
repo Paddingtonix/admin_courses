@@ -513,7 +513,13 @@ export default defineComponent({
                         font-weight: bold
                         color: $light_gray
 
-
+        &__final-price
+            display: block
+            margin-top: rem(32)
+            font-weight: bold
+            font-size: rem(20)
+            span
+                color: $basic_gray
 
 
 
