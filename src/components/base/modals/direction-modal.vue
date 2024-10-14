@@ -1,6 +1,6 @@
 <template>
     <div class="oil-direction">
-        <span class="oil-direction__desc">Направление должно быть переведено на обязательные языки (помечены звёздочкой)</span>
+        <span class="oil-direction__desc">Направление и описание должны быть переведены на обязательные языки (помечены звёздочкой)</span>
         <LangSwitcherCmp
             class="oil-direction__tabs"
             :active="lang"
@@ -118,7 +118,7 @@ export default defineComponent({
             const courses = course_store.course_list.filter((direction_in_course) => {
                 return direction_in_course.directions.includes(localizedName);
             });
-            return courses.length === 1 ? courses : [];
+            return courses.length ? courses : [];
         };
 
         const isValid = () => {
