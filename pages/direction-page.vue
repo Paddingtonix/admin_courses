@@ -285,10 +285,11 @@ export default defineComponent({
             const courses = course_store.course_list.filter((direction_in_course) => {
                 return direction_in_course.directions.includes(localizedName);
             });
-            return courses.length === 1 ? courses : [];
+            return courses.length ? courses : [];
         };
 
         const deleteDirection = (data?: IDirection) => {
+            console.log(data.localizedName, 'data.localizedName')
             const related_courses = getRelatedCourses(data.localizedName);
             console.log(related_courses, 'related_courses')
             if (related_courses.length > 0) {
