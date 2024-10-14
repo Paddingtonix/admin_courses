@@ -300,7 +300,7 @@
                         "
                         class="oil-course-setting__content__container__inner__input"
                         :model-value="changes_value.value"
-                        @set_value="changes_value.value = $event.value"
+                        @set_value="changeSettingValue"
                         :error="
                             validationErrors.find(
                                 (item) => item?.id === part.id
@@ -405,7 +405,7 @@
                                 )?.error ?? ''
                             "
                             class="oil-course-setting__content__container__inner__input"
-                            @set_value="changes_value.value = $event.value"
+                            @set_value="changeSettingValue"
                             :model-value="changes_value.value"
                         />
                         <!-- TODO: chaper-input -->
@@ -420,11 +420,12 @@
                             <InputCmp
                                 class="oil-course-setting__content__container__inner__input__price"
                                 :error="
-                                    validationErrors.find(
+                                    priceValidationErrors.find(
                                         (item) => item?.id === chapter.id
                                     )?.error ?? ''
                                 "
-                                @set_value="chapter_price_value = $event.value"
+                                :type="'number'"
+                                @set_value="changeSettingValue"
                                 :model-value="chapter_price_value"
                             />
                         </div>
@@ -537,7 +538,7 @@
                                     (item) => item?.id === section.id
                                 )?.error ?? ''
                             "
-                            @set_value="changes_value.value = $event.value"
+                            @set_value="changeSettingValue"
                         />
 
                         <span
@@ -624,7 +625,7 @@
                                     (item) => item?.id === chapter.testing.id
                                 )?.error ?? ''
                             "
-                            @set_value="changes_value.value = $event.value"
+                            @set_value="changeSettingValue"
                             class="oil-course-setting__content__container__inner__input"
                             :model-value="changes_value.value"
                         />
@@ -783,7 +784,7 @@ defineProps({
     },
 });
 // TODO: chapter_value
-const chapter_price_value = ref("");
+const chapter_price_value = ref<number | null>(null);
 
 const preloader = reactive({
     value: true as boolean,
@@ -797,6 +798,8 @@ const edit_field = reactive({
 });
 
 const validationErrors = reactive([] as { id: number; error: string }[]);
+
+const priceValidationErrors = reactive([] as { id: number; error: string }[]);
 
 const visible_block = reactive({
     value: "",
@@ -831,43 +834,78 @@ const moveToStructure = (direction: string, endpoint: string) => {
     });
 };
 
-watch(changes_value, () => {
-    validateSettings({
-        value: changes_value.value,
-        type: edit_field.type_field as string,
-    });
-});
+const changeSettingValue = ({
+    value,
+    type,
+}: {
+    value: string | number;
+    type: string;
+}) => {
+    if (type !== "number") {
+        changes_value.value = value as string;
+        validateSettings({
+            value: value,
+            type: type,
+        });
+    } else {
+        chapter_price_value.value = value as number;
+        validateSettings({
+            value: value,
+            type: type,
+        });
+    }
+};
 
-watch(chapter_price_value, () => {
-    validateSettings({
-        value: chapter_price_value.value,
-        type: "price",
-    });
-});
-
-const validateSettings = ({ value, type }: { value: string; type: string }) => {
+const validateSettings = ({
+    value,
+    type,
+}: {
+    value: string | number;
+    type: string;
+}) => {
     function setError(errorMessage: string) {
-        const errorIndex = validationErrors.findIndex(
-            (field) => field?.id === edit_field.idx_field
-        );
-
-        if (errorIndex < 0) {
-            validationErrors.push({
-                id: edit_field.idx_field as number,
-                error: errorMessage,
-            });
+        const isNumber = type === "number";
+        const errorIndex = !isNumber
+            ? validationErrors.findIndex(
+                  (field) => field?.id === edit_field.idx_field
+              )
+            : priceValidationErrors.findIndex(
+                  (field) => field?.id === edit_field.idx_field
+              );
+        if (errorIndex === -1) {
+            !isNumber
+                ? validationErrors.push({
+                      id: edit_field.idx_field as number,
+                      error: errorMessage,
+                  })
+                : priceValidationErrors.push({
+                      id: edit_field.idx_field as number,
+                      error: errorMessage,
+                  });
         } else {
-            validationErrors[errorIndex].error = errorMessage;
+            if (isNumber) {
+                validationErrors[errorIndex].error = errorMessage;
+            } else {
+                priceValidationErrors[errorIndex].error = errorMessage;
+            }
         }
     }
 
     function deleteError() {
-        const deleteIndex = validationErrors.findIndex((item) =>
-            validationErrors.length ? item?.id === edit_field.idx_field : null
-        );
-
-        if (deleteIndex !== -1) {
-            validationErrors.splice(deleteIndex, 1);
+        const isNumber = type === "number";
+        const errorIndex = !isNumber
+            ? validationErrors.findIndex(
+                  (field) => field?.id === edit_field.idx_field
+              )
+            : priceValidationErrors.findIndex(
+                  (field) => field?.id === edit_field.idx_field
+              );
+        if (errorIndex !== -1) {
+            if (!isNumber) {
+                validationErrors.splice(errorIndex, 1);
+            } else {
+                priceValidationErrors.splice(errorIndex, 1);
+            }
         } else {
             return;
         }
@@ -876,15 +914,15 @@ const validateSettings = ({ value, type }: { value: string; type: string }) => {
     if (!value || (typeof value === "string" && value.trimStart().length < 1)) {
         setError("Поле обязательно к заполнению!");
         return;
-    } else if (type !== "price" && value.length > 80) {
-        setError("Название должно содержать не более 80 символов!");
-    } else if (type === "price" && !/^\d+$/.test(value)) {
-        setError("Цена может содержать только цифры");
     } else if (
-        (type === "price" &&
-            /^(0|[1-9][0-9]*)$/.test(value) &&
-            parseInt(value) > 100000) ||
-        parseInt(value) < 1
+        type !== "number" &&
+        typeof value === "string" &&
+        value.length > 80
+    ) {
+        setError("Название должно содержать не более 80 символов!");
+    } else if (
+        (type === "number" && (value as number) > 100000) ||
+        (value as number) < 1
     ) {
         setError(
             "Стоимость главы не может быть больше 100000 или меньше 1 руб."
@@ -989,7 +1027,9 @@ watch(reload_state, () => {
     }
 });
 
-const isSettingValid = computed(() => !validationErrors.length);
+const isSettingValid = computed(
+    () => !validationErrors.length && !priceValidationErrors.length
+);
 onMounted(() => {
     nextTick(() => {
         axios
