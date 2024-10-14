@@ -835,8 +835,8 @@ const formValidation = (field: number | string, fieldName: string) => {
 			if (typeof field !== "number") {
 				return;
 			}
-			if (field > 10000) {
-				setError("Значение должно быть от 1 - 10 000");
+			if (field > 1000) {
+				setError("Значение должно быть от 1 - 1000");
 			} else {
 				setError("");
 			}
@@ -1062,6 +1062,10 @@ const saveSettings = () => {
 	if (picked_directions_filtered.value.length === 0) {
 		show_error.value = true;
 	} else {
+		const formNubmer = (value: string) => {
+			return parseInt(value.replace(" ", ""));
+		};
+
 		show_error.value = false;
 		formData.directionIds = picked_directions;
 		formData.authorEmails =
@@ -1069,13 +1073,19 @@ const saveSettings = () => {
 				? [operatingForm.authors]
 				: operatingForm.authors;
 		formData.priceInRubles = operatingForm.price
-			? operatingForm.price
+			? typeof operatingForm.price === "string"
+				? formNubmer(operatingForm.price)
+				: operatingForm.price
 			: null;
 		formData.durationAcademicHours = operatingForm.duration
-			? operatingForm.duration
+			? typeof operatingForm.duration === "string"
+				? formNubmer(operatingForm.duration)
+				: operatingForm.duration
 			: null;
 		formData.durationWorkDays = operatingForm.workload
-			? operatingForm.workload
+			? typeof operatingForm.workload === "string"
+				? formNubmer(operatingForm.workload)
+				: operatingForm.workload
 			: null;
 		formData.dateStart = operatingForm?.start_date
 			? new Date(operatingForm.start_date!).toISOString()

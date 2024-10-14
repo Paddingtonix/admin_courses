@@ -73,7 +73,7 @@
 						/>
 					</svg>
 				</slot>
-				<span>Как работать с содержанием модуля?</span>
+				<span>Как работать с содержанием курса?</span>
 				<slot name="attention-chevron">
 					<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 						<path
@@ -243,6 +243,7 @@
 					<CourseArchitectureIcons
 						v-if="storeCourseSettings.CourseType !== 'Archived'"
 						:arrow="false"
+						:fields_valid="isSettingValid"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialTesting.id"
 						:delete_type="'Testing'"
@@ -289,13 +290,19 @@
 							edit_field.idx_field !== null,
 					}"
 				>
-					<input
+					<InputCmp
 						v-if="
 							edit_field.type_field === 'Part' &&
 							edit_field.idx_field === part.id
 						"
 						class="oil-course-setting__content__container__inner__input"
-						v-model="changes_value.value"
+						:model-value="changes_value.value"
+						@set_value="changes_value.value = $event.value"
+						:error="
+							validationErrors.find(
+								(item) => item?.id === part.id
+							)?.error ?? ''
+						"
 					/>
 					<span v-else>{{
 						part.title === null ? "Вводная страница" : part.title
@@ -305,6 +312,7 @@
 						:delete_id="part.id"
 						:delete_type="'Part'"
 						@delete-trigger="reloadContent"
+						:fields_valid="isSettingValid"
 						@move-trigger="
 							moveToStructure(
 								$event,
@@ -384,13 +392,19 @@
 							}}
 							<span>RUB</span></span
 						>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Chapter' &&
 								edit_field.idx_field === chapter.id
 							"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === chapter.id
+								)?.error ?? ''
+							"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							@set_value="changes_value.value = $event.value"
+							:model-value="changes_value.value"
 						/>
 						<!-- TODO: chaper-input -->
 						<div
@@ -401,9 +415,15 @@
 								storeCourseSettings.IsPartialAvailable
 							"
 						>
-							<input
+							<InputCmp
 								class="oil-course-setting__content__container__inner__input__price"
-								v-model="chapter_price_value"
+								:error="
+									validationErrors.find(
+										(item) => item?.id === chapter.id
+									)?.error ?? ''
+								"
+								@set_value="chapter_price_value = $event.value"
+								:model-value="chapter_price_value"
 							/>
 						</div>
 
@@ -414,6 +434,7 @@
 							"
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
+							:fields_valid="!validationErrors.length"
 							@move-trigger="
 								moveToStructure(
 									$event,
@@ -448,6 +469,7 @@
 									`/admin/v1/Chapter/${chapter.id}/move`
 								)
 							"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editPriceAndTitle(
@@ -502,13 +524,19 @@
 						)"
 						:key="idx"
 					>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Section' &&
 								edit_field.idx_field === section.id
 							"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							:model-value="changes_value.value"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === section.id
+								)?.error ?? ''
+							"
+							@set_value="changes_value.value = $event.value"
 						/>
 
 						<span
@@ -529,6 +557,7 @@
 							v-if="storeCourseSettings.CourseType !== 'Archived'"
 							:delete_id="section.id"
 							:delete_type="'Section'"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editTitle(
@@ -584,13 +613,19 @@
 								edit_field.idx_field !== null,
 						}"
 					>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Testing' &&
 								edit_field.idx_field === chapter.testing.id
 							"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === chapter.testing.id
+								)?.error ?? ''
+							"
+							@set_value="changes_value.value = $event.value"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							:model-value="changes_value.value"
 						/>
 
 						<span
@@ -612,6 +647,7 @@
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
 							:is-deletable="false"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editTitle(
@@ -656,6 +692,7 @@
 					<CourseArchitectureIcons
 						v-if="storeCourseSettings.CourseType !== 'Archived'"
 						:delete_id="content_inner.value.finalTesting.id"
+						:fields_valid="isSettingValid"
 						:delete_type="'Testing'"
 						:is-editable="false"
 						@delete-trigger="reloadContent"
@@ -709,10 +746,9 @@
 
 <script lang="ts" setup>
 import axios from "axios";
-import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseSettings } from "~/src/stores/storeCourseSettings";
+import InputCmp from "./input-cmp.vue";
 
-const storeStateCourse = useStoreCourses();
 const storeCourseSettings = useStoreCourseSettings();
 const route = useRoute();
 
@@ -735,6 +771,8 @@ const edit_field = reactive({
 	idx_field: null as null | number,
 	type_field: null as null | string,
 });
+
+const validationErrors = reactive([] as { id: number; error: string }[]);
 
 const visible_block = reactive({
 	value: "",
@@ -767,6 +805,69 @@ const moveToStructure = (direction: string, endpoint: string) => {
 				reload_state.value = false;
 			});
 	});
+};
+
+watch(changes_value, () => {
+	validateSettings({
+		value: changes_value.value,
+		type: edit_field.type_field as string,
+	});
+});
+
+watch(chapter_price_value, () => {
+	validateSettings({
+		value: chapter_price_value.value,
+		type: "price",
+	});
+});
+
+const validateSettings = ({ value, type }: { value: string; type: string }) => {
+	function setError(errorMessage: string) {
+		const errorIndex = validationErrors.findIndex(
+			(field) => field?.id === edit_field.idx_field
+		);
+
+		if (errorIndex < 0) {
+			validationErrors.push({
+				id: edit_field.idx_field as number,
+				error: errorMessage,
+			});
+		} else {
+			validationErrors[errorIndex].error = errorMessage;
+		}
+	}
+
+	function deleteError() {
+		const deleteIndex = validationErrors.findIndex((item) =>
+			validationErrors.length ? item?.id === edit_field.idx_field : null
+		);
+
+		if (deleteIndex !== -1) {
+			validationErrors.splice(deleteIndex, 1);
+		} else {
+			return;
+		}
+	}
+
+	if (!value || (typeof value === "string" && value.trimStart().length < 1)) {
+		setError("Поле обязательно к заполнению!");
+		return;
+	} else if (type !== "price" && value.length > 80) {
+		setError("Название должно содержать не более 80 символов!");
+	} else if (type === "price" && !/^\d+$/.test(value)) {
+		setError("Цена может содержать только цифры");
+	} else if (
+		(type === "price" &&
+			/^(0|[1-9][0-9]*)$/.test(value) &&
+			parseInt(value) > 100000) ||
+		parseInt(value) < 1
+	) {
+		setError(
+			"Стоимость главы не может быть больше 100000 или меньше 1 руб."
+		);
+	} else {
+		deleteError();
+	}
 };
 
 const editTitle = (
@@ -861,6 +962,7 @@ watch(reload_state, () => {
 	}
 });
 
+const isSettingValid = computed(() => !validationErrors.length);
 onMounted(() => {
 	nextTick(() => {
 		axios
