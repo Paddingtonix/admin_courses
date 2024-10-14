@@ -18,7 +18,6 @@
             class="oil-direction__text-area"
             :label="`Описание направления (${lang.toLocaleUpperCase()})*`"
             :modelValue="dataLocalizations.description[lang]"
-            :error="errors.name"
             :max_length="550"
             @set_textarea="(value) => setDirectionDescription(value)"
         ></TextareaCmp>

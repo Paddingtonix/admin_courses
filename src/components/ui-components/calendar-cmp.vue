@@ -3,6 +3,7 @@
 		<VDatePicker v-model="date" :popover="popover" :masks="masks">
 			<template #default="{ inputValue, inputEvents }">
 				<InputCmp
+					:error="error"
 					:date_calendar="inputValue"
 					:placeholder="'ДД.ММ.ГГ'"
 					@set_value="handleSetValue"
@@ -35,6 +36,10 @@ export default defineComponent({
 		input_value: {
 			type: String as unknown as PropType<Date | null>,
 			default: null,
+		},
+		error: {
+			type: String,
+			default: "",
 		},
 	},
 	emits: ["update-date"],
