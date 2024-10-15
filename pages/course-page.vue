@@ -8,13 +8,12 @@
 				Мои курсы
 			</div>
 			<div v-else class="oil-course__title">Курсы</div>
-			<div class="oil-course__info__card" v-if="statuses_course">
+			<div class="oil-course__info__card">
 				<CardInfo
-					v-for="([key, status], idx) in Object.entries(statuses_course)"
+					v-for="(status, idx) in course_statuses"
 					:key="idx"
-					:count="status.count"
-					:text="status.translate"
-					:status="key"
+					:count="status.status_count"
+					:text="status.status_name"
 				/>
 			</div>
 			<!-- <template
@@ -67,14 +66,11 @@
 			<div class="oil-course__settings-container">
 				<div class="oil-course__settings">
 					<SearchCmp
-						:model-value="queryParams.search_value"
 						:label="'Поиск'"
-						@change-value="updateSearchValue($event)"
+						@change-value="updateSearchValue"
 					/>
 					<FilterCmp
 						v-if="course_filters.length"
-						@cancel-filters="setFilters"
-						@send-fiters="setFilters"
 						@click="openFilter(true)"
 						:pressed_button="filter_frame.value"
 						:filters="course_filters"
@@ -112,7 +108,7 @@
 					:lang="'Язык'"
 					:date_edit="'Дата посл. ред.'"
 					:end_date="'Снятие с витрины'"
-					@sort="sortClick($event.field_key)"
+					@sort="sortClick"
 				/>
 				<TableRowCmp
 					v-for="(row, idx) in course_list.courses"
@@ -120,7 +116,7 @@
 					:id="row.courseId"
 					:key="idx"
 					:name="row.title"
-					:status="translateStatus(row.status)"
+					:status="translateStatus(row.status.toLowerCase())"
 					:authors="row.authorEmails[0]"
 					:direction="formatDirectionToString(row.directions)"
 					:lang="row.language.toUpperCase()"
@@ -160,11 +156,11 @@
 				<PaginationCmp
 					:pages_count="course_list.numberOfPages"
 					:currentPage="$route.query.page ? Number($route.query.page) : 1"
-					@change-page="isCurrentPage"
+					@change-page="changeMainParams($event, 'page')"
 				/>
 			</div>
 			<SelectorCmp
-				@setValue="changeCoursePerPage($event)"
+				@setValue="changeMainParams($event.value, 'nCoursesPerPage')"
 				class="tags-page__selector"
 				:label="`${$route.query.nCoursesPerPage ? $route.query.nCoursesPerPage : 10} курсов на стр.`"
 				listText="курсов на стр."
@@ -172,15 +168,20 @@
 			/>
 		</div>
 	</section>
+	<div v-else>
+		<iframe
+			class="oil-preloader"
+			height="40" 
+			width="40"
+			src="https://lottie.host/embed/5dffe70e-d9da-4cf4-bd25-3c41a6cf22ff/639rkXafx6.json"
+		></iframe>
+	</div>
 </template>
 <script lang="ts">
-import { useRouter, useRoute } from "vue-router";
-// import { useStoreCourses } from "~/src/stores/storeCourse";
+import { useRouter, useRoute, type LocationQueryValue } from "vue-router";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
-import { useHeadersSort } from "~/src/utils/sort-generator";
-import { getRequest } from '~/src/composables/api';
-
+import { getRequest, deleteRequest } from '~/src/composables/api';
 
 import type {
 	IDeleteModal,
@@ -189,98 +190,121 @@ import type {
 
 export default defineComponent({
 	setup() {
-		const route = useRoute();
-		const router = useRouter();
-		// const courseStore = useStoreCourses();
+		const route = useRoute()
+		const router = useRouter()
 
-		const user_role_store = useUserRoleStore();
+		const user_role_store = useUserRoleStore()
 
-		const modalStore = useStoreModal();
+		const modalStore = useStoreModal()
 
 		const filter_frame = reactive({
 			value: false as boolean,
-		});
+		})
 
-		////////////////////////////////////////////////////////////////
+		const course_sort_query = reactive({
+			query_string: '' as string
+		})
+
+		const query_params = reactive({
+			page: route.query.page || '1',
+			statuses: route.query.statuses,
+			languageIds: route.query.languageIds,
+			directionIds: route.query.directionIds,
+			nCoursesPerPage: route.query.nCoursesPerPage
+		})
+
+		const loader = ref(false)
+
 		const course_list = ref([])
 
-		const queryParams = reactive({
-			nCoursesPerPage: 10,
-			// current_page: computed(() => courseStore.currentPage).value,
-			search_value: "",
-			statuses: "",
-			languageIds: "",
-			directionIds: "",
-			sortString: "",
-		});
-
-		// const paginations_pages = ref<number>(courseStore.numberOfPages ?? 1);
-		const current_page = ref<number>(1);
-
+		const course_filter = ref({})
 		
-
-		const courseEndpoint = computed(
-			() =>
-				`/admin/v1/Course?page=${queryParams.current_page}${
-					queryParams.search_value.length
-						? `&searchSubstring=${queryParams.search_value}`
-						: ""
-				}${queryParams.directionIds}${queryParams.statuses}${
-					queryParams.languageIds
-				}${queryParams.sortString}`
-		);
-
-		const deleteCourse = (id: number) => {
-			// return courseStore
-			// 	.deleteCourse(id)
-			// 	.then(async () => courseStore.getCourses(courseEndpoint.value))
-			// 	.catch((err) => {
-			// 		throw err;
-			// 	});
-		};
-
-		// watch(queryParams, () => {
-		// 	courseStore.getCourses(courseEndpoint.value);
-		// });
-
-		const updateSearchValue = (value = "") => {
-			queryParams.search_value = value;
-		};
-
+		const course_statuses = ref([]) as any
+		
 		const list = [
 			{ text: 10, active: true },
 			{ text: 15, active: false },
 			{ text: 20, active: false },
 			{ text: 25, active: false },
-		];
+		]
 
-		const formatDirectionToString = (
-			arr: string[] | null | undefined
-		): string => {
+		const translation_map: Record<"indevelopment"|"onmoderation"|"published"|"withdrawn"|"archieved"|"en"|"fr"|"ru"|"name"|"lang"|"status"|"authors"|"direction"|"date_edit"|"end_date", string> = {
+			indevelopment: "В разработке",
+			onmoderation: "На модерации",
+			published: "Опубликован",
+			withdrawn: "Снят с витрины",
+			archieved: "В архиве",
+			en: 'Английский (EN)',
+			fr: 'Французкий (FR)',
+			ru: 'Русский (RU)',
+			name: "ascendingTitle",
+			status: 'ascendingStatus',
+			lang: 'ascendingLanguage',
+            authors: 'ascendingAuthors',
+            direction: 'ascendingDirection',
+            date_edit: 'ascendingLastChangeDate',
+            end_date: 'ascendingSalesTerminationDate'
+		}
+	
+		const course_filters = computed(() => {
+			if(course_filter.value) {
+				return [
+					{
+						title: 'Статусы',
+						filters_values: course_filter.value.statuses
+							? course_filter.value.statuses.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
+							: [],
+					},
+					{
+						title: 'Языки',
+						filters_values: course_filter.value.languages
+							? course_filter.value.languages.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
+							: [],
+					},
+					{
+						title: 'Направления',
+						filters_values: course_filter.value.directions
+							? course_filter.value.directions.map((item: { name: any; id: any; }) => ({ name: item.name, id: item.id, active: false }))
+							: [],
+					}
+				]
+			}
+		})
+
+		const formatDirectionToString = (arr: string[] | null | undefined): string => {
 			if (!arr || arr.length === 0) {
 				return "—";
 			}
 			return arr.join(", ");
-		};
+		}
+
+		const deleteCourse = async (id: number) => {
+			await deleteRequest(`/admin/v1/Course/${id}`)
+		}
+
+		const updateSearchValue = async (value: string) => {
+			course_list.value = await getRequest(`/admin/v1/Course?searchSubstring=${value}`)
+		}
 
 		const formatDate = (date_value: string | null) => {
 			if (date_value === null) {
 				return "—";
 			}
-			const date = new Date(date_value);
-			const day = String(date.getDate()).padStart(2, "0");
-			const month = String(date.getMonth() + 1).padStart(2, "0");
-			const year = date.getFullYear();
-			return `${day}.${month}.${year}`;
-		};
+			const date = new Date(date_value)
+			const day = String(date.getDate()).padStart(2, "0")
+			const month = String(date.getMonth() + 1).padStart(2, "0")
+			const year = date.getFullYear()
+
+			return `${day}.${month}.${year}`
+		}
 
 		const openFilter = (state: boolean) => {
 			filter_frame.value = state;
-		};
+		}
 
 		const navigate = (url: string) => {
 			router.push(url);
-		};
+		}
 
 		const openDeleteModal = (data: any) => {
 			modalStore.$patch({
@@ -296,230 +320,77 @@ export default defineComponent({
 			modalStore.openModal();
 		};
 
-		const isFiltrationActive = computed(
-			() =>
-				!!queryParams.directionIds.length ||
-				!!queryParams.languageIds.length ||
-				!!queryParams.statuses.length
-		);
-
-		const isCurrentPage = (page: number) => {
+		const changeMainParams = (state: any, params: any) => {
+			console.log(params, state);
+			
 			router.push({
 				query: {
-					page: page,
-				}
+                    ...route.query,
+                    [params]: state
+                }
 			})
 		}
-
-		const changeCoursePerPage = (val: { value: number; type: string }) => {
-			router.push({
-				query: {
-					nCoursesPerPage: val.value,
-				}
-			})
-		}
-
-		const setFilters = (value: {
-			Направления?: number[];
-			Статус?: string[];
-			Язык?: string[];
-		}) => {
-			queryParams.directionIds = !value?.Направления
-				? ""
-				: (() => {
-						return value.Направления
-							.map((item) => `&directionIds=${item}`)
-							.join("");
-				  })();
-
-			queryParams.languageIds = !value.Язык
-				? ""
-				: (() => {
-						return value.Язык
-							.map((item) => `&languageIds=${item}`)
-							.join("");
-				  })();
-
-			queryParams.statuses = !value.Статус
-				? ""
-				: (() => {
-						return value.Статус
-							.map((item) => `&statuses=${item}`)
-							.join("");
-				  })();
-		};
-
-		const tableHeadFields = [
-			"name",
-			"status",
-			"lang",
-			"authors",
-			"direction",
-			"date_edit",
-			"end_date",
-		];
-
-		enum sortNames {
-			name = "ascendingTitle",
-			status = "ascendingStatus",
-			lang = "ascendingLanguage",
-			authors = "ascendingAuthors",
-			direction = "ascendingDirection",
-			date_edit = "ascendingLastChangeDate",
-			end_date = "ascendingSalesTerminationDate",
-		}
-
-		const setSorting = (value: string) => {
-			queryParams.sortString = value;
-		};
-
-		const { sortState, sortClick } = useHeadersSort(
-			tableHeadFields,
-			sortNames,
-			//@ts-ignore
-			setSorting
-		);
-
-		const status_translation: Record<"InDevelopment"|"OnModeration"|"Published"|"Withdrawn"|"Archived"|"en"|"fr"|"ru", string> = {
-			InDevelopment: "В разработке",
-			OnModeration: "На модерации",
-			Published: "Опубликован",
-			Withdrawn: "Снят с витрины",
-			Archived: "В архиве",
-			en: 'Английский (EN)',
-			fr: 'Французкий (FR)',
-			ru: 'Русский (RU)'
-		};
 		
 		const translateStatus = (status: string): string => {
-			if (status in status_translation) {
-				return status_translation[
-					status as keyof typeof status_translation
+			if (status in translation_map) {
+				return translation_map[
+					status as keyof typeof translation_map
 				];
 			}
 
 			return "Неизвестный статус"
 		}
 
-		const statuses_course = computed(() => {
-			if (course_list.value && Array.isArray(course_list.value.courses)) {
-				return course_list.value.courses.reduce((acc: any, course_status: { status: string }) => {
-					if(!acc[course_status.status]) {
+		const sortClick = async (val: { field_key: string; }) => {
+			const compare_state = course_sort_query.query_string === translateStatus(val.field_key)
 
-					acc[course_status.status] = {
-							count: 0,
-							translate: ''
-						}
-					}
+			course_list.value = await getRequest(`/admin/v1/Course?${translateStatus(val.field_key) }=${compare_state}`)	
+			course_sort_query.query_string = compare_state ? '' : translateStatus(val.field_key)
+		}
 
-					acc[course_status.status].count += 1
-
-					switch (course_status.status) {
-
-						case 'InDevelopment':							
-							acc[course_status.status].translate = 'В разработке'
-							break
-							
-						case 'OnModeration':
-							acc[course_status.status].translate = 'На модерации'
-							break
-
-						case 'Published':
-							acc[course_status.status].translate = 'Опубликован'
-							break
-
-						case 'Withdrawn':
-							acc[course_status.status].translate = 'Снят с витрины'
-							break
-
-
-						default:
-							acc[course_status.status].translate = 'В архиве'
-
-							break
-					}
-
-					if (!acc.OnModeration) {
-						acc.OnModeration = { count: 0, translate: 'На модерации' }
-
-					} 
-					if(!acc.Published) {
-						acc.Published = { count: 0, translate: 'Опубликовано' }
-
-					} 
-					if(!acc.Withdrawn) {
-						acc.Withdrawn = { count: 0, translate: 'Снят с витрины' }
-
-					} if(!acc.Archieved) {
-						acc.Archieved = { count: 0, translate: 'В архиве' }
-					}
-
-					return acc
-
-				}, {} as { [key: string]: { count: number; translate: string } })
+		watch(() => route.query, async () => {
+    		const queryParams = {
+				page: route.query.page || '1',
+				statuses: route.query.statuses,
+				languageIds: route.query.languageIds,
+				directionIds: route.query.directionIds,
+				nCoursesPerPage: route.query.nCoursesPerPage
 			}
-		})
 
-		const course_filters = computed(() => {
-			if(course_filter.value) {
-				return [
-					{
-						title: 'Статусы',
-						filters_values: course_filter.value.statuses
-							? course_filter.value.statuses.map((item, idx) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
-							: [],
-					},
-					{
-						title: 'Языки',
-						filters_values: course_filter.value.languages
-							? course_filter.value.languages.map((item, idx) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
-							: [],
-					},
-					{
-						title: 'Направления',
-						filters_values: course_filter.value.directions
-							? course_filter.value.directions.map((item, idx) => ({ name: item.name, id: item.id, active: false }))
-							: [],
-					}
-				]
-			}
-		})
+			const queryStr = Object.entries(queryParams)
+				.filter(([_, value]) => value)
+				.map(([key, value]) => 
+					Array.isArray(value) ? 
+					value.map(v => `${key}=${v}`).join('&') : 
+					`${key}=${value}`
+				)
+				.join('&')
 
-		const loader = reactive({
-			value: true
-		})
+			await nextTick()
+			course_list.value = await getRequest(`/admin/v1/Course?${queryStr}`);
 
-		
-		const course_filter = ref({})
-
-		watch(() => route.query, async (query) => {		
-
-			const buildQueryParams = (param, key) => 
-				param ? param.split(',').map(id => `&${key}=${id}`).join('') : ''
-
-				let statuses = buildQueryParams(route.query.statuses, 'statuses')
-				let language_ids = buildQueryParams(route.query.languageIds, 'languageIds')
-				let direction_ids = buildQueryParams(route.query.directionIds, 'directionIds')
-				let page = buildQueryParams(route.query.page, 'page') 
-				let n_courses_per_page = buildQueryParams(route.query.nCoursesPerPage, 'nCoursesPerPage')		
-
-				await nextTick()				
-
-				course_list.value = await getRequest(`/admin/v1/Course?${page ? page : '1'}${statuses}${language_ids}${direction_ids}${n_courses_per_page}`)
-
-				await nextTick()
-				course_filter.value = await getRequest('/admin/v1/Course/filters')
-				loader.value = false
-			},
-			{ immediate: true }
-		)
+			loader.value = false
+		}, { immediate: true })
 
 		onMounted(() => {
-			router.push({
-				query: {
-                    ...route.query,
-                    page: 1,
-                }
+			nextTick(async () => {
+				router.push({
+					query: {
+						...route.query,
+						page: 1,
+					}
+				})
+
+				course_statuses.value = Object.entries(await getRequest('/admin/v1/Course/statuses')).map(status => (
+					{
+						status_name: translateStatus(status[0].toLowerCase()),
+						status_count: status[1]
+					}
+				))
+
+				course_filter.value = await getRequest('/admin/v1/Course/filters')
+
+				loader.value = false
 			})
 		})
 
@@ -530,145 +401,147 @@ export default defineComponent({
 			openFilter,
 			formatDirectionToString,
 			formatDate,
-			// paginations_pages,
-			current_page,
-			isCurrentPage,
 			updateSearchValue,
 			translateStatus,
 			openDeleteModal,
-			// courseStore,
-			setFilters,
-			isFiltrationActive,
 			list,
 			sortClick,
-			changeCoursePerPage,
-			queryParams,
-			// course_info: courseStore.course_info,
 			course_list,
-			statuses_course,
+			course_statuses,
 			course_filter,
 			course_filters,
-			loader
+			loader,
+			changeMainParams
 		};
 	},
 });
 </script>
 <style lang="sass" scoped>
-.oil-course
-    &__title
-        font-size: rem(20)
-        line-height: rem(28)
-        font-weight: bold
-        margin-bottom: rem(32)
+.oil
+	&-preloader 
+		position: fixed
+		top: 50%
+		left: 50%
+		transform: translate(-50%, -50%)
+		height: rem(500)
+		width: rem(500)
+		pointer-events: none
 
-    &__info
-        position: relative
-        .oil-selector
-            position: absolute
-            bottom: rem(32)
-            right: rem(32)
+	&-course
+		&__title
+			font-size: rem(20)
+			line-height: rem(28)
+			font-weight: bold
+			margin-bottom: rem(32)
 
-        &__card
-            margin-bottom: rem(48)
+		&__info
+			position: relative
+			.oil-selector
+				position: absolute
+				bottom: rem(32)
+				right: rem(32)
 
-            @include flex_center_spacing()
-            gap: rem(12)
+			&__card
+				margin-bottom: rem(48)
 
-        &__attention
-            padding: rem(16) rem(24)
-            margin-bottom: rem(32)
+				@include flex_center_spacing()
+				gap: rem(12)
 
-            border: 1px solid $basic-primary
-            background-color: $disabled_basic
-            max-width: rem(972)
-            @include flex_center()
-            gap: rem(10)
-            border-radius: rem(12)
-            &__icon
-                padding: rem(12)
+			&__attention
+				padding: rem(16) rem(24)
+				margin-bottom: rem(32)
 
-                border-radius: 50%
-                background-color: #176DC10D
-                @include flex_center()
+				border: 1px solid $basic-primary
+				background-color: $disabled_basic
+				max-width: rem(972)
+				@include flex_center()
+				gap: rem(10)
+				border-radius: rem(12)
+				&__icon
+					padding: rem(12)
 
-            &__text
-                font-size: rem(16)
-                line-height: 150%
+					border-radius: 50%
+					background-color: #176DC10D
+					@include flex_center()
 
-        &__btn
-            max-width: rem(192)
-        &__selector.oil-selector
-            position: absolute
-            border: none
-            bottom: 0
-            right: rem(32)
-            transform: translateY(-50%)
+				&__text
+					font-size: rem(16)
+					line-height: 150%
 
-    &__settings
-        @include flex_start()
-        gap: rem(8)
-        width: rem(742)
+			&__btn
+				max-width: rem(192)
+			&__selector.oil-selector
+				position: absolute
+				border: none
+				bottom: 0
+				right: rem(32)
+				transform: translateY(-50%)
 
-        &__course-list
-            margin-bottom: rem(24)
-            &__row
-                position: relative
-                &:hover
-                    background: $basic_light_blue
-                    .oil-course__settings__course-list__row__svg
-                        opacity: 1
+		&__settings
+			@include flex_start()
+			gap: rem(8)
+			width: rem(742)
 
-                &__svg
-                    transition: opacity .2s ease-in
-                    opacity: 0
-                    position: absolute
-                    right: rem(16)
-                    cursor: pointer
+			&__course-list
+				margin-bottom: rem(24)
+				&__row
+					position: relative
+					&:hover
+						background: $basic_light_blue
+						.oil-course__settings__course-list__row__svg
+							opacity: 1
 
-        &-container
-            margin-bottom: rem(16)
-            z-index: 9
+					&__svg
+						transition: opacity .2s ease-in
+						opacity: 0
+						position: absolute
+						right: rem(16)
+						cursor: pointer
 
-            @include flex_center_spacing()
-            position: relative
-            .oil-btn
-                height: rem(38)
-                padding: rem(8) rem(24)
+			&-container
+				margin-bottom: rem(16)
+				z-index: 9
 
-        &__pagination
-            @include flex_center()
+				@include flex_center_spacing()
+				position: relative
+				.oil-btn
+					height: rem(38)
+					padding: rem(8) rem(24)
 
-    &__filter
-        padding: rem(32)
+			&__pagination
+				@include flex_center()
 
-        background-color: $basic_white
-        box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
-        @include flex_column()
-        gap: rem(32)
-        position: absolute
-        right: 0
-        top: rem(-132)
-        .oil-checkbox
-            width: rem(347)
-            &__text
-                font-size: rem(14)
+		&__filter
+			padding: rem(32)
 
-        &__frame
-            gap: rem(12)
+			background-color: $basic_white
+			box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
+			@include flex_column()
+			gap: rem(32)
+			position: absolute
+			right: 0
+			top: rem(-132)
+			.oil-checkbox
+				width: rem(347)
+				&__text
+					font-size: rem(14)
 
-            @include flex_column()
-            &__title
-                margin-bottom: rem(4)
+			&__frame
+				gap: rem(12)
 
-                font-size: rem(14)
+				@include flex_column()
+				&__title
+					margin-bottom: rem(4)
 
-        &__btns
-            @include flex_start()
-            gap: rem(12)
+					font-size: rem(14)
 
-        &__close
-            position: absolute
-            top: rem(24)
-            right: rem(24)
-            cursor: pointer
+			&__btns
+				@include flex_start()
+				gap: rem(12)
+
+			&__close
+				position: absolute
+				top: rem(24)
+				right: rem(24)
+				cursor: pointer
 </style>

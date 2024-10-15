@@ -1,7 +1,7 @@
 <template>
     <div class="oil" v-if="!preloader.value">
         <Sidebar v-if="storeAuth.$state.isAuth && !isAuthModalOpen" @logout="logOut" />
-        <NuxtPage v-if="!isAuthModalOpen" />
+        <NuxtPage v-if="!isAuthModalOpen && storeAuth.$state.isAuth" />
         <ModalCmp v-if="storeModal.$state.isOpen" />
     </div>
 </template>
@@ -55,7 +55,7 @@ export default defineComponent({
                 openDeleteModal();
                 storeModal.openModal();
                 preloader.value = false;
-            }
+            }            
         });
 
         // Iak 68
@@ -64,7 +64,9 @@ export default defineComponent({
         // Bob
         const host = "http://195.133.145.105:8082/" as string;
 
-        axios.defaults.baseURL = host;
+        const test = 'http://192.168.19.32:8082/' as string;
+
+        axios.defaults.baseURL = test;
 
         return {
             storeAuth,
