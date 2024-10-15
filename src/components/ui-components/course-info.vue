@@ -232,7 +232,11 @@ const saveEditFrame = () => {
 		educationResults: edit_info.value[5]?.value,
 	};
 
-	course_info_store.patchCourseInfo(id as unknown as number, courseInfoData);
+	course_info_store
+		.patchCourseInfo(id as unknown as number, courseInfoData)
+		.then(() => {
+			openEditFrame();
+		});
 };
 
 watch(
