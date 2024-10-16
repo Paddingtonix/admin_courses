@@ -6,7 +6,7 @@
 				:current_page="$route.query?.contentName ?? ''"
 				class="oil-course-content__bread"
 			/>
-			<SummaryCmp>
+			<SummaryCmp class="_summary">
 				<template v-slot:summary-text>
 					<ul>
 						<span>{{ instructionsTitle }}</span>
@@ -128,60 +128,8 @@ onMounted(() => {
 
 <style lang="sass">
 .oil-course-content
+    ._summary
+        max-width: rem(972)
     &__btn
         max-width: rem(152)
-
-    &__attention
-        padding: rem(16) rem(24)
-        // margin-bottom: rem(32)
-        max-width: rem(972)
-        @include flex_column()
-        gap: rem(12)
-        background-color: $basic_light_gray
-        border-radius: rem(8)
-        border: rem(1) solid $light_gray
-        cursor: pointer
-        &__head
-            gap: rem(12)
-
-            display: flex
-            align-items: center
-            position: relative
-            span
-                font-weight: bold
-
-        &__chevron
-            position: absolute
-            top: 50%
-            right: rem(16)
-            transform: translateY(-50%)
-            &.active
-                transform: rotate(180deg) translateY(50%)
-
-
-        &__text
-            @include flex_column()
-            cursor: default
-            ul
-                list-style: inside
-                & > ul
-                    padding-left: rem(32)
-
-            span
-                display: inline-flex
-                font-weight: bold
-                margin-bottom: rem(12)
-                line-height: rem(24)
-
-
-            &__frame
-                li, p
-                    color: $basic_table_header
-                    line-height: rem(24)
-                &:not(:last-child)
-                    margin-bottom: rem(20)
-                ul
-                    line-height: rem(24)
-                    li
-                        margin-left: rem(8)
 </style>
