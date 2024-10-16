@@ -44,66 +44,17 @@
 						stroke-linejoin="round"
 					/>
 				</svg>
-				<!-- <div
-					v-for="(key, index) in filterKeys"
-					class="oil-filter__body__frame"
-				> -->
-					<!-- <span class="oil-filter__body__frame__title">{{ key }}</span> -->	
-					<template v-for="(filter_block, idx) in filters_block.value" :key="idx">
-						<span>{{ filter_block.title }}</span>
-						<CheckboxCmp
-							v-for="filter_state in filter_block.filters_values"
-							:key="filter_state"
-							:text="filter_state.translate ? filter_state.translate : filter_state.name"
-							:id="filter_state.id"
-                            :active="filter_state.active"   
-                            @set_value="setCheckbox($event, idx)"
-						/>
-					</template>
-						
-					<!-- </div>
-					<div>
-						<span>{{ filters.languages ? 'Направления' : '' }}</span>
-						<CheckboxCmp
-							v-for="filter_state in filters.languages"
-							:key="filter_state"
-							:text="filter_state.name"
-							:id="filter_state.id"
-						/>
-					</div>
-					<div>
-						<CheckboxCmp 
-							v-for="filter_state in filters.statuses"
-							:key="filter_state"
-							:text="filter_state.name"
-							:id="filter_state.id"
-						/>
-					</div> -->
-					<!-- <template v-if="!isMarks || key !== 'Язык'">
-						<CheckboxCmp
-							v-for="(checkbox, idx) in filter_values.value[
-								index
-							][key]"
-							:key="idx"
-							:text="checkbox.name"
-							:id="checkbox.id"
-							:active="checkbox.active"
-							@click="setActiveFilter(index, key, idx)"
-						/>
-					</template>
-					<template v-else-if="key === 'Язык'">
-						<RadioCmp
-							v-for="(radio, idx) in filter_values.value[index][
-								key
-							]"
-							:key="idx"
-							:text="radio.name"
-							:id="radio.id"
-							:active="radio.active ? radio.id : ''"
-							@click="setActiveFilter(index, key, idx)"
-						/>
-					</template> -->
-				<!-- </div> -->
+				<template v-for="(filter_block, idx) in filters_block.value" :key="idx">
+					<span>{{ filter_block.title }}</span>
+					<CheckboxCmp
+						v-for="filter_state in filter_block.filters_values"
+						:key="filter_state"
+						:text="filter_state.translate ? filter_state.translate : filter_state.name"
+						:id="filter_state.id"
+						:active="filter_state.active" 
+						@set_value="setCheckbox($event, idx)"
+					/>
+				</template>
 				<div class="oil-filter__body__btns">
 					<BtnCmp
 						@click="cancelFilters"
@@ -143,10 +94,9 @@ const props = defineProps({
 	},
 });
 
-const router = useRouter() as useRouter
-const route = useRoute() as useRoute
+const router = useRouter() 
+const route = useRoute() 
 
-const emit = defineEmits(["send-fiters", "cancel-filters"]);
 
 const filters_block = reactive({
 	value: props.filters
@@ -163,6 +113,7 @@ const setCheckbox = (val: any, idx: number) => {
 const setFilter = () => {
 	router.push({
 		query: {
+			...route.query,
 			statuses: filters_block.value[0]!.filters_values.some(item => item.active) ? filters_block.value[0]!.filters_values
 				.filter((item: { id: any }) => {
 					if(item.active) {
@@ -194,82 +145,40 @@ const setFilter = () => {
 	})
 }
 
-onMounted(() => {
-	console.log(route);
-	
-	// nextTick(() => {
-	// 	for(let i = 0; i < filters_block.value.length; i++) {
-	// 		setCheckbox(i, )
-	// 	}
-	// })
-})
-
-// const filterKeys = Object.keys(filters || {});
-
-// const mapFilters = (key: string) =>
-// 	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
-// 		.value;
-
-// const getMappedFilters = () =>
-// 	filterKeys.map((key) => ({
-// 		[key]: mapFilters(key),
-// 	})) as unknown as {
-// 		[key: string]: {
-// 			active: boolean;
-// 			id: string | number;
-// 			name: string;
-// 			isRadio?: boolean;
-// 		}[];
-// 	}[];
-
-// onMounted(() => {
-// 	console.log(getMappedFilters());
-// });
-
-// const initialFilter_values = getMappedFilters();
-
-// const filter_values = reactive({ value: initialFilter_values });
-
-// const setActiveFilter = (index: number, key: string, id: number) => {
-// 	if (filter_values !== undefined) {
-// 		if (filter_values.value[index][key][id].isRadio) {
-// 			filter_values.value[index][key].forEach((item) => {
-// 				item.active = false;
-// 			});
-// 			filter_values.value[index][key][id].active = true;
-// 		} else {
-// 			filter_values.value[index][key]![id].active =
-// 				!filter_values.value[index][key]![id].active;
-// 		}
-// 	}
-// };
-
-// const sendFilters = () => {
-// 	const formData = () => {
-// 		const result: { [key: string]: any } = {};
-
-// 		for (const key in filterKeys) {
-// 			result[filterKeys[key]] = Object.values(filter_values.value[key])
-// 				.map((item) =>
-// 					item.filter((filterItem) => filterItem.active)
-// 				)[0]
-// 				.map((item) => item.id);
-// 		}
-
-// 		return result;
-// 	};
-// 	const formedData = formData();
-// 	emit("send-fiters", formedData);
-// };
-
-const cancelFilters = () => {
-	emit("cancel-filters", []);
-	// filter_values.value = getMappedFilters();
-};
+const cancelFilters = () => {	
+	router.push({ query: {
+		...route.query,
+		statuses: undefined,
+		languageIds: undefined,
+		directionIds: undefined,
+	} });
+}
 
 const openFilter = (state: boolean) => {
 	filter_frame.value = state;
+}
+
+const syncCheckboxesWithUrl = () => {
+  	const query = route.query
+
+  	filters_block.value.forEach(filter_block => {
+		const query_key = filter_block.query
+
+		const active_values = (query[query_key] || '').split(',')
+
+		filter_block.filters_values.forEach(filter_value => {
+			filter_value.active = active_values.includes(filter_value.name)
+    	})
+  	})
 };
+
+watch(() => props.filters, () => {
+	filters_block.value = props.filters
+
+	syncCheckboxesWithUrl()
+	
+})
+
 </script>
 <style lang="sass">
 .oil-filter

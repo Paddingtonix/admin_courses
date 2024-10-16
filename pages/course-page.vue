@@ -1,5 +1,5 @@
 <template>
-	<section class="oil-container oil-course" v-if="!loader.value">
+	<section class="oil-container oil-course" v-if="course_list.courses">
 		<div class="oil-course__info oil-page">
 			<div
 				v-if="user_role_store.role === 'Author'"
@@ -16,13 +16,7 @@
 					:text="status.status_name"
 				/>
 			</div>
-			<!-- <template
-				v-if="
-					!courseStore.course_list.length &&
-					!queryParams.search_value.length &&
-					!isFiltrationActive
-				"
-			>
+			<template v-if="!course_list.courses">
 				<div class="oil-course__info__attention">
 					<i class="oil-course__info__attention__icon">
 						<svg
@@ -41,10 +35,7 @@
 							/>
 						</svg>
 					</i>
-					<p
-						v-if="user_role_store.role === 'Author'"
-						class="oil-course__info__attention__text"
-					>
+					<p v-if="user_role_store.role === 'Author'" class="oil-course__info__attention__text">
 						На данный момент у вас нет ни одного созданного курса.
 						Нажмите на кнопку "Создать курс", чтобы начать и
 						поделиться своими знаниями с другими!
@@ -61,9 +52,8 @@
 					class="oil-course__info__btn"
 					@click="navigate('/course-create')"
 				/>
-			</template> -->
-			<!-- <template v-else> -->
-			<div class="oil-course__settings-container">
+			</template>
+			<div class="oil-course__settings-container" v-else>
 				<div class="oil-course__settings">
 					<SearchCmp
 						:label="'Поиск'"
@@ -169,16 +159,11 @@
 		</div>
 	</section>
 	<div v-else>
-		<iframe
-			class="oil-preloader"
-			height="40" 
-			width="40"
-			src="https://lottie.host/embed/5dffe70e-d9da-4cf4-bd25-3c41a6cf22ff/639rkXafx6.json"
-		></iframe>
+		<LottieCmp />
 	</div>
 </template>
 <script lang="ts">
-import { useRouter, useRoute, type LocationQueryValue } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useUserRoleStore } from "~/src/stores/storeRole";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { getRequest, deleteRequest } from '~/src/composables/api';
@@ -203,14 +188,6 @@ export default defineComponent({
 
 		const course_sort_query = reactive({
 			query_string: '' as string
-		})
-
-		const query_params = reactive({
-			page: route.query.page || '1',
-			statuses: route.query.statuses,
-			languageIds: route.query.languageIds,
-			directionIds: route.query.directionIds,
-			nCoursesPerPage: route.query.nCoursesPerPage
 		})
 
 		const loader = ref(false)
@@ -250,18 +227,21 @@ export default defineComponent({
 			if(course_filter.value) {
 				return [
 					{
+						query: 'statuses',
 						title: 'Статусы',
 						filters_values: course_filter.value.statuses
 							? course_filter.value.statuses.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
 							: [],
 					},
 					{
+						query: 'languageIds',
 						title: 'Языки',
 						filters_values: course_filter.value.languages
 							? course_filter.value.languages.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
 							: [],
 					},
 					{
+						query: 'directionIds',
 						title: 'Направления',
 						filters_values: course_filter.value.directions
 							? course_filter.value.directions.map((item: { name: any; id: any; }) => ({ name: item.name, id: item.id, active: false }))
@@ -349,7 +329,7 @@ export default defineComponent({
 		}
 
 		watch(() => route.query, async () => {
-    		const queryParams = {
+    		const query_params = {
 				page: route.query.page || '1',
 				statuses: route.query.statuses,
 				languageIds: route.query.languageIds,
@@ -357,7 +337,7 @@ export default defineComponent({
 				nCoursesPerPage: route.query.nCoursesPerPage
 			}
 
-			const queryStr = Object.entries(queryParams)
+			const query_str = Object.entries(query_params)
 				.filter(([_, value]) => value)
 				.map(([key, value]) => 
 					Array.isArray(value) ? 
@@ -367,7 +347,7 @@ export default defineComponent({
 				.join('&')
 
 			await nextTick()
-			course_list.value = await getRequest(`/admin/v1/Course?${queryStr}`);
+			course_list.value = await getRequest(`/admin/v1/Course?${query_str}`);
 
 			loader.value = false
 		}, { immediate: true })
@@ -389,7 +369,6 @@ export default defineComponent({
 				))
 
 				course_filter.value = await getRequest('/admin/v1/Course/filters')
-
 				loader.value = false
 			})
 		})
