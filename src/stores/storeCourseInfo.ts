@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { ICourseInfo } from "~/src/ts-interface/course-info";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const useCourseInfo = defineStore("course-content", {
 	state: () => ({
@@ -31,8 +31,11 @@ export const useCourseInfo = defineStore("course-content", {
 					return response;
 				})
 				.catch((error) => {
-					console.error("Произошла ошибка при редактирвоании", error);
-					throw error;
+					if (error instanceof AxiosError) {
+						throw error as AxiosError;
+					} else {
+						throw error;
+					}
 				});
 		},
 	},

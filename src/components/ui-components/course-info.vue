@@ -25,7 +25,7 @@
 			:type="field.type"
 			:label="field.label"
 			:error="field.error"
-			@set_value="(value) => (edit_info[field_idx].value = value.value)"
+			@set_value="changeFormValue($event.value, field_idx)"
 			v-model="edit_info[field_idx].value"
 		/>
 		<div v-for="(field, field_idx) in edit_info.slice(2)" :key="field_idx">
@@ -35,9 +35,7 @@
 				:label="field.label"
 				:error="field.error"
 				v-model="edit_info[field_idx + 2].value"
-				@set_textarea="
-					(value) => (edit_info[field_idx + 2].value = value.value)
-				"
+				@set_textarea="changeFormValue($event.value, field_idx + 2)"
 				class="oil-course-setting__edit__textarea"
 			/>
 			<div class="oil-course-setting__edit__example">
@@ -84,7 +82,11 @@
 				@click="openEditFrame"
 				:background_type="'_secondary'"
 			/>
-			<BtnCmp :text="'Сохранить'" @click="saveEditFrame" />
+			<BtnCmp
+				:text="'Сохранить'"
+				@click="saveEditFrame"
+				:disabled="!isFormValid"
+			/>
 		</div>
 	</div>
 </template>
@@ -94,6 +96,7 @@ import { onMounted } from "vue";
 import { useCourseInfo } from "~/src/stores/storeCourseInfo";
 import { useRoute } from "vue-router";
 import type { ICourseInfo } from "~/src/ts-interface/course-info";
+import { AxiosError } from "axios";
 
 const course_info_store = useCourseInfo();
 const route = useRoute();
@@ -152,7 +155,7 @@ const edit_info = ref([
 		value: course_info_store.course_info.title || "",
 		required: true,
 		valid: false,
-		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i as RegExp,
 		label: "Название курса",
 		error: "",
 		example: "",
@@ -163,7 +166,8 @@ const edit_info = ref([
 		value: course_info_store.course_info.authors || "",
 		required: true,
 		valid: false,
-		pattern: "",
+		pattern:
+			/^[a-zA-Zа-яА-ЯёЁ\s!"#$%&'()*+,\-.\/:;<=>?@[\\\]^_`{|}~]+$/u as RegExp,
 		label: "Авторы",
 		error: "",
 		example: "",
@@ -174,7 +178,7 @@ const edit_info = ref([
 		value: course_info_store.course_info.description || "",
 		required: true,
 		valid: false,
-		pattern: "",
+		pattern: "" as unknown as RegExp,
 		label: "Описание",
 		error: "",
 		example:
@@ -186,7 +190,7 @@ const edit_info = ref([
 		value: course_info_store.course_info.targetAudience || "",
 		required: true,
 		valid: false,
-		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i as RegExp,
 		label: "Целевая аудитория",
 		error: "",
 		example:
@@ -198,7 +202,7 @@ const edit_info = ref([
 		value: course_info_store.course_info.educationMethods || "",
 		required: true,
 		valid: false,
-		pattern: "",
+		pattern: "" as unknown as RegExp,
 		label: "Методика обучения",
 		error: "",
 		example:
@@ -210,7 +214,7 @@ const edit_info = ref([
 		value: course_info_store.course_info.educationResults || "",
 		required: true,
 		valid: false,
-		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i,
+		pattern: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i as RegExp,
 		label: "Результаты обучения",
 		error: "",
 		example:
@@ -220,23 +224,6 @@ const edit_info = ref([
 
 const openExample = (id: number) => {
 	active_example.value = active_example.value === id ? null : id;
-};
-
-const saveEditFrame = () => {
-	const courseInfoData: ICourseInfo = {
-		title: edit_info.value[0]?.value,
-		authors: edit_info.value[1]?.value,
-		description: edit_info.value[2]?.value,
-		targetAudience: edit_info.value[3]?.value,
-		educationMethods: edit_info.value[4]?.value,
-		educationResults: edit_info.value[5]?.value,
-	};
-
-	course_info_store
-		.patchCourseInfo(id as unknown as number, courseInfoData)
-		.then(() => {
-			openEditFrame();
-		});
 };
 
 watch(
@@ -252,6 +239,85 @@ watch(
 		}
 	}
 );
+
+const formValidation = (value: string, idx: number) => {
+	const field_type = edit_info.value[idx].id;
+	const formField = edit_info.value[idx];
+
+	switch (field_type) {
+		case "courseTitle":
+			if (!value) {
+				formField.error = "Поле обязательно к заполнению";
+			} else if (value.length > 103) {
+				formField.error = "Максимальное количество символов - 103";
+			} else {
+				formField.error = "";
+			}
+			return;
+		case "author":
+			if (!value) {
+				formField.error = "Поле обязательно к заполнению";
+			} else if (!formField.pattern.test(value)) {
+				formField.error =
+					"Поле может содержать кириллицу и латиницу, а также специальные символы";
+			} else if (value.length > 100) {
+				formField.error = "Максимальное количество символов - 100";
+			} else {
+				formField.error = "";
+			}
+			return;
+		default:
+			if (!value) {
+				formField.error = "Поле обязательно к заполнению";
+			} else if (value.length > 470) {
+				formField.error = "Максимальное количество символов - 470";
+			} else {
+				formField.error = "";
+			}
+			return;
+	}
+};
+
+const changeFormValue = (value: string, idx: number) => {
+	edit_info.value[idx].value = value;
+	formValidation(value, idx);
+};
+
+const isFormValid = computed(
+	() => !edit_info.value.some((item) => item.error.length)
+);
+
+const saveEditFrame = () => {
+	const courseInfoData: ICourseInfo = {
+		title: edit_info.value[0]?.value,
+		authors: edit_info.value[1]?.value,
+		description: edit_info.value[2]?.value,
+		targetAudience: edit_info.value[3]?.value,
+		educationMethods: edit_info.value[4]?.value,
+		educationResults: edit_info.value[5]?.value,
+	};
+
+	for (const [index, field] of edit_info.value.entries()) {
+		formValidation(field.value, index);
+	}
+
+	if (isFormValid.value) {
+		course_info_store
+			.patchCourseInfo(id as unknown as number, courseInfoData)
+			.then(() => {
+				openEditFrame();
+			})
+			.catch((error) => {
+				if (error instanceof AxiosError) {
+					if (error.config?.data.includes("названием")) {
+						edit_info.value[0].error = error.message;
+					} else if (error.config?.data.includes("описанием")) {
+						edit_info.value[2].error = error.message;
+					}
+				}
+			});
+	}
+};
 
 onMounted(() => {
 	nextTick(() => {
