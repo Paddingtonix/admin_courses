@@ -525,6 +525,7 @@
 							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							:is-deletable="chapter.sections?.length !== 1"
+							:is_editing="storeEditCourseSetting.isEdit"
 							@edit-trigger="
 								editTitle(
 									$event,
@@ -916,7 +917,20 @@ const editTitle = (
 		edit_field.idx_field = id;
 		edit_field.type_field = type;
 		changes_value.value = title.replace(/^.*?:\s*/, "");
+		validationErrors.length = 0;
 	} else {
+		validateSettings({ value: changes_value.value, type: "title" });
+		if (storeCourseSettings.IsPartialAvailable) {
+			validateSettings({
+				value: chapter_price_value.value ?? 0,
+				type: "number",
+			});
+		}
+		console.log(isSettingValid.value);
+
+		if (!isSettingValid.value) {
+			return;
+		}
 		axios
 			.patch(`/admin/v1/${edit_field.type_field}/${id}`, {
 				title: changes_value.value,
@@ -953,7 +967,23 @@ const editPriceAndTitle = (
 		edit_field.type_field = type;
 		changes_value.value = title.replace(/^.*?:\s*/, "");
 		chapter_price_value.value = price;
+		validationErrors.length = 0;
+		priceValidationErrors.length = 0;
 	} else {
+		validateSettings({ value: changes_value.value, type: "title" });
+		if (storeCourseSettings.IsPartialAvailable) {
+			validateSettings({
+				value: chapter_price_value.value ?? 0,
+				type: "number",
+			});
+		}
+		console.log(isSettingValid.value);
+
+		if (!isSettingValid.value) {
+			console.log("invalid");
+
+			return;
+		}
 		axios
 			.patch(`/admin/v1/${edit_field.type_field}/${id}`, {
 				title: changes_value.value,
@@ -985,11 +1015,6 @@ const cancelEditing = () => {
 	storeEditCourseSetting.canselEdit();
 };
 
-const isSummaryVisible = ref(false);
-
-const toggleSummary = () => {
-	isSummaryVisible.value = !isSummaryVisible.value;
-};
 const canAddPart = () => {
 	const { initialPage, initialTesting, finalTesting, finalPage } =
 		content_inner.value;

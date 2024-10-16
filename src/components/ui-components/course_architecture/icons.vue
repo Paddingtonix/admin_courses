@@ -138,7 +138,7 @@ export default defineComponent({
 		},
 		fields_valid: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 	},
 	setup(props, { emit }) {
@@ -162,8 +162,16 @@ export default defineComponent({
 		});
 
 		const editActive = (state: boolean) => {
-			edit.value = state;
 			emit("edit-trigger", state);
+			if (edit.value) {
+				setTimeout(() => {
+					if (props.fields_valid) {
+						edit.value = state;
+					}
+				}, 0);
+			} else {
+				edit.value = state;
+			}
 		};
 
 		const cancelEditing = (state: boolean) => {
