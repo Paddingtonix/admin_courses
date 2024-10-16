@@ -733,7 +733,8 @@
 		<span
 			class="oil-course-setting__content__final-price"
 			v-if="course_setting.value.IsPartialAvailable"
-			>Итоговая стоимость курса: {{ course_setting.value.PriceInRubles }}
+			>Итоговая стоимость курса:
+			{{ coursePrice }}
 			<span>RUB</span></span
 		>
 	</div>
@@ -749,6 +750,8 @@ const storeCourseSettings = useStoreCourseSettings();
 const route = useRoute();
 
 const storeEditCourseSetting = useStoreEditCourseSetting();
+
+const coursePrice = computed(() => storeCourseSettings.PriceInRubles);
 
 defineProps({
 	course_setting: {
@@ -1000,6 +1003,9 @@ const editPriceAndTitle = (
 				axios
 					.get(`/admin/v1/Course/${route.query.search}/content`)
 					.then((struct_response) => {
+						storeCourseSettings.getCourseSetting(
+							route.query.search
+						);
 						content_inner.value = struct_response.data;
 						reload_state.value = false;
 					});
