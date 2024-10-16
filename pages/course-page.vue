@@ -205,11 +205,12 @@ export default defineComponent({
 			{ text: 25, active: false },
 		]
 
-		const translation_map: Record<"indevelopment"|"onmoderation"|"published"|"withdrawn"|"archieved"|"en"|"fr"|"ru"|"name"|"lang"|"status"|"authors"|"direction"|"date_edit"|"end_date", string> = {
+		const translation_map: Record<"indevelopment"|"onmoderation"|"published"|"withdrawn"|"archived"|"en"|"fr"|"ru"|"name"|"lang"|"status"|"authors"|"direction"|"date_edit"|"end_date"|'archieved', string> = {
 			indevelopment: "В разработке",
 			onmoderation: "На модерации",
 			published: "Опубликован",
 			withdrawn: "Снят с витрины",
+			archived: "В архиве",
 			archieved: "В архиве",
 			en: 'Английский (EN)',
 			fr: 'Французкий (FR)',
@@ -230,14 +231,14 @@ export default defineComponent({
 						query: 'statuses',
 						title: 'Статусы',
 						filters_values: course_filter.value.statuses
-							? course_filter.value.statuses.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
+							? course_filter.value.statuses.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item.toLowerCase()) }))
 							: [],
 					},
 					{
 						query: 'languageIds',
 						title: 'Языки',
 						filters_values: course_filter.value.languages
-							? course_filter.value.languages.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item) }))
+							? course_filter.value.languages.map((item: string, idx: number) => ({ name: item, id: idx + 1, active: false, translate: translateStatus(item.toLowerCase()) }))
 							: [],
 					},
 					{
@@ -312,6 +313,8 @@ export default defineComponent({
 		}
 		
 		const translateStatus = (status: string): string => {
+			console.log(status);
+			
 			if (status in translation_map) {
 				return translation_map[
 					status as keyof typeof translation_map

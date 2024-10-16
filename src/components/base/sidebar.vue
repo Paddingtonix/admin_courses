@@ -212,7 +212,7 @@ export default defineComponent({
     box-shadow: 0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)
     background-color: $basic-white
     &__page
-        height: 100%
+        min-height: 87vh
         @include flex_center_spacing()
         flex-direction: column
         margin: 0 rem(-26)

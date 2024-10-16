@@ -29,7 +29,7 @@ export default defineComponent({
                     renderer: 'svg',
                     loop: props.loop,
                     autoplay: props.autoplay,
-                    path: "../../assets/loader/loader.json",
+                    path: "/public/api/loader.json",
                 });
             }
         });
