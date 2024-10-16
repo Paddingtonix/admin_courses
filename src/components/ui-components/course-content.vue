@@ -47,50 +47,8 @@
 				</svg>
 			</BtnCmp>
 		</div>
-		<div
-			v-else
-			style="max-width: 972px"
-			class="oil-course-content__attention"
-			@click="toggleSummary"
-		>
-			<div
-				class="oil-course-content__attention__head"
-				:class="{ active: isSummaryVisible }"
-			>
-				<slot name="attention-icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						fill="none"
-					>
-						<path
-							d="M12 16V12M12 8H12.01M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
-							stroke="#323C46"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</slot>
-				<span>Как работать с содержанием курса?</span>
-				<slot name="attention-chevron">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-						<path
-							d="M6 9L12 15L18 9"
-							stroke="#374351"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</slot>
-			</div>
-			<div
-				v-if="isSummaryVisible"
-				class="oil-course-content__attention__text"
-				@click.stop
-			>
+		<SummaryCmp attention-title="Как работать с содержанием курса?" v-else>
+			<template v-slot:summary-text>
 				<ul>
 					<span>Редактирование структуры курса</span>
 					<li>
@@ -158,8 +116,8 @@
 						</li>
 					</ul>
 				</ul>
-			</div>
-		</div>
+			</template>
+		</SummaryCmp>
 		<div
 			class="oil-course-setting__content__container"
 			:class="{
@@ -1068,6 +1026,7 @@ onMounted(() => {
 <style scoped lang="sass">
 .oil-course-setting
     &__content
+        max-width: rem(972)
         &__container
             &._special
                 margin-top: rem(96)
