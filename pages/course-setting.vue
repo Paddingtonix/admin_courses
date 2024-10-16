@@ -490,22 +490,36 @@ export default defineComponent({
                     width: 100%
                     padding: rem(1) rem(16)
                     min-height: rem(20)
-                &__input-wrapper
+                    max-height: rem(24)
+                &__input__price
+                    border: rem(1) solid $light_gray
                     position: relative
+                    border-radius: rem(4)
+                    width: 100%
+                    padding: rem(1) rem(16)
+                    min-height: rem(20)
+                    max-height: rem(24)
+                    flex-shrink: 4
+                    input::-webkit-outer-spin-button,
+                    input::-webkit-inner-spin-button
+                        -webkit-appearance: none
+                        margin: 0
+                        position: relative
+
                     &::after
                         position: absolute
                         right: 11%
                         content: 'RUB'
                         font-weight: bold
                         color: $light_gray
-                &__input__price
-                    border: rem(1) solid $light_gray
-                    border-radius: rem(4)
-                    width: 100%
-                    padding: rem(1) rem(16)
-                    min-height: rem(20)
-                    flex-shrink: 4
 
+        &__final-price
+            display: block
+            margin-top: rem(32)
+            font-weight: bold
+            font-size: rem(20)
+            span
+                color: $basic_gray
 
 
 

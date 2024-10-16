@@ -1,6 +1,6 @@
 <template>
-    <div class="oil-architecture__btn">
-        <div class="oil-architecture__btn__line"></div>
+    <div class="oil-architecture__btn" :class="{ 'oil-architecture__btn-special': isSpecial }">
+        <div v-if="!isSpecial" class="oil-architecture__btn__line"></div>
         <div 
             @click="addBlock"
             class="oil-architecture__btn__create"
@@ -42,6 +42,10 @@ export default defineComponent({
             type: Number,
             default: 0
         },
+        isSpecial: {
+            type: Boolean,
+            default: false
+        }
     },
     setup(props, { emit }) {
         const addBlock = () => {
@@ -92,4 +96,13 @@ export default defineComponent({
             span 
                 font-weight: bold
                 color: $light_primary
+
+    &__btn-special
+        position: relative
+        top: rem(-80)
+        left: 10%
+        transform: translateX(-50%)
+        span
+            font-weight: bold
+            color: $light_primary
 </style>

@@ -313,7 +313,11 @@
 							<span
 								v-for="(author, idx) in column.authors"
 								:key="author"
-								>{{ !idx ? author : `${author}, ` }}</span
+								>{{
+									idx !== null && idx !== undefined
+										? author
+										: `${author}, `
+								}}</span
 							>
 						</template>
 					</div>
@@ -655,6 +659,8 @@ const _course_format_translation = {
 	Online: "Онлайн",
 	Offline: "Оффлайн",
 };
+
+const storeEditCourseSetting = useStoreEditCourseSetting();
 const directions = reactive<IDirection[]>([]);
 const picked_directions = reactive<any>([]);
 const show_error = ref<boolean>(false);
@@ -835,8 +841,8 @@ const formValidation = (field: number | string, fieldName: string) => {
 			if (typeof field !== "number") {
 				return;
 			}
-			if (field > 10000) {
-				setError("Значение должно быть от 1 - 10 000");
+			if (field > 1000) {
+				setError("Значение должно быть от 1 - 1000");
 			} else {
 				setError("");
 			}
@@ -1062,20 +1068,31 @@ const saveSettings = () => {
 	if (picked_directions_filtered.value.length === 0) {
 		show_error.value = true;
 	} else {
+		const formNubmer = (value: string) => {
+			return parseInt(value.replace(" ", ""));
+		};
+
 		show_error.value = false;
 		formData.directionIds = picked_directions;
 		formData.authorEmails =
 			typeof operatingForm.authors === "string"
 				? [operatingForm.authors]
 				: operatingForm.authors;
-		formData.priceInRubles = operatingForm.price
-			? parseFloat(operatingForm.price)
-			: null;
+		formData.priceInRubles =
+			operatingForm.price && !course_setting.value.IsPartialAvailable
+				? typeof operatingForm.price === "string"
+					? formNubmer(operatingForm.price)
+					: operatingForm.price
+				: null;
 		formData.durationAcademicHours = operatingForm.duration
-			? parseFloat(operatingForm.duration)
+			? typeof operatingForm.duration === "string"
+				? formNubmer(operatingForm.duration)
+				: operatingForm.duration
 			: null;
 		formData.durationWorkDays = operatingForm.workload
-			? parseFloat(operatingForm.workload)
+			? typeof operatingForm.workload === "string"
+				? formNubmer(operatingForm.workload)
+				: operatingForm.workload
 			: null;
 		formData.dateStart = operatingForm?.start_date
 			? new Date(operatingForm.start_date!).toISOString()
@@ -1151,8 +1168,6 @@ const saveSettings = () => {
 	}
 };
 
-const storeEditCourseSetting = useStoreEditCourseSetting();
-
 const tooltip_id = ref<string>("");
 
 const showTooltip = (id: string) => {
@@ -1225,7 +1240,7 @@ onMounted(() => {
 		axios
 			.get("admin/v1/user/authors")
 			.then((response) => {
-				console.log(response, "looking for authors emails");
+				console.log(response.data[0], "looking for authors emails");
 				course_table[1].authors = response.data[0];
 			})
 			.catch((error) => {
@@ -1235,13 +1250,14 @@ onMounted(() => {
 			.get(`/admin/v1/Course/${route.query.search}`)
 			.then((info_course) => {
 				course_setting.value = info_course.data;
-				(course_table[1].authors = info_course.data.AuthorEmails),
-					(course_table[1].price = info_course.data.PriceInRubles
-						? String(info_course.data.PriceInRubles).replace(
-								/\B(?=(\d{3})+(?!\d))/g,
-								" "
-						  )
-						: info_course.data.PriceInRubles);
+				course_table[1].authors =
+					info_course.data.AuthorEmails ?? course_table[1].authors;
+				course_table[1].price = info_course.data.PriceInRubles
+					? String(info_course.data.PriceInRubles).replace(
+							/\B(?=(\d{3})+(?!\d))/g,
+							" "
+					  )
+					: info_course.data.PriceInRubles;
 				course_table[1].duration = info_course.data
 					.DurationAcademicHours
 					? String(info_course.data.DurationAcademicHours).replace(

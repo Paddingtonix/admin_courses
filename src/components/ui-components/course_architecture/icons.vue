@@ -77,6 +77,7 @@
 	</div>
 	<div class="oil-architecture__icons" v-else :style="{ opacity: 1 }">
 		<svg
+			:class="{ _disable: !fields_valid }"
 			@click="editActive(false)"
 			width="24"
 			height="24"
@@ -93,7 +94,7 @@
 			/>
 		</svg>
 		<svg
-			@click="editActive(false)"
+			@click="cancelEditing(false)"
 			width="24"
 			height="24"
 			viewBox="0 0 24 24"
@@ -135,6 +136,10 @@ export default defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		fields_valid: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	setup(props, { emit }) {
 		const deleteBlock = () => {
@@ -161,11 +166,17 @@ export default defineComponent({
 			emit("edit-trigger", state);
 		};
 
+		const cancelEditing = (state: boolean) => {
+			edit.value = state;
+			emit("cancel-edit", state);
+		};
+
 		return {
 			edit,
 			deleteBlock,
 			editActive,
 			moveState,
+			cancelEditing,
 		};
 	},
 });
@@ -175,7 +186,12 @@ export default defineComponent({
     &__icons
         gap: rem(16)
         @include flex_start()
-
+        svg
+            &._disable
+                opacity: .4
+                pointer-events: none
+                user-select: none
+                cursor: not-allowed
         // position: absolute
         // right: rem(24)
         // top:50%
@@ -188,6 +204,8 @@ export default defineComponent({
             &._disable
                 opacity: .4
                 pointer-events: none
+                user-select: none
+                cursor: not-allowed
 
             &:hover
                 &:not(:last-child)

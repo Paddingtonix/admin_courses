@@ -73,7 +73,7 @@
 						/>
 					</svg>
 				</slot>
-				<span>Как работать с содержанием модуля?</span>
+				<span>Как работать с содержанием курса?</span>
 				<slot name="attention-chevron">
 					<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 						<path
@@ -162,6 +162,9 @@
 		</div>
 		<div
 			class="oil-course-setting__content__container"
+			:class="{
+				_special: canAddPart(),
+			}"
 			v-if="!preloader.value"
 		>
 			<div
@@ -202,7 +205,7 @@
 						v-if="
 							!content_inner.value.initialPage &&
 							storeCourseSettings.CourseType !== 'Archived' &&
-							!canAddPart()
+							content_inner.value.parts.length
 						"
 						:style="{ top: -15 + 'px' }"
 						:btn_text="
@@ -243,6 +246,7 @@
 					<CourseArchitectureIcons
 						v-if="storeCourseSettings.CourseType !== 'Archived'"
 						:arrow="false"
+						:fields_valid="isSettingValid"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialTesting.id"
 						:delete_type="'Testing'"
@@ -289,13 +293,19 @@
 							edit_field.idx_field !== null,
 					}"
 				>
-					<input
+					<InputCmp
 						v-if="
 							edit_field.type_field === 'Part' &&
 							edit_field.idx_field === part.id
 						"
 						class="oil-course-setting__content__container__inner__input"
-						v-model="changes_value.value"
+						:model-value="changes_value.value"
+						@set_value="changeSettingValue"
+						:error="
+							validationErrors.find(
+								(item) => item?.id === part.id
+							)?.error ?? ''
+						"
 					/>
 					<span v-else>{{
 						part.title === null ? "Вводная страница" : part.title
@@ -305,6 +315,7 @@
 						:delete_id="part.id"
 						:delete_type="'Part'"
 						@delete-trigger="reloadContent"
+						:fields_valid="isSettingValid"
 						@move-trigger="
 							moveToStructure(
 								$event,
@@ -314,6 +325,7 @@
 						@edit-trigger="
 							editTitle($event, idx, 'Part', part.id, part.title)
 						"
+						@cancel-edit="cancelEditing"
 						:arrow="{
 							up: !idx ? false : true,
 							down:
@@ -333,8 +345,7 @@
 							@request-trigger="reloadContent"
 							v-if="
 								idx === content_inner.value.parts.length - 1 &&
-								storeCourseSettings.CourseType !== 'Archived' &&
-								canAddPart()
+								storeCourseSettings.CourseType !== 'Archived'
 							"
 						/>
 					</transition>
@@ -384,13 +395,19 @@
 							}}
 							<span>RUB</span></span
 						>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Chapter' &&
 								edit_field.idx_field === chapter.id
 							"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === chapter.id
+								)?.error ?? ''
+							"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							@set_value="changeSettingValue"
+							:model-value="changes_value.value"
 						/>
 						<!-- TODO: chaper-input -->
 						<div
@@ -401,19 +418,27 @@
 								storeCourseSettings.IsPartialAvailable
 							"
 						>
-							<input
+							<InputCmp
 								class="oil-course-setting__content__container__inner__input__price"
-								v-model="chapter_price_value"
+								:error="
+									priceValidationErrors.find(
+										(item) => item?.id === chapter.id
+									)?.error ?? ''
+								"
+								:type="'number'"
+								@set_value="changeSettingValue"
+								:model-value="chapter_price_value"
 							/>
 						</div>
-
 						<CourseArchitectureIcons
 							v-if="
 								storeCourseSettings.CourseType !== 'Archived' &&
 								!storeCourseSettings.IsPartialAvailable
 							"
+							:is-deletable="part.chapters.length !== 1"
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
+							:fields_valid="!validationErrors.length"
 							@move-trigger="
 								moveToStructure(
 									$event,
@@ -430,6 +455,7 @@
 									chapter.title
 								)
 							"
+							@cancel-edit="cancelEditing"
 							:arrow="{
 								up: !idx ? false : true,
 								down:
@@ -439,7 +465,8 @@
 							}"
 						/>
 						<CourseArchitectureIcons
-							v-else
+							v-else-if="storeCourseSettings.IsPartialAvailable"
+							:is-deletable="part.chapters.length !== 1"
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
 							@move-trigger="
@@ -448,6 +475,7 @@
 									`/admin/v1/Chapter/${chapter.id}/move`
 								)
 							"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editPriceAndTitle(
@@ -459,6 +487,7 @@
 									chapter.priceInRubles
 								)
 							"
+							@cancel-edit="cancelEditing"
 							:arrow="{
 								up: !idx ? false : true,
 								down:
@@ -502,13 +531,19 @@
 						)"
 						:key="idx"
 					>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Section' &&
 								edit_field.idx_field === section.id
 							"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							:model-value="changes_value.value"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === section.id
+								)?.error ?? ''
+							"
+							@set_value="changeSettingValue"
 						/>
 
 						<span
@@ -529,7 +564,9 @@
 							v-if="storeCourseSettings.CourseType !== 'Archived'"
 							:delete_id="section.id"
 							:delete_type="'Section'"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
+							:is-deletable="chapter.sections?.length !== 1"
 							@edit-trigger="
 								editTitle(
 									$event,
@@ -539,6 +576,7 @@
 									section.title
 								)
 							"
+							@cancel-edit="cancelEditing"
 							@move-trigger="
 								moveToStructure(
 									$event,
@@ -584,13 +622,19 @@
 								edit_field.idx_field !== null,
 						}"
 					>
-						<input
+						<InputCmp
 							v-if="
 								edit_field.type_field === 'Testing' &&
 								edit_field.idx_field === chapter.testing.id
 							"
+							:error="
+								validationErrors.find(
+									(item) => item?.id === chapter.testing.id
+								)?.error ?? ''
+							"
+							@set_value="changeSettingValue"
 							class="oil-course-setting__content__container__inner__input"
-							v-model="changes_value.value"
+							:model-value="changes_value.value"
 						/>
 
 						<span
@@ -612,7 +656,9 @@
 							:delete_id="chapter.id"
 							:delete_type="'Chapter'"
 							:is-deletable="false"
+							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
+							@cancel-edit="cancelEditing"
 							@edit-trigger="
 								editTitle(
 									$event,
@@ -656,6 +702,7 @@
 					<CourseArchitectureIcons
 						v-if="storeCourseSettings.CourseType !== 'Archived'"
 						:delete_id="content_inner.value.finalTesting.id"
+						:fields_valid="isSettingValid"
 						:delete_type="'Testing'"
 						:is-editable="false"
 						@delete-trigger="reloadContent"
@@ -681,6 +728,26 @@
 					/>
 				</transition>
 			</div>
+
+			<transition name="fade">
+				<CourseArchitectureAddBlock
+					:btn_text="'часть'"
+					:request_type="{
+						type: 'Part',
+						query: 'courseId',
+					}"
+					:block_id="Number($route.query.search) || undefined"
+					@request-trigger="reloadContent"
+					:isSpecial="true"
+					v-if="
+						content_inner.value.parts.length === 0 &&
+						content_inner.value.finalPage.contentId &&
+						storeCourseSettings.CourseType !== 'Archived' &&
+						canAddPart()
+					"
+				/>
+			</transition>
+
 			<div
 				class="oil-course-setting__content__container__inner"
 				:class="{
@@ -704,17 +771,25 @@
 				>
 			</div>
 		</div>
+		<span
+			class="oil-course-setting__content__final-price"
+			v-if="course_setting.value.IsPartialAvailable"
+			>Итоговая стоимость курса: {{ course_setting.value.PriceInRubles }}
+			<span>RUB</span></span
+		>
 	</div>
 </template>
 
 <script lang="ts" setup>
 import axios from "axios";
-import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseSettings } from "~/src/stores/storeCourseSettings";
+import InputCmp from "./input-cmp.vue";
+import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 
-const storeStateCourse = useStoreCourses();
 const storeCourseSettings = useStoreCourseSettings();
 const route = useRoute();
+
+const storeEditCourseSetting = useStoreEditCourseSetting();
 
 defineProps({
 	course_setting: {
@@ -723,7 +798,7 @@ defineProps({
 	},
 });
 // TODO: chapter_value
-const chapter_price_value = ref("");
+const chapter_price_value = ref<number | null>(null);
 
 const preloader = reactive({
 	value: true as boolean,
@@ -735,6 +810,10 @@ const edit_field = reactive({
 	idx_field: null as null | number,
 	type_field: null as null | string,
 });
+
+const validationErrors = reactive([] as { id: number; error: string }[]);
+
+const priceValidationErrors = reactive([] as { id: number; error: string }[]);
 
 const visible_block = reactive({
 	value: "",
@@ -769,6 +848,104 @@ const moveToStructure = (direction: string, endpoint: string) => {
 	});
 };
 
+const changeSettingValue = ({
+	value,
+	type,
+}: {
+	value: string | number;
+	type: string;
+}) => {
+	if (type !== "number") {
+		changes_value.value = value as string;
+		validateSettings({
+			value: value,
+			type: type,
+		});
+	} else {
+		chapter_price_value.value = value as number;
+		validateSettings({
+			value: value,
+			type: type,
+		});
+	}
+};
+
+const validateSettings = ({
+	value,
+	type,
+}: {
+	value: string | number;
+	type: string;
+}) => {
+	function setError(errorMessage: string) {
+		const isNumber = type === "number";
+		const errorIndex = !isNumber
+			? validationErrors.findIndex(
+					(field) => field?.id === edit_field.idx_field
+			  )
+			: priceValidationErrors.findIndex(
+					(field) => field?.id === edit_field.idx_field
+			  );
+		if (errorIndex === -1) {
+			!isNumber
+				? validationErrors.push({
+						id: edit_field.idx_field as number,
+						error: errorMessage,
+				  })
+				: priceValidationErrors.push({
+						id: edit_field.idx_field as number,
+						error: errorMessage,
+				  });
+		} else {
+			if (isNumber) {
+				validationErrors[errorIndex].error = errorMessage;
+			} else {
+				priceValidationErrors[errorIndex].error = errorMessage;
+			}
+		}
+	}
+
+	function deleteError() {
+		const isNumber = type === "number";
+		const errorIndex = !isNumber
+			? validationErrors.findIndex(
+					(field) => field?.id === edit_field.idx_field
+			  )
+			: priceValidationErrors.findIndex(
+					(field) => field?.id === edit_field.idx_field
+			  );
+		if (errorIndex !== -1) {
+			if (!isNumber) {
+				validationErrors.splice(errorIndex, 1);
+			} else {
+				priceValidationErrors.splice(errorIndex, 1);
+			}
+		} else {
+			return;
+		}
+	}
+
+	if (!value || (typeof value === "string" && value.trimStart().length < 1)) {
+		setError("Поле обязательно к заполнению!");
+		return;
+	} else if (
+		type !== "number" &&
+		typeof value === "string" &&
+		value.length > 80
+	) {
+		setError("Название должно содержать не более 80 символов!");
+	} else if (
+		(type === "number" && (value as number) > 100000) ||
+		(value as number) < 1
+	) {
+		setError(
+			"Стоимость главы не может быть больше 100000 или меньше 1 руб."
+		);
+	} else {
+		deleteError();
+	}
+};
+
 const editTitle = (
 	state: boolean,
 	idx: number,
@@ -777,6 +954,7 @@ const editTitle = (
 	title: string
 ) => {
 	if (state) {
+		storeEditCourseSetting.edit();
 		edit_field.idx_field = id;
 		edit_field.type_field = type;
 		changes_value.value = title.replace(/^.*?:\s*/, "");
@@ -792,6 +970,8 @@ const editTitle = (
 				edit_field.idx_field = null;
 				edit_field.type_field = null;
 				changes_value.value = "";
+
+				storeEditCourseSetting.canselEdit();
 				axios
 					.get(`/admin/v1/Course/${route.query.search}/content`)
 					.then((struct_response) => {
@@ -808,7 +988,7 @@ const editPriceAndTitle = (
 	type: string,
 	id: number,
 	title: string,
-	price: string
+	price: number
 ) => {
 	if (state) {
 		edit_field.idx_field = id;
@@ -819,7 +999,7 @@ const editPriceAndTitle = (
 		axios
 			.patch(`/admin/v1/${edit_field.type_field}/${id}`, {
 				title: changes_value.value,
-				priceInRubles: parseInt(chapter_price_value.value),
+				priceInRubles: chapter_price_value.value,
 			})
 			.then((resp) => {
 				console.log(resp);
@@ -828,7 +1008,7 @@ const editPriceAndTitle = (
 				edit_field.idx_field = null;
 				edit_field.type_field = null;
 				changes_value.value = "";
-				chapter_price_value.value = "";
+				chapter_price_value.value = null;
 				axios
 					.get(`/admin/v1/Course/${route.query.search}/content`)
 					.then((struct_response) => {
@@ -837,6 +1017,14 @@ const editPriceAndTitle = (
 					});
 			});
 	}
+};
+
+const cancelEditing = () => {
+	edit_field.idx_field = null;
+	edit_field.type_field = "";
+	changes_value.value = "";
+	chapter_price_value.value = null;
+	storeEditCourseSetting.canselEdit();
 };
 
 const isSummaryVisible = ref(false);
@@ -861,18 +1049,26 @@ watch(reload_state, () => {
 	}
 });
 
+const isSettingValid = computed(
+	() => !validationErrors.length && !priceValidationErrors.length
+);
 onMounted(() => {
 	nextTick(() => {
 		axios
 			.get(`/admin/v1/Course/${route.query.search}/content`)
 			.then((struct_response) => {
-				console.log("dataStruct!:", struct_response.data);
 				content_inner.value = struct_response.data;
+				console.log(content_inner.value, "content_inner.value");
 				preloader.value = false;
 			});
-		console.log("inner!:", content_inner.value);
 	});
 });
 </script>
 
-<style></style>
+<style scoped lang="sass">
+.oil-course-setting
+    &__content
+        &__container
+            &._special
+                margin-top: rem(96)
+</style>
