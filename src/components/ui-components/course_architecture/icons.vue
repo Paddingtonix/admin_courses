@@ -113,10 +113,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
+import { useStoreModal } from "~/src/stores/storeModal";
 import axios from "axios";
 
 export default defineComponent({
 	props: {
+		name: {
+			type: String,
+		},
 		delete_id: {
 			type: Number,
 			default: 0,
@@ -142,15 +146,58 @@ export default defineComponent({
 		},
 	},
 	setup(props, { emit }) {
-		const deleteBlock = () => {
-			axios
+		const modalLabel = () => {
+			switch (props.delete_type) {
+				case "Chapter":
+					return "Удаление главы";
+				case "Part":
+					return "Удаление части";
+				case "Testing":
+					return "Удаления модуля";
+				default:
+					return "Удаление модуля";
+			}
+		};
+
+		const modalComponent = () => {
+			switch (props.delete_type) {
+				case "Chapter":
+					return "delete-chapter";
+				case "Part":
+					return "delete-part";
+				case "Testing":
+					return "delete-module";
+				default:
+					return "delete-module";
+			}
+		};
+
+		const modalStore = useStoreModal();
+
+		const deleteRequest = () => {
+			return axios
 				.delete(`/admin/v1/${props.delete_type}/${props.delete_id}`)
-				.then(() => {
+				.then((response) => {
 					emit("delete-trigger", true);
+					return response;
 				})
 				.catch((err) => {
 					console.log(err);
+					throw err;
 				});
+		};
+
+		const deleteBlock = () => {
+			modalStore.$patch({
+				isOpen: true,
+				activeModal: "delete-modal",
+				label: modalLabel(),
+				modalProps: {
+					name: props.name,
+					deleteFunction: deleteRequest,
+					modalComponent: modalComponent(),
+				},
+			});
 		};
 
 		const moveState = (direction: string) => {

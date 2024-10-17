@@ -154,6 +154,7 @@
 						:arrow="false"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialPage.id"
+						:name="'Вводная страница'"
 						:delete_type="'Page'"
 						@delete-trigger="reloadContent"
 					/>
@@ -207,6 +208,7 @@
 						:fields_valid="isSettingValid"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialTesting.id"
+						:name="'Входной тест'"
 						:delete_type="'Testing'"
 						@delete-trigger="reloadContent"
 					/>
@@ -274,6 +276,7 @@
 						:delete_type="'Part'"
 						@delete-trigger="reloadContent"
 						:fields_valid="isSettingValid"
+						:name="part.title"
 						@move-trigger="
 							moveToStructure(
 								$event,
@@ -403,6 +406,7 @@
 									`/admin/v1/Chapter/${chapter.id}/move`
 								)
 							"
+							:name="chapter.title"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editTitle(
@@ -434,6 +438,7 @@
 								)
 							"
 							:fields_valid="isSettingValid"
+							:name="chapter.title"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editPriceAndTitle(
@@ -525,6 +530,7 @@
 							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							:is-deletable="chapter.sections?.length !== 1"
+							:name="section.title"
 							:is_editing="storeEditCourseSetting.isEdit"
 							@edit-trigger="
 								editTitle(
@@ -663,6 +669,7 @@
 						:delete_id="content_inner.value.finalTesting.id"
 						:fields_valid="isSettingValid"
 						:delete_type="'Testing'"
+						:name="'Итоговый тест'"
 						:is-editable="false"
 						@delete-trigger="reloadContent"
 						:arrow="false"
