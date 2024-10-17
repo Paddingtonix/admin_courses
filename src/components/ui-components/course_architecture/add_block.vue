@@ -33,7 +33,7 @@
 	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, type PropType } from "vue";
 import axios from "axios";
 
 export default defineComponent({
@@ -59,7 +59,7 @@ export default defineComponent({
 			default: false,
 		},
 		additional_type: {
-			type: [Boolean, Object],
+			type: [Boolean, Object] as PropType<boolean | any>,
 			default: false,
 		},
 	},
