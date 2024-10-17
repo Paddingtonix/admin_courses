@@ -1004,7 +1004,7 @@ const editPriceAndTitle = (
 					.get(`/admin/v1/Course/${route.query.search}/content`)
 					.then((struct_response) => {
 						storeCourseSettings.getCourseSetting(
-							route.query.search
+							route.query.search as string
 						);
 						content_inner.value = struct_response.data;
 						reload_state.value = false;
