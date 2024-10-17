@@ -74,16 +74,16 @@ export default defineComponent({
 						: {}),
 				}
 			);
-			const addSecondBlock = axios.post(
-				`/admin/v1/${props.additional_type.type}`,
-				{
-					[props.additional_type.query]: props.block_id,
-					...(props.additional_type.testing_type
-						? { category: props.additional_type.testing_type }
-						: {}),
-				}
-			);
 			if (props.additional_type) {
+				const addSecondBlock = axios.post(
+					`/admin/v1/${props.additional_type.type}`,
+					{
+						[props.additional_type.query]: props.block_id,
+						...(props.additional_type.testing_type
+							? { category: props.additional_type.testing_type }
+							: {}),
+					}
+				);
 				axios.all([addFirstBlock, addSecondBlock]).then(
 					axios.spread((...res) => {
 						emit("request-trigger", true);

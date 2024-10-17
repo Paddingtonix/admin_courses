@@ -177,12 +177,16 @@
 							type: 'Page',
 							query: 'courseId',
 						}"
-						:add_two_parts="true"
-						:additional_type="{
-							type: 'Testing',
-							query: 'courseId',
-							testing_type: 'Entrance',
-						}"
+						:additional_type="
+							!content_inner.value.initialPage &&
+							!content_inner.value.initialTesting
+								? {
+										type: 'Testing',
+										query: 'courseId',
+										testing_type: 'Entrance',
+								  }
+								: false
+						"
 						:block_id="Number($route.query.search) || undefined"
 						@request-trigger="reloadContent"
 					/>
