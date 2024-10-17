@@ -131,7 +131,7 @@ const setFormValue = (
 };
 
 const changeLang = (newLang: string) => {
-	console.log(errors);
+	console.log(newLang);
 
 	activeLang.value = newLang;
 };

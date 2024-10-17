@@ -47,50 +47,8 @@
 				</svg>
 			</BtnCmp>
 		</div>
-		<div
-			v-else
-			style="max-width: 972px"
-			class="oil-course-content__attention"
-			@click="toggleSummary"
-		>
-			<div
-				class="oil-course-content__attention__head"
-				:class="{ active: isSummaryVisible }"
-			>
-				<slot name="attention-icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						fill="none"
-					>
-						<path
-							d="M12 16V12M12 8H12.01M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z"
-							stroke="#323C46"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</slot>
-				<span>Как работать с содержанием курса?</span>
-				<slot name="attention-chevron">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-						<path
-							d="M6 9L12 15L18 9"
-							stroke="#374351"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</slot>
-			</div>
-			<div
-				v-if="isSummaryVisible"
-				class="oil-course-content__attention__text"
-				@click.stop
-			>
+		<SummaryCmp attention-title="Как работать с содержанием курса?" v-else>
+			<template v-slot:summary-text>
 				<ul>
 					<span>Редактирование структуры курса</span>
 					<li>
@@ -158,8 +116,8 @@
 						</li>
 					</ul>
 				</ul>
-			</div>
-		</div>
+			</template>
+		</SummaryCmp>
 		<div
 			class="oil-course-setting__content__container"
 			:class="{
@@ -196,6 +154,7 @@
 						:arrow="false"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialPage.id"
+						:name="'Вводная страница'"
 						:delete_type="'Page'"
 						@delete-trigger="reloadContent"
 					/>
@@ -218,6 +177,16 @@
 							type: 'Page',
 							query: 'courseId',
 						}"
+						:additional_type="
+							!content_inner.value.initialPage &&
+							!content_inner.value.initialTesting
+								? {
+										type: 'Testing',
+										query: 'courseId',
+										testing_type: 'Entrance',
+								  }
+								: false
+						"
 						:block_id="Number($route.query.search) || undefined"
 						@request-trigger="reloadContent"
 					/>
@@ -249,6 +218,7 @@
 						:fields_valid="isSettingValid"
 						:is-editable="false"
 						:delete_id="content_inner.value.initialTesting.id"
+						:name="'Входной тест'"
 						:delete_type="'Testing'"
 						@delete-trigger="reloadContent"
 					/>
@@ -316,6 +286,7 @@
 						:delete_type="'Part'"
 						@delete-trigger="reloadContent"
 						:fields_valid="isSettingValid"
+						:name="part.title"
 						@move-trigger="
 							moveToStructure(
 								$event,
@@ -445,6 +416,7 @@
 									`/admin/v1/Chapter/${chapter.id}/move`
 								)
 							"
+							:name="chapter.title"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editTitle(
@@ -476,6 +448,7 @@
 								)
 							"
 							:fields_valid="isSettingValid"
+							:name="chapter.title"
 							@delete-trigger="reloadContent"
 							@edit-trigger="
 								editPriceAndTitle(
@@ -567,6 +540,8 @@
 							:fields_valid="isSettingValid"
 							@delete-trigger="reloadContent"
 							:is-deletable="chapter.sections?.length !== 1"
+							:name="section.title"
+							:is_editing="storeEditCourseSetting.isEdit"
 							@edit-trigger="
 								editTitle(
 									$event,
@@ -704,6 +679,7 @@
 						:delete_id="content_inner.value.finalTesting.id"
 						:fields_valid="isSettingValid"
 						:delete_type="'Testing'"
+						:name="'Итоговый тест'"
 						:is-editable="false"
 						@delete-trigger="reloadContent"
 						:arrow="false"
@@ -774,7 +750,8 @@
 		<span
 			class="oil-course-setting__content__final-price"
 			v-if="course_setting.value.IsPartialAvailable"
-			>Итоговая стоимость курса: {{ course_setting.value.PriceInRubles }}
+			>Итоговая стоимость курса:
+			{{ coursePrice }}
 			<span>RUB</span></span
 		>
 	</div>
@@ -790,6 +767,8 @@ const storeCourseSettings = useStoreCourseSettings();
 const route = useRoute();
 
 const storeEditCourseSetting = useStoreEditCourseSetting();
+
+const coursePrice = computed(() => storeCourseSettings.PriceInRubles);
 
 defineProps({
 	course_setting: {
@@ -958,7 +937,20 @@ const editTitle = (
 		edit_field.idx_field = id;
 		edit_field.type_field = type;
 		changes_value.value = title.replace(/^.*?:\s*/, "");
+		validationErrors.length = 0;
 	} else {
+		validateSettings({ value: changes_value.value, type: "title" });
+		if (storeCourseSettings.IsPartialAvailable) {
+			validateSettings({
+				value: chapter_price_value.value ?? 0,
+				type: "number",
+			});
+		}
+		console.log(isSettingValid.value);
+
+		if (!isSettingValid.value) {
+			return;
+		}
 		axios
 			.patch(`/admin/v1/${edit_field.type_field}/${id}`, {
 				title: changes_value.value,
@@ -995,7 +987,23 @@ const editPriceAndTitle = (
 		edit_field.type_field = type;
 		changes_value.value = title.replace(/^.*?:\s*/, "");
 		chapter_price_value.value = price;
+		validationErrors.length = 0;
+		priceValidationErrors.length = 0;
 	} else {
+		validateSettings({ value: changes_value.value, type: "title" });
+		if (storeCourseSettings.IsPartialAvailable) {
+			validateSettings({
+				value: chapter_price_value.value ?? 0,
+				type: "number",
+			});
+		}
+		console.log(isSettingValid.value);
+
+		if (!isSettingValid.value) {
+			console.log("invalid");
+
+			return;
+		}
 		axios
 			.patch(`/admin/v1/${edit_field.type_field}/${id}`, {
 				title: changes_value.value,
@@ -1012,6 +1020,9 @@ const editPriceAndTitle = (
 				axios
 					.get(`/admin/v1/Course/${route.query.search}/content`)
 					.then((struct_response) => {
+						storeCourseSettings.getCourseSetting(
+							route.query.search as string
+						);
 						content_inner.value = struct_response.data;
 						reload_state.value = false;
 					});
@@ -1027,11 +1038,6 @@ const cancelEditing = () => {
 	storeEditCourseSetting.canselEdit();
 };
 
-const isSummaryVisible = ref(false);
-
-const toggleSummary = () => {
-	isSummaryVisible.value = !isSummaryVisible.value;
-};
 const canAddPart = () => {
 	const { initialPage, initialTesting, finalTesting, finalPage } =
 		content_inner.value;
@@ -1068,6 +1074,7 @@ onMounted(() => {
 <style scoped lang="sass">
 .oil-course-setting
     &__content
+        max-width: rem(972)
         &__container
             &._special
                 margin-top: rem(96)

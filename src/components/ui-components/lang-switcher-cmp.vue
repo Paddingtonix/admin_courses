@@ -5,7 +5,7 @@
 			type="button"
 			:id="lang.id"
 			:class="{
-				active: active === lang.id,
+				active: active == lang.id,
 				error: errors.includes(lang.id),
 			}"
 			@click="() => changeActiveLang(lang.id)"
@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import type { PropType } from "vue";
 
-const { russian, extraLang, extraLang2, active } = defineProps({
+const props = defineProps({
 	russian: {
 		type: Object as PropType<{ text: string; id: string }>,
 		default: { text: "Русский (RU) *", id: "ru" },
@@ -41,14 +41,21 @@ const { russian, extraLang, extraLang2, active } = defineProps({
 	},
 });
 
-const langs = {
-	russian,
-	extraLang,
-	extraLang2,
-};
+const langs = reactive([props.russian, props.extraLang, props.extraLang2]);
 
 const emit = defineEmits(["change-lang"]);
+
+const active_lang = ref(props.active) as string;
+
 const changeActiveLang = (id: string) => {
+	console.log(langs, "prev");
+
+	active_lang.value = id;
+
+	// console.log("innerActive", computed(() => active_lang.value).value);
+
+	console.log(active_lang.value, "current");
+
 	emit("change-lang", id);
 };
 </script>
