@@ -94,6 +94,7 @@ export default defineComponent({
 		const input_value = ref<string | number>(
 			modelValue.value || initial_value
 		);
+
 		const formatter = new Intl.NumberFormat("ru-RU", {
 			useGrouping: true,
 		});
@@ -121,7 +122,10 @@ export default defineComponent({
 		);
 
 		const setValue = (event: Event) => {
-			emit("set_value", { value: input_value.value, type: props.type });
+			emit("set_value", {
+				value: (event.target as HTMLInputElement).value,
+				type: props.type,
+			});
 		};
 
 		const setValueFormatted = (event: Event) => {

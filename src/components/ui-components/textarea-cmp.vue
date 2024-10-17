@@ -73,7 +73,10 @@ export default defineComponent({
 		});
 
 		const setValue = () => {
-			emit("set_textarea", { value: textarea_value.value, type: "" });
+			emit("set_textarea", {
+				value: textarea_value.value,
+				type: props.type,
+			});
 		};
 
 		return {
