@@ -44,65 +44,45 @@
 						stroke-linejoin="round"
 					/>
 				</svg>
-				<div
-					v-for="(key, index) in filterKeys"
-					class="oil-filter__body__frame"
-				>
-					<span class="oil-filter__body__frame__title">{{
-						key
-					}}</span>
-					<template v-if="!isMarks || key !== 'Язык'">
-						<CheckboxCmp
-							v-for="(checkbox, idx) in filter_values.value[
-								index
-							][key]"
-							:key="idx"
-							:text="checkbox.name"
-							:id="checkbox.id"
-							:active="checkbox.active"
-							@click="setActiveFilter(index, key, idx)"
-						/>
-					</template>
-					<template v-else-if="key === 'Язык'">
-						<RadioCmp
-							v-for="(radio, idx) in filter_values.value[index][
-								key
-							]"
-							:key="idx"
-							:text="radio.name"
-							:id="radio.id"
-							:active="radio.active ? radio.id : ''"
-							@click="setActiveFilter(index, key, idx)"
-						/>
-					</template>
-				</div>
+				<template v-for="(filter_block, idx) in filters_block.value" :key="idx">
+					<span>{{ filter_block.title }}</span>
+					<CheckboxCmp
+						v-for="filter_state in filter_block.filters_values"
+						:key="filter_state"
+						:text="filter_state.translate ? filter_state.translate : filter_state.name"
+						:id="filter_state.id"
+						:active="filter_state.active" 
+						@set_value="setCheckbox($event, idx)"
+					/>
+				</template>
 				<div class="oil-filter__body__btns">
 					<BtnCmp
 						@click="cancelFilters"
 						:background_type="'_secondary'"
 						:text="'Сбросить'"
 					/>
-					<BtnCmp @click="sendFilters" :text="'Применить'" />
+					<BtnCmp @click="setFilter" :text="'Применить'" />
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script lang="ts" setup>
-const { filters } = defineProps({
+import { useRouter, useRoute } from 'vue-router' 
+
+const props = defineProps({
 	is_body_visible: {
 		type: Boolean,
 		default: false,
 	},
 	filters: {
-		type: Object as PropType<{
-			[key: string]: {
-				id: string | number;
-				name: string;
-				isRadio?: boolean;
-			}[];
-		}>,
-		required: true,
+		type: Array,
+		default: () => [
+			{
+				filters_values: [] as any,
+				title: '' as string
+			}
+		]
 	},
 	pressed_button: {
 		type: Boolean,
@@ -114,78 +94,91 @@ const { filters } = defineProps({
 	},
 });
 
-const emit = defineEmits(["send-fiters", "cancel-filters"]);
+const router = useRouter() 
+const route = useRoute() 
+
+
+const filters_block = reactive({
+	value: props.filters
+})
 
 const filter_frame = reactive({
 	value: false as boolean,
 });
 
-const filterKeys = Object.keys(filters || {});
+const setCheckbox = (val: any, idx: number) => {    
+    filters_block.value[idx]!.filters_values.find((field: { id: number; }) => field.id === val.id).active = val.active	
+}
 
-const mapFilters = (key: string) =>
-	computed(() => filters[key].map((filter) => ({ ...filter, active: false })))
-		.value;
+const setFilter = () => {
+	router.push({
+		query: {
+			...route.query,
+			statuses: filters_block.value[0]!.filters_values.some(item => item.active) ? filters_block.value[0]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+			languageIds: filters_block.value[1]!.filters_values.some(item => item.active) ? filters_block.value[1]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+			directionIds: filters_block.value[2]!.filters_values.some(item => item.active) ? filters_block.value[2]!.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+		} 
+	})
+}
 
-const getMappedFilters = () =>
-	filterKeys.map((key) => ({
-		[key]: mapFilters(key),
-	})) as unknown as {
-		[key: string]: {
-			active: boolean;
-			id: string | number;
-			name: string;
-			isRadio?: boolean;
-		}[];
-	}[];
-
-onMounted(() => {
-	console.log(getMappedFilters());
-});
-
-const initialFilter_values = getMappedFilters();
-
-const filter_values = reactive({ value: initialFilter_values });
-
-const setActiveFilter = (index: number, key: string, id: number) => {
-	if (filter_values !== undefined) {
-		if (filter_values.value[index][key][id].isRadio) {
-			filter_values.value[index][key].forEach((item) => {
-				item.active = false;
-			});
-			filter_values.value[index][key][id].active = true;
-		} else {
-			filter_values.value[index][key]![id].active =
-				!filter_values.value[index][key]![id].active;
-		}
-	}
-};
-
-const sendFilters = () => {
-	const formData = () => {
-		const result: { [key: string]: any } = {};
-
-		for (const key in filterKeys) {
-			result[filterKeys[key]] = Object.values(filter_values.value[key])
-				.map((item) =>
-					item.filter((filterItem) => filterItem.active)
-				)[0]
-				.map((item) => item.id);
-		}
-
-		return result;
-	};
-	const formedData = formData();
-	emit("send-fiters", formedData);
-};
-
-const cancelFilters = () => {
-	emit("cancel-filters", []);
-	filter_values.value = getMappedFilters();
-};
+const cancelFilters = () => {	
+	router.push({ query: {
+		...route.query,
+		statuses: undefined,
+		languageIds: undefined,
+		directionIds: undefined,
+	} });
+}
 
 const openFilter = (state: boolean) => {
 	filter_frame.value = state;
+}
+
+const syncCheckboxesWithUrl = () => {
+  	const query = route.query
+
+  	filters_block.value.forEach(filter_block => {
+		const query_key = filter_block.query
+
+		const active_values = (query[query_key] || '').split(',')
+
+		filter_block.filters_values.forEach(filter_value => {
+			filter_value.active = active_values.includes(filter_value.name)
+    	})
+  	})
 };
+
+watch(() => props.filters, () => {
+	filters_block.value = props.filters
+
+	syncCheckboxesWithUrl()
+	
+})
+
 </script>
 <style lang="sass">
 .oil-filter
@@ -210,14 +203,12 @@ const openFilter = (state: boolean) => {
                 stroke: $basic_white
 
     &__body-wrapper
-        position: fixed
+        position: absolute
         background-color: $basic_white
-        top: -40%
-        transform: translateY(60%)
-        left: 75%
+        top: rem(-180)
+        right: 0
         width: auto
         box-shadow: 0px 8px 18px -6px rgba(24, 39, 75, 0.12), 0px 12px 42px -4px rgba(24, 39, 75, 0.12)
-
 
     &__body
         padding: rem(32)
