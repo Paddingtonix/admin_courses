@@ -177,6 +177,12 @@
 							type: 'Page',
 							query: 'courseId',
 						}"
+						:add_two_parts="true"
+						:additional_type="{
+							type: 'Testing',
+							query: 'courseId',
+							testing_type: 'Entrance',
+						}"
 						:block_id="Number($route.query.search) || undefined"
 						@request-trigger="reloadContent"
 					/>
