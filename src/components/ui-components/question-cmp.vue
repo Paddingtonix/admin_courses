@@ -359,10 +359,6 @@ export default defineComponent({
 			}
 		);
 
-		onMounted(() => {
-			console.log(directions.value);
-		});
-
 		const answersValidate = (answer: {
 			text: string;
 			isCorrectAnswer: boolean;
@@ -634,6 +630,8 @@ export default defineComponent({
 
         .oil-input
             width: 100%
+            &:has(.oil-input__message)
+                margin-bottom: rem(8)
 
     &__btns
         @include flex_start()
