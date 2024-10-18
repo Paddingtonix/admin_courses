@@ -19,7 +19,9 @@
 					</span>
 					<div
 						class="oil-course-content__test__general-settings__value"
-						:class="{ fullfiled: setting.title }"
+						:class="{
+							fullfiled: setting.title || setting.title === 0,
+						}"
 						v-if="!setting.isEditing"
 					>
 						<span>
@@ -45,15 +47,11 @@
 							class="oil-course-content__test__general-settings__value__wrapper"
 							@click="editSetting(idx)"
 						>
-							<span v-if="!setting?.title">{{
-								setting.desc
-							}}</span>
+							<span
+								v-if="!setting?.title && setting.title !== 0"
+								>{{ setting.desc }}</span
+							>
 							<i v-html="defaultIcon"></i>
-						</div>
-						<div v-else>
-							<p v-if="!setting?.title || setting.title !== 0">
-								{{ setting.desc }}
-							</p>
 						</div>
 					</div>
 					<template v-else>
@@ -293,6 +291,7 @@ const acceptEditing = (
 	type: "score" | "title",
 	value: string | number
 ) => {
+	type === "score" && value === null ? (value = 0) : value;
 	validateGeneralSetting(value, type);
 	if (!generalSettingsErrors.value[type]?.length) {
 		changeGeneralSetting({ type, value }).then(() => {
