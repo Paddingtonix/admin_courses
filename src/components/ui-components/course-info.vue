@@ -113,13 +113,6 @@ const active_example = reactive({
 	value: null as number | null,
 });
 
-const openEditFrame = () => {
-	edit_mode.value = !edit_mode.value;
-	storeCourseEditing.$patch({
-		isEdit: edit_mode.value,
-	});
-};
-
 const course_info = computed(() => [
 	{
 		field: "Название курса",
@@ -227,8 +220,22 @@ const edit_info = ref([
 	},
 ]);
 
+const getInitialValues = () => {
+	for (const [index, field] of Object.entries(edit_info.value)) {
+		field.value = course_info.value[index as unknown as number].value;
+		field.error = "";
+	}
+};
+
 const openExample = (id: number) => {
 	active_example.value = active_example.value === id ? null : id;
+};
+const openEditFrame = () => {
+	edit_mode.value = !edit_mode.value;
+	storeCourseEditing.$patch({
+		isEdit: edit_mode.value,
+	});
+	getInitialValues();
 };
 
 watch(
