@@ -2,7 +2,10 @@
 	<section class="oil-container">
 		<div class="oil-course-content">
 			<breadCmp
-				:prev_page="['Список курсов', `${$route.query.courseTitle}`]"
+				:prev_page="[
+					userStore.isAdmin ? 'Список курсов' : 'Мои курсы',
+					`${$route.query.courseTitle}`,
+				]"
 				:current_page="courseContentStore.generalSettings?.title ?? ''"
 				class="oil-course-content__bread"
 			/>
@@ -69,6 +72,7 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import { useRoute } from "vue-router";
+import { useUserRoleStore } from "~/src/stores/storeRole";
 
 export default defineComponent({
 	props: {
@@ -81,6 +85,7 @@ export default defineComponent({
 		const courseStore = useStoreCourses();
 		const courseContentStore = useStoreCourseContent();
 		const route = useRoute();
+		const userStore = useUserRoleStore();
 		const { id } = route.params as unknown as { id: string };
 		const course_settings = reactive({
 			title_course: "",
@@ -122,6 +127,7 @@ export default defineComponent({
 			course_settings,
 			id,
 			isLoading,
+			userStore,
 		};
 	},
 });

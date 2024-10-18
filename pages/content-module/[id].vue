@@ -2,7 +2,10 @@
 	<section class="oil-container">
 		<div class="oil-course-content">
 			<breadCmp
-				:prev_page="['Список курсов', `${$route.query.courseTitle}`]"
+				:prev_page="[
+					userStore.isAdmin ? 'Список курсов' : 'Мои курсы',
+					`${$route.query.courseTitle}`,
+				]"
 				:current_page="$route.query?.contentName ?? ''"
 				class="oil-course-content__bread"
 			/>
@@ -46,6 +49,7 @@
 import Editor from "@tinymce/tinymce-vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { useUserRoleStore } from "~/src/stores/storeRole";
 
 const props = defineProps({
 	title: {
@@ -114,6 +118,8 @@ const sendContent = () => {
 		text: editor_text.value,
 	});
 };
+
+const userStore = useUserRoleStore();
 
 onMounted(() => {
 	nextTick(() => {

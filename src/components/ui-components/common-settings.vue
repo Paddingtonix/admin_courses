@@ -559,7 +559,7 @@
 							class="oil-course-setting__settings__table__column__cell__dates"
 						>
 							<CalendarCmp
-								:class="'small-field_error'"
+								:class="'small-field_error _first-error'"
 								:error="dateErrors[0].error"
 								:input_value="UTCDates?.dateStart"
 								@update-date="handleDateUpdate($event, 'start')"
@@ -642,6 +642,7 @@
 import axios from "axios";
 import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 import type { IDirection } from "~/src/ts-interface/direction";
+import { useUserRoleStore } from "~/src/stores/storeRole";
 
 defineProps({
 	course_setting: {
@@ -649,6 +650,8 @@ defineProps({
 		default: {},
 	},
 });
+
+const userRoleStore = useUserRoleStore();
 
 const _course_type_translation = {
 	Asynchronous: "Асинхронный",
@@ -670,9 +673,11 @@ const router = useRouter();
 const preloader = reactive({
 	value: true as boolean,
 });
+
 const chooses_direction = reactive({
 	value: [] as IDirection[],
 });
+
 const course_setting = reactive({
 	value: {
 		Title: "" as string,
@@ -688,6 +693,7 @@ const course_setting = reactive({
 		SalesTerminationDate: "" as string,
 	},
 });
+
 const inputs = reactive([
 	{
 		placeholder: "99 999",
@@ -711,6 +717,7 @@ const inputs = reactive([
 		error: "",
 	},
 ]);
+
 const filtered_inputs = computed(() => {
 	if (course_setting.value.IsPartialAvailable) {
 		return inputs.slice(1, 2);
@@ -1074,6 +1081,7 @@ const saveSettings = () => {
 
 		show_error.value = false;
 		formData.directionIds = picked_directions;
+		// TODO: add_try
 		formData.authorEmails =
 			typeof operatingForm.authors === "string"
 				? [operatingForm.authors]
@@ -1105,6 +1113,10 @@ const saveSettings = () => {
 		formData.salesTerminationDate = operatingForm?.removed_date
 			? new Date(operatingForm.removed_date!).toISOString()
 			: null;
+
+		if (!userRoleStore.isAdmin) {
+			delete (formData as { authorEmails?: any }).authorEmails;
+		}
 
 		axios
 			.patch(`/admin/v1/Course/${route.query.search}/settings`, formData)
@@ -1334,4 +1346,13 @@ onMounted(() => {
 	.oil-input__message
 		width: max-content
 		transform: translateY(29%)
+		gap: rem(12)
+		i
+			position: absolute
+			top: 35%
+			left: -7%
+
+	&._first-error
+		.oil-input__message
+			transform: translateY(-120%)
 </style>

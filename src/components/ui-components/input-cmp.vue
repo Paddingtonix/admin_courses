@@ -1,8 +1,12 @@
 <template>
 	<div class="oil-input" :class="{ '_error-frame': error.length }">
-		<label :class="['oil-input__label', { _fill: input_value }]">{{
-			label
-		}}</label>
+		<label
+			:class="[
+				'oil-input__label',
+				{ _fill: input_value || input_value === 0 },
+			]"
+			>{{ label }}</label
+		>
 		<input
 			v-if="$props.mask_type"
 			:value="formatted_value"
@@ -11,6 +15,7 @@
 			@blur="() => onBlur"
 			:maxlength="max_length"
 			:placeholder="placeholder"
+			:readonly="is_readonly"
 		/>
 		<input
 			v-else
@@ -20,6 +25,7 @@
 			@input="setValue"
 			:placeholder="placeholder"
 			:maxlength="max_length"
+			:readonly="is_readonly"
 		/>
 		<div class="oil-input__message" v-if="error.length">
 			<i>
@@ -78,11 +84,14 @@ export default defineComponent({
 		},
 		modelValue: {
 			type: [String, Number],
-			default: "",
 		},
 		onBlur: {
 			type: Function,
 			default: () => {},
+		},
+		is_readonly: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	emits: ["set_value"],
@@ -94,6 +103,7 @@ export default defineComponent({
 		const input_value = ref<string | number>(
 			modelValue.value || initial_value
 		);
+
 		const formatter = new Intl.NumberFormat("ru-RU", {
 			useGrouping: true,
 		});
@@ -121,7 +131,12 @@ export default defineComponent({
 		);
 
 		const setValue = (event: Event) => {
-			emit("set_value", { value: input_value.value, type: props.type });
+			console.log(typeof (event.target as HTMLInputElement).value);
+
+			emit("set_value", {
+				value: (event.target as HTMLInputElement).value,
+				type: props.type,
+			});
 		};
 
 		const setValueFormatted = (event: Event) => {

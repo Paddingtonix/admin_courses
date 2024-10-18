@@ -19,13 +19,25 @@
 					</span>
 					<div
 						class="oil-course-content__test__general-settings__value"
-						:class="{ fullfiled: setting.title }"
+						:class="{
+							fullfiled: setting.title || setting.title === 0,
+						}"
 						v-if="!setting.isEditing"
 					>
 						<span>
-							{{ setting.title ? setting.title : noDataText }}
 							{{
-								setting.title && setting.type === "score"
+								setting.title || setting.title === 0
+									? setting.type === "title"
+										? checkForFlooding(
+												setting.title as string,
+												65
+										  )
+										: setting.title
+									: noDataText
+							}}
+							{{
+								(setting.title === 0 || setting.title) &&
+								setting.type === "score"
 									? "%"
 									: ""
 							}}
@@ -40,13 +52,11 @@
 							class="oil-course-content__test__general-settings__value__wrapper"
 							@click="editSetting(idx)"
 						>
-							<span v-if="!setting?.title">{{
-								setting.desc
-							}}</span>
+							<span
+								v-if="!setting?.title && setting.title !== 0"
+								>{{ setting.desc }}</span
+							>
 							<i v-html="defaultIcon"></i>
-						</div>
-						<div v-else>
-							<p v-if="!setting?.title">{{ setting.desc }}</p>
 						</div>
 					</div>
 					<template v-else>
@@ -123,6 +133,7 @@ import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import { useStoreModal } from "~/src/stores/storeModal";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 const route = useRoute();
 const { id } = route.params as unknown as { id: string };
@@ -151,7 +162,6 @@ const props = defineProps({
 });
 
 const isSummaryVisible = ref(false);
-const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 const storeModal = useStoreModal();
 const generalSettingsTitle = computed(() =>
 	courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
@@ -178,7 +188,7 @@ const general_settings = reactive([
 
 const active_question = reactive<{ value: null | number }>({ value: null });
 
-const changing_field = ref("");
+const changing_field = ref<string | number>();
 
 const setActiveQuestion = (id: number) => {
 	active_question.value = id;
@@ -234,11 +244,11 @@ onMounted(() => {
 
 const changeValueSetting = (
 	id: number,
-	value: string,
+	value: string | number,
 	type: "score" | "title"
 ) => {
-	validateGeneralSetting(value, type);
 	changing_field.value = value;
+	validateGeneralSetting(value, type);
 };
 
 const cancelEditing = (id: number, type: string | number) => {
@@ -265,7 +275,7 @@ const validateGeneralSetting = (
 			delete generalSettingsErrors.value[type];
 		}
 	} else if (type === "score") {
-		const scoreValue = value as number;
+		const scoreValue = parseFloat(value as string);
 
 		if (typeof scoreValue !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";
@@ -287,6 +297,7 @@ const acceptEditing = (
 	type: "score" | "title",
 	value: string | number
 ) => {
+	type === "score" && value === null ? (value = 0) : value;
 	validateGeneralSetting(value, type);
 	if (!generalSettingsErrors.value[type]?.length) {
 		changeGeneralSetting({ type, value }).then(() => {

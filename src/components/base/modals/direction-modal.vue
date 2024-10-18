@@ -1,202 +1,196 @@
 <template>
-    <div class="oil-direction">
-        <span class="oil-direction__desc">Направление и описание должны быть переведены на обязательные языки (помечены звёздочкой)</span>
-        <LangSwitcherCmp
-            class="oil-direction__tabs"
-            :active="lang"
-            @change-lang="setLang"
-        />
-        <InputCmp
-            class="oil-direction__input"
-           :label="`Название направления (${lang.toLocaleUpperCase()})*`"
-           :modelValue="dataLocalizations.localizations[lang]"
-           :error="errors.name"
-           @set_value="(value) => setDirectionName(value)"
-           @blur="isValid"
-        />
-        <TextareaCmp
-            class="oil-direction__text-area"
-            :label="`Описание направления (${lang.toLocaleUpperCase()})*`"
-            :modelValue="dataLocalizations.description[lang]"
-            :max_length="550"
-            @set_textarea="(value) => setDirectionDescription(value)"
-        ></TextareaCmp>
-        <CheckboxCmp
-            class="oil-direction__checkbox"
-            :text="'Отображать на сайте'"
-            :active="visible_direction"
-            :error="errors.checkbox"
-            @set_value="setCheckbox"
-            @blur="isValid"
-        />
-        <div class="oil-direction__btns">
-            <BtnCmp
-                :text="'Отмена'"
-                :background_type="'_secondary'"
-                @click="closeModal"
-            />
-            <BtnCmp
-                v-if="!modal_data.modalProps.edit"
-                :text="'Добавить'"
-                @click="sendDirection"
-            />
-            <BtnCmp
-                v-if="modal_data.modalProps.edit"
-                :text="'Сохранить'"
-                @click="patchDirection"
-            />
-        </div>
-    </div>
+	<div class="oil-direction">
+		<span class="oil-direction__desc"
+			>Направление и описание должны быть переведены на обязательные языки
+			(помечены звёздочкой)</span
+		>
+		<LangSwitcherCmp
+			class="oil-direction__tabs"
+			:active="lang"
+			@change-lang="setLang"
+		/>
+		<InputCmp
+			class="oil-direction__input"
+			:label="`Название направления (${lang.toLocaleUpperCase()})*`"
+			:modelValue="localizationForm.name.value[lang]"
+			:error="localizationForm.name.error"
+			@set_value="setFormValue($event)"
+			:type="localizationForm.name.type"
+		/>
+		<TextareaCmp
+			class="oil-direction__text-area"
+			:label="`Описание направления (${lang.toLocaleUpperCase()})*`"
+			:modelValue="localizationForm.description.value[lang]"
+			:max_length="550"
+			:type="localizationForm.description.type"
+			@set_textarea="setFormValue($event)"
+		></TextareaCmp>
+		<CheckboxCmp
+			class="oil-direction__checkbox"
+			:text="'Отображать на сайте'"
+			:active="localizationForm.visibleCheckbox.value"
+			:error="localizationForm.visibleCheckbox.error"
+			:type="localizationForm.visibleCheckbox.type"
+			@set_value="setCheckbox"
+		/>
+		<div class="oil-direction__btns">
+			<BtnCmp
+				:text="'Отмена'"
+				:background_type="'_secondary'"
+				@click="closeModal"
+			/>
+			<BtnCmp
+				v-if="!modal_data.modalProps.edit"
+				:text="'Добавить'"
+				@click="sendDirection"
+			/>
+			<BtnCmp
+				v-if="modal_data.modalProps.edit"
+				:text="'Сохранить'"
+				@click="patchDirection"
+			/>
+		</div>
+	</div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useDirectionStore } from "~/src/stores/storeDirection";
-import type { IDirection } from "~/src/ts-interface/direction";
 import { useStoreCourses } from "~/src/stores/storeCourse";
 import type { ILocalizations } from "~/src/ts-interface/direction";
 
 export default defineComponent({
-    components: {},
+	components: {},
 
-    setup() {
-        const lang = ref('ru')
+	setup() {
+		const lang = ref<"ru" | "en" | "fr">("ru");
 
-        const store_modal = useStoreModal();
+		const store_modal = useStoreModal();
 
-        const modal_data = store_modal.$state;
+		const modal_data = store_modal.$state;
 
-        const visible_direction = ref(modal_data.modalProps?.localizations?.isVisible || false)
+		const visible_direction = ref(
+			modal_data.modalProps?.localizations?.isVisible || false
+		);
 
-        const store_direction = useDirectionStore();
-        const course_store = useStoreCourses();
+		const store_direction = useDirectionStore();
+		const course_store = useStoreCourses();
 
-        const initialLocalizations: ILocalizations = {
-            id: 0,
-            isVisible: false,
-            localizations: { ru: "", en: "", fr: "" },
-            description: { ru: "", en: "", fr: "" }
-        }
+		const initialLocalizations: ILocalizations = {
+			id: 0,
+			isVisible: false,
+			localizations: { ru: "", en: "", fr: "" },
+			description: { ru: "", en: "", fr: "" },
+		};
 
-        const dataLocalizations: ILocalizations = reactive(
-            modal_data.modalProps?.localizations || initialLocalizations
-        );
+		const dataLocalizations: ILocalizations = reactive(
+			modal_data.modalProps?.localizations || initialLocalizations
+		);
 
-        const closeModal = () => {
-            store_modal.closeModal();
-        };
+		const localizationForm = reactive({
+			name: {
+				error: "",
+				value: {
+					ru: dataLocalizations.localizations.ru,
+					en: dataLocalizations.localizations.en,
+					fr: dataLocalizations.localizations.fr,
+				},
+				type: "name",
+				pattern: "",
+			},
+			description: {
+				error: "",
+				value: {
+					ru: dataLocalizations.description.ru,
+					en: dataLocalizations.description.en,
+					fr: dataLocalizations.description.fr,
+				},
+				type: "description",
+				pattern: "",
+			},
+			visibleCheckbox: {
+				error: "",
+				value: false,
+				type: "checkbox",
+				pattern: "",
+			},
+		});
 
-        const setLang = (active_lang) => {
-            lang.value = active_lang
-            console.log(lang.value, 'lang.value')
-        }
+		const closeModal = () => {
+			store_modal.closeModal();
+		};
 
-        const setCheckbox = (val) => {
-            visible_direction.value = val.active
-            console.log(visible_direction.value, 'visible_direction.value')
-        }
+		const setLang = (active_lang: "ru" | "en" | "fr") => {
+			lang.value = active_lang;
+		};
 
-        const setDirectionName = (val) => {
-            dataLocalizations.localizations[lang.value] = val.value;
-        }
+		const setCheckbox = (val: boolean) => {
+			localizationForm.visibleCheckbox.value = val.active;
+		};
 
-        const setDirectionDescription = (val) => {
-            dataLocalizations.description[lang.value] = val.value;
-        }
+		const setFormValue = ({
+			value,
+			type,
+		}: {
+			value: string;
+			type: "description" | "name";
+		}) => {
+			localizationForm[type].value[lang.value] = value;
+		};
 
-        const errors = reactive({
-            name: ''
-        });
+		const errors = reactive({
+			name: "",
+		});
 
-        const isDirectionExists = (name: string) => {
-            return store_direction.directions.directions
-                .some((direction: IDirection) => direction.localizedName === name);
-        };
+		const sendDirection = () => {
+			const sendData = {
+				isVisible: visible_direction.value,
+				localizations: dataLocalizations.localizations,
+				descriptions: dataLocalizations.description,
+			};
+			console.log(
+				sendData,
+				"отправляемые данные при создании направления"
+			);
 
-        const getRelatedCourses = (localizedName: string) => {
-            const courses = course_store.course_list.filter((direction_in_course) => {
-                return direction_in_course.directions.includes(localizedName);
-            });
-            return courses.length ? courses : [];
-        };
+			store_direction.createDirection(sendData);
+			store_modal.closeModal();
+		};
 
-        const isValid = () => {
-            errors.name = '';
-            errors.checkbox = '';
+		const patchDirection = () => {
+			const sendData = {
+				isVisible: visible_direction.value,
+				localizations: dataLocalizations.localizations,
+				descriptions: dataLocalizations.description,
+			};
+			console.log(
+				sendData,
+				"отправляемые данные при редактировании направления"
+			);
 
-            const hasAtLeastOneLocalization = Object.values(dataLocalizations.localizations).some(value => value.trim() !== '');
+			store_direction.changeDirection(
+				modal_data.modalProps?.localizations.id,
+				sendData
+			);
+			store_modal.closeModal();
+		};
 
-            if (!hasAtLeastOneLocalization) {
-                errors.name = 'Поле обязательно к заполнению';
-                return false;
-            }
-
-            if (dataLocalizations.localizations[lang.value]?.length > 50) {
-                errors.name = 'Максимальное количество символов - 50';
-                return false;
-            }
-
-            if (!modal_data.modalProps.edit && isDirectionExists(dataLocalizations.localizations[lang.value])) {
-                errors.name = 'Направление с таким названием уже существует';
-                return false;
-            }
-
-            if (!visible_direction.value) {
-                const related_courses = getRelatedCourses(dataLocalizations.localizations[lang.value]);
-                if (related_courses.length > 0) {
-                    errors.checkbox = 'Направление используется на сайте, его нельзя скрыть';
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        const sendDirection = () => {
-            if (isValid()) {
-                const sendData = {
-                    isVisible: visible_direction.value,
-                    localizations: dataLocalizations.localizations,
-                    descriptions: dataLocalizations.description
-                }
-                console.log(sendData, 'отправляемые данные при создании направления')
-
-                store_direction.createDirection(sendData);
-                store_modal.closeModal();
-            }
-        }
-
-        const patchDirection = () => {
-            if (isValid()) {
-                const sendData = {
-                    isVisible: visible_direction.value,
-                    localizations: dataLocalizations.localizations,
-                    descriptions: dataLocalizations.description
-                }
-                console.log(sendData, 'отправляемые данные при редактировании направления')
-
-                store_direction.changeDirection(modal_data.modalProps?.localizations.id, sendData);
-                store_modal.closeModal();
-            }
-        }
-
-        return {
-            lang,
-            visible_direction,
-            modal_data,
-            dataLocalizations,
-            errors,
-            setLang,
-            setCheckbox,
-            setDirectionName,
-            setDirectionDescription,
-            isValid,
-            sendDirection,
-            patchDirection,
-            closeModal
-        }
-    }
-})
+		return {
+			lang,
+			visible_direction,
+			modal_data,
+			dataLocalizations,
+			errors,
+			setLang,
+			setCheckbox,
+			setFormValue,
+			sendDirection,
+			patchDirection,
+			closeModal,
+			localizationForm,
+		};
+	},
+});
 </script>
 <style lang="sass">
 .oil-direction
@@ -219,5 +213,4 @@ export default defineComponent({
     &__btns
         @include flex_start()
         gap: rem(16)
-
 </style>
