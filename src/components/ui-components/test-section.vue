@@ -27,7 +27,12 @@
 						<span>
 							{{
 								setting.title || setting.title === 0
-									? setting.title
+									? setting.type === "title"
+										? checkForFlooding(
+												setting.title as string,
+												65
+										  )
+										: setting.title
 									: noDataText
 							}}
 							{{
@@ -128,6 +133,7 @@ import { useStoreCourseContent } from "~/src/stores/storeCourseContent";
 import { useStoreModal } from "~/src/stores/storeModal";
 import type { ICourseContentQuestions } from "~/src/ts-interface/course-content";
 import type { IDeleteModal } from "~/src/ts-interface/storeModal.type";
+import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
 const route = useRoute();
 const { id } = route.params as unknown as { id: string };
