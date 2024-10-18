@@ -731,9 +731,11 @@
 					_disable:
 						edit_field.type_field !== '' &&
 						edit_field.idx_field !== null,
+					_active: true,
 				}"
 			>
 				<span
+					:style="{ color: '#176DC1' }"
 					@click="
 						$router.push(
 							`content-module/${content_inner.value.finalPage.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=Итоги&=text`
