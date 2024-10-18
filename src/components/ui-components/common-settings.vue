@@ -559,7 +559,7 @@
 							class="oil-course-setting__settings__table__column__cell__dates"
 						>
 							<CalendarCmp
-								:class="'small-field_error'"
+								:class="'small-field_error _first-error'"
 								:error="dateErrors[0].error"
 								:input_value="UTCDates?.dateStart"
 								@update-date="handleDateUpdate($event, 'start')"
@@ -1346,4 +1346,13 @@ onMounted(() => {
 	.oil-input__message
 		width: max-content
 		transform: translateY(29%)
+		gap: rem(12)
+		i
+			position: absolute
+			top: 35%
+			left: -7%
+
+	&._first-error
+		.oil-input__message
+			transform: translateY(-120%)
 </style>
