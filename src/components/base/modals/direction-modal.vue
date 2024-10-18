@@ -30,6 +30,7 @@
 		<CheckboxCmp
 			class="oil-direction__checkbox"
 			:text="'Отображать на сайте'"
+			:id="'visible'"
 			:active="localizationForm.visibleCheckbox.value"
 			:error="localizationForm.visibleCheckbox.error"
 			:type="localizationForm.visibleCheckbox.type"
@@ -171,7 +172,7 @@ export default defineComponent({
 
 			switch (fieldValue.type) {
 				case "name":
-					if (!fieldValue.value && !fieldValue.value.trimStart()) {
+					if (!fieldValue.value && !fieldValue.value?.trimStart()) {
 						setError("Поле обязательно к заполнению");
 					} else if (fieldValue.value.length > 50) {
 						setError("Максимальное количество символов - 50");
@@ -180,7 +181,7 @@ export default defineComponent({
 					}
 					return;
 				case "description":
-					if (!fieldValue.value && !fieldValue.value.trimStart()) {
+					if (!fieldValue.value && !fieldValue.value?.trimStart()) {
 						setError("Поле обязательно к заполнению");
 					} else if (fieldValue.value.length > 170) {
 						setError("Максимальное количество символов - 170");

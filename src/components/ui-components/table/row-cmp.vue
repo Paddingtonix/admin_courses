@@ -29,114 +29,114 @@ import { defineComponent } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 
 export default defineComponent({
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-        redirect: {
-            type: Boolean,
-            default: true,
-        },
-        name: {
-            type: String,
-            default: "",
-        },
-        lastChangeDateTime: {
-            type: String,
-            default: "",
-        },
-        localizedName: {
-            type: String,
-            default: "",
-        },
-        status: {
-            type: [String, Number],
-            default: "",
-        },
-        authors: {
-            type: String,
-            default: "",
-        },
-        direction: {
-            type: String,
-            default: "",
-        },
-        lang: {
-            type: String,
-            default: "",
-        },
-        date_edit: {
-            type: String,
-            default: "",
-        },
-        end_date: {
-            type: String,
-            default: "",
-        },
-        isVisible: {
-            type: Boolean,
-            default: false,
-        },
-        count: {
-            type: [String, Number],
-            default: "",
-        },
-    },
-    setup(props) {
-        const fields = props;
-        const store_modal = useStoreModal();
+	props: {
+		id: {
+			type: Number,
+			required: true,
+		},
+		redirect: {
+			type: Boolean,
+			default: true,
+		},
+		name: {
+			type: String,
+			default: "",
+		},
+		lastChangeDateTime: {
+			type: String,
+			default: "",
+		},
+		localizedName: {
+			type: String,
+			default: "",
+		},
+		status: {
+			type: [String, Number],
+			default: "",
+		},
+		authors: {
+			type: String,
+			default: "",
+		},
+		direction: {
+			type: String,
+			default: "",
+		},
+		lang: {
+			type: String,
+			default: "",
+		},
+		date_edit: {
+			type: String,
+			default: "",
+		},
+		end_date: {
+			type: String,
+			default: "",
+		},
+		isVisible: {
+			type: String,
+			default: "Отображается",
+		},
+		count: {
+			type: [String, Number],
+			default: "",
+		},
+	},
+	setup(props) {
+		const fields = props;
+		const store_modal = useStoreModal();
 
-        const statusChange = (status: string) => {
-            switch (status) {
-                case "В разработке":
-                    store_modal.$patch({
-                        label: "Внимание!",
-                        activeModal: "development-status",
-                        modalProps: {
-                            courseId: props.id,
-                            status: 'onModeration' // автор может только отправлять курс на модерацию
-                        }
-                    });
-                    store_modal.openModal()
-                    break;
-                case "На модерации":
-                    store_modal.$patch({
-                        label: "Изменение статуса",
-                        activeModal: "moderation-status",
-                        modalProps: {
-                            courseId: props.id,
-                            status: props.status
-                        }
-                    });
-                    store_modal.openModal()
-                    break;
-                case "Опубликован":
-                    store_modal.$patch({
-                        label: "Внимание!",
-                        activeModal: "published-status",
-                    });
-                    store_modal.openModal()
-                    break;
-                case "Снят с витрины":
-                    store_modal.$patch({
-                        label: "Внимание!",
-                        activeModal: "out-of-stock-status",
-                    });
-                    store_modal.openModal()
-                    break;
-                case "В архиве":
-                    store_modal.$patch({
-                        label: "Внимание!",
-                        activeModal: "archived-status",
-                    });
-                    store_modal.openModal()
-                    break;
-                default:
-                    break;
-            }
-            return "";
-        };
+		const statusChange = (status: string) => {
+			switch (status) {
+				case "В разработке":
+					store_modal.$patch({
+						label: "Внимание!",
+						activeModal: "development-status",
+						modalProps: {
+							courseId: props.id,
+							status: "onModeration", // автор может только отправлять курс на модерацию
+						},
+					});
+					store_modal.openModal();
+					break;
+				case "На модерации":
+					store_modal.$patch({
+						label: "Изменение статуса",
+						activeModal: "moderation-status",
+						modalProps: {
+							courseId: props.id,
+							status: props.status,
+						},
+					});
+					store_modal.openModal();
+					break;
+				case "Опубликован":
+					store_modal.$patch({
+						label: "Внимание!",
+						activeModal: "published-status",
+					});
+					store_modal.openModal();
+					break;
+				case "Снят с витрины":
+					store_modal.$patch({
+						label: "Внимание!",
+						activeModal: "out-of-stock-status",
+					});
+					store_modal.openModal();
+					break;
+				case "В архиве":
+					store_modal.$patch({
+						label: "Внимание!",
+						activeModal: "archived-status",
+					});
+					store_modal.openModal();
+					break;
+				default:
+					break;
+			}
+			return "";
+		};
 
 		return {
 			fields,
