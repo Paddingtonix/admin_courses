@@ -365,9 +365,13 @@ export default defineComponent({
                 padding-top: rem(7)
                 p
                     color: #5B6C7B
-
+        .oil-input
+            &:has(.oil-input__message)
+                margin-bottom: rem(8)
         &__textarea
             margin-bottom: rem(8)
+            &:has(.oil-textarea__message)
+                margin-bottom: rem(16)
 
     &__content
         &__info
