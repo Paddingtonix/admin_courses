@@ -104,6 +104,10 @@ export default defineComponent({
 			modelValue.value || initial_value
 		);
 
+		watch(modelValue, (newValue) => {
+			input_value.value = newValue;
+		});
+
 		const formatter = new Intl.NumberFormat("ru-RU", {
 			useGrouping: true,
 		});
