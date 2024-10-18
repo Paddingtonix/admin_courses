@@ -1,8 +1,12 @@
 <template>
 	<div class="oil-input" :class="{ '_error-frame': error.length }">
-		<label :class="['oil-input__label', { _fill: input_value }]">{{
-			label
-		}}</label>
+		<label
+			:class="[
+				'oil-input__label',
+				{ _fill: input_value || input_value === 0 },
+			]"
+			>{{ label }}</label
+		>
 		<input
 			v-if="$props.mask_type"
 			:value="formatted_value"
@@ -78,7 +82,6 @@ export default defineComponent({
 		},
 		modelValue: {
 			type: [String, Number],
-			default: "",
 		},
 		onBlur: {
 			type: Function,
@@ -122,6 +125,8 @@ export default defineComponent({
 		);
 
 		const setValue = (event: Event) => {
+			console.log(typeof (event.target as HTMLInputElement).value);
+
 			emit("set_value", {
 				value: (event.target as HTMLInputElement).value,
 				type: props.type,

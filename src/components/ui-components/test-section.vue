@@ -23,9 +23,14 @@
 						v-if="!setting.isEditing"
 					>
 						<span>
-							{{ setting.title ? setting.title : noDataText }}
 							{{
-								setting.title && setting.type === "score"
+								setting.title || setting.title === 0
+									? setting.title
+									: noDataText
+							}}
+							{{
+								(setting.title === 0 || setting.title) &&
+								setting.type === "score"
 									? "%"
 									: ""
 							}}
@@ -46,7 +51,9 @@
 							<i v-html="defaultIcon"></i>
 						</div>
 						<div v-else>
-							<p v-if="!setting?.title">{{ setting.desc }}</p>
+							<p v-if="!setting?.title || setting.title !== 0">
+								{{ setting.desc }}
+							</p>
 						</div>
 					</div>
 					<template v-else>
@@ -151,7 +158,6 @@ const props = defineProps({
 });
 
 const isSummaryVisible = ref(false);
-const toggleSummary = () => (isSummaryVisible.value = !isSummaryVisible.value);
 const storeModal = useStoreModal();
 const generalSettingsTitle = computed(() =>
 	courseContentStore.generalSettings.title?.replace(/^.*?:\s*/, "")
@@ -178,7 +184,7 @@ const general_settings = reactive([
 
 const active_question = reactive<{ value: null | number }>({ value: null });
 
-const changing_field = ref("");
+const changing_field = ref<string | number>();
 
 const setActiveQuestion = (id: number) => {
 	active_question.value = id;
@@ -234,11 +240,11 @@ onMounted(() => {
 
 const changeValueSetting = (
 	id: number,
-	value: string,
+	value: string | number,
 	type: "score" | "title"
 ) => {
-	validateGeneralSetting(value, type);
 	changing_field.value = value;
+	validateGeneralSetting(value, type);
 };
 
 const cancelEditing = (id: number, type: string | number) => {
@@ -265,7 +271,7 @@ const validateGeneralSetting = (
 			delete generalSettingsErrors.value[type];
 		}
 	} else if (type === "score") {
-		const scoreValue = value as number;
+		const scoreValue = parseFloat(value as string);
 
 		if (typeof scoreValue !== "number") {
 			generalSettingsErrors.value[type] = "Поле обязательно к заполнению";

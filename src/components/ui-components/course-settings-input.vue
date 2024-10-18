@@ -90,8 +90,10 @@ const model_value = toRef(props.model_value);
 
 const emit = defineEmits(["decline", "accept", "set_value"]);
 
-const changeInputValue = (value: { value: string; type: string }) => {
+const changeInputValue = (value: { value: string | number; type: string }) => {
 	model_value.value = value.value;
+	console.log(typeof value.value);
+
 	emit("set_value", model_value.value);
 };
 </script>
