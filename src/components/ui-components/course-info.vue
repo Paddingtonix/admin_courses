@@ -97,9 +97,11 @@ import { useCourseInfo } from "~/src/stores/storeCourseInfo";
 import { useRoute } from "vue-router";
 import type { ICourseInfo } from "~/src/ts-interface/course-info";
 import { AxiosError } from "axios";
+import { useStoreEditCourseSetting } from "~/src/stores/storeEditCourseSetting";
 
 const course_info_store = useCourseInfo();
 const route = useRoute();
+const storeCourseEditing = useStoreEditCourseSetting();
 
 const id = route.query.search;
 
@@ -113,6 +115,9 @@ const active_example = reactive({
 
 const openEditFrame = () => {
 	edit_mode.value = !edit_mode.value;
+	storeCourseEditing.$patch({
+		isEdit: edit_mode.value,
+	});
 };
 
 const course_info = computed(() => [
