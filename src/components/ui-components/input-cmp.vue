@@ -15,6 +15,7 @@
 			@blur="() => onBlur"
 			:maxlength="max_length"
 			:placeholder="placeholder"
+			:readonly="is_readonly"
 		/>
 		<input
 			v-else
@@ -24,6 +25,7 @@
 			@input="setValue"
 			:placeholder="placeholder"
 			:maxlength="max_length"
+			:readonly="is_readonly"
 		/>
 		<div class="oil-input__message" v-if="error.length">
 			<i>
@@ -86,6 +88,10 @@ export default defineComponent({
 		onBlur: {
 			type: Function,
 			default: () => {},
+		},
+		is_readonly: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	emits: ["set_value"],

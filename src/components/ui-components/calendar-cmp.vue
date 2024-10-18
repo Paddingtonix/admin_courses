@@ -3,10 +3,12 @@
 		<VDatePicker v-model="date" :popover="popover" :masks="masks">
 			<template #default="{ inputValue, inputEvents }">
 				<InputCmp
+					aria-readonly="true"
 					:error="error"
 					:date_calendar="inputValue"
 					:placeholder="'ДД.ММ.ГГ'"
 					@set_value="handleSetValue"
+					:is_readonly="true"
 				/>
 				<svg
 					v-on="inputEvents"
