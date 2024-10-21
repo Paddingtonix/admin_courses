@@ -324,14 +324,18 @@ export default defineComponent({
     &__info
         width: rem(960)
         &__fields
+            position: relative
             border-bottom: rem(1) solid $disabled_basic
             @include flex_start()
             &__cell
                 padding: rem(16) rem(8)
+                max-width: 70%
                 &:nth-child(1)
                     width: rem(272)
                     span
                         color: #5B6C7B
+                span
+                    word-wrap: break-word
 
         &__btn
             margin-top: rem(32)
