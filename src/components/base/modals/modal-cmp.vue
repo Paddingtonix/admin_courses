@@ -31,7 +31,7 @@
                 </button>
             </div>
             <div class="oil-modal__container__content">
-                <component :is="modalData.activeModal"></component>
+                <component :is="modalData.activeModal" :props="modalData"></component>
             </div>
         </div>
     </div>

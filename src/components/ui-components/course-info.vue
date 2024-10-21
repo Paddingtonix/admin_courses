@@ -64,7 +64,7 @@
 						</i>
 					</div>
 					<div>
-						{{ edit_info[field_idx + 2].value.length }}
+						{{ edit_info[field_idx + 2].value?.length }}
 						/ 470
 					</div>
 				</div>

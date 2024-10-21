@@ -151,7 +151,7 @@
 			</div>
 			<SelectorCmp
 				@setValue="changeMainParams($event.value, 'nCoursesPerPage')"
-				class="tags-page__selector"
+				class="oil-course__info__selector"
 				:label="`${$route.query.nCoursesPerPage ? $route.query.nCoursesPerPage : 10} курсов на стр.`"
 				listText="курсов на стр."
 				:list="list"
@@ -354,6 +354,32 @@ export default defineComponent({
 
 			loader.value = false
 		}, { immediate: true })
+		// watch(() => route.query, async () => {
+		// 	const query_params = {
+		// 		page: route.query.page || '1',
+		// 		statuses: Array.isArray(route.query.statuses) ? route.query.statuses : route.query.statuses?.split(',') || [],
+		// 		languageIds: Array.isArray(route.query.languageIds) ? route.query.languageIds : route.query.languageIds?.split(',') || [],
+		// 		directionIds: Array.isArray(route.query.directionIds) ? route.query.directionIds : route.query.directionIds?.split(',') || [],
+		// 		nCoursesPerPage: route.query.nCoursesPerPage || '10'
+		// 	}
+
+		// 	// Преобразуем параметры в строку запроса
+		// 	const query_str = Object.entries(query_params)
+		// 		.filter(([_, value]) => Array.isArray(value) ? value.length : value) // Оставляем только параметры с ненулевыми значениями
+		// 		.map(([key, value]) => 
+		// 			Array.isArray(value) ? 
+		// 			value.map(v => `${key}=${v}`).join('&') : // Для массивов создаем несколько одинаковых параметров
+		// 			`${key}=${value}`
+		// 		)
+		// 		.join('&')
+
+		// 	await nextTick()
+
+		// 	// Отправляем запрос
+		// 	course_list.value = await getRequest(`/admin/v1/Course?${query_str}`)
+
+		// 	loader.value = false
+		// }, { immediate: true })
 
 		onMounted(() => {
 			nextTick(async () => {

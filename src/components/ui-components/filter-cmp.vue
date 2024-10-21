@@ -214,7 +214,7 @@ watch(() => props.filters, () => {
         padding: rem(32)
         @include flex_column()
         height: max-content
-        gap: rem(32)
+        gap: rem(24)
 
         .oil-checkbox
             width: rem(347)

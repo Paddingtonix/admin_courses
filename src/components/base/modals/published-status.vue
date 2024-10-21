@@ -2,7 +2,7 @@
     <div :class="`oil-modal__course-create`">
         <div :class="`oil-modal__course-create__text`">
             <span>Курс размещен на витрине сайта.</span>
-            <span> Дата снятия курса с витрины - {{ published_date }}</span>
+            <span> Дата снятия курса с витрины - {{ props.published_date }}</span>
         </div>
         <BtnCmp
             :text="'Понятно'"
@@ -15,12 +15,7 @@ import { defineComponent, reactive } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 
 export default defineComponent({
-    props: {
-        published_date: {
-            type: String,
-            default: "28.07.2025",
-        }
-    },
+    props: ['props'],
     setup() {
         const store_modal = useStoreModal();
 

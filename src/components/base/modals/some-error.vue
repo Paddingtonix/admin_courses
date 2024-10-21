@@ -27,6 +27,10 @@ export default defineComponent({
             store_modal.closeModal();
         };
 
+        onMounted(() => {
+            console.log(store_modal.modalProps.data);
+        })
+
         return {
             store_modal,
             closeModal

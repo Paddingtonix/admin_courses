@@ -1,6 +1,7 @@
 export interface Selector {
     text: string | number;
     active: boolean;
+    translate: string;
 }
 
 export interface FormField {
@@ -11,4 +12,5 @@ export interface FormField {
     id?: string;
     pattern?: string | RegExp;
     error?: string;
+
 }

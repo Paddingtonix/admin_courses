@@ -18,16 +18,14 @@
                             :type="field.type"
                             :error="field.error"
                             @setValue="setValueSelector"
-                            @blur="validCheck(field)"
                         />
                         <inputCmp
                             v-else
                             :placeholder="field.label"
                             :type="field.type"
-                            :error="field.error = field.value.length > 103 ? 'Не больше 103 символов' : ''"
+                            :error="field.error = field.value.length > 103 ? 'Не больше 103 символов' : field.error"
                             :maxlength="103"
                             @set_value="setValueSelector"
-                            @blur="validCheck(field)"
                         />
                     </template>
                 </div>
@@ -42,43 +40,26 @@
                     </i>
                     <p>Внимание! После сохранения изменений, редактирование параметров будет невозможно.</p>
                 </div>
-                <div class="oil-create-course__form__fields__guide">
-                    <div class="oil-create-course__form__fields__guide__title" @click="openGuide">
-                        <i>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#323C46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </i>
-                        <span>Как правильно задать параметры курса?</span>
-                        <i class="oil-create-course__form__fields__guide__title__chevron">
-                            <svg :class="{'_active': open_guide.value}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 9L12 15L18 9" stroke="#374351" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </i>
-                    </div>
-                    <div class="oil-create-course__form__fields__guide__text" v-if="open_guide.value">
-                        <ul>
-                            <span>Типы курса</span>
-                            <li>Асинхронный — обучение, не привязанное к конкретному времени или месту</li>
-                            <li>Синхронный — обучение проходит в режиме реального времени сразу для всех</li>
+                <SummaryCmp>
+                    <template v-slot:summary-text>
+                        <ul v-for="(text_block, idx) in guide_text" :key="idx">
+                            <span>{{ text_block.title }}</span>
+                            <p
+                                v-for="(
+                                    text, idx
+                                ) in text_block.text"
+                                :key="idx"
+                            >
+                                {{ text }}
+                            </p>
+
+
+                            <li v-for="(rule, index) in text_block.rules" :key="index">
+                                {{ rule }}
+                            </li>
                         </ul>
-                        <ul>
-                            <span>Формат курса</span>
-                            <li>Онлайн — обучение происходит с помощью интернета и электронных технологий</li>
-                            <li>Оффлайн — обучение предполагает получение знаний в стенах учебного заведения</li>
-                        </ul>
-                        <ul>
-                            <span>Приобретение</span>
-                            <li>Платно — платный курс</li>
-                            <li>Бесплатно — бесплатный курс</li>
-                        </ul>
-                        <ul>
-                            <span>Доступ</span>
-                            <li>Полный — пользователь может купить курс только целиком</li>
-                            <li>Частичный — пользователь может купить курс частично (по главам) или целиком</li>
-                        </ul>
-                    </div>
-                </div>
+                    </template>
+                </SummaryCmp>
                 <div class="oil-create-course__form__fields__container">
                     <template v-for="(field, idx) in form.slice(2)" :key="idx">
                         <selectorCmp
@@ -88,7 +69,6 @@
                             :type="field.type"
                             :error="field.error"
                             @setValue="setValueSelector"
-                            @blur="validCheck(field)"
                         />
                     </template>
                 </div>
@@ -101,6 +81,8 @@
                     <BtnCmp
                         :text="'Создать'"
                         @click="submitForm"
+                        :class="{_disable: form.some(field => !field.value.length)}"
+                        :disabled="form.some(field => !field.value.length)"
                     />
                 </div>
             </div>
@@ -123,6 +105,37 @@ export default defineComponent({
             value: false as boolean
         })
 
+        const guide_text = reactive([
+            {
+                title: 'Типы курса',
+                rules: [
+                    "Асинхронный — обучение, не привязанное к конкретному времени или месту",
+                    "Синхронный — обучение проходит в режиме реального времени сразу для всех",
+                ],
+            },
+            {
+                title: 'Формат курса',
+                rules: [
+                    "Онлайн — обучение происходит с помощью интернета и электронных технологий",
+                    "Оффлайн — обучение предполагает получение знаний в стенах учебного заведения",
+                ],
+            },
+            {
+                title: 'Приобретение',
+                rules: [
+                    "Платно — платный курс",
+                    "Бесплатно — бесплатный курс",
+                ],
+            },
+            {
+                title: 'Доступ',
+                rules: [
+                    "Полный — пользователь может купить курс только целиком",
+                    "Частичный — пользователь может купить курс частично (по главам) или целиком",
+                ],
+            },
+        ])
+
         const form = reactive<FormField[]>([
             {
                 label: 'Язык',
@@ -132,15 +145,18 @@ export default defineComponent({
                 selector: [
                     {
                         text: 'Русский',
-                        active: false
+                        active: false,
+                        translate: 'ru'
                     },
                     {
                         text: 'Английский',
-                        active: false
+                        active: false,
+                        translate: 'en'
                     },
                     {
                         text: 'Французский',
-                        active: false
+                        active: false,
+                        translate: 'fr'
                     }
                 ]
             },
@@ -220,7 +236,7 @@ export default defineComponent({
 			open_guide.value = !open_guide.value;
 		};
 
-        const setValueSelector = (val: { type: string, value: string }) => {
+        const setValueSelector = (val: { type: string, value: string }) => {            
             const field = form.find(field => field.type === val.type)!
             field.value = val.value
 
@@ -231,9 +247,7 @@ export default defineComponent({
             }
         }
 
-        const validCheck = (field: FormField) => {    
-            console.log(11111);
-                    
+        const validCheck = (field: FormField) => {                        
             if(!field.value.length) {
                 field.error = 'Это поле обязательно к заполнению'
             } else {
@@ -241,55 +255,54 @@ export default defineComponent({
             }
         }
 
-        const isFormValid = () => {
-            let course_data = {
-                languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
-                title: form[1].value,
-                courseType: form[2].selector?.find((type: { text: string | number, active: boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
-                courseFormat: form[3].selector?.find((format: { text: string | number, active: boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
-                isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
-                isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
-            }
+        // const isFormValid = () => {
+        //     let course_data = {
+        //         languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.translate,
+        //         title: form[1].value,
+        //         courseType: form[2].selector?.find((type: { text: string | number, active: boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
+        //         courseFormat: form[3].selector?.find((format: { text: string | number, active: boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
+        //         isFree: form[4].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Бесплатно',
+        //         isPartialAvailable: form[5].selector?.find((option: { text: string | number, active: boolean }) => option.active)?.text === 'Частичный'
+        //     }
 
 
-            if (course_data.courseType === 2 && course_data.courseFormat === 1) {
-                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
-                form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
-                console.log('Валидация не пройдена: Асинхронный курс не может быть оффлайн')
-                return false
-            }
+        //     if (course_data.courseType === 2 && course_data.courseFormat === 1) {
+        //         form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
+        //         form.find(field => field.type === 'format')!.error = 'Валидация не пройдена: Асинхронный курс не может быть оффлайн'
+        //         console.log('Валидация не пройдена: Асинхронный курс не может быть оффлайн')
+        //         return false
+        //     }
 
-            if (course_data.isFree && course_data.isPartialAvailable) {
-                form.find(field => field.type === 'acquired')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
-                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
-                console.log('Валидация не пройдена: Бесплатный курс не может быть частично доступен')
-                return false
-            }
+        //     if (course_data.isFree && course_data.isPartialAvailable) {
+        //         form.find(field => field.type === 'acquired')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+        //         form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Бесплатный курс не может быть частично доступен'
+        //         console.log('Валидация не пройдена: Бесплатный курс не может быть частично доступен')
+        //         return false
+        //     }
 
-            if (course_data.courseType === 1 && course_data.isPartialAvailable) {
-                form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
-                form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
-                console.log('Валидация не пройдена: Синхронный курс не может быть частично доступен')
-                return false
-            }
+        //     if (course_data.courseType === 1 && course_data.isPartialAvailable) {
+        //         form.find(field => field.type === 'type')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+        //         form.find(field => field.type === 'access')!.error = 'Валидация не пройдена: Синхронный курс не может быть частично доступен'
+        //         console.log('Валидация не пройдена: Синхронный курс не может быть частично доступен')
+        //         return false
+        //     }
 
-            return true
-        }
+        //     return true
+        // }
 
         const submitForm = () => {
-            let form_is_valid = true
+            // let form_is_valid = true
 
-            form.forEach((field) => {
-                validCheck(field)
-                if (field.error) {
-                    form_is_valid = false
-                }
-            })
+            // form.forEach((field) => {
+            //     validCheck(field)
+            //     if (field.error) {
+            //         form_is_valid = false
+            //     }
+            // })
 
-            if (!form_is_valid || !isFormValid()) return
-
-            const course_data = {
-                languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.text === 'Русский' ? 'ru' : 'en',
+            // if (!form_is_valid || !isFormValid()) return
+            let course_data = {
+                languageId: form[0].selector?.find((lang: { text: string | number, active: boolean }) => lang.active)?.translate,
                 title: form[1].value,
                 courseType: form[2].selector?.find((type: { text: string | number, active: boolean }) => type.active)?.text === 'Асинхронный' ? 2 : 1,
                 courseFormat: form[3].selector?.find((format: { text: string | number, active: boolean }) => format.active)?.text === 'Онлайн' ? 2 : 1,
@@ -309,21 +322,22 @@ export default defineComponent({
                     }
                 })
                 .catch((error) => {
-                    console.error('Ошибка при получении данных:', error)
-                    form.find(field => field.type === error.type)!.error = error.message
-                })
+                    console.error('Ошибка при получении данных:', error.response.data)
+                    form.find(field => field.type === 'title')!.error = error.response.data
+                    })
         }
 
         return {
             open_guide,
             openGuide,
+            guide_text,
             form,
             submitForm,
             setValueSelector,
             validCheck,
             storeCourses,
             storeModal,
-            isFormValid
+            // isFormValid
         }
     }
 })
@@ -407,4 +421,7 @@ export default defineComponent({
             &__btns
                 @include flex_center_spacing()
                 gap: rem(12)
+                ._disable
+                    opacity: .5
+                    pointer-events: none 
 </style>

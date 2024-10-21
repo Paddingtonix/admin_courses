@@ -115,6 +115,7 @@ export default defineComponent({
                     store_modal.$patch({
                         label: "Внимание!",
                         activeModal: "published-status",
+                        published_date: props.end_date
                     });
                     store_modal.openModal()
                     break;
