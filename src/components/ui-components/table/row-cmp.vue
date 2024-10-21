@@ -76,7 +76,7 @@ export default defineComponent({
 		},
 		isVisible: {
 			type: String,
-			default: "Отображается",
+			default: "",
 		},
 		count: {
 			type: [String, Number],
