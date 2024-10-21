@@ -322,16 +322,22 @@ export default defineComponent({
                 line-height: rem(24)
 
     &__info
-        width: rem(960)
+        max-width: rem(960)
+        position: relative
         &__fields
             border-bottom: rem(1) solid $disabled_basic
             @include flex_start()
             &__cell
                 padding: rem(16) rem(8)
+                flex: 3 1
+                overflow: hidden
                 &:nth-child(1)
+                    flex: 1 0
                     width: rem(272)
                     span
                         color: #5B6C7B
+                span
+                    word-wrap: break-word
 
         &__btn
             margin-top: rem(32)

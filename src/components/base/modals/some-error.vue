@@ -2,10 +2,18 @@
     <div :class="`oil-modal__course-create`">
         <div :class="`oil-modal__course-create__text`">
             <span>Вы не можете отправить курс на публикацию.</span>
-            <ul>Обнаружены ошибки:
-                <li v-for="(error, index) in store_modal.modalProps.data" :key="index">
-                    {{ error }}
-                </li>
+            <ul>
+                <template v-for="(error, index) in store_modal.modalProps.data" :key="index">
+                    <template v-if="index + 1 === store_modal.modalProps.data.length">
+                        <li class="oil-modal__course-create__text__block" v-for="(part, partIndex) in error.split(';')" :key="partIndex">
+                            <!-- <span class="oil-modal__course-create__text__long-error" >{{ part }}</span> -->
+                            {{ part }}
+                        </li>
+                    </template>
+                    <li v-else>
+                        {{ error }}
+                    </li>
+                </template>
             </ul>
             <span>Исправьте ошибку и попробуйте ещё раз или убедитесь что вы совершаете правильное действие. </span>
         </div>
@@ -28,7 +36,7 @@ export default defineComponent({
         };
 
         onMounted(() => {
-            console.log(store_modal.modalProps.data);
+            console.log(store_modal.modalProps.data.at(-1));
         })
 
         return {
@@ -51,14 +59,22 @@ export default defineComponent({
             display: flex
             flex-direction: column
             gap: rem(12)
-            ul
-                list-style-type: disc
-                li
-                    margin-left: rem(24)
 
-                    &:first-child
-                        margin-top: rem(8)
+            ul
+                li
+                    list-style: inside
+                    max-width: calc(rem(472) - rem(72))
+                    white-space: nowrap
+                    overflow-x: hidden
+                    text-overflow: ellipsis
 
                     &:not(:last-child)
                         margin-bottom: rem(8)
+            &__block 
+                padding-left: rem(24) 
+            
+            &__long-error
+                @include flex_column()
+                list-style: inside
+                    
 </style>

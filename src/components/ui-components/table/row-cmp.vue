@@ -29,63 +29,63 @@ import { defineComponent } from "vue";
 import { useStoreModal } from "~/src/stores/storeModal";
 
 export default defineComponent({
-    props: {
-        id: {
-            type: Number,
-            required: true,
-        },
-        redirect: {
-            type: Boolean,
-            default: true,
-        },
-        name: {
-            type: String,
-            default: "",
-        },
-        lastChangeDateTime: {
-            type: String,
-            default: "",
-        },
-        localizedName: {
-            type: String,
-            default: "",
-        },
-        status: {
-            type: [String, Number],
-            default: "",
-        },
-        authors: {
-            type: String,
-            default: "",
-        },
-        direction: {
-            type: String,
-            default: "",
-        },
-        lang: {
-            type: String,
-            default: "",
-        },
-        date_edit: {
-            type: String,
-            default: "",
-        },
-        end_date: {
-            type: String,
-            default: "",
-        },
-        isVisible: {
-            type: Boolean,
-            default: false,
-        },
-        count: {
-            type: [String, Number],
-            default: "",
-        },
-    },
-    setup(props) {
-        const fields = props;
-        const store_modal = useStoreModal();
+	props: {
+		id: {
+			type: Number,
+			required: true,
+		},
+		redirect: {
+			type: Boolean,
+			default: true,
+		},
+		name: {
+			type: String,
+			default: "",
+		},
+		lastChangeDateTime: {
+			type: String,
+			default: "",
+		},
+		localizedName: {
+			type: String,
+			default: "",
+		},
+		status: {
+			type: [String, Number],
+			default: "",
+		},
+		authors: {
+			type: String,
+			default: "",
+		},
+		direction: {
+			type: String,
+			default: "",
+		},
+		lang: {
+			type: String,
+			default: "",
+		},
+		date_edit: {
+			type: String,
+			default: "",
+		},
+		end_date: {
+			type: String,
+			default: "",
+		},
+		isVisible: {
+			type: String,
+			default: "Отображается",
+		},
+		count: {
+			type: [String, Number],
+			default: "",
+		},
+	},
+	setup(props) {
+		const fields = props;
+		const store_modal = useStoreModal();
 
         const statusChange = (status: string) => {
             switch (status) {
