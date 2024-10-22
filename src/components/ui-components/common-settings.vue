@@ -1518,7 +1518,7 @@ onMounted(() => {
 
 
         &__btn
-            width: fit-content
+            max-width: rem(190)
 
         &__setting-btns
             display: flex
