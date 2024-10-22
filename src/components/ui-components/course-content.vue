@@ -141,7 +141,7 @@
 						:style="{ color: '#176DC1' }"
 						@click="
 							$router.push(
-								`content-module/${content_inner.value.initialPage.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=Вводная%20страница&=text`
+								`content-module/${content_inner.value.initialPage.contentId}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&contentName=Вводная%20страница&=text`
 							)
 						"
 						>{{
@@ -207,7 +207,7 @@
 					<span
 						@click="
 							$router.push(
-								`course-content/${content_inner.value.initialTesting.id}?courseTitle=${storeCourseSettings.Title}&=test`
+								`course-content/${content_inner.value.initialTesting.id}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&=test`
 							)
 						"
 						:style="{ color: '#176DC1' }"
@@ -525,7 +525,7 @@
 							v-else
 							@click="
 								$router.push(
-									`content-module/${section.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=${section.title}&=text`
+									`content-module/${section.contentId}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&contentName=${section.title}&=text`
 								)
 							"
 							>{{
@@ -617,7 +617,7 @@
 							:style="{ color: '#176DC1' }"
 							@click="
 								$router.push(
-									`course-content/${chapter.testing.id}?courseTitle=${storeCourseSettings.Title}&=test`
+									`course-content/${chapter.testing.id}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&=test`
 								)
 							"
 							v-else
@@ -665,7 +665,7 @@
 					<span
 						@click="
 							$router.push(
-								`course-content/${content_inner.value.finalTesting.id}?courseTitle=${storeCourseSettings.Title}&=test`
+								`course-content/${content_inner.value.finalTesting.id}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&=test`
 							)
 						"
 						:style="{ color: '#176DC1' }"
@@ -739,7 +739,7 @@
 					:style="{ color: '#176DC1' }"
 					@click="
 						$router.push(
-							`content-module/${content_inner.value.finalPage.contentId}?courseTitle=${storeCourseSettings.Title}&contentName=Итоги&=text`
+							`content-module/${content_inner.value.finalPage.contentId}?courseTitle=${storeCourseSettings.Title}&courseId=${$route.query.search}&contentName=Итоги&=text`
 						)
 					"
 					>{{

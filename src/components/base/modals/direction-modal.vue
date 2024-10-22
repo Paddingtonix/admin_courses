@@ -321,7 +321,6 @@ export default defineComponent({
 						store_modal.closeModal();
 					})
 					.catch((error) => {
-						console.warn("eto catch", error.response?.data);
 						if (
 							error.response?.data.includes(
 								"Такие локализации уже существуют"

@@ -3,7 +3,7 @@
 		<div class="oil-course-content">
 			<breadCmp
 				:prev_page="[
-					userStore.isAdmin ? 'Список курсов' : 'Мои курсы',
+					userStore.role !== 'Author' ? 'Список курсов' : 'Мои курсы',
 					`${$route.query.courseTitle}`,
 				]"
 				:current_page="courseContentStore.generalSettings?.title ?? ''"

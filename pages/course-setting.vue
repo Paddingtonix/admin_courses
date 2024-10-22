@@ -2,7 +2,9 @@
 	<section class="oil-container">
 		<div class="oil-page oil-course-setting">
 			<breadCmp
-				:prev_page="isAdmin ? 'Список курсов' : 'Мои курсы'"
+				:prev_page="
+					userStore.role !== 'Author' ? 'Список курсов' : 'Мои курсы'
+				"
 				:current_page="storeCourseSetting.Title"
 				class="oil-course-setting__bread"
 			/>
@@ -114,6 +116,7 @@ export default defineComponent({
 			storeCourseSetting,
 			query,
 			isAdmin,
+			userStore,
 		};
 	},
 });
