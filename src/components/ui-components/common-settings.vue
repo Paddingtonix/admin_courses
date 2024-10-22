@@ -1340,19 +1340,203 @@ onMounted(() => {
 	});
 });
 </script>
-
 <style lang="sass">
-.small-field_error
-	.oil-input__message
-		width: max-content
-		transform: translateY(29%)
-		gap: rem(12)
-		i
-			position: absolute
-			top: 35%
-			left: -7%
+.oil-course-setting__settings
+        @include flex_column()
+        width: rem(972)
+        gap: rem(24)
+        .small-field_error
+            .oil-input__message
+                width: max-content
+                transform: translateY(29%)
+                gap: rem(12)
+                i
+                    position: absolute
+                    top: 35%
+                    left: -7%
 
-	&._first-error
-		.oil-input__message
-			transform: translateY(-120%)
+            &._first-error
+                .oil-input__message
+                    transform: translateY(-120%)
+        &__cards
+            display: flex
+            gap: rem(12)
+            flex: 1
+
+        &__table
+            display: flex
+            &__column
+                &__cell
+                    display: flex
+                    position: relative
+                    gap: rem(8)
+                    border-bottom: rem(1) solid $background-main
+                    padding: rem(16) rem(8)
+                    span
+                        line-height: rem(24)
+                        margin: rem(8) 0
+
+                    &__tooltip-container
+                        position: relative
+                        display: inline-block
+
+                    &__tooltip
+                        position: absolute
+                        display: flex
+                        background-color: $basic_light_gray
+                        border-radius: rem(8)
+                        padding: rem(8) rem(12)
+                        left: rem(12)
+                        bottom: rem(24)
+                        box-shadow: rem(0) rem(2) rem(4) rem(-2) rgba(24, 39, 75, 0.12), rem(0) rem(4) rem(4) rem(-2) rgba(24, 39, 75, 0.08)
+                        z-index: 1
+                        &__text
+                            color: $basic_white
+                            font-size: 12px
+                            width: rem(171)
+
+                    &__no-data
+                        display: flex
+                        flex-direction: column
+                        gap: rem(2)
+                        height: rem(40)
+                        align-content: center
+                        span
+                            line-height: initial
+                            margin: initial
+
+                        &__title
+                            color: #5B6C7B
+                            font-size: 16px
+                            font-weight: 500
+                            line-height: 24px
+                            margin: 0
+
+                        &__subtitle
+                            color: #9AA7BB
+                            font-size: 12px
+                            font-weight: 400
+                            line-height: 16px
+                            margin: 0
+
+                        &_partial-available
+                            color: #9AA7BB
+                            font-size: rem(12)
+                            a
+                                color: $light_primary
+
+                    &__direction
+                        display: flex
+                        flex-wrap: wrap
+                        gap: rem(8)
+                        min-height: rem(40)
+                        align-items: center
+                        span
+                            bottom: rem(-6)
+                            font-size: rem(14)
+                            line-height: 16px
+                            color: $basic_error
+
+                    &__partial-available
+                        position: absolute
+                        font-size: rem(12)
+                        top: rem(42)
+                        &__title
+                            color: #9AA7BB
+
+                        a
+                            color: $light_primary
+                            cursor: pointer
+                            transition: color 0.2s
+                            &:hover
+                                color: #03AEE2
+
+                &:first-child
+                    width: rem(360)
+                    flex-shrink: 0
+                    display: flex
+                    flex-direction: column
+                    .oil-course-setting__settings__table__column__cell
+                        span
+                            color: $basic_gray
+
+                        svg
+                            cursor: pointer
+                            margin: rem(10) 0
+                            &:hover
+                                path
+                                    transition: stroke .2s
+                                    stroke: #398BDB
+
+                        &:last-child
+                            flex-grow: 1
+                            align-items: center
+
+                &:not(:first-child)
+                    flex-grow: 1
+                    .oil-course-setting__settings__table__column__cell
+                        &:first-child
+                            padding: rem(14) rem(8)
+                            span
+                                background-color: $background-main
+                                color: $basic_primary
+                                border-radius: rem(16)
+                                padding: rem(4) rem(8)
+                                line-height: rem(20)
+
+                        .oil-course-setting__settings__table__column__cell__dates
+                            display: flex
+                            gap: rem(8)
+                            align-items: center
+                            position: relative
+                            svg
+                                position: absolute
+                                // top: rem(10)
+                                // left: rem(16)
+
+                            .oil-input
+                                padding: rem(0) rem(16) rem(0) rem(44)
+
+                        &__inputs
+                            display: flex
+                            gap: 24px
+
+                        &__edit-partial-available
+                            font-size: rem(12)
+                            top: rem(42)
+                            margin: rem(8) rem(0)
+                            &__title
+                                color: #9AA7BB
+
+                            a
+                                color: $light_primary
+                                cursor: pointer
+                                transition: color 0.2s
+                                &:hover
+                                    color: #03AEE2
+
+
+
+        &__btn
+            width: fit-content
+
+        &__setting-btns
+            display: flex
+            gap: rem(12)
+
+        &__notification
+            display: flex
+            flex-direction: row
+            gap: rem(10)
+            place-items: center
+            padding: rem(16) rem(24)
+            width: 100%
+            background-color: #FFC0711A
+            border: rem(1) solid #FFCE91
+            border-radius: rem(12)
+            svg
+                flex-shrink: 0
+
+            &__text
+                line-height: rem(24)
 </style>

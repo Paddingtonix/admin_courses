@@ -1078,7 +1078,159 @@ onMounted(() => {
 .oil-course-setting
     &__content
         max-width: rem(972)
+        &__info
+            &__attention
+                padding: rem(16) rem(24)
+                margin-bottom: rem(32)
+
+                border: 1px solid $basic-primary
+                background-color: $disabled_basic
+                max-width: rem(972)
+                @include flex_center()
+                gap: rem(10)
+                border-radius: rem(12)
+
+                &__icon
+                    padding: rem(12)
+
+                    border-radius: 50%
+                    background-color: #176DC10D
+                    @include flex_center()
+
+                &__text
+                    min-width: rem(640)
+                    font-size: rem(16)
+                    line-height: 150%
+
+        &__edu
+            padding: rem(16) rem(24)
+            @include flex_start()
+            gap: rem(12)
+            max-width: rem(972)
+            margin-bottom: rem(32)
+
+            border-radius: rem(8)
+            border: rem(1) solid $light_gray
+            background-color: $basic_light_gray
+            position: relative
+            &__chevron
+                position: absolute
+                right: rem(24)
+                top: 50%
+                transform: translateY(-50%)
+
         &__container
+            border: rem(1) solid $light_gray
+            border-radius: rem(8)
+            position: relative
+
+            max-width: rem(972)
             &._special
                 margin-top: rem(96)
+            &__inner
+                background-color: $basic_light_gray
+                @include flex_center_spacing()
+                width: 100%
+
+                gap: rem(16)
+                position: relative
+
+                span
+                    width: 100%
+                    white-space: nowrap
+                    text-overflow: ellipsis
+                    overflow: hidden
+                    font-weight: bold
+
+                &._filled
+                    padding: rem(16) rem(24)
+
+                    cursor: pointer
+                    transition: background .2s
+                    .oil-architecture__icons
+                        opacity: 0
+                        transition: opacity .2s
+
+                    .oil-architecture__btn
+                        bottom: 0
+                        opacity: 0
+                        transition: opacity .2s
+
+                &._disable
+                    opacity: .4
+                    pointer-events: none
+
+                &:hover
+                    background-color: $disabled_basic
+                    .oil-architecture__icons
+                        opacity: 1
+
+                    .oil-architecture__btn
+                        opacity: 1
+
+                &._active
+                    .oil-architecture__icons
+                        opacity: 0
+
+                    .oil-architecture__btn
+                        opacity: 0
+
+                &:first-child
+                    border-radius: rem(8) rem(8) 0 0
+
+                &:not(:last-child)
+                    border-bottom: rem(1) solid $light_gray
+
+                &:last-child
+                    border-radius:0 0 rem(8) rem(8)
+
+                &._chapter
+                    padding-left: rem(48)
+
+                &._section
+                    padding-left: rem(64)
+
+                &__text
+                    color: $basic_primary
+                    font-weight: bold
+                &__chapter-price
+                    flex-shrink: 3
+                    span
+                        color: $light_gray
+                &__input
+                    border: rem(1) solid $light_gray
+                    border-radius: rem(4)
+                    width: 100%
+                    padding: rem(1) rem(16)
+                    min-height: rem(20)
+                    max-height: rem(24)
+                &__input__price
+                    border: rem(1) solid $light_gray
+                    position: relative
+                    border-radius: rem(4)
+                    width: 100%
+                    padding: rem(1) rem(16)
+                    min-height: rem(20)
+                    max-height: rem(24)
+                    flex-shrink: 4
+                    input::-webkit-outer-spin-button,
+                    input::-webkit-inner-spin-button
+                        -webkit-appearance: none
+                        margin: 0
+                        position: relative
+
+                    &::after
+                        position: absolute
+                        right: 11%
+                        content: 'RUB'
+                        font-weight: bold
+                        color: $light_gray
+
+        &__final-price
+            display: block
+            margin-top: rem(32)
+            font-weight: bold
+            font-size: rem(20)
+            span
+                color: $basic_gray
 </style>

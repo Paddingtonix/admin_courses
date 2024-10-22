@@ -337,3 +337,64 @@ onMounted(() => {
 	});
 });
 </script>
+
+<style lang="sass">
+.oil-course-setting
+    &__info
+            max-width: rem(960)
+            position: relative
+            &__fields
+                border-bottom: rem(1) solid $disabled_basic
+                @include flex_start()
+                &__cell
+                    padding: rem(16) rem(8)
+                    flex: 3 1
+                    overflow: hidden
+                    &:nth-child(1)
+                        flex: 1 0
+                        width: rem(272)
+                        span
+                            color: #5B6C7B
+                    span
+                        word-wrap: break-word
+
+            &__btn
+                margin-top: rem(32)
+                width: fit-content
+
+    &__edit
+        width: rem(672)
+        @include flex_column()
+        gap: rem(16)
+        &__btns
+            width: rem(291)
+            gap: rem(12)
+
+            @include flex_start()
+
+        &__example
+            &__btn
+                @include flex_center_spacing()
+                span
+                    color: $basic_primary
+                    cursor: pointer
+
+                p
+                    display: inline-flex
+
+                &__frame
+                    @include flex_start()
+                    gap: rem(2)
+
+            &__text
+                padding-top: rem(7)
+                p
+                    color: #5B6C7B
+        .oil-input
+            &:has(.oil-input__message)
+                margin-bottom: rem(8)
+        &__textarea
+            margin-bottom: rem(8)
+            &:has(.oil-textarea__message)
+                margin-bottom: rem(16)
+</style>
