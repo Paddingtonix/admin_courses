@@ -331,55 +331,53 @@ export default defineComponent({
 			course_sort_query.query_string = compare_state ? '' : translateStatus(val.field_key)
 		}
 
-		watch(() => route.query, async () => {
-    		const query_params = {
-				page: route.query.page || '1',
-				statuses: route.query.statuses,
-				languageIds: route.query.languageIds,
-				directionIds: route.query.directionIds,
-				nCoursesPerPage: route.query.nCoursesPerPage
-			}
-
-			const query_str = Object.entries(query_params)
-				.filter(([_, value]) => value)
-				.map(([key, value]) => 
-					Array.isArray(value) ? 
-					value.map(v => `${key}=${v}`).join('&') : 
-					`${key}=${value}`
-				)
-				.join('&')
-
-			await nextTick()
-			course_list.value = await getRequest(`/admin/v1/Course?${query_str}`);
-
-			loader.value = false
-		}, { immediate: true })
 		// watch(() => route.query, async () => {
-		// 	const query_params = {
+    	// 	const query_params = {
 		// 		page: route.query.page || '1',
-		// 		statuses: Array.isArray(route.query.statuses) ? route.query.statuses : route.query.statuses?.split(',') || [],
-		// 		languageIds: Array.isArray(route.query.languageIds) ? route.query.languageIds : route.query.languageIds?.split(',') || [],
-		// 		directionIds: Array.isArray(route.query.directionIds) ? route.query.directionIds : route.query.directionIds?.split(',') || [],
-		// 		nCoursesPerPage: route.query.nCoursesPerPage || '10'
+		// 		statuses: route.query.statuses,
+		// 		languageIds: route.query.languageIds,
+		// 		directionIds: route.query.directionIds,
+		// 		nCoursesPerPage: route.query.nCoursesPerPage
 		// 	}
 
-		// 	// Преобразуем параметры в строку запроса
 		// 	const query_str = Object.entries(query_params)
-		// 		.filter(([_, value]) => Array.isArray(value) ? value.length : value) // Оставляем только параметры с ненулевыми значениями
+		// 		.filter(([_, value]) => value)
 		// 		.map(([key, value]) => 
 		// 			Array.isArray(value) ? 
-		// 			value.map(v => `${key}=${v}`).join('&') : // Для массивов создаем несколько одинаковых параметров
+		// 			value.map(v => `${key}=${v}`).join('&') : 
 		// 			`${key}=${value}`
 		// 		)
 		// 		.join('&')
 
 		// 	await nextTick()
-
-		// 	// Отправляем запрос
-		// 	course_list.value = await getRequest(`/admin/v1/Course?${query_str}`)
+		// 	course_list.value = await getRequest(`/admin/v1/Course?${query_str}`);
 
 		// 	loader.value = false
 		// }, { immediate: true })
+		watch(() => route.query, async () => {
+			const query_params = {
+				page: route.query.page || '1',
+				statuses: Array.isArray(route.query.statuses) ? route.query.statuses : route.query.statuses?.split(',') || [],
+				languageIds: Array.isArray(route.query.languageIds) ? route.query.languageIds : route.query.languageIds?.split(',') || [],
+				directionIds: Array.isArray(route.query.directionIds) ? route.query.directionIds : route.query.directionIds?.split(',') || [],
+				nCoursesPerPage: route.query.nCoursesPerPage || '10'
+			}
+
+			const query_str = Object.entries(query_params)
+				.filter(([_, value]) => Array.isArray(value) ? value.length : value) 
+				.map(([key, value]) => 
+					Array.isArray(value) ? 
+					value.map(v => `${key}=${v}`).join('&') :
+					`${key}=${value}`
+				)
+				.join('&')
+
+			await nextTick()
+
+			course_list.value = await getRequest(`/admin/v1/Course?${query_str}`)
+
+			loader.value = false
+		}, { immediate: true })
 
 		onMounted(() => {
 			nextTick(async () => {

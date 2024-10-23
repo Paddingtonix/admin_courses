@@ -111,10 +111,12 @@ const setCheckbox = (val: any, idx: number) => {
 }
 
 const setFilter = () => {
+    console.log(filters_block.value.find(type => type.query === 'languageIds'));
+    
 	router.push({
 		query: {
 			...route.query,
-			statuses: filters_block.value[0]!.filters_values.some(item => item.active) ? filters_block.value[0]!.filters_values
+			statuses: filters_block.value.find(type => type.query === 'statuses')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'statuses')?.filters_values
 				.filter((item: { id: any }) => {
 					if(item.active) {
 						return item.name
@@ -123,7 +125,8 @@ const setFilter = () => {
 				.map((item: { id: any }) => item.name )
 				.join(",")
 				: undefined,
-			languageIds: filters_block.value[1]!.filters_values.some(item => item.active) ? filters_block.value[1]!.filters_values
+                
+			languageIds: filters_block.value.find(type => type.query === 'languageIds')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'languageIds')?.filters_values
 				.filter((item: { id: any }) => {
 					if(item.active) {
 						return item.name
@@ -132,7 +135,18 @@ const setFilter = () => {
 				.map((item: { id: any }) => item.name )
 				.join(",")
 				: undefined,
-			directionIds: filters_block.value[2]!.filters_values.some(item => item.active) ? filters_block.value[2]!.filters_values
+
+			directionIds: filters_block.value.find(type => type.query === 'directionIds')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'directionIds')?.filters_values
+				.filter((item: { id: any }) => {
+					if(item.active) {
+						return item.name
+					}
+				})
+				.map((item: { id: any }) => item.name )
+				.join(",")
+				: undefined,
+
+            section: filters_block.value.find(type => type.query === 'section')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'section')?.filters_values
 				.filter((item: { id: any }) => {
 					if(item.active) {
 						return item.name
@@ -220,6 +234,9 @@ watch(() => props.filters, () => {
             width: rem(347)
             &__text
                 font-size: rem(14)
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis
 
         &__frame
             position: relative

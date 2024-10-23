@@ -10,7 +10,7 @@
 			class="oil-tags__filter"
 			v-if="tagsStore?.filters['Язык']"
 			:isMarks="true"
-			:filters="tagsStore.filters"
+			:filters="tags_filter"
 			@send-fiters="sendFilters($event)"
 			@cancel-filters="sendFilters($event)"
 		/>
@@ -158,6 +158,9 @@ import type {
 import type { ITags } from "~/src/ts-interface/storeTags.type";
 import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
+import { getRequest } from '~/src/composables/api';
+
+
 const tagsStore = useTagsStore();
 
 const tagsData = tagsStore.$state;
@@ -182,6 +185,51 @@ const active_checkbox = reactive({
 	translated: { name: "translated", isActive: true },
 	not_translated: { name: "not_translated", isActive: true },
 });
+
+const translation_map: Record<"en"|"fr"|"ru", string> = {
+	en: 'Английский (EN)',
+	fr: 'Французкий (FR)',
+	ru: 'Русский (RU)',
+}
+
+		
+const translateStatus = (status: string): string => {
+	console.log(status);
+	
+	if (status in translation_map) {
+		return translation_map[
+			status as keyof typeof translation_map
+		];
+	}
+
+	return "Неизвестный статус"
+}
+
+const filters_tags = ref([])
+
+const heading_list = ref([])
+
+const tags_filter = computed(() => {
+	if(filters_tags.value) {
+		return [
+			{
+				query: 'languageIds',
+				title: 'Язык',
+				filters_values: filters_tags.value.languages
+					? filters_tags.value.languages.map((item: string, idx: number) => ({ name: item.id, id: idx + 1, active: false, translate: translateStatus(item.id.toLowerCase()) }))
+					: [],
+			},
+			{
+				query: 'headings',
+				title: 'Разделы',
+				filters_values: filters_tags.value.headings
+					? filters_tags.value.headings.map((item: string, idx: number) => ({ name: item.name, id: idx + 1, active: false, translate: item.name }))
+					: [],
+			},
+		]
+	}
+})
+
 
 const setActiveCheckbox = ({
 	id,
@@ -227,6 +275,11 @@ onMounted(() => {
 	tagsStore.getFilters().then(() => {
 		console.log("tags-store", tagsStore.filters);
 	});
+
+	nextTick(async () => {
+		filters_tags.value = await getRequest('admin/v1/Label/filters')
+		heading_list.value = await getRequest('admin/v1/Label')
+	})
 });
 
 const modalStore = useStoreModal();
@@ -306,86 +359,88 @@ watch(tagsStore.$state, () => {
 
 <style lang="sass">
 .tags-page
-  &__widget-wrapper
-      column-gap: rem(8)
-      margin-bottom: rem(8)
+    &__widget-wrapper
+        column-gap: rem(8)
+        margin-bottom: rem(8)
 
-      display: grid
-      grid-template-columns: 4fr 0fr 1fr
-      align-items: center
+        display: grid
+        grid-template-columns: 4fr 0fr 1fr
+        align-items: center
 
-  .oil-tags__filter
-        .oil-filter__body-wrapper
-            top: -20%
-            transform: translateY(100%)
-        .oil-filter__body__frame
-            max-height: rem(152)
-            overflow-y: scroll
-            overflow-x: hidden
+    .oil-tags__filter
+        .oil-filter
+            &__body-wrapper
+                top: rem(20)
+                right: rem(20)
+
+            &__body__frame
+                max-height: rem(152)
+                overflow-y: scroll
+                overflow-x: hidden
 
 
-  &__checkbox-wrapper
-      display: flex
-      column-gap: rem(16)
+    &__checkbox-wrapper
+        display: flex
+        column-gap: rem(16)
 
-  &__search
-      min-width: 100%
+    &__search
+        min-width: 100%
 
-  &__add-tag-btn
-      max-height: rem(40)
-      padding: rem(8) rem(8) rem(8) rem(16) !important
+    &__add-tag-btn
+        max-height: rem(40)
+        padding: rem(8) rem(8) rem(8) rem(16) !important
 
-  &__pagination-wrapper
-      position: relative
-      display: flex
-      justify-content: center
-      margin-top: rem(16)
+    &__pagination-wrapper
+        position: relative
+        display: flex
+        justify-content: center
+        margin-top: rem(16)
 
-  &__selector.oil-selector
-      position: absolute
-      border: none
-      right: 0
-      *
-          cursor: pointer
+    &__selector.oil-selector
+        position: absolute
+        border: none
+        right: 0
+        *
+            cursor: pointer
 
 .tags-table-header
-  .oil-head__cell
-      padding: 0
-      padding: rem(16) rem(8)
-      &:nth-child(1)
-          flex: 1
+    .oil-head__cell
+        padding: 0
+        padding: rem(16) rem(8)
+        &:nth-child(1)
+            flex: 1
 
 .tags-table-row
-  cursor: pointer
-  position: relative
-  transition: all .2s ease-in-out
-  &:hover
-      background: $basic_light_blue
-      .tags-table-row__svg
-          opacity: 1
+    cursor: pointer
+    position: relative
+    transition: all .2s ease-in-out
+    &:hover
+        background: $basic_light_blue
+        .tags-table-row__svg
+            opacity: 1
 
 
-  .oil-row__cell
-      padding: 0
-      padding: rem(16) rem(8)
+    .oil-row__cell
+        padding: 0
+        padding: rem(16) rem(8)
 
-      &:nth-child(1)
-          flex: 2
-          a
-              color: $basic_primary
+        &:nth-child(1)
+            flex: 2
+            a
+                color: $basic_primary
 
-      &:nth-child(2)
-          flex: 1
-          order: -1
-          span
-            color: $basic_text
+        &:nth-child(2)
+            flex: 1
+            order: -1
+            span
+                color: $basic_text
 
-      &:nth-child(3)
-          flex: 3
+        &:nth-child(3)
+            flex: 3
 
-  &__svg
-      transition: opacity .2s ease-in
-      opacity: 0
-      position: absolute
-      right: rem(16)
+    &__svg
+        transition: opacity .2s ease-in
+        opacity: 0
+        position: absolute
+        right: rem(16)
 </style>
