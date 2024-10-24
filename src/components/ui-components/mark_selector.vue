@@ -1,9 +1,13 @@
 <template>
 	<div class="oil-selector" :class="{ error: error }" @click="openList">
 		<div class="oil-selector__chooses">
-			<label v-if="!chooses_variable.id">{{ label }}</label>
+			<label
+				:class="{ fullfilled: chooses_variable.id }"
+				class="oil-selector__chooses__label"
+				>{{ label }}</label
+			>
 
-			<span v-else>
+			<span>
 				{{ checkForFlooding(chooses_variable.name, 45) }}
 			</span>
 			<svg
@@ -139,6 +143,16 @@ export default defineComponent({
         & > .oil-selector__chooses span
             color: $light_error
     &__chooses
+        &__label
+            color: #9AA7BB
+            cursor: pointer
+            transition: transform .3s ease
+            &.fullfilled
+                position: absolute
+                top: 0
+                background: white
+                color: $basic_primary
+                transform: translateY(-50%)
         &__chevron
             position: absolute
             right: rem(18)
@@ -151,10 +165,6 @@ export default defineComponent({
             font-size: rem(16)
             line-height: 150%
 
-
-        label
-            color: #9AA7BB
-            cursor: pointer
 
     &__list
         position: absolute

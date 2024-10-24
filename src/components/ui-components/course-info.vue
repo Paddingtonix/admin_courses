@@ -321,10 +321,14 @@ const saveEditFrame = () => {
 			})
 			.catch((error) => {
 				if (error instanceof AxiosError) {
-					if (error.config?.data.includes("названием")) {
-						edit_info.value[0].error = error.message;
-					} else if (error.config?.data.includes("описанием")) {
-						edit_info.value[2].error = error.message;
+					console.log("axios error!!!!!!:", error);
+
+					if (error.response?.data.includes("названием")) {
+						edit_info.value[0].error =
+							"Курс с таким названием уже существует";
+					} else if (error.response?.data.includes("описанием")) {
+						edit_info.value[2].error =
+							"Курс с таким описанием уже существует";
 					}
 				}
 			});
