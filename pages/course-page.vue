@@ -205,7 +205,8 @@ export default defineComponent({
 			{ text: 25, active: false },
 		]
 
-		const translation_map: Record<"indevelopment"|"onmoderation"|"published"|"withdrawn"|"archived"|"en"|"fr"|"ru"|"name"|"lang"|"status"|"authors"|"direction"|"date_edit"|"end_date"|'archieved', string> = {
+		const translation_map: Record<'total'|"indevelopment"|"onmoderation"|"published"|"withdrawn"|"archived"|"en"|"fr"|"ru"|"name"|"lang"|"status"|"authors"|"direction"|"date_edit"|"end_date"|'archieved', string> = {
+			total: 'Всего',
 			indevelopment: "В разработке",
 			onmoderation: "На модерации",
 			published: "Опубликован",
@@ -221,7 +222,7 @@ export default defineComponent({
             authors: 'ascendingAuthors',
             direction: 'ascendingDirection',
             date_edit: 'ascendingLastChangeDate',
-            end_date: 'ascendingSalesTerminationDate'
+            end_date: 'ascendingSalesTerminationDate',
 		}
 	
 		const course_filters = computed(() => {
@@ -388,6 +389,8 @@ export default defineComponent({
 					}
 				})
 
+				
+				
 				course_statuses.value = Object.entries(await getRequest('/admin/v1/Course/statuses')).map(status => (
 					{
 						status_name: translateStatus(status[0].toLowerCase()),

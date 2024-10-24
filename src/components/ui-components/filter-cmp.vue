@@ -146,13 +146,13 @@ const setFilter = () => {
 				.join(",")
 				: undefined,
 
-            section: filters_block.value.find(type => type.query === 'section')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'section')?.filters_values
+			headingIds: filters_block.value.find(type => type.query === 'headingIds')?.filters_values.some(item => item.active) ? filters_block.value.find(type => type.query === 'headingIds')?.filters_values
 				.filter((item: { id: any }) => {
 					if(item.active) {
-						return item.name
+						return item.id
 					}
 				})
-				.map((item: { id: any }) => item.name )
+				.map((item: { id: any }) => item.id )
 				.join(",")
 				: undefined,
 		} 
@@ -165,6 +165,7 @@ const cancelFilters = () => {
 		statuses: undefined,
 		languageIds: undefined,
 		directionIds: undefined,
+		headingIds: undefined,
 	} });
 }
 
@@ -229,6 +230,8 @@ watch(() => props.filters, () => {
         @include flex_column()
         height: max-content
         gap: rem(24)
+        overflow-y: auto
+        max-height: 85vh
 
         .oil-checkbox
             width: rem(347)

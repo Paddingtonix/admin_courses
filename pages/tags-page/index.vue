@@ -61,7 +61,7 @@
 		@sort="sortClick($event.field_key)"
 	/>
 
-	<template v-for="tag in tagsData.tags" :key="tag.id">
+	<template v-for="tag in heading_list.labels" :key="tag.id">
 		<TableRowCmp
 			class="tags-table-row"
 			:id="tag.id"
@@ -150,6 +150,7 @@
 import { useStoreModal } from "~/src/stores/storeModal";
 import { useTagsStore } from "~/src/stores/storeTags";
 import { useHeadersSort } from "~/src/utils/sort-generator";
+import { useRoute } from 'vue-router'
 import type {
 	IDeleteModal,
 	IDeleteTag,
@@ -209,6 +210,8 @@ const filters_tags = ref([])
 
 const heading_list = ref([])
 
+const route = useRoute();
+
 const tags_filter = computed(() => {
 	if(filters_tags.value) {
 		return [
@@ -220,10 +223,10 @@ const tags_filter = computed(() => {
 					: [],
 			},
 			{
-				query: 'headings',
+				query: 'headingIds',
 				title: 'Разделы',
 				filters_values: filters_tags.value.headings
-					? filters_tags.value.headings.map((item: string, idx: number) => ({ name: item.name, id: idx + 1, active: false, translate: item.name }))
+					? filters_tags.value.headings.map((item: string, idx: number) => ({ name: item.id, id: idx + 1, active: false, translate: item.name }))
 					: [],
 			},
 		]
@@ -355,6 +358,36 @@ watch(tagsStore.$state, () => {
 		goToPage(tagsData.currentPage);
 	}
 });
+
+
+watch(() => route.query, async () => {
+	console.log(route.query.headingIds);
+	
+	const query_params = {
+		page: route.query.page || '1',
+		headingIds: Array.isArray(route.query.headingIds) ? route.query.headingIds : route.query.headingIds?.split(',') || [],
+		languageIds: Array.isArray(route.query.languageIds) ? route.query.languageIds : route.query.languageIds?.split(',') || [],
+		// nCoursesPerPage: route.query.nCoursesPerPage || '10'
+	}
+
+	const query_str = Object.entries(query_params)
+		.filter(([_, value]) => Array.isArray(value) ? value.length : value) 
+		.map(([key, value]) => 
+			Array.isArray(value) ? 
+			value.map(v => `${key}=${v}`).join('&') :
+			`${key}=${value}`
+		)
+		.join('&')
+
+	await nextTick()
+
+	console.log(route.query);
+	
+
+	heading_list.value = await getRequest(`/admin/v1/Label?${query_str}`)
+
+
+}, { immediate: true })
 </script>
 
 <style lang="sass">
