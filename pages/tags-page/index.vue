@@ -158,8 +158,7 @@ import type {
 import type { ITags } from "~/src/ts-interface/storeTags.type";
 import { checkForFlooding } from "~/src/utils/checkForFlooding";
 
-import { getRequest } from '~/src/composables/api';
-
+import { getRequest } from "~/src/composables/api";
 
 const tagsStore = useTagsStore();
 
@@ -186,50 +185,62 @@ const active_checkbox = reactive({
 	not_translated: { name: "not_translated", isActive: true },
 });
 
-const translation_map: Record<"en"|"fr"|"ru", string> = {
-	en: 'Английский (EN)',
-	fr: 'Французкий (FR)',
-	ru: 'Русский (RU)',
-}
+const translation_map: Record<"en" | "fr" | "ru", string> = {
+	en: "Английский (EN)",
+	fr: "Французкий (FR)",
+	ru: "Русский (RU)",
+};
 
-		
 const translateStatus = (status: string): string => {
 	console.log(status);
-	
+
 	if (status in translation_map) {
-		return translation_map[
-			status as keyof typeof translation_map
-		];
+		return translation_map[status as keyof typeof translation_map];
 	}
 
-	return "Неизвестный статус"
-}
+	return "Неизвестный статус";
+};
 
-const filters_tags = ref([])
+const filters_tags = ref([]);
 
-const heading_list = ref([])
+const heading_list = ref([]);
 
 const tags_filter = computed(() => {
-	if(filters_tags.value) {
+	if (filters_tags.value) {
 		return [
 			{
-				query: 'languageIds',
-				title: 'Язык',
+				query: "languageIds",
+				title: "Язык",
 				filters_values: filters_tags.value.languages
-					? filters_tags.value.languages.map((item: string, idx: number) => ({ name: item.id, id: idx + 1, active: false, translate: translateStatus(item.id.toLowerCase()) }))
+					? filters_tags.value.languages.map(
+							(item: string, idx: number) => ({
+								name: item.id,
+								id: idx + 1,
+								active: false,
+								translate: translateStatus(
+									item.id.toLowerCase()
+								),
+							})
+					  )
 					: [],
 			},
 			{
-				query: 'headings',
-				title: 'Разделы',
+				query: "headings",
+				title: "Разделы",
 				filters_values: filters_tags.value.headings
-					? filters_tags.value.headings.map((item: string, idx: number) => ({ name: item.name, id: idx + 1, active: false, translate: item.name }))
+					? filters_tags.value.headings.map(
+							(item: string, idx: number) => ({
+								name: item.name,
+								id: idx + 1,
+								active: false,
+								translate: item.name,
+							})
+					  )
 					: [],
 			},
-		]
+		];
 	}
-})
-
+});
 
 const setActiveCheckbox = ({
 	id,
@@ -277,9 +288,9 @@ onMounted(() => {
 	});
 
 	nextTick(async () => {
-		filters_tags.value = await getRequest('admin/v1/Label/filters')
-		heading_list.value = await getRequest('admin/v1/Label')
-	})
+		filters_tags.value = await getRequest("admin/v1/Label/filters");
+		heading_list.value = await getRequest("admin/v1/Label");
+	});
 });
 
 const modalStore = useStoreModal();
@@ -358,7 +369,13 @@ watch(tagsStore.$state, () => {
 </script>
 
 <style lang="sass">
+.oil-container
+    &:has(.tags-page)
+        padding: 2rem 2rem 7rem 6.5rem
+        min-height: fit-content
+        position: relative
 .tags-page
+    max-height: fit-content
     &__widget-wrapper
         column-gap: rem(8)
         margin-bottom: rem(8)
